@@ -1,5 +1,6 @@
 <template>
-    <div type="background">
+    <div class="base">
+        <img src="../public/logo-hestia.png" class="logo"/>
         <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton>
     </div>
 </template>
@@ -27,5 +28,21 @@ const handleLoginError = () => {
 </script>
 
 <style>
+body {
+    background-color: #E7FEED;
+}
+
+.base {
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+}
+
+.logo {
+    width: 280px;
+    border-radius: 15px;
+}
 
 </style>
