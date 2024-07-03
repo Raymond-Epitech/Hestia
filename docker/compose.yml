@@ -1,5 +1,3 @@
-version: '3.3'
-
 services:
   web:
     build: ../frontend/
@@ -11,3 +9,11 @@ services:
     ports: 
       - 5001:5001
 
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: ./secret/mongo-psswd
+    volumes:
+      - ./mongodb:/data/db
