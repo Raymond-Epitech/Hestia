@@ -1,0 +1,13 @@
+version: '3.3'
+
+services:
+  web:
+    build: ../frontend/
+    ports:
+      - 3000:3000
+
+  back:
+    build: ../backend/
+    ports: 
+      - 5001:5001
+
