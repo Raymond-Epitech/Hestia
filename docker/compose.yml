@@ -7,7 +7,8 @@ services:
   back:
     build: ../backend/
     ports: 
-      - 5001:5001
+      - 8081:8081
+      - 8080:8080
 
   mongo:
     image: mongo
