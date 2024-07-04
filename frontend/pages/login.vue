@@ -1,8 +1,7 @@
 <template>
     <div class="base">
-        <h1>{{data}}</h1>
         <img src="../public/logo-hestia.png" class="logo"/>
-        <button onclick='gettest'>call test</button>
+        <button @click.prevent='gettest'>call test</button>
         <!-- <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton> -->
     </div>
 </template>
