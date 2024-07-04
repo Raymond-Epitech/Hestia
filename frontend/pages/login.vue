@@ -1,7 +1,9 @@
 <template>
     <div class="base">
+        <h1>{{data}}</h1>
         <img src="../public/logo-hestia.png" class="logo"/>
-        <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton>
+        <button onclick='gettest'>call test</button>
+        <!-- <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton> -->
     </div>
 </template>
 
@@ -25,6 +27,14 @@ const handleLoginSuccess = async (response) => {
 const handleLoginError = () => {
   console.error("Login failed");
 };
+
+const gettest = async () => {
+    const response = await fetch('http://localhost:8080/api/Test');
+    const data = await response.json();
+    console.log(data);
+    return data;
+}
+
 </script>
 
 <style>
