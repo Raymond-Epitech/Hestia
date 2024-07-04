@@ -21,7 +21,7 @@ try
 
     builder.Services.Configure<BookStoreDatabaseSettings>(
     builder.Configuration.GetSection("BookStoreDatabase"));
-    /*builder.Services.AddAuthentication(options =>
+    builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -39,9 +39,9 @@ try
             ValidateLifetime = false,
             ValidateIssuerSigningKey = true
         };
-    });*/
+    });
 
-    //builder.Services.AddAuthorization();
+    builder.Services.AddAuthorization();
     builder.Services.AddSwaggerGen();
 
     var app = builder.Build();
@@ -56,12 +56,10 @@ try
 
     //app.UseHttpsRedirection();
 
-    /*app.UseAuthentication();
-    app.UseAuthorization();*/
+    app.UseAuthentication();
+    app.UseAuthorization();
 
     app.MapControllers();
-
-    app.Run();
 
     app.Run();
 }
