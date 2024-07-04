@@ -1,18 +1,27 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS builder
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 
-WORKDIR /home/backend/
-COPY . .
-WORKDIR /home/backend/Api
-#RUN dotnet restore
-#RUN dotnet publish -c Release -o out
+WORKDIR /app
+EXPOSE 5000
 EXPOSE 5001
 
-CMD [ "dotnet", "run" ]
-#FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
-#WORKDIR /backend
-#COPY --from=builder /home/backend/ .
 
-#WORKDIR /backend/Api
-#RUN ls ./out/*/ && ls ./out #&& sleep 5000
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
-#CMD [ "dotnet", "./out/ZstdSharp.dll" ]
+WORKDIR /src
+COPY ["../", "Api/"]
+RUN dotnet restore "Api/Api/Api.csproj"
+COPY . .
+
+WORKDIR /src/Api/Api
+
+RUN dotnet build "Api.csproj" -c Release -o /app/build
+
+FROM build AS publish
+
+RUN dotnet publish "Api.csproj" -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+
+ENTRYPOINT ["dotnet", "Api.dll"]
