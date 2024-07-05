@@ -23,7 +23,7 @@ namespace WebApi.Configuration
         public static IServiceCollection EnableCors(this IServiceCollection services)
         {
             var allowedHost = new[]{
-                "http://localhost:4200"
+                "http://localhost:3000"
             };
             services.AddCors(opt => opt.AddDefaultPolicy(policy => policy
                 .AllowAnyHeader()
