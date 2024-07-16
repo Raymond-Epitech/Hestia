@@ -62,8 +62,6 @@ try
     app.MapControllers();
 
     app.Run();
-
-    app.Run();
 }
 catch (Exception e)
 {
