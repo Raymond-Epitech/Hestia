@@ -1,30 +1,24 @@
-﻿using System;
-using BookStoreApi.Models;
+﻿using EntityFramework.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace MyConsoleApp.Models
 {
-    public partial class entitycoreContext : DbContext
+    public class HestiaContext : DbContext
     {
-        public virtual DbSet<Book> Book { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseNpgsql(@"Host=localhost;Database=entitycore;Username=postgres;Password=mypassword");
-        }
+        public virtual DbSet<Reminder> Reminder { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Book>(entity =>
+            /*modelBuilder.Entity<Reminder>(e =>
             {
-                entity.ToTable("book", "account");
-                entity.Property(e => e.Id)
-                                    .HasColumnName("id")
-                                    .HasDefaultValueSql("nextval('account.item_id_seq'::regclass)");
-                entity.Property(e => e.BookName).HasColumnName("Name");
-            });
-            modelBuilder.HasSequence("item_id_seq", "account");
+                e.HasMany(x => x.Roles)
+                    .WithMany(x => x.Users)
+                    .UsingEntity<RoleUser>(
+                        x => x.HasOne(c => c.Role).WithMany(c => c.RoleUsers),
+                        x => x.HasOne(c => c.User).WithMany(c => c.RoleUsers));
+                e.HasMany(x => x.Candidates).WithOne(x => x.Recruiter);
+                e.HasMany(x => x.Interviews).WithOne(x => x.Responsible).HasForeignKey(x => x.ResponsibleId);
+            });*/
         }
     }
 }

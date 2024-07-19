@@ -14,8 +14,8 @@ namespace WebApi.Configuration
 
         private static IServiceCollection AddBusinessServices(this IServiceCollection services)
         {
-            services.AddScoped<ITestService, TestService>();
-            services.AddSingleton<TestService>();
+            services.AddScoped<IReminderService, ReminderService>();
+            services.AddSingleton<ReminderService>();
             services.AddHttpContextAccessor();
             return services;
         }
