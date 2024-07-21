@@ -15,7 +15,8 @@ services:
     restart: always
     shm_size: 128mb
     environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
       POSTGRES_USER: root
       POSTGRES_PASSWORD: ./secret/postgres-psswd
     volumes:
-      - ./postgres:/data/db
+      - ./postgres:/var/lib/postgresql/data
