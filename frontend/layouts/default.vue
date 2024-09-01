@@ -4,6 +4,9 @@
     <div>
         <slot />
     </div>
+    <div>
+      <Navbar/>
+    </div>
 
 </template>
 

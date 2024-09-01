@@ -2,7 +2,7 @@
     <div class="base">
         <img src="../public/logo-hestia.png" class="logo"/>
         <button @click.prevent='gettest'>call test</button>
-        <!-- <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton> -->
+        <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton>
     </div>
 </template>
 
