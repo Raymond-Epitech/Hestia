@@ -10,6 +10,23 @@ public class ReminderController(
     IReminderService reminderService) : ControllerBase
 {
     [HttpGet]
+    public async Task<ActionResult<List<ReminderOutput> >> GetAllReminders()
+    {
+        try
+        {
+            return Ok(await reminderService.GetAllRemindersAsync());
+        }
+        catch (ContextException ex)
+        {
+            return UnprocessableEntity(ex);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex);
+        }
+    }
+
+    [HttpGet]
     public async Task<ActionResult<ReminderOutput>> GetReminder(Guid Id)
     {
         try

@@ -5,6 +5,7 @@ namespace Business.Interfaces
 {
     public interface IReminderService
     {
+        Task<List<ReminderOutput>> GetAllRemindersAsync();
         Task<ReminderOutput> GetReminderAsync(Guid id);
         Task AddReminderAsync(ReminderInput input);
         Task UpdateReminderAsync(ReminderInput input);

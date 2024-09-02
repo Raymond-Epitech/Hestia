@@ -1,4 +1,3 @@
-using BookStoreApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -19,8 +18,6 @@ try
 
     builder.Services.ConfigureServices(builder.Configuration, builder.Environment.IsDevelopment());
 
-    builder.Services.Configure<BookStoreDatabaseSettings>(
-    builder.Configuration.GetSection("BookStoreDatabase"));
     builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

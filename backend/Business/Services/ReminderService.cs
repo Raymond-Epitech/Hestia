@@ -14,6 +14,30 @@ public class ReminderService(
     HestiaContext _context) : IReminderService
 {
     /// <summary>
+    /// Get all reminders
+    /// </summary>
+    /// <returns>All the reminders available</returns>
+    /// <exception cref="ContextException">An error has occured while retriving the reminders from db</exception>
+    public async Task<List<ReminderOutput>> GetAllRemindersAsync()
+    {
+        try
+        {
+            var reminders = await _context.Reminder.Select(x => new ReminderOutput
+            {
+                Id = x.Id,
+                Content = x.Content,
+                Color = x.Color
+            }).ToListAsync();
+            logger.LogInformation("Succes : All reminders found");
+            return reminders;
+        }
+        catch (Exception ex)
+        {
+            throw new ContextException("An error occurred while getting all reminders from the db", ex);
+        }
+    }
+
+    /// <summary>
     /// Get a reminder
     /// </summary>
     /// <param name="id">the Guid of the reminder</param>
