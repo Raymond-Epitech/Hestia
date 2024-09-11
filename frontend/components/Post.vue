@@ -3,6 +3,7 @@
         <button class="delete-button" @click="handleDelete">X</button>
         <h1>{{ title }}</h1>
         <p>{{ text }}</p>
+        <ProfileIcon class="profile-icon"/>
     </div>
 </template>
 
@@ -16,10 +17,6 @@ text: {
     type: String,
     required: true
 },
-image: {
-    type: String,
-    required: false,
-}
 })
 
 const emit = defineEmits(['delete'])
@@ -71,5 +68,11 @@ const handleDelete = () => {
     left: 50%;
     transform: translate(-50%, -50%); 
     color: rgb(10, 10, 10); 
+}
+
+.profile-icon {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
 }
 </style>
