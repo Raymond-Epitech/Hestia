@@ -6,15 +6,17 @@ services:
 
   back:
     build: ../backend/
-    ports: 
+    ports:
       - 8081:8081
       - 8080:8080
 
-  mongo:
-    image: mongo
+  db:
+    image: postgres:12.19-bookworm
     restart: always
+    shm_size: 128mb
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: ./secret/mongo-psswd
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: ./secret/postgres-psswd
     volumes:
-      - ./mongodb:/data/db
+      - ./postgres:/var/lib/postgresql/data
