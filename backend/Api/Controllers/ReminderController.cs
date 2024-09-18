@@ -6,8 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ReminderController(
-    IReminderService reminderService) : ControllerBase
+public class ReminderController(IReminderService reminderService) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<List<ReminderOutput> >> GetAllReminders()
@@ -26,7 +25,7 @@ public class ReminderController(
         }
     }
 
-    [HttpGet]
+    [HttpGet("{id}")]
     public async Task<ActionResult<ReminderOutput>> GetReminder(Guid Id)
     {
         try
@@ -65,12 +64,12 @@ public class ReminderController(
         }
     }
 
-    [HttpPost]
-    public async Task<ActionResult> UpdateReminder(ReminderInput input)
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdateReminder(Guid id, ReminderInput input)
     {
         try
         {
-            await reminderService.UpdateReminderAsync(input);
+            await reminderService.UpdateReminderAsync(id, input);
             return Ok();
         }
         catch (MissingArgumentException ex)
@@ -91,7 +90,7 @@ public class ReminderController(
         }
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteReminder(Guid Id)
     {
         try

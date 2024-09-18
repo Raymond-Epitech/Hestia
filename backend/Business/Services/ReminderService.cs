@@ -96,19 +96,14 @@ public class ReminderService(
     /// <exception cref="MissingArgumentException">The Id of the reminder is missing</exception>
     /// <exception cref="NotFoundException">No reminder where found with this id</exception>
     /// <exception cref="ContextException">An error has occured while adding reminder from db</exception>
-    public async Task UpdateReminderAsync(ReminderInput input)
+    public async Task UpdateReminderAsync(Guid id, ReminderInput input)
     {
         try
         {
-            if (input.Id == null)
-            {
-                throw new MissingArgumentException("Missing the Id field of the reminder");
-            }
-
-            var reminder = _context.Reminder.Where(x => x.Id == input.Id).FirstOrDefault();
+            var reminder = _context.Reminder.Where(x => x.Id == id).FirstOrDefault();
             if (reminder == null)
             {
-                throw new NotFoundException($"Reminder {input.Id} not found");
+                throw new NotFoundException($"Reminder {id} not found");
             }
 
             var updatedReminder = reminder.UpdateFromInput(input);
