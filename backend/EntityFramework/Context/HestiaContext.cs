@@ -1,7 +1,7 @@
 ﻿using EntityFramework.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace MyConsoleApp.Models
+namespace EntityFramework.Context
 {
     public class HestiaContext : DbContext
     {
@@ -11,7 +11,7 @@ namespace MyConsoleApp.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            
+
         }
     }
 }

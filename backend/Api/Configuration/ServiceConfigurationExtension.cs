@@ -1,7 +1,7 @@
 ﻿using BookStoreApi.Services;
 using Business.Interfaces;
+using EntityFramework.Context;
 using Microsoft.EntityFrameworkCore;
-using MyConsoleApp.Models;
 
 namespace WebApi.Configuration
 {

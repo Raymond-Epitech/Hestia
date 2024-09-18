@@ -51,12 +51,25 @@ try
         app.UseSwaggerUI();
     }
 
-    app.UseHttpsRedirection();
+    //app.UseHttpsRedirection();
 
     app.UseAuthentication();
     app.UseAuthorization();
 
     app.MapControllers();
+
+    /*using (var connection = new Npgsql.NpgsqlConnection("Server=localhost;Port=5432;Database=mydb;User Id=user;Password=password;"))
+    {
+        try
+        {
+            connection.Open();
+            Console.WriteLine("Connection successful!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Connection failed: {ex.Message}");
+        }
+    }*/
 
     app.Run();
 }
