@@ -1,5 +1,7 @@
 ﻿using BookStoreApi.Services;
 using Business.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using MyConsoleApp.Models;
 
 namespace WebApi.Configuration
 {
@@ -34,7 +36,12 @@ namespace WebApi.Configuration
 
         private static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
         {
-            //DB context
+            services.AddDbContext<HestiaContext>(opt =>
+            {
+                opt.UseNpgsql(configuration.GetConnectionString("ConnectionString"));
+                opt.EnableDetailedErrors(isDevelopment);
+                opt.EnableSensitiveDataLogging(isDevelopment);
+            });
 
             return services;
         }
