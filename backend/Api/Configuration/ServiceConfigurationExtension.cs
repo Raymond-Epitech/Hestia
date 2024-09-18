@@ -38,7 +38,7 @@ namespace WebApi.Configuration
         {
             services.AddDbContext<HestiaContext>(opt =>
             {
-                opt.UseNpgsql(configuration.GetConnectionString("ConnectionString"));
+                opt.UseNpgsql(configuration.GetConnectionString("HestiaDb"));
                 opt.EnableDetailedErrors(isDevelopment);
                 opt.EnableSensitiveDataLogging(isDevelopment);
             });

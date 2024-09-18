@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WebApi.Configuration;
@@ -14,6 +15,7 @@ try
     });
 
     builder.Services.AddControllers();
+
     builder.Services.AddEndpointsApiExplorer();
 
     builder.Services.ConfigureServices(builder.Configuration, builder.Environment.IsDevelopment());
@@ -55,10 +57,9 @@ try
 
     app.UseAuthentication();
     app.UseAuthorization();
-
     app.MapControllers();
 
-    /*using (var connection = new Npgsql.NpgsqlConnection("Server=localhost;Port=5432;Database=mydb;User Id=user;Password=password;"))
+    /*using (var connection = new Npgsql.NpgsqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
     {
         try
         {
