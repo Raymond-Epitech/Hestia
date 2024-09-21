@@ -20,7 +20,7 @@ services:
     ports:
       - 5432:5432
     environment:
-      POSTGRES_USER: "user"
+      POSTGRES_USER: "root"
       POSTGRES_PASSWORD: "password"
       POSTGRES_DB: "mydb"
     volumes:
