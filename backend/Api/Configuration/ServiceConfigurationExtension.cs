@@ -43,6 +43,8 @@ namespace WebApi.Configuration
                 opt.EnableSensitiveDataLogging(isDevelopment);
             });
 
+            Console.WriteLine(configuration.GetConnectionString("HestiaDb"));
+
             return services;
         }
     }

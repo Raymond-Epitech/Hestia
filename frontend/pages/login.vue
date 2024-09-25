@@ -28,7 +28,7 @@ const handleLoginError = () => {
 };
 
 const gettest = async () => {
-    const response = await fetch('http://localhost:8080/api/Test');
+    const response = await fetch('http://localhost:8080/api/Version');
     const data = await response.json();
     console.log(data);
     return data;
