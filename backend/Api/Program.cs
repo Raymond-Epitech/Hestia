@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WebApi.Configuration;
@@ -14,7 +13,7 @@ try
         o.ValidateScopes = true;
     });
 
-    builder.Services.AddControllers();
+    builder.Services.AddControllers().AddNewtonsoftJson();
 
     builder.Services.AddEndpointsApiExplorer();
 
