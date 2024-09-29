@@ -11,7 +11,7 @@ namespace EntityFramework.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         }
     }
 }

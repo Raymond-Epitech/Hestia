@@ -59,18 +59,25 @@ try
     app.UseAuthorization();
     app.MapControllers();
 
-    /*using (var connection = new Npgsql.NpgsqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
+    if (app.Environment.IsDevelopment())
     {
-        try
+        using (var connection = new Npgsql.NpgsqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
         {
-            connection.Open();
-            Console.WriteLine("Connection successful!");
+            try
+            {
+                if (string.IsNullOrEmpty(builder.Configuration.GetConnectionString("HestiaDb")))
+                {
+                    Console.Error.WriteLine("Connection string is not set in Docker.");
+                }
+                connection.Open();
+                Console.Error.WriteLine("Connection successful!");
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Connection failed: {ex.Message}");
+            }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Connection failed: {ex.Message}");
-        }
-    }*/
+    }
 
     app.Run();
 }

@@ -28,7 +28,10 @@ const handleLoginError = () => {
 };
 
 const gettest = async () => {
-    const response = await fetch('http://localhost:8080/api/Version');
+    const response = await fetch('http://localhost:8080/api/Reminder', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'}});
     const data = await response.json();
     console.log(data);
     return data;

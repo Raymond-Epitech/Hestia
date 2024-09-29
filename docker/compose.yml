@@ -6,30 +6,35 @@ services:
 
   back:
     build: ../backend/
-    depends_on:
-      db:
-        condition: service_healthy
     ports:
       - 8081:8081
       - 8080:8080
-
-  db:
-    image: postgres:12.19-bookworm
-    restart: always
-    shm_size: 128mb
-    ports:
-      - 5432:5432
     environment:
-      POSTGRES_USER: "root"
-      POSTGRES_PASSWORD: "password"
-      POSTGRES_DB: "mydb"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+    - app-network
 
-volumes:
-  pgdata:
+networks:
+  app-network:
+    driver: bridge
+
+#  db:
+#    image: postgres:12.19-bookworm
+#    restart: always
+#    shm_size: 128mb
+#    ports:
+#      - 5432:5432
+#    environment:
+#      POSTGRES_USER: "root"
+#      POSTGRES_PASSWORD: "password"
+#      POSTGRES_DB: "mydb"
+#    volumes:
+#      - pgdata:/var/lib/postgresql/data
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+#
+#volumes:
+#  pgdata:
