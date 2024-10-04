@@ -10,6 +10,9 @@ Avoir récupérer le fichier "appsettings.Development 2.json" et le renommer en 
 
 Si tout est bien configurer, lancer le docker (**docker compose up** dans le folder *Hestia/docker)*
 Si tout vas bien vous devriez voir apparaitre dans les logs : "**Connection successful!**"
+L'API se situe a la route : ip(localhost):8080/api/
+
+Pour acceder au swagger : ip(localhost):8080/swagger
 
 ## Lancement en local avec Visual studio
 
