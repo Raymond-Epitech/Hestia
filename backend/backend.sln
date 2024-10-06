@@ -4,10 +4,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "Api\Api.csproj", "{AF6FEFCB-41A2-4D93-A068-B42A026CC3AC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3BDA08CA-C391-40E1-BDFB-5CF27864EC9D} = {3BDA08CA-C391-40E1-BDFB-5CF27864EC9D}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFramework", "EntityFramework\EntityFramework.csproj", "{3BDA08CA-C391-40E1-BDFB-5CF27864EC9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "Business\Business.csproj", "{A319872A-1C07-4ECE-BB9E-7909DD5559FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Business", "Business\Business.csproj", "{A319872A-1C07-4ECE-BB9E-7909DD5559FE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +33,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AA04BD3A-1AC6-45BB-9AFA-8E8F947935A4}
 	EndGlobalSection
 EndGlobal

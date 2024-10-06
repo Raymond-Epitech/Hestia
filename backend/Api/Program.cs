@@ -1,4 +1,3 @@
-using BookStoreApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -14,13 +13,12 @@ try
         o.ValidateScopes = true;
     });
 
-    builder.Services.AddControllers();
+    builder.Services.AddControllers().AddNewtonsoftJson();
+
     builder.Services.AddEndpointsApiExplorer();
 
     builder.Services.ConfigureServices(builder.Configuration, builder.Environment.IsDevelopment());
 
-    builder.Services.Configure<BookStoreDatabaseSettings>(
-    builder.Configuration.GetSection("BookStoreDatabase"));
     builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -54,12 +52,31 @@ try
         app.UseSwaggerUI();
     }
 
-    app.UseHttpsRedirection();
+    //app.UseHttpsRedirection();
 
     app.UseAuthentication();
     app.UseAuthorization();
-
     app.MapControllers();
+
+    if (app.Environment.IsDevelopment())
+    {
+        using (var connection = new Npgsql.NpgsqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(builder.Configuration.GetConnectionString("HestiaDb")))
+                {
+                    Console.Error.WriteLine("Connection string is not set in Docker.");
+                }
+                connection.Open();
+                Console.Error.WriteLine("Connection successful!");
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Connection failed: {ex.Message}");
+            }
+        }
+    }
 
     app.Run();
 }
