@@ -28,7 +28,7 @@ namespace Business.Mappers
             };
         }
 
-        public static Reminder UpdateFromInput(this Reminder reminder, ReminderInput input)
+        public static Reminder UpdateFromInput(this Reminder reminder, ReminderUpdate input)
         {
             reminder.Color = input.Color;
             reminder.Content = input.Content;
