@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 public class ReminderController(IReminderService reminderService) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<ReminderOutput> >> GetAllReminders()
+    public async Task<ActionResult<List<ReminderOutput>>> GetAllReminders()
     {
         try
         {
@@ -40,7 +40,7 @@ public class ReminderController(IReminderService reminderService) : ControllerBa
         {
             return UnprocessableEntity(ex);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             return StatusCode(500, ex);
         }
@@ -64,12 +64,38 @@ public class ReminderController(IReminderService reminderService) : ControllerBa
         }
     }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateReminder(Guid id, ReminderInput input)
+    [HttpPut]
+    public async Task<ActionResult> UpdateReminder(ReminderUpdate input)
     {
         try
         {
-            await reminderService.UpdateReminderAsync(id, input);
+            await reminderService.UpdateReminderAsync(input);
+            return Ok();
+        }
+        catch (MissingArgumentException ex)
+        {
+            return BadRequest(ex);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex);
+        }
+        catch (ContextException ex)
+        {
+            return UnprocessableEntity(ex);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex);
+        }
+    }
+
+    [HttpPut("Range")]
+    public async Task<ActionResult> UpdateRangeReminder(List<ReminderUpdate> inputs)
+    {
+        try
+        {
+            await reminderService.UpdateRangeReminderAsync(inputs);
             return Ok();
         }
         catch (MissingArgumentException ex)

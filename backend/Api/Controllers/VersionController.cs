@@ -1,7 +1,4 @@
-﻿using BookStoreApi.Services;
-using Business.Exceptions;
-using Business.Models.Output;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {

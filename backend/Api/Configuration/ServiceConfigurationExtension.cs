@@ -1,5 +1,5 @@
-﻿using BookStoreApi.Services;
-using Business.Interfaces;
+﻿using Business.Interfaces;
+using Business.Services;
 using EntityFramework.Context;
 using Microsoft.EntityFrameworkCore;
 
