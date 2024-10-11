@@ -26,11 +26,11 @@ public class ReminderController(IReminderService reminderService) : ControllerBa
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ReminderOutput>> GetReminder(Guid Id)
+    public async Task<ActionResult<ReminderOutput>> GetReminder(Guid id)
     {
         try
         {
-            return Ok(await reminderService.GetReminderAsync(Id));
+            return Ok(await reminderService.GetReminderAsync(id));
         }
         catch (NotFoundException ex)
         {
@@ -117,11 +117,11 @@ public class ReminderController(IReminderService reminderService) : ControllerBa
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteReminder(Guid Id)
+    public async Task<ActionResult> DeleteReminder(Guid id)
     {
         try
         {
-            await reminderService.DeleteReminderAsync(Id);
+            await reminderService.DeleteReminderAsync(id);
             return Ok();
         }
         catch (NotFoundException ex)
