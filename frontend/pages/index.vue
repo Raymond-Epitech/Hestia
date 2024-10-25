@@ -1,6 +1,8 @@
 <template>
     <div>
-      <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm">
+      <AddPostModal v-model="isModalOpen">
+      </AddPostModal>
+      <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
         <img src="~/public/plus.png" class="plus">
       </button>
       <h1>Welcome to the homepage</h1>
@@ -19,6 +21,8 @@ const handlePostDelete = () => {
   console.log('Post supprimé')
   // Ajoutez ici la logique pour supprimer le post
 }
+const isModalOpen = ref(false)
+const openModal = () => (isModalOpen.value = true)
 </script>
 
 <style scoped>
