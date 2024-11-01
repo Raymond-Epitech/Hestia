@@ -9,14 +9,14 @@
 
             <form>
               <div class="modal-body left">
-                <textarea class="modal-body-input" rows="3" required></textarea>
+                <textarea class="modal-body-input" rows="3" v-model="post.content" required></textarea>
               </div>
 
               <div class="post-colors-buttons">
-                <input class="form-check-input color-choice blue" type="radio" name="gridRadios" id="gridRadios1" value="blue">
-                <input class="form-check-input color-choice yellow" type="radio" name="gridRadios" id="gridRadios2" value="yellow">
-                <input class="form-check-input color-choice pink" type="radio" name="gridRadios" id="gridRadios3" value="pink">
-                <input class="form-check-input color-choice green" type="radio" name="gridRadios" id="gridRadios4" value="green">
+                <input class="form-check-input color-choice blue" v-model="post.color" type="radio" name="gridRadios" id="gridRadios1" value="blue" required>
+                <input class="form-check-input color-choice yellow" v-model="post.color" type="radio" name="gridRadios" id="gridRadios2" value="yellow">
+                <input class="form-check-input color-choice pink" v-model="post.color" type="radio" name="gridRadios" id="gridRadios3" value="pink">
+                <input class="form-check-input color-choice green" v-model="post.color" type="radio" name="gridRadios" id="gridRadios4" value="green">
               </div>
               <div class="modal-buttons">
                 <!-- <button class="button button-cancel" @click="handleClose">Cancel</button> -->
@@ -44,6 +44,11 @@
       borders: true,
     }
   )
+
+  const post = ref({
+    content: '',
+    color: '',
+  })
 
   const { modelValue } = toRefs(props)
 
