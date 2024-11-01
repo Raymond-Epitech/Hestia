@@ -1,6 +1,6 @@
 import type { Reminder } from "./type";
 
-class bridge {
+export class bridge {
     url: string = "http://localhost:8080";
 
     seturl(new_url: string) {
