@@ -4,20 +4,25 @@
         <div class="modal-background" @click="handleClose">
           <div class="modal" @click.stop>
             <div class="modal-header left">
-              <h1>Contenu du post : </h1>
+              <h1 class="modal-header-text">Contenu du post : </h1>
             </div>
 
-            <div class="modal-body left">
-              <form>
-                <textarea class="modal-body-input" rows="5" required></textarea>
-              </form>
-            </div>
+            <form>
+              <div class="modal-body left">
+                <textarea class="modal-body-input" rows="3" required></textarea>
+              </div>
 
-            <!-- Buttons -->
-            <div class="modal-buttons">
+              <div class="post-colors-buttons">
+                <input class="form-check-input color-choice blue" type="radio" name="gridRadios" id="gridRadios1" value="blue">
+                <input class="form-check-input color-choice yellow" type="radio" name="gridRadios" id="gridRadios2" value="yellow">
+                <input class="form-check-input color-choice pink" type="radio" name="gridRadios" id="gridRadios3" value="pink">
+                <input class="form-check-input color-choice green" type="radio" name="gridRadios" id="gridRadios4" value="green">
+              </div>
+              <div class="modal-buttons">
                 <!-- <button class="button button-cancel" @click="handleClose">Cancel</button> -->
-                <button class="button button-proceed" @click="handleProceed">Yes, Proceed</button>
-            </div>
+                <button class="button button-proceed" @click="handleProceed">Poster</button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -85,7 +90,7 @@
   <style>
   .modal {
     width: 100%;
-    height: 334px;
+    height: 300px;
     overflow-y: auto;
     margin-top: 0px;
     border-top-left-radius: 0px;
@@ -93,22 +98,28 @@
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
     animation: slideIn 0.2s;
-    background-color: #1E1E1E;
+    background-color: #1e1e1eda;
+    backdrop-filter: blur(8px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
     display: flex;
     flex-direction: column;
+    justify-content: center;
     position: relative;
   }
 
   .modal-header {
-    padding: 20px 16px;
+    padding: 12px 16px;
     font-weight: 600;
-    border-bottom: 1px solid lightgrey;
+    border-bottom: 1px dotted lightgrey;
     color: #fff;
   }
 
+  .modal-header-text{
+    font-size: 20px;
+  }
+
   .modal-body {
-    padding: 16px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
     overflow: auto;
@@ -123,14 +134,62 @@
 
   .modal-body-input {
     width: 100%;
-    background-color: #1E1E1E;
+    background-color: #1e1e1e00;
     outline: none;
     border: none;
-    line-height: 4ch;
-    background-image: linear-gradient(transparent, transparent calc(4ch - 1px), #E7EFF8 0px);
-    background-size: 100% 4ch;
+    line-height: 3ch;
+    background-image: linear-gradient(transparent, transparent calc(3ch - 1px), #E7EFF8 0px);
+    background-size: 100% 3ch;
     color: #fff;
-    font-size: 20px;
+    font-size: 18px;
+  }
+
+  .post-colors-buttons {
+    padding: 8px;
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  .color-choice {
+    width: 24px;
+    height: 24px;
+    border: none;
+  }
+
+  .color-choice:focus {
+    box-shadow: none;
+  }
+
+  .blue {
+    background-color: #A8CBFF;
+  }
+
+  .blue:checked {
+    background-color: #A8CBFF;
+  }
+
+  .yellow {
+    background-color: #FFF973;
+  }
+
+  .yellow:checked {
+    background-color: #FFF973;
+  }
+
+  .pink {
+    background-color: #FFA3EB;
+  }
+
+  .pink:checked {
+    background-color: #FFA3EB;
+  }
+
+  .green {
+    background-color: #9CFFB2;
+  }
+
+  .green:checked {
+    background-color: #9CFFB2;
   }
 
   .modal-background {
@@ -147,13 +206,13 @@
   }
 
   .modal-buttons {
-    padding: 16px;
+    padding: 14px;
     border-top: 0px;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
     margin-top: auto;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     gap: 1em;
   }
 
@@ -168,7 +227,7 @@
   /** Fallback Buttons */
   .button {
     padding: 10px 20px;
-    border-radius: 4px;
+    border-radius: 15px;
     border: 0;
     cursor: pointer;
   }
@@ -182,7 +241,7 @@
   }
 
   .button-proceed {
-    background: #000;
+    background: #00000088;
     color: #fff;
   }
 
