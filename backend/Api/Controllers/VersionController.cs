@@ -9,7 +9,7 @@ namespace Api.Controllers
         [HttpGet]
         public ActionResult GetVersion()
         {
-            return Ok("1.0");
+            return Ok("0.1");
         }
     }
 }
