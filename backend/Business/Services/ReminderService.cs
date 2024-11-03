@@ -26,7 +26,10 @@ public class ReminderService(
             {
                 Id = x.Id,
                 Content = x.Content,
-                Color = x.Color
+                Color = x.Color,
+                CoordX = x.CoordX,
+                CoordY = x.CoordY,
+                CoordZ = x.CoordZ
             }).ToListAsync();
             logger.LogInformation("Succes : All reminders found");
             return reminders;
@@ -52,7 +55,10 @@ public class ReminderService(
             {
                 Id = x.Id,
                 Content = x.Content,
-                Color = x.Color
+                Color = x.Color,
+                CoordX = x.CoordX,
+                CoordY = x.CoordY,
+                CoordZ = x.CoordZ
             }).FirstOrDefaultAsync(x => x.Id == id);
 
             if (reminder == null)
