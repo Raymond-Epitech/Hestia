@@ -10,6 +10,10 @@
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/store/auth';
 
+definePageMeta({
+    layout: false
+})
+
 const { authenticateUser } = useAuthStore();
 const { authenticated } = storeToRefs(useAuthStore());
 
