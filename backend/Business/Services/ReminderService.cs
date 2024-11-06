@@ -52,12 +52,14 @@ public class ReminderService(
             {
                 Id = x.Id,
                 Content = x.Content,
-                Color = x.Color
+                Color = x.Color,
+                CreatedBy = x.CreatedBy,
+                CreatedAt = x.CreatedAt
             }).FirstOrDefaultAsync(x => x.Id == id);
 
             if (reminder == null)
             {
-                throw new NotFoundException("Reminder not found");
+                throw new NotFoundException($"Reminder {id} not found");
             }
 
             logger.LogInformation("Succes : Reminder found");
