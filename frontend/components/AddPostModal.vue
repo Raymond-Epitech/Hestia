@@ -1,319 +1,318 @@
 <template>
-    <transition name="modal">
-      <div v-if="visible">
-        <div class="modal-background" @click="handleClose">
-          <div class="modal" @click.stop>
-            <div class="modal-header left">
-              <h1 class="modal-header-text">Contenu du post : </h1>
-            </div>
-
-            <form>
-              <div class="modal-body left">
-                <textarea class="modal-body-input" rows="3" v-model="post.content" required></textarea>
-              </div>
-
-              <div class="post-colors-buttons">
-                <input class="form-check-input color-choice blue" v-model="post.color" type="radio" name="gridRadios" id="gridRadios1" value="blue" required>
-                <input class="form-check-input color-choice yellow" v-model="post.color" type="radio" name="gridRadios" id="gridRadios2" value="yellow">
-                <input class="form-check-input color-choice pink" v-model="post.color" type="radio" name="gridRadios" id="gridRadios3" value="pink">
-                <input class="form-check-input color-choice green" v-model="post.color" type="radio" name="gridRadios" id="gridRadios4" value="green">
-              </div>
-              <div class="modal-buttons">
-                <!-- <button class="button button-cancel" @click="handleClose">Cancel</button> -->
-                <button class="button button-proceed" @click="handleProceed">Poster</button>
-              </div>
-            </form>
+  <transition name="modal">
+    <div v-if="visible">
+      <div class="modal-background" @click="handleClose">
+        <div class="modal" @click.stop>
+          <div class="modal-header left">
+            <h1 class="modal-header-text">Contenu du post : </h1>
           </div>
+          <form>
+            <div class="modal-body left">
+              <textarea class="modal-body-input" rows="3" v-model="post.content" required></textarea>
+            </div>
+            <div class="post-colors-buttons">
+              <input class="form-check-input color-choice blue" v-model="post.color" type="radio" name="gridRadios" id="gridRadios1" value="blue" required>
+              <input class="form-check-input color-choice yellow" v-model="post.color" type="radio" name="gridRadios" id="gridRadios2" value="yellow">
+              <input class="form-check-input color-choice pink" v-model="post.color" type="radio" name="gridRadios" id="gridRadios3" value="pink">
+              <input class="form-check-input color-choice green" v-model="post.color" type="radio" name="gridRadios" id="gridRadios4" value="green">
+            </div>
+            <div class="modal-buttons">
+              <!-- <button class="button button-cancel" @click="handleClose">Cancel</button> -->
+              <button class="button button-proceed" @click="handleProceed">Poster</button>
+            </div>
+          </form>
         </div>
       </div>
-    </transition>
-  </template>
+    </div>
+  </transition>
+</template>
 
-  <script setup lang="ts">
-  const props = withDefaults(
-    defineProps<{
-      name?: string
-      modelValue?: boolean
-      header?: boolean
-      buttons?: boolean
-      borders?: boolean
-    }>(),
-    {
-      header: true,
-      buttons: true,
-      borders: true,
+<script setup lang="ts">
+import useModal from '~/composables/useModal';
+const props = withDefaults(
+  defineProps<{
+    name?: string
+    modelValue?: boolean
+    header?: boolean
+    buttons?: boolean
+    borders?: boolean
+  }>(),
+  {
+    header: true,
+    buttons: true,
+    borders: true,
+  }
+)
+
+const post = ref({
+  content: '',
+  color: '',
+})
+
+const { modelValue } = toRefs(props)
+
+const { open, close, toggle, visible } = useModal(props.name)
+
+const emit = defineEmits<{
+  closed: [] // named tuple syntax
+  proceed: []
+  'update:modelValue': [value: boolean]
+}>()
+
+defineExpose({
+  open,
+  close,
+  toggle,
+  visible,
+})
+
+const handleClose = () => {
+  close()
+  emit('closed')
+}
+
+const handleProceed = () => {
+  close()
+  emit('proceed')
+}
+
+watch(
+  modelValue,
+  (value, oldValue) => {
+    if (value !== oldValue) {
+      toggle(value)
     }
-  )
+  },
+  { immediate: true }
+)
 
-  const post = ref({
-    content: '',
-    color: '',
-  })
+watch(visible, (value) => {
+  emit('update:modelValue', value)
+})
+</script>
 
-  const { modelValue } = toRefs(props)
+<style>
+.modal {
+  width: 100%;
+  height: 300px;
+  overflow-y: auto;
+  margin-top: 0px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  animation: slideIn 0.2s;
+  background-color: #1e1e1eda;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
 
-  const { open, close, toggle, visible } = useModal(props.name)
+.modal-header {
+  padding: 12px 16px;
+  font-weight: 600;
+  border-bottom: 1px dotted lightgrey;
+  color: #fff;
+}
 
-  const emit = defineEmits<{
-    closed: [] // named tuple syntax
-    proceed: []
-    'update:modelValue': [value: boolean]
-  }>()
+.modal-header-text{
+  font-size: 20px;
+}
 
-  defineExpose({
-    open,
-    close,
-    toggle,
-    visible,
-  })
+.modal-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  gap: 16px;
+}
 
-  const handleClose = () => {
-    close()
-    emit('closed')
-  }
+.modal-body:deep(p) {
+  margin: 0;
+  font-size: 18px;
+  line-height: 23px;
+}
 
-  const handleProceed = () => {
-    close()
-    emit('proceed')
-  }
+.modal-body-input {
+  width: 100%;
+  background-color: #1e1e1e00;
+  outline: none;
+  border: none;
+  line-height: 3ch;
+  background-image: linear-gradient(transparent, transparent calc(3ch - 1px), #E7EFF8 0px);
+  background-size: 100% 3ch;
+  color: #fff;
+  font-size: 18px;
+}
 
-  watch(
-    modelValue,
-    (value, oldValue) => {
-      if (value !== oldValue) {
-        toggle(value)
-      }
-    },
-    { immediate: true }
-  )
+.post-colors-buttons {
+  padding: 8px;
+  display: flex;
+  justify-content: space-evenly;
+}
 
-  watch(visible, (value) => {
-    emit('update:modelValue', value)
-  })
-  </script>
+.color-choice {
+  width: 24px;
+  height: 24px;
+  border: none;
+}
 
-  <style>
-  .modal {
-    width: 100%;
-    height: 300px;
-    overflow-y: auto;
-    margin-top: 0px;
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-    animation: slideIn 0.2s;
-    background-color: #1e1e1eda;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    position: relative;
-  }
+.color-choice:focus {
+  box-shadow: none;
+}
 
-  .modal-header {
-    padding: 12px 16px;
-    font-weight: 600;
-    border-bottom: 1px dotted lightgrey;
-    color: #fff;
-  }
+.blue {
+  background-color: #A8CBFF;
+}
 
-  .modal-header-text{
-    font-size: 20px;
-  }
+.blue:checked {
+  background-color: #A8CBFF;
+}
 
-  .modal-body {
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-    gap: 16px;
-  }
+.yellow {
+  background-color: #FFF973;
+}
 
-  .modal-body:deep(p) {
-    margin: 0;
-    font-size: 18px;
-    line-height: 23px;
-  }
+.yellow:checked {
+  background-color: #FFF973;
+}
 
-  .modal-body-input {
-    width: 100%;
-    background-color: #1e1e1e00;
-    outline: none;
-    border: none;
-    line-height: 3ch;
-    background-image: linear-gradient(transparent, transparent calc(3ch - 1px), #E7EFF8 0px);
-    background-size: 100% 3ch;
-    color: #fff;
-    font-size: 18px;
-  }
+.pink {
+  background-color: #FFA3EB;
+}
 
-  .post-colors-buttons {
-    padding: 8px;
-    display: flex;
-    justify-content: space-evenly;
-  }
+.pink:checked {
+  background-color: #FFA3EB;
+}
 
-  .color-choice {
-    width: 24px;
-    height: 24px;
-    border: none;
-  }
+.green {
+  background-color: #9CFFB2;
+}
 
-  .color-choice:focus {
-    box-shadow: none;
-  }
+.green:checked {
+  background-color: #9CFFB2;
+}
 
-  .blue {
-    background-color: #A8CBFF;
-  }
+.modal-background {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  position: fixed;
+  animation: fadeIn 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
 
-  .blue:checked {
-    background-color: #A8CBFF;
-  }
+.modal-buttons {
+  padding: 14px;
+  border-top: 0px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+}
 
-  .yellow {
-    background-color: #FFF973;
-  }
+.modal-buttons:deep(button) {
+  border-radius: 7px;
+}
 
-  .yellow:checked {
-    background-color: #FFF973;
-  }
+.modal-no-border {
+  border: 0;
+}
 
-  .pink {
-    background-color: #FFA3EB;
-  }
+/** Fallback Buttons */
+.button {
+  padding: 10px 20px;
+  border-radius: 15px;
+  border: 0;
+  cursor: pointer;
+}
 
-  .pink:checked {
-    background-color: #FFA3EB;
-  }
+.button-cancel {
+  background: transparent;
+}
 
-  .green {
-    background-color: #9CFFB2;
-  }
+.button-cancel:hover {
+  background: #fafafa;
+}
 
-  .green:checked {
-    background-color: #9CFFB2;
-  }
+.button-proceed {
+  background: #00000088;
+  color: #fff;
+}
 
-  .modal-background {
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 100;
-    position: fixed;
-    animation: fadeIn 0.2s;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-  }
+.button-proceed:hover {
+  opacity: 0.7;
+}
 
-  .modal-buttons {
-    padding: 14px;
-    border-top: 0px;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-    margin-top: auto;
-    display: flex;
-    justify-content: center;
-    gap: 1em;
-  }
+/* Transition */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.2s ease;
+}
 
-  .modal-buttons:deep(button) {
-    border-radius: 7px;
-  }
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
 
-  .modal-no-border {
-    border: 0;
-  }
-
-  /** Fallback Buttons */
-  .button {
-    padding: 10px 20px;
-    border-radius: 15px;
-    border: 0;
-    cursor: pointer;
-  }
-
-  .button-cancel {
-    background: transparent;
-  }
-
-  .button-cancel:hover {
-    background: #fafafa;
-  }
-
-  .button-proceed {
-    background: #00000088;
-    color: #fff;
-  }
-
-  .button-proceed:hover {
-    opacity: 0.7;
-  }
-
-  /* Transition */
-  .modal-enter-active,
-  .modal-leave-active {
-    transition: opacity 0.2s ease;
-  }
-
-  .modal-enter-from,
-  .modal-leave-to {
+@keyframes fadeIn {
+  0% {
     opacity: 0;
   }
 
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-    }
+  100% {
+    opacity: 1;
+  }
+}
 
-    100% {
-      opacity: 1;
-    }
+@keyframes slideIn {
+  0% {
+    transform: translateY(100px);
   }
 
-  @keyframes slideIn {
-    0% {
-      transform: translateY(100px);
-    }
+  100% {
+    transform: translateY(0px);
+  }
+}
 
-    100% {
-      transform: translateY(0px);
-    }
+@keyframes slideOut {
+  0% {
+    transform: translateY(0px);
   }
 
-  @keyframes slideOut {
-    0% {
-      transform: translateY(0px);
-    }
+  100% {
+    transform: translateY(100px);
+  }
+}
 
-    100% {
-      transform: translateY(100px);
-    }
+@media screen and (max-width: 768px) {
+  /** Slide Out Transition (mobile only) */
+  .modal-enter-from:deep(.modal),
+  .modal-leave-to:deep(.modal) {
+    animation: slideOut 0.2s linear;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .modal-background {
+    justify-content: flex-start;
   }
 
-  @media screen and (max-width: 768px) {
-    /** Slide Out Transition (mobile only) */
-    .modal-enter-from:deep(.modal),
-    .modal-leave-to:deep(.modal) {
-      animation: slideOut 0.2s linear;
-    }
+  .modal {
+    width: 100%;
+    margin: 0 0 0 0;
+    max-height: calc(100dvh - 120px);
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
   }
-
-  @media screen and (min-width: 768px) {
-    .modal-background {
-      justify-content: flex-start;
-    }
-
-    .modal {
-      width: 100%;
-      margin: 0 0 0 0;
-      max-height: calc(100dvh - 120px);
-      border-bottom-left-radius: 20px;
-      border-bottom-right-radius: 20px;
-    }
-  }
-  </style>
+}
+</style>

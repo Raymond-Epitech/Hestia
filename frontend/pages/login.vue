@@ -11,6 +11,10 @@ import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/store/auth';
 import { bridge } from '~/service/bridge.ts';
 
+definePageMeta({
+    layout: false
+})
+
 const { authenticateUser } = useAuthStore();
 const { authenticated } = storeToRefs(useAuthStore());
 const api = new bridge();
