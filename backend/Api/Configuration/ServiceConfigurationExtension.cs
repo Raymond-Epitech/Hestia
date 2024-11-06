@@ -1,5 +1,7 @@
-﻿using BookStoreApi.Services;
-using Business.Interfaces;
+﻿using Business.Interfaces;
+using Business.Services;
+using EntityFramework.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApi.Configuration
 {
@@ -10,12 +12,12 @@ namespace WebApi.Configuration
             services.AddDbContext(configuration, isDevelopment)
                 .AddBusinessServices()
                 .EnableCors();
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         }
 
         private static IServiceCollection AddBusinessServices(this IServiceCollection services)
         {
-            services.AddScoped<ITestService, TestService>();
-            services.AddSingleton<TestService>();
+            services.AddScoped<IReminderService, ReminderService>();
             services.AddHttpContextAccessor();
             return services;
         }
@@ -35,7 +37,12 @@ namespace WebApi.Configuration
 
         private static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
         {
-            //DB context
+            services.AddDbContext<HestiaContext>(opt =>
+            {
+                opt.UseNpgsql(configuration.GetConnectionString("HestiaDb"));
+                opt.EnableDetailedErrors(isDevelopment);
+                opt.EnableSensitiveDataLogging(isDevelopment);
+            });
 
             return services;
         }

@@ -9,6 +9,7 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/store/auth';
+import { bridge } from '~/service/bridge.ts';
 
 definePageMeta({
     layout: false
@@ -16,6 +17,7 @@ definePageMeta({
 
 const { authenticateUser } = useAuthStore();
 const { authenticated } = storeToRefs(useAuthStore());
+const api = new bridge();
 
 const router = useRouter();
 const handleLoginSuccess = async (response) => {
@@ -32,8 +34,7 @@ const handleLoginError = () => {
 };
 
 const gettest = async () => {
-    const response = await fetch('http://localhost:8080/api/Test');
-    const data = await response.json();
+    const data = await api.getAllReminders();
     console.log(data);
     return data;
 }
