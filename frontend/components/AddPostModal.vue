@@ -17,7 +17,6 @@
               <input class="form-check-input color-choice green" v-model="post.color" type="radio" name="gridRadios" id="gridRadios4" value="green">
             </div>
             <div class="modal-buttons">
-              <!-- <button class="button button-cancel" @click="handleClose">Cancel</button> -->
               <button class="button button-proceed" @click="handleProceed">Poster</button>
             </div>
           </form>
@@ -234,14 +233,6 @@ watch(visible, (value) => {
   border-radius: 15px;
   border: 0;
   cursor: pointer;
-}
-
-.button-cancel {
-  background: transparent;
-}
-
-.button-cancel:hover {
-  background: #fafafa;
 }
 
 .button-proceed {
