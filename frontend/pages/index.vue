@@ -10,12 +10,18 @@
         This is an auto-imported component
       </AppAlert>
       <h1>{{data}}</h1>
-      <Post title="test-title" text="test-text" @delete="handlePostDelete"/>
+      <div v-for="(post, index) in posts" :key="index">
+        <Post :text="post.content" :color="post.color" @delete="handlePostDelete"/>
+      </div>
     </div>
 </template>
 
 <script setup>
 const {data} = await useFetch('http://localhost:8080/api/Version')
+import { bridge } from '~/service/bridge.ts';
+
+const api = new bridge();
+const posts = await api.getAllReminders();
 
 const handlePostDelete = () => {
   console.log('Post supprimé')
