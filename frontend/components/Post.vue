@@ -63,13 +63,14 @@ const handleDelete = async () => {
 }
 
 .post h1 {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0%);
-    color: rgb(10, 10, 10);
+    position: absolute; 
+    left: 50%; 
+    transform: translate(-50%, 0%); 
+    color: rgb(10, 10, 10); 
 }
 
 .post p {
+    position: absolute;
     position: absolute;
     top: 50%;
     left: 50%;
