@@ -1,7 +1,6 @@
 <template>
-    <div class="post">
+    <div class="post" :class="color">
         <button class="delete-button" @click="handleDelete">X</button>
-        <h1>{{ title }}</h1>
         <p>{{ text }}</p>
         <ProfileIcon class="profile-icon"/>
     </div>
@@ -9,14 +8,14 @@
 
 <script setup>
 const props = defineProps({
-title: {
-    type: String,
-    required: true
-},
 text: {
     type: String,
     required: true
 },
+color: {
+    type: String,
+    required: true
+}
 })
 
 const emit = defineEmits(['delete'])
@@ -28,12 +27,11 @@ const handleDelete = () => {
 
 <style scoped>
 .post {
-    background-image: url('../public/carre_jaune.png');
     background-size: cover;
-    background-position: center; 
-    background-repeat: no-repeat; 
-    width: 500px; 
-    height: 500px; 
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 250px;
+    height: 250px;
     position: relative;
 }
 
@@ -57,22 +55,38 @@ const handleDelete = () => {
 }
 
 .post h1 {
-    position: absolute; 
-    left: 50%; 
-    transform: translate(-50%, 0%); 
-    color: rgb(10, 10, 10); 
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    color: rgb(10, 10, 10);
 }
 .post p {
-    position: absolute; 
+    position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%); 
-    color: rgb(10, 10, 10); 
+    transform: translate(-50%, -50%);
+    color: rgb(10, 10, 10);
 }
 
 .profile-icon {
     position: absolute;
     bottom: 10px;
     right: 10px;
+}
+
+.blue {
+    background-color: #A8CBFF;
+}
+
+.yellow {
+    background-color: #FFF973;
+}
+
+.pink {
+    background-color: #FFA3EB;
+}
+
+.green {
+    background-color: #9CFFB2;
 }
 </style>

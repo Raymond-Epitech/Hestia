@@ -1,7 +1,9 @@
 export type Reminder = {
-    id: string;
-    color: string;
-    content: string;
-    createdBy: string;
-    createdAt: string;
+    id: number,
+    createdBy: string,
+    content: string,
+    color: string,
+    coordX: number,
+    coordY: number,
+    coordZ: number
 };
