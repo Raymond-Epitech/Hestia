@@ -28,6 +28,8 @@
 
 <script setup lang="ts">
 import useModal from '~/composables/useModal';
+import { bridge } from '~/service/bridge';
+
 const props = withDefaults(
   defineProps<{
     name?: string
@@ -43,9 +45,16 @@ const props = withDefaults(
   }
 )
 
+const api = new bridge();
+
 const post = ref({
+  id: 0,
+  createdBy: '',
   content: '',
   color: '',
+  coordX: 0,
+  coordY: 0,
+  coordZ: 0
 })
 
 const { modelValue } = toRefs(props)
@@ -70,7 +79,8 @@ const handleClose = () => {
   emit('closed')
 }
 
-const handleProceed = () => {
+const handleProceed = async () => {
+  const data = await api.addReminder(post.value)
   close()
   emit('proceed')
 }
