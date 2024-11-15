@@ -1,6 +1,6 @@
 <template>
     <div class="conteneur">
-        <Rectangle color="#85AD7B" :onClick="() => handleComposantClick('langue')" id="langue">   
+        <Rectangle color="#85AD7B" :onClick="() => redirect('/settings/language')" id="language">   
             <h1> Language </h1>
         </Rectangle>
         <Rectangle color="#85AD7B" :onClick="() => handleComposantClick('notif')"  id="notif">
@@ -25,6 +25,10 @@
 const handleComposantClick = (id) => {
   console.log(`ID du composant cliqué: ${id}`);
   alert(`ID du composant cliqué: ${id}`);
+}
+const router = useRouter();
+const redirect = (page) => {
+  router.push(page);
 }
 </script>
 
