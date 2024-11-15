@@ -1,19 +1,33 @@
 <template>
-    <div class="rectangle" :style="{ backgroundColor: color }">
+    <div class="rectangle" :style="{ backgroundColor: color }" @click="handleClick">
         <slot></slot>
     </div>
 </template>
 
 <script>
 export default {
-    name: "Rectangle",
     props: {
         color: {
             type: String,
-            default: "white"
+            default: 'lightgray'
+        },
+        onClick: {
+            type: Function,
+            default: null
+        },
+        id: {
+            type: String,
+            required: true
+        }
+    },
+    methods: {
+        handleClick() {
+            if (this.onClick) {
+                this.onClick();
+            }
         }
     }
-};
+}
 </script>
 
 <style scoped>
