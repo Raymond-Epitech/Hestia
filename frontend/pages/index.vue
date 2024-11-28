@@ -6,13 +6,12 @@
         <img src="~/public/plus.png" class="plus">
       </button>
       <h1>Welcome to the homepage</h1>
-      <AppAlert>
-        This is an auto-imported component
-      </AppAlert>
       <h1>{{data}}</h1>
-      <div v-for="(post, index) in posts" :key="index">
-        <Post :text="post.content" :color="post.color" @delete="handlePostDelete"/>
-      </div>
+      <!-- <div v-if="posts != null"> -->
+        <div v-for="(post, index) in posts" :key="index">
+          <Post :text="post.content" :color="post.color" @delete="handlePostDelete"/>
+        </div>
+      <!-- </div> -->
     </div>
 </template>
 
@@ -20,15 +19,17 @@
 const {data} = await useFetch('http://localhost:8080/api/Version')
 import { bridge } from '~/service/bridge.ts';
 
+const isModalOpen = ref(false)
+const openModal = () => (isModalOpen.value = true)
+
 const api = new bridge();
 const posts = await api.getAllReminders();
+console.log(posts)
 
 const handlePostDelete = () => {
   console.log('Post supprimé')
   // Ajoutez ici la logique pour supprimer le post
 }
-const isModalOpen = ref(false)
-const openModal = () => (isModalOpen.value = true)
 </script>
 
 <style scoped>

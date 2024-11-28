@@ -13,6 +13,8 @@
     "@pinia/nuxt": "^0.5.1",
     "bootstrap": "^5.3.3",
     "bootstrap-vue": "^2.23.1",
+    "json-server": "^1.0.0-beta.3",
+    "node": "^20.18.1",
     "nuxt": "^3.12.2",
     "nuxt-vue3-google-signin": "^0.0.11",
     "pinia": "^2.1.7"
@@ -21,6 +23,7 @@
     "vue": "latest"
   },
   "devDependencies": {
-    "sass": "^1.77.8"
+    "nuxt-modal": "^1.0.2",
+    "sass": "1.77.6"
   }
 }
