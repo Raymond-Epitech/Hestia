@@ -7,11 +7,9 @@
       </button>
       <h1>Welcome to the homepage</h1>
       <h1>{{data}}</h1>
-      <!-- <div v-if="posts != null"> -->
         <div v-for="(post, index) in posts" :key="index">
-          <Post :text="post.content" :color="post.color" @delete="handlePostDelete"/>
+          <Post :id="post.id" :text="post.content" :color="post.color" @delete="handlePostDelete"/>
         </div>
-      <!-- </div> -->
     </div>
 </template>
 
