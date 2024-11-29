@@ -7,7 +7,12 @@
 </template>
 
 <script setup>
+import { bridge } from '~/service/bridge';
 const props = defineProps({
+id: {
+    type: String,
+    required: true,
+},
 text: {
     type: String,
     required: true
@@ -18,8 +23,11 @@ color: {
 }
 })
 
+const api = new bridge();
+
 const emit = defineEmits(['delete'])
-const handleDelete = () => {
+const handleDelete = async() => {
+    await api.deleteReminder(props.id)
     emit('delete')
 }
 
