@@ -8,7 +8,7 @@
       <h1>Welcome to the homepage</h1>
       <h1>{{data}}</h1>
         <div v-for="(post, index) in posts" :key="index">
-          <Post :id="post.id" :text="post.content" :color="post.color" @delete="handlePostDelete"/>
+          <Post :id="post.id" :text="post.content" :color="post.color"/>
         </div>
     </div>
 </template>
@@ -24,10 +24,6 @@ const api = new bridge();
 const posts = await api.getAllReminders();
 console.log(posts)
 
-const handlePostDelete = () => {
-  console.log('Post supprimé')
-  // Ajoutez ici la logique pour supprimer le post
-}
 </script>
 
 <style scoped>
