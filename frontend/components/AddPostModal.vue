@@ -6,7 +6,7 @@
           <div class="modal-header left">
             <h1 class="modal-header-text">Contenu du post : </h1>
           </div>
-          <form>
+          <form method="post" action="">
             <div class="modal-body left">
               <textarea class="modal-body-input" rows="3" v-model="post.content" required></textarea>
             </div>
@@ -17,7 +17,7 @@
               <input class="form-check-input color-choice green" v-model="post.color" type="radio" name="gridRadios" id="gridRadios4" value="green">
             </div>
             <div class="modal-buttons">
-              <button class="button button-proceed" @click="handleProceed">Poster</button>
+              <button class="button button-proceed" @click.prevent="handleProceed">Poster</button>
             </div>
           </form>
         </div>
@@ -48,7 +48,6 @@ const props = withDefaults(
 const api = new bridge();
 
 const post = ref({
-  id: 0,
   createdBy: '',
   content: '',
   color: '',
@@ -80,7 +79,7 @@ const handleClose = () => {
 }
 
 const handleProceed = async () => {
-  const data = await api.addReminder(post.value)
+  await api.addReminder(post.value)
   close()
   emit('proceed')
 }
