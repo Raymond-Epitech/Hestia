@@ -6,16 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-    public class ReminderController(IReminderService reminderService) : ControllerBase
+    [ApiController]
+    public class ChoreController(IChoreService choreService) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<List<ReminderOutput>>> GetAllReminders()
+        public async Task<ActionResult<List<ChoreOutput>>> GetAllChores()
         {
             try
             {
-                return Ok(await reminderService.GetAllRemindersAsync());
+                return Ok(await choreService.GetAllChoresAsync());
             }
             catch (ContextException ex)
             {
@@ -28,11 +28,32 @@ namespace Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ReminderOutput>> GetReminder(Guid Id)
+        public async Task<ActionResult<ChoreOutput>> GetChore(Guid id)
         {
             try
             {
-                return Ok(await reminderService.GetReminderAsync(Id));
+                return Ok(await choreService.GetChoreAsync(id));
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex);
+            }
+            catch (ContextException ex)
+            {
+                return UnprocessableEntity(ex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpGet("Message/{choreId}")]
+        public async Task<ActionResult<List<ChoreMessageOutput>>> GetChoreMessageFromChore(Guid choreId)
+        {
+            try
+            {
+                return Ok(await choreService.GetChoreMessageFromChoreAsync(choreId));
             }
             catch (NotFoundException ex)
             {
@@ -49,11 +70,29 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddReminder(ReminderInput input)
+        public async Task<ActionResult> AddChore(ChoreInput input)
         {
             try
             {
-                await reminderService.AddReminderAsync(input);
+                await choreService.AddChoreAsync(input);
+                return Ok();
+            }
+            catch (ContextException ex)
+            {
+                return StatusCode(500, ex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpPost("Message/")]
+        public async Task<ActionResult> AddChoreMessage(ChoreMessageInput input)
+        {
+            try
+            {
+                await choreService.AddChoreMessageAsync(input);
                 return Ok();
             }
             catch (ContextException ex)
@@ -67,42 +106,12 @@ namespace Api.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateReminder(ReminderUpdate input)
+        public async Task<ActionResult> UpdateChore(ChoreUpdate input)
         {
             try
             {
-                await reminderService.UpdateReminderAsync(input);
+                await choreService.UpdateChoreAsync(input);
                 return Ok();
-            }
-            catch (MissingArgumentException ex)
-            {
-                return BadRequest(ex);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
-        }
-
-        [HttpPut("Range")]
-        public async Task<ActionResult> UpdateRangeReminder(List<ReminderUpdate> inputs)
-        {
-            try
-            {
-                await reminderService.UpdateRangeReminderAsync(inputs);
-                return Ok();
-            }
-            catch (MissingArgumentException ex)
-            {
-                return BadRequest(ex);
             }
             catch (NotFoundException ex)
             {
@@ -119,11 +128,33 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteReminder(Guid Id)
+        public async Task<ActionResult> DeleteChore(Guid id)
         {
             try
             {
-                await reminderService.DeleteReminderAsync(Id);
+                await choreService.DeleteChoreAsync(id);
+                return Ok();
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex);
+            }
+            catch (ContextException ex)
+            {
+                return UnprocessableEntity(ex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpDelete("Message/{choreId}")]
+        public async Task<ActionResult> DeleteChoreMessageByChoreId(Guid choreId)
+        {
+            try
+            {
+                await choreService.DeleteChoreMessageByChoreIdAsync(choreId);
                 return Ok();
             }
             catch (NotFoundException ex)

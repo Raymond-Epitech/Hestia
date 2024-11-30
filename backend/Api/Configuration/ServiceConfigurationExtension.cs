@@ -17,6 +17,7 @@ namespace WebApi.Configuration
         private static IServiceCollection AddBusinessServices(this IServiceCollection services)
         {
             services.AddScoped<IReminderService, ReminderService>();
+            services.AddScoped<IChoreService, ChoreService>();
             services.AddHttpContextAccessor();
             return services;
         }

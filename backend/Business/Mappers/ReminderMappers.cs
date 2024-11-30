@@ -2,7 +2,6 @@
 using Business.Models.Input;
 using Business.Models.Output;
 using EntityFramework.Models;
-using Npgsql.Internal;
 
 namespace Business.Mappers
 {
