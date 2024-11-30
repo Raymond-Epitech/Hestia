@@ -89,7 +89,7 @@ public class ChoreService(
                 Content = x.Content
             }).ToListAsync();
 
-            if (choreMessages == null || choreMessages.Count == 0)
+            if (choreMessages == null)
             {
                 throw new NotFoundException("No chore messages found");
             }
@@ -207,7 +207,7 @@ public class ChoreService(
         try
         {
             var chore = await _context.ChoreMessage.Where(x => x.ChoreId == choreId).ToListAsync();
-            if (chore == null || chore.Count == 0)
+            if (chore == null)
             {
                 throw new NotFoundException($"Chore {choreId} not found or no Chore message linked to this chore");
             }
