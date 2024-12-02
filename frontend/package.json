@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxtjs/i18n": "^9.1.0",
     "@pinia/nuxt": "^0.5.1",
     "bootstrap": "^5.3.3",
     "bootstrap-vue": "^2.23.1",
