@@ -6,7 +6,6 @@
         <img src="~/public/plus.png" class="plus">
       </button>
       <h1>Welcome to the homepage</h1>
-      <h1>{{data}}</h1>
         <div v-for="(post, index) in posts" :key="index">
           <Post :id="post.id" :text="post.content" :color="post.color"/>
         </div>
@@ -14,15 +13,23 @@
 </template>
 
 <script setup>
-const {data} = await useFetch('http://localhost:8080/api/Version')
 import { bridge } from '~/service/bridge.ts';
 
 const isModalOpen = ref(false)
 const openModal = () => (isModalOpen.value = true)
 
 const api = new bridge();
-const posts = await api.getAllReminders();
-console.log(posts)
+const posts = ref([]);
+
+const getall = async () => {
+  const data = await api.getAllReminders();
+  posts.value = data;
+  console.log("post:"+posts.value);
+};
+
+onMounted(async () => {
+  await getall();
+});
 
 </script>
 
