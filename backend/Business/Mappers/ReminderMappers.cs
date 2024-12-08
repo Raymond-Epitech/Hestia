@@ -2,7 +2,6 @@
 using Business.Models.Input;
 using Business.Models.Output;
 using EntityFramework.Models;
-using Npgsql.Internal;
 
 namespace Business.Mappers
 {
@@ -21,17 +20,23 @@ namespace Business.Mappers
             return new Reminder
             {
                 Id = Guid.NewGuid(),
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.Now.ToUniversalTime(),
                 CreatedBy = reminder.CreatedBy,
                 Content = reminder.Content,
-                Color = reminder.Color
+                Color = reminder.Color,
+                CoordX = reminder.CoordX,
+                CoordY = reminder.CoordY,
+                CoordZ = reminder.CoordZ
             };
         }
 
-        public static Reminder UpdateFromInput(this Reminder reminder, ReminderInput input)
+        public static Reminder UpdateFromInput(this Reminder reminder, ReminderUpdate input)
         {
             reminder.Color = input.Color;
             reminder.Content = input.Content;
+            reminder.CoordX = input.CoordX;
+            reminder.CoordY = input.CoordY;
+            reminder.CoordZ = input.CoordZ;
             return reminder;
         }
     }

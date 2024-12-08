@@ -1,7 +1,4 @@
-﻿using BookStoreApi.Services;
-using Business.Exceptions;
-using Business.Models.Output;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
@@ -12,7 +9,7 @@ namespace Api.Controllers
         [HttpGet]
         public ActionResult GetVersion()
         {
-            return Ok("1.0");
+            return Ok("0.1");
         }
     }
 }
