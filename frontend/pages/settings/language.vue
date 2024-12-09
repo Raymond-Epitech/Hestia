@@ -1,37 +1,37 @@
 <template>
   <NuxtPage />
   <div class="container">
-        <Rectangle color="#85AD7B" id="fr" @click="setLocale('fr')">
+        <Rectangle color="#85AD7B" id="fr" @click="setlangue('fr')">
           <div class="inner-class">
             <img src="/flags/france.png" alt="France" width="64" height="64"/>
             <h1> {{ $t('French') }} </h1>
           </div>
         </Rectangle>
-        <Rectangle color="#85AD7B" id="ang" @click="setLocale('en')">
+        <Rectangle color="#85AD7B" id="ang" @click="setlangue('en')">
           <div class="inner-class">
             <img src="/flags/united-kingdom.png" alt="United Kingdom" width="64" height="64"/>
               <h1> {{ $t('English') }} </h1>
             </div>
         </Rectangle>
-        <Rectangle color="#85AD7B" id="es" @click="setLocale('es')">
+        <Rectangle color="#85AD7B" id="es" @click="setlangue('es')">
           <div class="inner-class">
             <img src="/flags/spain.png" alt="Spain" width="64" height="64"/>
             <h1> {{ $t('Spanish') }} </h1>
           </div>
         </Rectangle>
-        <Rectangle color="#85AD7B" id="allemand" @click="setLocale('de')">
+        <Rectangle color="#85AD7B" id="allemand" @click="setlangue('de')">
           <div class="inner-class">
             <img src="/flags/germany.png" alt="Germany" width="64" height="64"/>
             <h1> {{ $t('German') }} </h1>
           </div>
         </Rectangle>
-        <Rectangle color="#85AD7B" id="mandarin" @click="setLocale('zh')">
+        <Rectangle color="#85AD7B" id="mandarin" @click="setlangue('zh')">
           <div class="inner-class">
             <img src="/flags/china.png" alt="China" width="64" height="64"/>
             <h1> {{ $t('Chinese') }} </h1>
           </div>
         </Rectangle>
-        <Rectangle color="#85AD7B" id="japonais" @click="setLocale('ja')">
+        <Rectangle color="#85AD7B" id="japonais" @click="setlangue('ja')">
           <div class="inner-class">
             <img src="/flags/japan.png" alt="Japan" width="64" height="64"/>
             <h1> {{ $t('Japanese') }} </h1>
@@ -41,7 +41,15 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+import type { Locale } from '~/service/type';
 const { setLocale } = useI18n();
+const { $locally } = useNuxtApp()
+
+const setlangue = (lang: Locale) => {
+  setLocale(lang);
+  $locally.setItem('locale', lang);
+}
 </script>
 
 <style scoped>
