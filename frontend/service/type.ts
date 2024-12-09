@@ -29,3 +29,4 @@ export type Chore = {
     dueDate: string;
     isDone: boolean;    
 }
+export type Locale = 'fr' | 'en' | 'es' | 'de' | 'zh' | 'ja';
