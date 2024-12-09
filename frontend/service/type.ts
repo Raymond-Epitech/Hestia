@@ -5,3 +5,5 @@ export type Reminder = {
     createdBy: string;
     createdAt: string;
 };
+
+export type Locale = 'fr' | 'en' | 'es' | 'de' | 'zh' | 'ja';
