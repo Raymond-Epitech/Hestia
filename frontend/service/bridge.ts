@@ -42,7 +42,12 @@ export class bridge {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
-        }).then(response => response.json());
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
     }
 
     async updateReminder(data: Reminder) {
@@ -52,7 +57,12 @@ export class bridge {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
-        }).then(response => response.json());
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
     }
 
     async updateReminderRange(data: [Reminder]) {
@@ -68,7 +78,12 @@ export class bridge {
     async deleteReminder(id: string) {
         return await fetch(this.url + "/api/Reminder/" + id, {
             method: 'DELETE'
-        }).then(response => response.json());
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
     }
 
     // User section:
