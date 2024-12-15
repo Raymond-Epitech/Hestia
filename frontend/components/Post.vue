@@ -2,31 +2,31 @@
     <div class="post" :class="color">
         <button class="delete-button" @click="handleDelete">X</button>
         <p>{{ text }}</p>
-        <ProfileIcon class="profile-icon"/>
+        <ProfileIcon class="profile-icon" />
     </div>
 </template>
 
 <script setup>
 import { bridge } from '~/service/bridge';
 const props = defineProps({
-id: {
-    type: String,
-    required: true,
-},
-text: {
-    type: String,
-    required: true
-},
-color: {
-    type: String,
-    required: true
-}
+    id: {
+        type: String,
+        required: true,
+    },
+    text: {
+        type: String,
+        required: true
+    },
+    color: {
+        type: String,
+        required: true
+    }
 })
 
 const api = new bridge();
 
 const emit = defineEmits(['delete'])
-const handleDelete = async() => {
+const handleDelete = async () => {
     await api.deleteReminder(props.id)
     emit('delete')
 }
@@ -68,6 +68,7 @@ const handleDelete = async() => {
     transform: translate(-50%, 0%);
     color: rgb(10, 10, 10);
 }
+
 .post p {
     position: absolute;
     top: 50%;

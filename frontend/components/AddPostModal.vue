@@ -11,10 +11,14 @@
               <textarea class="modal-body-input" rows="3" v-model="post.content" required></textarea>
             </div>
             <div class="post-colors-buttons">
-              <input class="form-check-input color-choice blue" v-model="post.color" type="radio" name="gridRadios" id="gridRadios1" value="blue" required>
-              <input class="form-check-input color-choice yellow" v-model="post.color" type="radio" name="gridRadios" id="gridRadios2" value="yellow">
-              <input class="form-check-input color-choice pink" v-model="post.color" type="radio" name="gridRadios" id="gridRadios3" value="pink">
-              <input class="form-check-input color-choice green" v-model="post.color" type="radio" name="gridRadios" id="gridRadios4" value="green">
+              <input class="form-check-input color-choice blue" v-model="post.color" type="radio" name="gridRadios"
+                id="gridRadios1" value="blue" required>
+              <input class="form-check-input color-choice yellow" v-model="post.color" type="radio" name="gridRadios"
+                id="gridRadios2" value="yellow">
+              <input class="form-check-input color-choice pink" v-model="post.color" type="radio" name="gridRadios"
+                id="gridRadios3" value="pink">
+              <input class="form-check-input color-choice green" v-model="post.color" type="radio" name="gridRadios"
+                id="gridRadios4" value="green">
             </div>
             <div class="modal-buttons">
               <button class="button button-proceed" @click.prevent="handleProceed">Poster</button>
@@ -126,7 +130,7 @@ watch(visible, (value) => {
   color: #fff;
 }
 
-.modal-header-text{
+.modal-header-text {
   font-size: 20px;
 }
 
@@ -295,6 +299,7 @@ watch(visible, (value) => {
 }
 
 @media screen and (max-width: 768px) {
+
   /** Slide Out Transition (mobile only) */
   .modal-enter-from:deep(.modal),
   .modal-leave-to:deep(.modal) {
