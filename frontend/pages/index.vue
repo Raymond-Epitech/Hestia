@@ -1,15 +1,15 @@
 <template>
-    <div>
-      <AddPostModal v-model="isModalOpen">
-      </AddPostModal>
-      <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
-        <img src="~/public/plus.png" class="plus">
-      </button>
-      <h1>Welcome to the homepage</h1>
-        <div v-for="(post, index) in posts" :key="index">
-          <Post :id="post.id" :text="post.content" :color="post.color"/>
-        </div>
+  <div>
+    <AddPostModal v-model="isModalOpen" @proceed="getall()">
+    </AddPostModal>
+    <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
+      <img src="~/public/plus.png" class="plus">
+    </button>
+    <h1>Welcome to the homepage</h1>
+    <div v-for="(post, index) in posts" :key="index">
+      <Post :id="post.id" :text="post.content" :color="post.color" />
     </div>
+  </div>
 </template>
 
 <script setup>
@@ -24,7 +24,7 @@ const posts = ref([]);
 const getall = async () => {
   const data = await api.getAllReminders();
   posts.value = data;
-  console.log("post:"+posts.value);
+  console.log(posts.value);
 };
 
 onMounted(async () => {
@@ -34,7 +34,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.add-post{
+.add-post {
   display: flex;
   justify-content: center;
   align-items: center;
