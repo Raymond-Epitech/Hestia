@@ -1,21 +1,29 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Business.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController(IUserService userService) : ControllerBase
     {
         [HttpPost]
-        public async Task<ActionResult> Login(string googleToken, string clientId)
+        public ActionResult Login(string googleToken, string clientId)
         {
             try
             {
-
+                if (userService.LoginUser(googleToken, clientId))
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return Unauthorized();
+                }
             }
             catch (Exception ex)
             {
-                StatusCode(500, ex);
+                return StatusCode(500, ex);
             }
         }
     }

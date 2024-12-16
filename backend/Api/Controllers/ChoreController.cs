@@ -10,12 +10,12 @@ namespace Api.Controllers
     [ApiController]
     public class ChoreController(IChoreService choreService) : ControllerBase
     {
-        [HttpGet]
-        public async Task<ActionResult<List<ChoreOutput>>> GetAllChores()
+        [HttpGet("GetByCollocationId/{CollocationId}")]
+        public async Task<ActionResult<List<ChoreOutput>>> GetAllChores(Guid CollocationId)
         {
             try
             {
-                return Ok(await choreService.GetAllChoresAsync());
+                return Ok(await choreService.GetAllChoresAsync(CollocationId));
             }
             catch (ContextException ex)
             {
@@ -27,7 +27,7 @@ namespace Api.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetById/{id}")]
         public async Task<ActionResult<ChoreOutput>> GetChore(Guid id)
         {
             try

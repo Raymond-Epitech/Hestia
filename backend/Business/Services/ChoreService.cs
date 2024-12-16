@@ -18,11 +18,11 @@ public class ChoreService(
     /// </summary>
     /// <returns>All the chores available</returns>
     /// <exception cref="ContextException">An error has occured while retriving the chores from db</exception>
-    public async Task<List<ChoreOutput>> GetAllChoresAsync()
+    public async Task<List<ChoreOutput>> GetAllChoresAsync(Guid CollocationId)
     {
         try
         {
-            var chores = await _context.Chore.Select(x => new ChoreOutput
+            var chores = await _context.Chore.Where(x => x.CollocationId == CollocationId).Select(x => new ChoreOutput
             {
                 Id = x.Id,
                 CreatedBy = x.CreatedBy,
@@ -32,7 +32,7 @@ public class ChoreService(
                 Description = x.Description,
                 IsDone = x.IsDone
             }).ToListAsync();
-            logger.LogInformation("Succes : All chores found");
+            logger.LogInformation($"Succes : All chores from the collocation {CollocationId} found");
             return chores;
         }
         catch (Exception ex)
@@ -114,11 +114,11 @@ public class ChoreService(
             var chore = input.ToDb();
             await _context.Chore.AddAsync(chore);
             await _context.SaveChangesAsync();
-            logger.LogInformation("Succes : Reminder added");
+            logger.LogInformation("Succes : Chore added");
         }
         catch (Exception ex)
         {
-            throw new ContextException("An error occurred while adding the reminder from the db", ex);
+            throw new ContextException("An error occurred while adding the chore from the db", ex);
         }
     }
 
@@ -134,11 +134,11 @@ public class ChoreService(
             var choreMessage = input.ToDb();
             await _context.ChoreMessage.AddAsync(choreMessage);
             await _context.SaveChangesAsync();
-            logger.LogInformation("Succes : Reminder added");
+            logger.LogInformation("Succes : Chore message added");
         }
         catch (Exception ex)
         {
-            throw new ContextException("An error occurred while adding the reminder from the db", ex);
+            throw new ContextException("An error occurred while adding the chore message from the db", ex);
         }
     }
 

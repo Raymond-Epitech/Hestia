@@ -5,7 +5,7 @@ namespace Business.Interfaces
 {
     public interface IChoreService
     {
-        Task<List<ChoreOutput>> GetAllChoresAsync();
+        Task<List<ChoreOutput>> GetAllChoresAsync(Guid CollocationId);
         Task<ChoreOutput> GetChoreAsync(Guid id);
         Task<List<ChoreMessageOutput>> GetChoreMessageFromChoreAsync(Guid id);
         Task AddChoreAsync(ChoreInput input);
