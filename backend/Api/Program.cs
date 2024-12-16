@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.Google;
 using System.Text;
 using WebApi.Configuration;
 
@@ -21,22 +22,19 @@ try
 
     builder.Services.AddAuthentication(options =>
     {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-    }).AddJwtBearer(o =>
+        options.DefaultScheme = "Bearer"; // Schéma par défaut pour l'API
+        options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme; // Google pour le challenge
+    })
+    .AddGoogle(googleOptions =>
     {
-        o.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey
-            (Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = false,
-            ValidateIssuerSigningKey = true
-        };
+        googleOptions.ClientId = builder.Configuration["GoogleToken:Id"]; // ID Client Google
+        googleOptions.ClientSecret = builder.Configuration["GoogleToken:Secret"]; // Secret Client Google
+        googleOptions.CallbackPath = "/signin-google"; // URI de redirection
+    })
+    .AddJwtBearer(options =>
+    {
+        options.Authority = "https://accounts.google.com"; // Autorité de Google
+        options.Audience = "VOTRE_CLIENT_ID"; // ID Client Google pour valider le token
     });
 
     builder.Services.AddAuthorization();
