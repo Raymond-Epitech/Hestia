@@ -5,6 +5,7 @@ using Business.Models.Input;
 using Business.Models.Output;
 using Business.Models.Update;
 using EntityFramework.Context;
+using EntityFramework.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -220,6 +221,117 @@ public class ChoreService(
         catch (Exception ex)
         {
             throw new ContextException("An error occurred while deleting the chore from the db", ex);
+        }
+    }
+
+    /// <summary>
+    /// Get all users who enrolled in a chore
+    /// </summary>
+    /// <param name="ChoreId">The chore</param>
+    /// <returns>The list with all users who enrolled in a chore</returns>
+    /// <exception cref="ContextException">An error occurred while adding the user to the db</exception>
+    public async Task<List<UserOutput>> GetUserFromChore(Guid ChoreId)
+    {
+        try
+        {
+            var enroll = _context.ChoreEnrollments.Where(x => x.ChoreId == ChoreId);
+            var users = await _context.User.Where(x => enroll.Select(x => x.UserId).Contains(x.Id)).Select(x => new UserOutput
+            {
+                Id = x.Id,
+                Username = x.Username,
+                Email = x.Email,
+            }).ToListAsync();
+
+            logger.LogInformation("Succes : Users found");
+
+            return users;
+        }
+        catch (Exception ex)
+        {
+            throw new ContextException("An error occurred while adding the user to the db", ex);
+        }
+    }
+
+    /// <summary>
+    /// Get all chores from a user
+    /// </summary>
+    /// <param name="UserId">Id of the user</param>
+    /// <returns>The list with all chores who the user enrolled</returns>
+    /// <exception cref="ContextException">An error occurred while adding the user to the db</exception>
+    public async Task<List<ChoreOutput>> GetChoreFromUser(Guid UserId)
+    {
+        try
+        {
+            var enroll = _context.ChoreEnrollments.Where(x => x.UserId == UserId);
+            var chores = await _context.Chore.Where(x => enroll.Select(x => x.ChoreId).Contains(x.Id)).Select(x => new ChoreOutput
+            {
+                Id = x.Id,
+                CreatedBy = x.CreatedBy,
+                CreatedAt = x.CreatedAt,
+                DueDate = x.DueDate,
+                Title = x.Title,
+                Description = x.Description,
+                IsDone = x.IsDone
+            }).ToListAsync();
+
+            logger.LogInformation("Succes : Chores found");
+
+            return chores;
+        }
+        catch (Exception ex)
+        {
+            throw new ContextException("An error occurred while adding the user to the db", ex);
+        }
+    }
+
+    /// <summary>
+    /// Add en enrollement to the chore
+    /// </summary>
+    /// <param name="UserId">The id of the User</param>
+    /// <param name="ChoreId">The id of the Chore</param>
+    /// <exception cref="ContextException"></exception>
+    public async Task EnrollToChore(Guid UserId, Guid ChoreId)
+    {
+        try
+        {
+            var enroll = new ChoreEnrollment
+            {
+                UserId = UserId,
+                ChoreId = ChoreId
+            };
+
+            _context.ChoreEnrollments.Add(enroll);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ContextException("An error occurred while adding the user to the db", ex);
+        }
+    }
+
+    /// <summary>
+    /// Remove en enrollement
+    /// </summary>
+    /// <param name="UserId">The id of the User</param>
+    /// <param name="ChoreId">The id of the Chore</param>
+    /// <exception cref="NotFoundException">The enrollement has not been found</exception>
+    /// <exception cref="ContextException">An error occurred while adding the user to the db</exception>
+    public async Task UnenrollToChore(Guid UserId, Guid ChoreId)
+    {
+        try
+        {
+            var enrollement = _context.ChoreEnrollments.Where(x => x.UserId == UserId && x.ChoreId == ChoreId).FirstOrDefault();
+            if (enrollement == null)
+            {
+                throw new NotFoundException("No enrollement found");
+            }
+
+            _context.ChoreEnrollments.Remove(enrollement);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ContextException("An error occurred while adding the user to the db", ex);
         }
     }
 }

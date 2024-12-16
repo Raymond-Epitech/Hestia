@@ -10,6 +10,7 @@ namespace EntityFramework.Context
         public virtual DbSet<Chore> Chore { get; set; } = null!;
         public virtual DbSet<ChoreMessage> ChoreMessage { get; set; } = null!;
         public virtual DbSet<User> User { get; set; } = null!;
+        public virtual DbSet<ChoreEnrollment> ChoreEnrollments { get; set; } = null!;
 
         public HestiaContext(DbContextOptions<HestiaContext> options) : base(options) { }
 
@@ -39,6 +40,22 @@ namespace EntityFramework.Context
                     .WithOne(x => x.Chore)
                     .HasForeignKey(x => x.ChoreId)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                c.HasMany(x => x.ChoreEnrollments)
+                    .WithOne(x => x.Chore)
+                    .HasForeignKey(x => x.ChoreId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+            modelBuilder.Entity<User>(c =>
+            {
+                c.HasMany(x => x.ChoreEnrollments)
+                    .WithOne(x => x.User)
+                    .HasForeignKey(x => x.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+            modelBuilder.Entity<ChoreEnrollment>(c =>
+            {
+                c.HasKey(x => new { x.UserId, x.ChoreId });
             });
 
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

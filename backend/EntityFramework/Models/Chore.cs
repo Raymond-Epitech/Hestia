@@ -11,6 +11,7 @@
         public string Title { get; set; } = null!;
         public string? Description { get; set; }
         public bool IsDone { get; set; }
+        public ICollection<ChoreEnrollment> ChoreEnrollments { get; set; } = null!;
         public ICollection<ChoreMessage> ChoreMessages { get; set; } = null!;
     }
 }

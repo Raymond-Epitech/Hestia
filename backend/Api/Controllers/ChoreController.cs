@@ -171,5 +171,83 @@ namespace Api.Controllers
                 return StatusCode(500, ex);
             }
         }
+
+        [HttpGet("Enroll/ByUser")]
+        public async Task<ActionResult<List<ChoreOutput>>> GetChoreFromUser(Guid UserId)
+        {
+            try
+            {
+                return Ok(await choreService.GetChoreFromUser(UserId));
+            }
+            catch (ContextException ex)
+            {
+                return UnprocessableEntity(ex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpGet("Enroll/ByChore")]
+        public async Task<ActionResult<List<UserOutput>>> GetUserFromChore(Guid ChoreId)
+        {
+            try
+            {
+                return Ok(await choreService.GetUserFromChore(ChoreId));
+            }
+            catch (ContextException ex)
+            {
+                return UnprocessableEntity(ex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpPost("Enroll")]
+        public async Task<ActionResult> EnrollToChore(Guid UserId, Guid ChoreId)
+        {
+            try
+            {
+                await choreService.EnrollToChore(UserId, ChoreId);
+                return Ok();
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex);
+            }
+            catch (ContextException ex)
+            {
+                return UnprocessableEntity(ex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpDelete("Enroll")]
+        public async Task<ActionResult> UnenrollToChore(Guid UserId, Guid ChoreId)
+        {
+            try
+            {
+                await choreService.UnenrollToChore(UserId, ChoreId);
+                return Ok();
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex);
+            }
+            catch (ContextException ex)
+            {
+                return UnprocessableEntity(ex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
     }
 }

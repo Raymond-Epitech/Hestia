@@ -91,7 +91,8 @@ namespace Business.Services
                     Email = user.Email,
                     CollocationId = user.CollocationId,
                     CreatedAt = DateTime.Now.ToUniversalTime(),
-                    LastConnection = DateTime.Now.ToUniversalTime()
+                    LastConnection = DateTime.Now.ToUniversalTime(),
+                    PathToProfilePicture = "default.jpg"
                 };
 
                 _context.Add(newUser);

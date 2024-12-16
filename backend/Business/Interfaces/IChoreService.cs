@@ -14,5 +14,9 @@ namespace Business.Interfaces
         Task UpdateChoreAsync(ChoreUpdate input);
         Task DeleteChoreAsync(Guid id);
         Task DeleteChoreMessageByChoreIdAsync(Guid id);
+        Task<List<ChoreOutput>> GetChoreFromUser(Guid UserId);
+        Task<List<UserOutput>> GetUserFromChore(Guid ChoreId);
+        Task EnrollToChore(Guid UserId, Guid ChoreId);
+        Task UnenrollToChore(Guid UserId, Guid ChoreId);
     }
 }
