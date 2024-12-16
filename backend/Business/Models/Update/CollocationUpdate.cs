@@ -1,4 +1,4 @@
-﻿namespace Business.Models.Input
+﻿namespace Business.Models.Update
 {
     public class CollocationUpdate
     {

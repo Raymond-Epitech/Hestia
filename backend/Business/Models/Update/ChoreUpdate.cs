@@ -1,4 +1,4 @@
-﻿namespace Business.Models.Output
+﻿namespace Business.Models.Update
 {
     public class ChoreUpdate
     {

@@ -1,5 +1,6 @@
 ﻿using Business.Models.Input;
 using Business.Models.Output;
+using Business.Models.Update;
 
 namespace Business.Interfaces
 {

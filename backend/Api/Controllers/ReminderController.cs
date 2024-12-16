@@ -2,6 +2,8 @@
 using Business.Interfaces;
 using Business.Models.Input;
 using Business.Models.Output;
+using Business.Models.Update;
+using EntityFramework.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -10,12 +12,12 @@ namespace Api.Controllers
     [Route("api/[controller]")]
     public class ReminderController(IReminderService reminderService) : ControllerBase
     {
-        [HttpGet]
-        public async Task<ActionResult<List<ReminderOutput>>> GetAllReminders()
+        [HttpGet("GetByCollocation/{CollocationId}")]
+        public async Task<ActionResult<List<ReminderOutput>>> GetAllReminders(Guid CollocationId)
         {
             try
             {
-                return Ok(await reminderService.GetAllRemindersAsync());
+                return Ok(await reminderService.GetAllRemindersAsync(CollocationId));
             }
             catch (ContextException ex)
             {
@@ -27,7 +29,7 @@ namespace Api.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetById/{id}")]
         public async Task<ActionResult<ReminderOutput>> GetReminder(Guid Id)
         {
             try

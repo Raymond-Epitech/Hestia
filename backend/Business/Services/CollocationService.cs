@@ -2,6 +2,7 @@
 using Business.Interfaces;
 using Business.Models.Input;
 using Business.Models.Output;
+using Business.Models.Update;
 using EntityFramework.Context;
 using EntityFramework.Models;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace Business.Services
 {
     public class CollocationService(
-        ILogger<ChoreService> logger,
+        ILogger<CollocationService> logger,
         HestiaContext _context) : ICollocationService
     {
         /// <summary>

@@ -1,5 +1,7 @@
-﻿using Business.Interfaces;
+﻿using Business.Exceptions;
+using Business.Interfaces;
 using Business.Models.Input;
+using Business.Models.Update;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -16,9 +18,13 @@ namespace Api.Controllers
                 var collocations = await collocationService.GetAllCollocations();
                 return Ok(collocations);
             }
+            catch (ContextException ex)
+            {
+                return UnprocessableEntity(ex);
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, ex);
             }
         }
 
@@ -30,9 +36,17 @@ namespace Api.Controllers
                 var collocation = await collocationService.GetCollocation(id);
                 return Ok(collocation);
             }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex);
+            }
+            catch (ContextException ex)
+            {
+                return UnprocessableEntity(ex);
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, ex);
             }
         }
 
@@ -44,9 +58,13 @@ namespace Api.Controllers
                 await collocationService.AddCollocation(collocation);
                 return Ok();
             }
+            catch (ContextException ex)
+            {
+                return UnprocessableEntity(ex);
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, ex);
             }
         }
 
@@ -58,9 +76,17 @@ namespace Api.Controllers
                 await collocationService.UpdateCollocation(collocation);
                 return Ok();
             }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex);
+            }
+            catch (ContextException ex)
+            {
+                return UnprocessableEntity(ex);
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, ex);
             }
         }
 
@@ -72,9 +98,17 @@ namespace Api.Controllers
                 await collocationService.DeleteCollocation(id);
                 return Ok();
             }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex);
+            }
+            catch (ContextException ex)
+            {
+                return UnprocessableEntity(ex);
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, ex);
             }
         }
     }

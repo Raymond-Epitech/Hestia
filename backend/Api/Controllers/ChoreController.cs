@@ -2,6 +2,7 @@
 using Business.Interfaces;
 using Business.Models.Input;
 using Business.Models.Output;
+using Business.Models.Update;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers

@@ -1,5 +1,6 @@
 ﻿using Business.Models.Input;
 using Business.Models.Output;
+using Business.Models.Update;
 using EntityFramework.Models;
 
 namespace Business.Mappers
