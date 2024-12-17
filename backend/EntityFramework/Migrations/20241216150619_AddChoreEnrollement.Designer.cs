@@ -3,6 +3,7 @@ using System;
 using EntityFramework.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EntityFramework.Migrations
 {
     [DbContext(typeof(HestiaContext))]
-    partial class HestiaContextModelSnapshot : ModelSnapshot
+    [Migration("20241216150619_AddChoreEnrollement")]
+    partial class AddChoreEnrollement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,10 +190,6 @@ namespace EntityFramework.Migrations
 
                     b.Property<DateTime>("LastConnection")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("PathToProfilePicture")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("Username")
                         .IsRequired()
