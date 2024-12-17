@@ -1,4 +1,4 @@
 <template>
-    <div>
+    <div class="task-list">
     </div>
 </template>
