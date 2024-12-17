@@ -4,12 +4,12 @@ namespace Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class VersionController : Controller
+    public class VersionController(IConfiguration config) : Controller
     {
         [HttpGet]
         public ActionResult GetVersion()
         {
-            return Ok("0.1");
+            return Ok(config["Version"]);
         }
     }
 }

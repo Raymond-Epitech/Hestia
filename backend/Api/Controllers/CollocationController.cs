@@ -1,23 +1,22 @@
 ﻿using Business.Exceptions;
 using Business.Interfaces;
 using Business.Models.Input;
-using Business.Models.Output;
 using Business.Models.Update;
-using EntityFramework.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-    public class ReminderController(IReminderService reminderService) : ControllerBase
+    [ApiController]
+    public class CollocationController(ICollocationService collocationService) : ControllerBase
     {
-        [HttpGet("GetByCollocation/{CollocationId}")]
-        public async Task<ActionResult<List<ReminderOutput>>> GetAllReminders(Guid CollocationId)
+        [HttpGet]
+        public async Task<IActionResult> GetAllCollocations()
         {
             try
             {
-                return Ok(await reminderService.GetAllRemindersAsync(CollocationId));
+                var collocations = await collocationService.GetAllCollocations();
+                return Ok(collocations);
             }
             catch (ContextException ex)
             {
@@ -29,12 +28,13 @@ namespace Api.Controllers
             }
         }
 
-        [HttpGet("GetById/{id}")]
-        public async Task<ActionResult<ReminderOutput>> GetReminder(Guid Id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCollocation(Guid id)
         {
             try
             {
-                return Ok(await reminderService.GetReminderAsync(Id));
+                var collocation = await collocationService.GetCollocation(id);
+                return Ok(collocation);
             }
             catch (NotFoundException ex)
             {
@@ -51,38 +51,12 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddReminder(ReminderInput input)
+        public async Task<IActionResult> AddCollocation(CollocationInput collocation)
         {
             try
             {
-                await reminderService.AddReminderAsync(input);
+                await collocationService.AddCollocation(collocation);
                 return Ok();
-            }
-            catch (ContextException ex)
-            {
-                return StatusCode(500, ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
-        }
-
-        [HttpPut]
-        public async Task<ActionResult> UpdateReminder(ReminderUpdate input)
-        {
-            try
-            {
-                await reminderService.UpdateReminderAsync(input);
-                return Ok();
-            }
-            catch (MissingArgumentException ex)
-            {
-                return BadRequest(ex);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
             }
             catch (ContextException ex)
             {
@@ -94,17 +68,13 @@ namespace Api.Controllers
             }
         }
 
-        [HttpPut("Range")]
-        public async Task<ActionResult> UpdateRangeReminder(List<ReminderUpdate> inputs)
+        [HttpPut]
+        public async Task<IActionResult> UpdateCollocation(CollocationUpdate collocation)
         {
             try
             {
-                await reminderService.UpdateRangeReminderAsync(inputs);
+                await collocationService.UpdateCollocation(collocation);
                 return Ok();
-            }
-            catch (MissingArgumentException ex)
-            {
-                return BadRequest(ex);
             }
             catch (NotFoundException ex)
             {
@@ -121,11 +91,11 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteReminder(Guid Id)
+        public async Task<IActionResult> DeleteCollocation(Guid id)
         {
             try
             {
-                await reminderService.DeleteReminderAsync(Id);
+                await collocationService.DeleteCollocation(id);
                 return Ok();
             }
             catch (NotFoundException ex)
