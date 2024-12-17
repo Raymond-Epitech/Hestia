@@ -118,14 +118,15 @@ namespace Api.Controllers
         {
             try
             {
-                if (userService.LoginUser(googleToken, clientId))
+                /*if (userService.LoginUser(googleToken, clientId))
                 {
                     return Ok();
                 }
                 else
                 {
                     return Unauthorized();
-                }
+                }*/
+                throw new NotImplementedException();
             }
             catch (Exception ex)
             {
