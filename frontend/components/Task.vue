@@ -1,7 +1,12 @@
 <template>
     <div class="task-container">
+        <TaskModal v-model="isModalOpen"></TaskModal>
         <div class="task" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
-            <TaskModal v-model="isModalOpen"></TaskModal>
+            <h1>Serpillère</h1>
+            <div class="due-date">
+                <h1 class="number">24</h1>
+                <h1 class="month">DEC</h1>
+            </div>
         </div>
     </div>
 </template>
@@ -21,36 +26,32 @@ const task = ref({
 })
 </script>
 
-<style>
-.add-post {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 30px;
-    height: 30px;
-    margin: 16px 16px;
-    background-color: #FFF973;
-    border-radius: 9px;
-    border: none;
-    box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
-}
-
-.plus {
-    width: 20px;
-    height: 20px;
-}
-
+<style scoped>
 .task-container {
     display: flex;
     justify-content: center;
 }
 
 .task {
-    width: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 380px;
     height: 100px;
     background-color: #FF6A61;
     margin-bottom: 15px;
     border-radius: 20px;
     box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
+}
+
+h1 {
+    font-weight: 600;
+}
+
+.due-date {
+    position: absolute;
+    right: 30px;
+    width: 62px;
+    height: 62px;
 }
 </style>
