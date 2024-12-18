@@ -7,3 +7,13 @@ export type Reminder = {
     coordY: number,
     coordZ: number
 };
+
+export type Task = {
+    id: string,
+    createdBy: string,
+    createdAt: string,
+    dueDate: string,
+    title: string,
+    description: string,
+    isDone: Boolean
+}
