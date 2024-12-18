@@ -4,29 +4,31 @@
     </div>
 </template>
 
-<script>
-export default {
-    props: {
-        color: {
-            type: String,
-            default: 'lightgray'
-        },
-        onClick: {
-            type: Function,
-            default: null
-        },
-        id: {
-            type: String,
-            required: true
-        }
+<script setup>
+import { defineProps, defineEmits } from 'vue';
+
+const props = defineProps({
+    color: {
+        type: String,
+        default: 'lightgray'
     },
-    methods: {
-        handleClick() {
-            if (this.onClick) {
-                this.onClick();
-            }
-        }
+    onClick: {
+        type: Function,
+        default: null
+    },
+    id: {
+        type: String,
+        required: true
     }
+});
+
+const emit = defineEmits(['click']);
+
+function handleClick() {
+    if (props.onClick) {
+        props.onClick();
+    }
+    emit('click');
 }
 </script>
 
