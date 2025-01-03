@@ -14,6 +14,6 @@ export default defineNuxtConfig({
     { src: '~/plugins/bootstrap.js', mode: 'client' },
   ],
   googleSignIn: {
-    clientId: "80772791160-i0v9t46ic6cuqj38u6g5gcs0kh7c6opk.apps.googleusercontent.com",
+    clientId: '80772791160-407a5d395k8o0h5v1ao3shvjog0m68ul.apps.googleusercontent.com',
   }
 })
