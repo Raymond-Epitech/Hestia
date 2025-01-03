@@ -1,4 +1,4 @@
-import type { Reminder } from "./type";
+import type { Reminder, User } from "./type";
 
 export class bridge {
     url: string = "http://localhost:8080";
@@ -70,4 +70,81 @@ export class bridge {
             method: 'DELETE'
         }).then(response => response.json());
     }
+
+    // User section:
+
+    async login(client_id: string, google_token: string) {
+        return await fetch(this.url + "/Login?googleToken=" + google_token + "&clientId=" + client_id, {
+            method: 'POST'
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        })
+    }
+
+    async addUser(user: User) {
+        return await fetch(this.url + "/api/User", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        })
+    }
+
+    async updateUser(user: User) {
+        return await fetch(this.url + "/api/User", {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        })
+    }
+
+    async deleteUser(user: User) {
+        return await fetch(this.url + "/api/User/" + user.id, {
+            method: 'DELETE',
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        })
+    }
+
+    async getUserbyId(id: string) {
+        return await fetch(this.url + "/api/User/GetById/" + id, {
+            method: 'GET'
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return {}
+        });
+    }
+
+    async getUserbyCollocId(collocid: string) {
+        return await fetch(this.url + "/api/User/GetByCollocationId/" + collocid, {
+            method: 'GET'
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return []
+        });
+    }
+
 }
