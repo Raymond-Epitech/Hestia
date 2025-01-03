@@ -3,7 +3,9 @@ using Business.Interfaces;
 using Business.Mappers;
 using Business.Models.Input;
 using Business.Models.Output;
+using Business.Models.Update;
 using EntityFramework.Context;
+using EntityFramework.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -18,15 +20,18 @@ public class ReminderService(
     /// </summary>
     /// <returns>All the reminders available</returns>
     /// <exception cref="ContextException">An error has occured while retriving the reminders from db</exception>
-    public async Task<List<ReminderOutput>> GetAllRemindersAsync()
+    public async Task<List<ReminderOutput>> GetAllRemindersAsync(Guid CollocationId)
     {
         try
         {
-            var reminders = await _context.Reminder.Select(x => new ReminderOutput
+            var reminders = await _context.Reminder.Where(x => x.CollocationId == CollocationId).Select(x => new ReminderOutput
             {
                 Id = x.Id,
                 Content = x.Content,
-                Color = x.Color
+                Color = x.Color,
+                CoordX = x.CoordX,
+                CoordY = x.CoordY,
+                CoordZ = x.CoordZ
             }).ToListAsync();
             logger.LogInformation("Succes : All reminders found");
             return reminders;
@@ -55,6 +60,9 @@ public class ReminderService(
                 Color = x.Color,
                 CreatedBy = x.CreatedBy,
                 CreatedAt = x.CreatedAt
+                CoordX = x.CoordX,
+                CoordY = x.CoordY,
+                CoordZ = x.CoordZ
             }).FirstOrDefaultAsync(x => x.Id == id);
 
             if (reminder == null)

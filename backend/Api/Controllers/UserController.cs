@@ -3,21 +3,21 @@ using Business.Interfaces;
 using Business.Models.Input;
 using Business.Models.Output;
 using Business.Models.Update;
-using EntityFramework.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-    public class ReminderController(IReminderService reminderService) : ControllerBase
+    [ApiController]
+    public class UserController(IUserService userService) : ControllerBase
     {
-        [HttpGet("GetByCollocation/{CollocationId}")]
-        public async Task<ActionResult<List<ReminderOutput>>> GetAllReminders(Guid CollocationId)
+        [HttpGet("GetByCollocationId/{CollocationId}")]
+        public async Task<ActionResult<List<UserOutput>>> GetAllUser(Guid CollocationId)
         {
             try
             {
-                return Ok(await reminderService.GetAllRemindersAsync(CollocationId));
+                var users = await userService.GetAllUser(CollocationId);
+                return Ok(users);
             }
             catch (ContextException ex)
             {
@@ -30,13 +30,14 @@ namespace Api.Controllers
         }
 
         [HttpGet("GetById/{id}")]
-        public async Task<ActionResult<ReminderOutput>> GetReminder(Guid Id)
+        public async Task<ActionResult<UserOutput>> GetUser(Guid id)
         {
             try
             {
-                return Ok(await reminderService.GetReminderAsync(Id));
+                var user = await userService.GetUser(id);
+                return Ok(user);
             }
-            catch (NotFoundException ex)
+            catch(NotFoundException ex)
             {
                 return NotFound(ex);
             }
@@ -51,38 +52,12 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddReminder(ReminderInput input)
+        public async Task<ActionResult> AddUser(UserInput user)
         {
             try
             {
-                await reminderService.AddReminderAsync(input);
+                await userService.AddUser(user);
                 return Ok();
-            }
-            catch (ContextException ex)
-            {
-                return StatusCode(500, ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
-        }
-
-        [HttpPut]
-        public async Task<ActionResult> UpdateReminder(ReminderUpdate input)
-        {
-            try
-            {
-                await reminderService.UpdateReminderAsync(input);
-                return Ok();
-            }
-            catch (MissingArgumentException ex)
-            {
-                return BadRequest(ex);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
             }
             catch (ContextException ex)
             {
@@ -94,17 +69,13 @@ namespace Api.Controllers
             }
         }
 
-        [HttpPut("Range")]
-        public async Task<ActionResult> UpdateRangeReminder(List<ReminderUpdate> inputs)
+        [HttpPut]
+        public async Task<ActionResult> UpdateUser(UserUpdate user)
         {
             try
             {
-                await reminderService.UpdateRangeReminderAsync(inputs);
+                await userService.UpdateUser(user);
                 return Ok();
-            }
-            catch (MissingArgumentException ex)
-            {
-                return BadRequest(ex);
             }
             catch (NotFoundException ex)
             {
@@ -121,11 +92,11 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteReminder(Guid Id)
+        public async Task<ActionResult> DeleteUser(Guid id)
         {
             try
             {
-                await reminderService.DeleteReminderAsync(Id);
+                userService.DeleteUser(id);
                 return Ok();
             }
             catch (NotFoundException ex)
@@ -135,6 +106,27 @@ namespace Api.Controllers
             catch (ContextException ex)
             {
                 return UnprocessableEntity(ex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpPost("/Login")]
+        public ActionResult Login(string googleToken, string clientId)
+        {
+            try
+            {
+                /*if (userService.LoginUser(googleToken, clientId))
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return Unauthorized();
+                }*/
+                throw new NotImplementedException();
             }
             catch (Exception ex)
             {

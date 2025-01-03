@@ -3,6 +3,7 @@ using System;
 using EntityFramework.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EntityFramework.Migrations
 {
     [DbContext(typeof(HestiaContext))]
-    partial class HestiaContextModelSnapshot : ModelSnapshot
+    [Migration("20241216120628_AddCollocationIdNullableInUser")]
+    partial class AddCollocationIdNullableInUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,24 +59,6 @@ namespace EntityFramework.Migrations
                     b.HasIndex("CollocationId");
 
                     b.ToTable("Chore");
-                });
-
-            modelBuilder.Entity("EntityFramework.Models.ChoreEnrollment", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ChoreId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("UserId", "ChoreId");
-
-                    b.HasIndex("ChoreId");
-
-                    b.ToTable("ChoreEnrollments");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.ChoreMessage", b =>
@@ -188,10 +173,6 @@ namespace EntityFramework.Migrations
                     b.Property<DateTime>("LastConnection")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("PathToProfilePicture")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("text");
@@ -212,25 +193,6 @@ namespace EntityFramework.Migrations
                         .IsRequired();
 
                     b.Navigation("Collocation");
-                });
-
-            modelBuilder.Entity("EntityFramework.Models.ChoreEnrollment", b =>
-                {
-                    b.HasOne("EntityFramework.Models.Chore", "Chore")
-                        .WithMany("ChoreEnrollments")
-                        .HasForeignKey("ChoreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EntityFramework.Models.User", "User")
-                        .WithMany("ChoreEnrollments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Chore");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.ChoreMessage", b =>
@@ -267,8 +229,6 @@ namespace EntityFramework.Migrations
 
             modelBuilder.Entity("EntityFramework.Models.Chore", b =>
                 {
-                    b.Navigation("ChoreEnrollments");
-
                     b.Navigation("ChoreMessages");
                 });
 
@@ -279,11 +239,6 @@ namespace EntityFramework.Migrations
                     b.Navigation("Reminders");
 
                     b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("EntityFramework.Models.User", b =>
-                {
-                    b.Navigation("ChoreEnrollments");
                 });
 #pragma warning restore 612, 618
         }

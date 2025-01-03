@@ -3,6 +3,7 @@ using System;
 using EntityFramework.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EntityFramework.Migrations
 {
     [DbContext(typeof(HestiaContext))]
-    partial class HestiaContextModelSnapshot : ModelSnapshot
+    [Migration("20241216094630_AddCollocationAndUser")]
+    partial class AddCollocationAndUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,24 +61,6 @@ namespace EntityFramework.Migrations
                     b.ToTable("Chore");
                 });
 
-            modelBuilder.Entity("EntityFramework.Models.ChoreEnrollment", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ChoreId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("UserId", "ChoreId");
-
-                    b.HasIndex("ChoreId");
-
-                    b.ToTable("ChoreEnrollments");
-                });
-
             modelBuilder.Entity("EntityFramework.Models.ChoreMessage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -110,13 +95,6 @@ namespace EntityFramework.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -175,7 +153,7 @@ namespace EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("CollocationId")
+                    b.Property<Guid>("CollocationId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -187,10 +165,6 @@ namespace EntityFramework.Migrations
 
                     b.Property<DateTime>("LastConnection")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("PathToProfilePicture")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -212,25 +186,6 @@ namespace EntityFramework.Migrations
                         .IsRequired();
 
                     b.Navigation("Collocation");
-                });
-
-            modelBuilder.Entity("EntityFramework.Models.ChoreEnrollment", b =>
-                {
-                    b.HasOne("EntityFramework.Models.Chore", "Chore")
-                        .WithMany("ChoreEnrollments")
-                        .HasForeignKey("ChoreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EntityFramework.Models.User", "User")
-                        .WithMany("ChoreEnrollments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Chore");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.ChoreMessage", b =>
@@ -260,15 +215,14 @@ namespace EntityFramework.Migrations
                     b.HasOne("EntityFramework.Models.Collocation", "Collocation")
                         .WithMany("Users")
                         .HasForeignKey("CollocationId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Collocation");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.Chore", b =>
                 {
-                    b.Navigation("ChoreEnrollments");
-
                     b.Navigation("ChoreMessages");
                 });
 
@@ -279,11 +233,6 @@ namespace EntityFramework.Migrations
                     b.Navigation("Reminders");
 
                     b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("EntityFramework.Models.User", b =>
-                {
-                    b.Navigation("ChoreEnrollments");
                 });
 #pragma warning restore 612, 618
         }
