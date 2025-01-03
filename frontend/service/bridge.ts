@@ -19,8 +19,8 @@ export class bridge {
 
     // Reminder section: get all reminders, get reminder by ID, add reminder, update reminder, delete reminder
 
-    async getAllReminders() {
-        const response: Response = await fetch(this.url + "/api/Reminder");
+    async getAllReminders(id_colloc: string) {
+        const response: Response = await fetch(this.url + "/api/Reminder/GetByCollocation/" + id_colloc);
         if (response.status == 200) {
             return await response.json();
         }
@@ -47,6 +47,16 @@ export class bridge {
 
     async updateReminder(data: Reminder) {
         return await fetch(this.url + "/api/Reminder/" + data.id, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => response.json());
+    }
+
+    async updateReminderRange(data: [Reminder]) {
+        return await fetch(this.url + "/api/Reminder/Range", {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'

@@ -59,7 +59,7 @@ public class ReminderService(
                 Content = x.Content,
                 Color = x.Color,
                 CreatedBy = x.CreatedBy,
-                CreatedAt = x.CreatedAt
+                CreatedAt = x.CreatedAt,
                 CoordX = x.CoordX,
                 CoordY = x.CoordY,
                 CoordZ = x.CoordZ
