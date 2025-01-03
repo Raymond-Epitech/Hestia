@@ -5,3 +5,10 @@ export type Reminder = {
     createdBy: string;
     createdAt: string;
 };
+
+export type User = {
+    username: string,
+    email: string,
+    collocationId: string,
+    id: string
+}
