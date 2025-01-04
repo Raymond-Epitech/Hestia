@@ -1,4 +1,4 @@
-import type { Reminder, User } from "./type";
+import type { Reminder, User, Collocation } from "./type";
 
 export class bridge {
     url: string = "http://localhost:8080";
@@ -147,4 +147,68 @@ export class bridge {
         });
     }
 
+    // collocation section: 
+
+    async addCollocation(collocation: Collocation) {
+        return await fetch(this.url + "/api/Collocation", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(collocation)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        })
+    }
+
+    async updateCollocation(collocation: Collocation) {
+        return await fetch(this.url + "/api/Collocation", {
+            method: 'PUT',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(collocation)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        })
+    }
+
+    async deleteCollocation(id: string) {
+        return await fetch(this.url + "/api/Collocation/" + id, {
+            method: 'DELETE',
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        })
+    }
+
+    async getAllCollocation() {
+        return await fetch(this.url + "/api/Collocation", {
+            method: 'GET',
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        })
+    }
+
+    async getCollocationById(id: string) {
+        return await fetch(this.url + "/api/Collocation/" + id, {
+            method: 'GET',
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return {};
+        })
+    }
 }
