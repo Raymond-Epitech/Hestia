@@ -7,8 +7,15 @@ export type Reminder = {
 };
 
 export type User = {
-    username: string,
-    email: string,
-    collocationId: string,
-    id: string
+    username: string;
+    email: string;
+    collocationId: string;
+    id: string;
+}
+
+export type Collocation = {
+    name: string;
+    addresse: string;
+    createdBy: string;
+    id: string;
 }
