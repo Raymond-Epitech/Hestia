@@ -19,3 +19,13 @@ export type Collocation = {
     createdBy: string;
     id: string;
 }
+
+export type Chore = {
+    id: string;
+    title: string;
+    description: string;
+    createdBy: string;
+    createdAt: string;
+    dueDate: string;
+    isDone: boolean;    
+}
