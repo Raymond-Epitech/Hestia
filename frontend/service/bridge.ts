@@ -1,4 +1,4 @@
-import type { Reminder, User, Collocation } from "./type";
+import type { Reminder, User, Collocation, Chore } from "./type";
 
 export class bridge {
     url: string = "http://localhost:8080";
@@ -209,6 +209,162 @@ export class bridge {
                 return response.json();
             }
             return {};
+        })
+    }
+
+    // Chore section:
+
+    async addChore(chore: Chore) {
+        return await fetch(this.url + "/api/Chore", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(chore)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        })
+    }
+
+    async updateChore(chore: Chore) {
+        return await fetch(this.url + "/api/Chore", {
+            method: 'PUT',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(chore)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        })
+    }
+
+    async deleteChore(id: string) {
+        return await fetch(this.url + "/api/Chore/" + id, {
+            method: 'DELETE',
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        })
+    }
+
+    async getAllChore(collocationId: string) {
+        return await fetch(this.url + "/api/Chore/GetByCollocationId/" + collocationId, {
+            method: 'GET',
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        })
+    }
+
+    async getChoreById(id: string) {
+        return await fetch(this.url + "/api/Chore/GetById/" + id, {
+            method: 'GET',
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return {};
+        })
+    }
+
+    async addChoreMessage(choreId: string, userId: string, message: string) {
+        return await fetch(this.url + "/api/Chore/Message", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                choreId: choreId,
+                createdBy: userId,
+                content: message
+            })
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        })
+    }
+
+    async deleteChoreMessage(id: string) {
+        return await fetch(this.url + "/api/Chore/Message/" + id, {
+            method: 'DELETE',
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        })
+    }
+
+    async getChoreMessage(choreId: string) {
+        return await fetch(this.url + "/api/Chore/Message/" + choreId, {
+            method: 'GET',
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        })
+    }
+
+    async addChoreUser(choreId: string, userId: string) {
+        return await fetch(`${this.url}/api/Chore/Enroll?ChoreId=${choreId}&UserId=${userId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        })
+    }
+
+    async deleteChoreUser(choreId: string, userId: string) {
+        return await fetch(`${this.url}/api/Chore/Unenroll?ChoreId=${choreId}&UserId=${userId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        })
+    }
+
+    async getChoreByUser(userId: string) {
+        return await fetch(`${this.url}/api/Chore/Enroll/ByUser?UserId=${userId}`, {
+            method: 'GET',
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        })
+    }
+
+    async getUserEnrollChore(choreId: string) {
+        return await fetch(`${this.url}/api/Chore/Enroll/ByChore?ChoreId=${choreId}`, {
+            method: 'GET',
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
         })
     }
 }
