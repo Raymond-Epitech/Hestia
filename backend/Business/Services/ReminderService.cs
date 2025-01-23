@@ -58,6 +58,8 @@ public class ReminderService(
                 Id = x.Id,
                 Content = x.Content,
                 Color = x.Color,
+                CreatedBy = x.CreatedBy,
+                CreatedAt = x.CreatedAt,
                 CoordX = x.CoordX,
                 CoordY = x.CoordY,
                 CoordZ = x.CoordZ
@@ -65,7 +67,7 @@ public class ReminderService(
 
             if (reminder == null)
             {
-                throw new NotFoundException("Reminder not found");
+                throw new NotFoundException($"Reminder {id} not found");
             }
 
             logger.LogInformation("Succes : Reminder found");
