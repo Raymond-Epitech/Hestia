@@ -96,7 +96,7 @@ namespace Api.Controllers
         {
             try
             {
-                userService.DeleteUser(id);
+                await userService.DeleteUser(id);
                 return Ok();
             }
             catch (NotFoundException ex)
@@ -114,19 +114,11 @@ namespace Api.Controllers
         }
 
         [HttpPost("/Login")]
-        public ActionResult Login(string googleToken, string clientId)
+        public async Task<ActionResult> Login(string googleToken, string clientId)
         {
             try
             {
-                /*if (userService.LoginUser(googleToken, clientId))
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return Unauthorized();
-                }*/
-                throw new NotImplementedException();
+                return Ok(await userService.LoginUser(googleToken, clientId));
             }
             catch (Exception ex)
             {

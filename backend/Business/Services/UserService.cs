@@ -5,15 +5,19 @@ using Business.Models.Output;
 using Business.Models.Update;
 using EntityFramework.Context;
 using EntityFramework.Models;
+using Google.Apis.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Business.Services
 {
     public class UserService(ILogger<UserService> logger,
-    HestiaContext _context) : IUserService
+    HestiaContext _context,
+    IJwtService jwtService) : IUserService
     {
         /// <summary>
         /// Get all users from a collocation
@@ -172,33 +176,25 @@ namespace Business.Services
         /// <param name="googleToken"></param>
         /// <param name="clientId"></param>
         /// <returns></returns>
-        public bool LoginUser(string googleToken, string clientId)
+        public async Task<string> LoginUser(string googleToken, string clientId)
         {
-            var validationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = "https://accounts.google.com",
-                ValidateAudience = true,
-                ValidAudience = clientId,
-                ValidateLifetime = true,
-                IssuerSigningKeyResolver = (token, securityToken, kid, parameters) =>
-                {
-                    // Récupérer les clés publiques depuis Google
-                    var client = new HttpClient();
-                    var keys = client.GetStringAsync("https://www.googleapis.com/oauth2/v3/certs").Result;
-                    return new JsonWebKeySet(keys).Keys;
-                }
-            };
-
             try
             {
-                var handler = new JwtSecurityTokenHandler();
-                handler.ValidateToken(googleToken, validationParameters, out _);
-                return true; // Le token est valide
+                var validPayload = await GoogleJsonWebSignature.ValidateAsync(googleToken);
+
+                var claims = new List<Claim>
+                {
+                    new Claim(JwtRegisteredClaimNames.Sub, validPayload.Subject),
+                    new Claim(JwtRegisteredClaimNames.Email, validPayload.Email),
+                    new Claim(JwtRegisteredClaimNames.Name, validPayload.Name),
+                    new Claim("picture", validPayload.Picture ?? ""),
+                };
+
+                return jwtService.GenerateToken(claims);
             }
-            catch
+            catch (Exception ex)
             {
-                return false; // Token invalide
+                throw new ContextException("Invalid token", ex);
             }
         }
     }

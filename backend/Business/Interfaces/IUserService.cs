@@ -11,6 +11,6 @@ namespace Business.Interfaces
         Task AddUser(UserInput user);
         Task UpdateUser(UserUpdate user);
         Task DeleteUser(Guid id);
-        bool LoginUser(string googleToken, string clientId);
+        Task<string> LoginUser(string googleToken, string clientId);
     }
 }

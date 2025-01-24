@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.Google;
 using System.Text;
 using WebApi.Configuration;
+using Business.Models.Jwt;
 
 try
 {
@@ -19,23 +20,28 @@ try
     builder.Services.AddEndpointsApiExplorer();
 
     builder.Services.ConfigureServices(builder.Configuration, builder.Environment.IsDevelopment());
+    builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+
+    var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>();
 
     builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = "Bearer"; // Schéma par défaut pour l'API
         options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme; // Google pour le challenge
     })
-    .AddGoogle(googleOptions =>
-    {
-        googleOptions.ClientId = builder.Configuration["GoogleToken:Id"]; // ID Client Google
-        googleOptions.ClientSecret = builder.Configuration["GoogleToken:Secret"]; // Secret Client Google
-        googleOptions.CallbackPath = "/signin-google"; // URI de redirection
-    })
     .AddJwtBearer(options =>
     {
-        options.Authority = "https://accounts.google.com"; // Autorité de Google
-        options.Audience = "VOTRE_CLIENT_ID"; // ID Client Google pour valider le token
-    });
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtOptions.Issuer,
+            ValidAudience = jwtOptions.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret))
+        };
+    };
 
     builder.Services.AddAuthorization();
     builder.Services.AddSwaggerGen();
