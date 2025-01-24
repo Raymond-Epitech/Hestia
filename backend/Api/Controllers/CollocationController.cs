@@ -54,6 +54,7 @@ namespace Api.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> AddCollocation(CollocationInput collocation)
         {
             try
@@ -72,6 +73,7 @@ namespace Api.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> UpdateCollocation(CollocationUpdate collocation)
         {
             try
@@ -94,6 +96,7 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteCollocation(Guid id)
         {
             try

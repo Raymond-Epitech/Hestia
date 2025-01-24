@@ -4,6 +4,7 @@ using Business.Models.Input;
 using Business.Models.Output;
 using Business.Models.Update;
 using EntityFramework.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -12,6 +13,7 @@ namespace Api.Controllers
     [Route("api/[controller]")]
     public class ReminderController(IReminderService reminderService) : ControllerBase
     {
+        [Authorize]
         [HttpGet("GetByCollocation/{CollocationId}")]
         public async Task<ActionResult<List<ReminderOutput>>> GetAllReminders(Guid CollocationId)
         {
@@ -30,6 +32,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("GetById/{id}")]
+        [Authorize]
         public async Task<ActionResult<ReminderOutput>> GetReminder(Guid Id)
         {
             try
@@ -51,6 +54,7 @@ namespace Api.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult> AddReminder(ReminderInput input)
         {
             try
@@ -69,6 +73,7 @@ namespace Api.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<ActionResult> UpdateReminder(ReminderUpdate input)
         {
             try
@@ -95,6 +100,7 @@ namespace Api.Controllers
         }
 
         [HttpPut("Range")]
+        [Authorize]
         public async Task<ActionResult> UpdateRangeReminder(List<ReminderUpdate> inputs)
         {
             try
@@ -121,6 +127,7 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult> DeleteReminder(Guid Id)
         {
             try

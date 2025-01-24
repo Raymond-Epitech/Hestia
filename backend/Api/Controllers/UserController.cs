@@ -13,6 +13,7 @@ namespace Api.Controllers
     public class UserController(IUserService userService) : ControllerBase
     {
         [HttpGet("GetByCollocationId/{CollocationId}")]
+        [Authorize]
         public async Task<ActionResult<List<UserOutput>>> GetAllUser(Guid CollocationId)
         {
             try
@@ -31,6 +32,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("GetById/{id}")]
+        [Authorize]
         public async Task<ActionResult<UserOutput>> GetUser(Guid id)
         {
             try
@@ -53,6 +55,7 @@ namespace Api.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<ActionResult> UpdateUser(UserUpdate user)
         {
             try
@@ -75,6 +78,7 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult> DeleteUser(Guid id)
         {
             try
