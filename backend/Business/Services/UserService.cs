@@ -6,6 +6,7 @@ using Business.Models.Output;
 using Business.Models.Update;
 using EntityFramework.Context;
 using EntityFramework.Models;
+using Google.Apis.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.IdentityModel.Tokens.Jwt;
@@ -148,7 +149,6 @@ namespace Business.Services
         {
             try
             {
-                /*
                 var validPayload = await GoogleJsonWebSignature.ValidateAsync(googleToken);
 
                 var claims = new List<Claim>
@@ -158,25 +158,18 @@ namespace Business.Services
                     new Claim(JwtRegisteredClaimNames.Name, validPayload.Name),
                     new Claim("picture", validPayload.Picture ?? ""),
                 };
-                */
 
-                await Task.Delay(50);
-
-                var claims = new List<Claim>
+                if (await _context.User.AnyAsync(x => x.Email == validPayload.Email))
                 {
-                    new Claim(JwtRegisteredClaimNames.Sub, "thibault"),
-                    new Claim(JwtRegisteredClaimNames.Email, "thibaulthe31@gmail.com"),
-                    new Claim(JwtRegisteredClaimNames.Name, "thibault"),
-                    new Claim("picture", ""),
-                };
+                    throw new AlreadyExistException("This user already exist with this email");
+                }
 
                 // Add new verified user in DB
                 var newUser = new User
                 {
                     Id = Guid.NewGuid(),
                     Username = userInput.Username,
-                    //Email, = validPayload.Email,
-                    Email = "thibaulthe31@gmail.com", // CHAAAAAAANGE
+                    Email = validPayload.Email,
                     CollocationId = userInput.CollocationId,
                     CreatedAt = DateTime.Now.ToUniversalTime(),
                     LastConnection = DateTime.Now.ToUniversalTime(),
@@ -236,7 +229,6 @@ namespace Business.Services
         {
             try
             {
-                /*
                 var validPayload = await GoogleJsonWebSignature.ValidateAsync(googleToken);
 
                 var claims = new List<Claim>
@@ -246,33 +238,18 @@ namespace Business.Services
                     new Claim(JwtRegisteredClaimNames.Name, validPayload.Name),
                     new Claim("picture", validPayload.Picture ?? ""),
                 };
-                */
 
-                await Task.Delay(50);
-
-                var claims = new List<Claim>
-                {
-                    new Claim(JwtRegisteredClaimNames.Sub, "thibault"),
-                    new Claim(JwtRegisteredClaimNames.Email, "thibaulthe31@gmail.com"),
-                    new Claim(JwtRegisteredClaimNames.Name, "thibault"),
-                    new Claim("picture", ""),
-                };
-                var jwt = jwtService.GenerateToken(claims);
-
-                /*var user = await _context.User.Where(x => x.Email == validPayload.Email).Select(x => new UserOutput
-                {
-                    Id = x.Id,
-                    Username = x.Username,
-                    Email = x.Email
-                }).FirstOrDefaultAsync();*/
-
-                var user = await _context.User.FirstOrDefaultAsync(x => x.Email == "thibaulthe31@gmail.com");
+                var user = await _context.User.FirstOrDefaultAsync(x => x.Email == validPayload.Email);
 
                 if (user is null)
                 {
                     throw new NotFoundException("User not found");
                 }
-                
+
+                // Generate and return JWT
+
+                var jwt = jwtService.GenerateToken(claims);
+
                 try
                 {
                     user.LastConnection = DateTime.Now.ToUniversalTime();
