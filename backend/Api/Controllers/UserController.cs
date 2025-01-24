@@ -3,6 +3,7 @@ using Business.Interfaces;
 using Business.Models.Input;
 using Business.Models.Output;
 using Business.Models.Update;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -40,24 +41,6 @@ namespace Api.Controllers
             catch(NotFoundException ex)
             {
                 return NotFound(ex);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> AddUser(UserInput user)
-        {
-            try
-            {
-                await userService.AddUser(user);
-                return Ok();
             }
             catch (ContextException ex)
             {
@@ -113,12 +96,35 @@ namespace Api.Controllers
             }
         }
 
-        [HttpPost("/Login")]
-        public async Task<ActionResult> Login(string googleToken, string clientId)
+        [HttpPost("/Register")]
+        [AllowAnonymous]
+        public async Task<ActionResult> Register(string googleToken, UserInput userInput)
         {
             try
             {
-                return Ok(await userService.LoginUser(googleToken, clientId));
+                return Ok(await userService.RegisterUser(googleToken, userInput));
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpPost("/Login")]
+        [AllowAnonymous]
+        public async Task<ActionResult> Login(string googleToken)
+        {
+            try
+            {
+                return Ok(await userService.LoginUser(googleToken));
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex);
             }
             catch (Exception ex)
             {
