@@ -1,4 +1,5 @@
 ﻿using Business.Models.Input;
+using Business.Models.Jwt;
 using Business.Models.Output;
 using Business.Models.Update;
 
@@ -8,9 +9,9 @@ namespace Business.Interfaces
     {
         Task<List<UserOutput>> GetAllUser(Guid CollocationId);
         Task<UserOutput> GetUser(Guid id);
-        Task AddUser(UserInput user);
         Task UpdateUser(UserUpdate user);
         Task DeleteUser(Guid id);
-        bool LoginUser(string googleToken, string clientId);
+        Task<UserInfo> RegisterUser(string googleToken, UserInput userInput);
+        Task<UserInfo> LoginUser(string googleToken);
     }
 }

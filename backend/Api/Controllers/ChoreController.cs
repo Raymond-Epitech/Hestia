@@ -3,6 +3,7 @@ using Business.Interfaces;
 using Business.Models.Input;
 using Business.Models.Output;
 using Business.Models.Update;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -12,6 +13,7 @@ namespace Api.Controllers
     public class ChoreController(IChoreService choreService) : ControllerBase
     {
         [HttpGet("GetByCollocationId/{CollocationId}")]
+        [Authorize]
         public async Task<ActionResult<List<ChoreOutput>>> GetAllChores(Guid CollocationId)
         {
             try
@@ -29,6 +31,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("GetById/{id}")]
+        [Authorize]
         public async Task<ActionResult<ChoreOutput>> GetChore(Guid id)
         {
             try
@@ -50,6 +53,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("Message/{choreId}")]
+        [Authorize]
         public async Task<ActionResult<List<ChoreMessageOutput>>> GetChoreMessageFromChore(Guid choreId)
         {
             try
@@ -71,6 +75,7 @@ namespace Api.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult> AddChore(ChoreInput input)
         {
             try
@@ -89,6 +94,7 @@ namespace Api.Controllers
         }
 
         [HttpPost("Message/")]
+        [Authorize]
         public async Task<ActionResult> AddChoreMessage(ChoreMessageInput input)
         {
             try
@@ -107,6 +113,7 @@ namespace Api.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<ActionResult> UpdateChore(ChoreUpdate input)
         {
             try
@@ -129,6 +136,7 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult> DeleteChore(Guid id)
         {
             try
@@ -151,6 +159,7 @@ namespace Api.Controllers
         }
 
         [HttpDelete("Message/{choreId}")]
+        [Authorize]
         public async Task<ActionResult> DeleteChoreMessageByChoreId(Guid choreId)
         {
             try
@@ -173,6 +182,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("Enroll/ByUser")]
+        [Authorize]
         public async Task<ActionResult<List<ChoreOutput>>> GetChoreFromUser(Guid UserId)
         {
             try
@@ -190,6 +200,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("Enroll/ByChore")]
+        [Authorize]
         public async Task<ActionResult<List<UserOutput>>> GetUserFromChore(Guid ChoreId)
         {
             try
@@ -207,6 +218,7 @@ namespace Api.Controllers
         }
 
         [HttpPost("Enroll")]
+        [Authorize]
         public async Task<ActionResult> EnrollToChore(Guid UserId, Guid ChoreId)
         {
             try
@@ -229,6 +241,7 @@ namespace Api.Controllers
         }
 
         [HttpDelete("Enroll")]
+        [Authorize]
         public async Task<ActionResult> UnenrollToChore(Guid UserId, Guid ChoreId)
         {
             try

@@ -2,6 +2,7 @@
 using Business.Interfaces;
 using Business.Models.Input;
 using Business.Models.Update;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -11,6 +12,7 @@ namespace Api.Controllers
     public class CollocationController(ICollocationService collocationService) : ControllerBase
     {
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAllCollocations()
         {
             try
@@ -29,6 +31,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetCollocation(Guid id)
         {
             try
@@ -51,6 +54,7 @@ namespace Api.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> AddCollocation(CollocationInput collocation)
         {
             try
@@ -69,6 +73,7 @@ namespace Api.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> UpdateCollocation(CollocationUpdate collocation)
         {
             try
@@ -91,6 +96,7 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteCollocation(Guid id)
         {
             try

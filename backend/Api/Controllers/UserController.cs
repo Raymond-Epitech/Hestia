@@ -3,6 +3,7 @@ using Business.Interfaces;
 using Business.Models.Input;
 using Business.Models.Output;
 using Business.Models.Update;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -12,6 +13,7 @@ namespace Api.Controllers
     public class UserController(IUserService userService) : ControllerBase
     {
         [HttpGet("GetByCollocationId/{CollocationId}")]
+        [Authorize]
         public async Task<ActionResult<List<UserOutput>>> GetAllUser(Guid CollocationId)
         {
             try
@@ -30,6 +32,7 @@ namespace Api.Controllers
         }
 
         [HttpGet("GetById/{id}")]
+        [Authorize]
         public async Task<ActionResult<UserOutput>> GetUser(Guid id)
         {
             try
@@ -51,25 +54,8 @@ namespace Api.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<ActionResult> AddUser(UserInput user)
-        {
-            try
-            {
-                await userService.AddUser(user);
-                return Ok();
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
-        }
-
         [HttpPut]
+        [Authorize]
         public async Task<ActionResult> UpdateUser(UserUpdate user)
         {
             try
@@ -92,11 +78,12 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult> DeleteUser(Guid id)
         {
             try
             {
-                userService.DeleteUser(id);
+                await userService.DeleteUser(id);
                 return Ok();
             }
             catch (NotFoundException ex)
@@ -113,20 +100,35 @@ namespace Api.Controllers
             }
         }
 
-        [HttpPost("/Login")]
-        public ActionResult Login(string googleToken, string clientId)
+        [HttpPost("/Register")]
+        [AllowAnonymous]
+        public async Task<ActionResult> Register(string googleToken, UserInput userInput)
         {
             try
             {
-                /*if (userService.LoginUser(googleToken, clientId))
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return Unauthorized();
-                }*/
-                throw new NotImplementedException();
+                return Ok(await userService.RegisterUser(googleToken, userInput));
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpPost("/Login")]
+        [AllowAnonymous]
+        public async Task<ActionResult> Login(string googleToken)
+        {
+            try
+            {
+                return Ok(await userService.LoginUser(googleToken));
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex);
             }
             catch (Exception ex)
             {
