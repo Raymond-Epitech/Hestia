@@ -6,7 +6,7 @@
       <img src="~/public/plus.png" class="plus">
     </button>
     <div v-for="(post, index) in posts" :key="index">
-      <Post :id="post.id" :text="post.content" :color="post.color" />
+      <Post :id="post.id" :text="post.content" :color="post.color" @delete="getall()" />
     </div>
   </div>
 </template>
@@ -23,7 +23,6 @@ const posts = ref([]);
 const getall = async () => {
   const data = await api.getAllReminders();
   posts.value = data;
-  console.log(posts.value);
 };
 
 onMounted(async () => {
