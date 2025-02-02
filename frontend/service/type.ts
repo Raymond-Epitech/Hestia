@@ -1,6 +1,6 @@
 export type Reminder = {
 
-    id: number,
+    id: string,
     createdBy: string,
     content: string,
     color: string,
