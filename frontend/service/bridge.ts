@@ -34,7 +34,7 @@ export class bridge {
         }
         return {};
     }
-    //here data is an any type because the back is not expecting an ID, might need to be changed
+
     async addReminder(data: any) {
         return await fetch(this.url + "/api/Reminder", {
             method: 'POST',
