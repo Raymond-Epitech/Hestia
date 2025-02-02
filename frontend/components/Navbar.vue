@@ -1,5 +1,8 @@
 <template>
     <div class="navbar">
+        <a class="settings-button" href="/settings">
+            <img src="../public/settings.png" class="settings">
+        </a>
         <a class="task-button" href="/tasks">
             <div class="task-button-top-bar"></div>
             <div class="task-button-middle-bar"></div>
