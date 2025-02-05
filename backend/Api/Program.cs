@@ -115,8 +115,6 @@ try
         {
             try
             {
-                Console.WriteLine($"DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: {Environment.GetEnvironmentVariable("DOTNET_SYSTEM_GLOBALIZATION_INVARIANT")}");
-                Console.WriteLine($"Globalization Mode: {System.Globalization.CultureInfo.CurrentCulture}");
                 if (string.IsNullOrEmpty(builder.Configuration.GetConnectionString("HestiaDb")))
                 {
                     Console.Error.WriteLine("Connection string is not set in Docker.");
