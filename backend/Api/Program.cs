@@ -111,10 +111,12 @@ try
 
     if (app.Environment.IsDevelopment())
     {
-        using (var connection = new Npgsql.NpgsqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
+        using (var connection = new Microsoft.Data.SqlClient.SqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
         {
             try
             {
+                Console.WriteLine($"DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: {Environment.GetEnvironmentVariable("DOTNET_SYSTEM_GLOBALIZATION_INVARIANT")}");
+                Console.WriteLine($"Globalization Mode: {System.Globalization.CultureInfo.CurrentCulture}");
                 if (string.IsNullOrEmpty(builder.Configuration.GetConnectionString("HestiaDb")))
                 {
                     Console.Error.WriteLine("Connection string is not set in Docker.");
