@@ -31,7 +31,7 @@ namespace Api.Controllers
             }
         }
 
-        [HttpGet("GetById/{id}")]
+        [HttpGet("GetById/{Id}")]
         [Authorize]
         public async Task<ActionResult<ReminderOutput>> GetReminder(Guid Id)
         {
