@@ -2,6 +2,7 @@ import type { Reminder, User, Collocation, Chore } from "./type";
 
 export class bridge {
     url: string = "http://localhost:8080";
+    jwt: string = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMTE1OTE1ODU5OTA5MDMxOTM3MzAiLCJlbWFpbCI6ImJlbmphbWluYm91cmV6QGdtYWlsLmNvbSIsIm5hbWUiOiJCZW5qYW1pbiIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NMbnpUTlJNOF9ERTBYWWVhcGdGWlNjNlUxTC11NXQtRzJxZzA1MVF3bllYLWZnV2EwPXM5Ni1jIiwiZXhwIjoxNzM5NDQ2MDU2LCJpc3MiOiJoZXN0aWEtYXBwIiwiYXVkIjoiaGVzdGlhLW1vYmlsZSJ9.WrGZj9le4qrM4TGwBP_C53uq2WR2K1jyrh0YWWCZTiY";
 
     seturl(new_url: string) {
         this.url = new_url;
@@ -20,7 +21,14 @@ export class bridge {
     // Reminder section: get all reminders, get reminder by ID, add reminder, update reminder, delete reminder
 
     async getAllReminders(id_colloc: string) {
-        const response: Response = await fetch(this.url + "/api/Reminder/GetByCollocation/" + id_colloc);
+        const response: Response = await fetch(this.url + "/api/Reminder/GetByCollocation/" + id_colloc,
+            {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            }
+        );
         if (response.status == 200) {
             return await response.json();
         }
@@ -39,7 +47,8 @@ export class bridge {
         return await fetch(this.url + "/api/Reminder", {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
             },
             body: JSON.stringify(data)
         }).then(response => {
@@ -77,7 +86,10 @@ export class bridge {
 
     async deleteReminder(id: string) {
         return await fetch(this.url + "/api/Reminder/" + id, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
         }).then(response => {
             if (response.status == 200) {
                 return true;

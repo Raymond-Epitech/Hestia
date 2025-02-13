@@ -21,7 +21,7 @@ const api = new bridge();
 const posts = ref([]);
 
 const getall = async () => {
-  const data = await api.getAllReminders();
+  const data = await api.getAllReminders("d6c34b10-e6dc-472e-8047-da3a89d44eae");
   posts.value = data;
 };
 
