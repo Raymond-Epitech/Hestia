@@ -57,7 +57,8 @@ const post = ref({
   color: '',
   coordX: 0,
   coordY: 0,
-  coordZ: 0
+  coordZ: 0,
+  collocationId: "d6c34b10-e6dc-472e-8047-da3a89d44eae"
 })
 
 const { modelValue } = toRefs(props)
