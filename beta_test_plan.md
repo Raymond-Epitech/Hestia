@@ -144,11 +144,17 @@ Ensure the test scenarios reflect real-world use cases and cover all major inter
 Define success metrics and baseline performance or usability expectations to determine whether a feature is ready for release.
 
 ### 5.1 Success metrics
-- **Metric 1**: (e.g., 95% of testers successfully complete the login process)
-- **Metric 2**: (e.g., average response time for API calls is under 500ms)
+- **Feature success**:
+  Features succeed more then 98% of the time (ex: adding a post on the wall page succeeds, assigning user to a task succeeds).
+  To get metric, send message from app to server upon success/failure of feature.
+
+- **Responsiveness**:
+  Server requests response time stay lower than 500ms for small request (not for big data transfers like images)
 
 ### 5.2 Baseline expectations
-- **Performance Baseline**: (e.g., system handles 100 concurrent users without degradation)
-- **Usability Baseline**: (e.g., 90% of testers rate the interface as "easy to use")
+- **Performance Baseline**:
+  Server can handle X users on Y hardware (to be defined)
+- **Usability Baseline**:
+  95% of testers rate the interface as "easy to use"
 
 ---
