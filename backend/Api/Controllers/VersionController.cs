@@ -1,15 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class VersionController : Controller
+    public class VersionController(IConfiguration config) : Controller
     {
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult GetVersion()
         {
-            return Ok("0.1");
+            return Ok(config["Version"]);
         }
     }
 }

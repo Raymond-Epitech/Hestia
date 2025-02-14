@@ -1,4 +1,5 @@
 ﻿using Business.Interfaces;
+using Business.Models.Jwt;
 using Business.Services;
 using EntityFramework.Context;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,10 @@ namespace WebApi.Configuration
         private static IServiceCollection AddBusinessServices(this IServiceCollection services)
         {
             services.AddScoped<IReminderService, ReminderService>();
+            services.AddScoped<IChoreService, ChoreService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ICollocationService, CollocationService>();
+            services.AddScoped<IJwtService, JwtService>();
             services.AddHttpContextAccessor();
             return services;
         }

@@ -22,10 +22,120 @@ namespace EntityFramework.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("EntityFramework.Models.Chore", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CollocationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDone")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CollocationId");
+
+                    b.ToTable("Chore");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.ChoreEnrollment", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ChoreId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("UserId", "ChoreId");
+
+                    b.HasIndex("ChoreId");
+
+                    b.ToTable("ChoreEnrollments");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.ChoreMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ChoreId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChoreId");
+
+                    b.ToTable("ChoreMessage");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Collocation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Collocation");
+                });
+
             modelBuilder.Entity("EntityFramework.Models.Reminder", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CollocationId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Color")
@@ -54,7 +164,126 @@ namespace EntityFramework.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CollocationId");
+
                     b.ToTable("Reminder");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CollocationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("LastConnection")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PathToProfilePicture")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CollocationId");
+
+                    b.ToTable("User");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Chore", b =>
+                {
+                    b.HasOne("EntityFramework.Models.Collocation", "Collocation")
+                        .WithMany("Chores")
+                        .HasForeignKey("CollocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Collocation");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.ChoreEnrollment", b =>
+                {
+                    b.HasOne("EntityFramework.Models.Chore", "Chore")
+                        .WithMany("ChoreEnrollments")
+                        .HasForeignKey("ChoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EntityFramework.Models.User", "User")
+                        .WithMany("ChoreEnrollments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Chore");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.ChoreMessage", b =>
+                {
+                    b.HasOne("EntityFramework.Models.Chore", "Chore")
+                        .WithMany("ChoreMessages")
+                        .HasForeignKey("ChoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Chore");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Reminder", b =>
+                {
+                    b.HasOne("EntityFramework.Models.Collocation", "Collocation")
+                        .WithMany("Reminders")
+                        .HasForeignKey("CollocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Collocation");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.User", b =>
+                {
+                    b.HasOne("EntityFramework.Models.Collocation", "Collocation")
+                        .WithMany("Users")
+                        .HasForeignKey("CollocationId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Collocation");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Chore", b =>
+                {
+                    b.Navigation("ChoreEnrollments");
+
+                    b.Navigation("ChoreMessages");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Collocation", b =>
+                {
+                    b.Navigation("Chores");
+
+                    b.Navigation("Reminders");
+
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.User", b =>
+                {
+                    b.Navigation("ChoreEnrollments");
                 });
 #pragma warning restore 612, 618
         }

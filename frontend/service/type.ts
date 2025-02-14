@@ -1,5 +1,6 @@
 export type Reminder = {
-    id: number,
+
+    id: string,
     createdBy: string,
     content: string,
     color: string,
@@ -7,3 +8,28 @@ export type Reminder = {
     coordY: number,
     coordZ: number
 };
+
+export type User = {
+    username: string;
+    email: string;
+    collocationId: string;
+    id: string;
+}
+
+export type Collocation = {
+    name: string;
+    addresse: string;
+    createdBy: string;
+    id: string;
+}
+
+export type Chore = {
+    id: string;
+    title: string;
+    description: string;
+    createdBy: string;
+    createdAt: string;
+    dueDate: string;
+    isDone: boolean;    
+}
+export type Locale = 'fr' | 'en' | 'es' | 'de' | 'zh' | 'ja';
