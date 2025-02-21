@@ -3,21 +3,27 @@ import { defineNuxtConfig } from 'nuxt/config'
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
+
   modules: [
     '@pinia/nuxt',
     'nuxt-vue3-google-signin',
     '@nuxtjs/i18n'
   ],
+
   css: [
     '~/assets/styles/main.scss',
   ],
+
   plugins: [
     { src: '~/plugins/bootstrap.js', mode: 'client' },
   ],
+
   googleSignIn: {
     clientId: "80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com",
   },
+
   extends: ['nuxt-modal'],
+
   i18n: {
     locales: [
       { code: 'fr', name: 'Français', file: 'fr.json' },
@@ -32,4 +38,6 @@ export default defineNuxtConfig({
     defaultLocale: 'fr',
     strategy: 'no_prefix'
   },
+
+  compatibilityDate: '2025-02-21',
 })
