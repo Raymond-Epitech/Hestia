@@ -63,7 +63,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import Texte_language from '~/components/texte_language.vue';
-import type { Locale } from '~/service/type';
+import type { Locale } from '~/composables/service/type';
 const { setLocale } = useI18n();
 const { $locally } = useNuxtApp()
 

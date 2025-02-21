@@ -9,7 +9,7 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/store/auth';
-import { bridge } from '~/service/bridge.ts';
+import { bridge } from '~/composables/service/bridge';
 
 definePageMeta({
     layout: false
@@ -17,7 +17,7 @@ definePageMeta({
 
 const { authenticateUser } = useAuthStore();
 const { authenticated } = storeToRefs(useAuthStore());
-const api = new bridge();
+const { $bridge } = useNuxtApp()
 
 const router = useRouter();
 const handleLoginSuccess = async (response) => {

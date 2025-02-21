@@ -12,12 +12,12 @@
 </template>
 
 <script setup>
-import { bridge } from '~/service/bridge.ts';
 
 const isModalOpen = ref(false)
 const openModal = () => (isModalOpen.value = true)
 
-const api = new bridge();
+const { $bridge } = useNuxtApp()
+const api = $bridge;
 const posts = ref([]);
 
 const getall = async () => {
