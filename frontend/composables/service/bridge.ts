@@ -8,6 +8,10 @@ export class bridge {
         this.url = new_url;
     }
 
+    setjwt(new_jwt: string) {
+        this.jwt = new_jwt;
+    }
+
     // Version section: get version
 
     async getVersion() {
