@@ -1,6 +1,7 @@
 ﻿using Business.Exceptions;
 using Business.Interfaces;
 using Business.Models.Input;
+using Business.Models.Jwt;
 using Business.Models.Output;
 using Business.Models.Update;
 using Microsoft.AspNetCore.Authorization;
@@ -14,6 +15,9 @@ namespace Api.Controllers
     {
         [HttpGet("GetByCollocationId/{CollocationId}")]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<List<UserOutput>>> GetAllUser(Guid CollocationId)
         {
             try
@@ -33,6 +37,10 @@ namespace Api.Controllers
 
         [HttpGet("GetById/{id}")]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<UserOutput>> GetUser(Guid id)
         {
             try
@@ -56,6 +64,10 @@ namespace Api.Controllers
 
         [HttpPut]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> UpdateUser(UserUpdate user)
         {
             try
@@ -79,6 +91,10 @@ namespace Api.Controllers
 
         [HttpDelete("{id}")]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> DeleteUser(Guid id)
         {
             try
@@ -102,7 +118,10 @@ namespace Api.Controllers
 
         [HttpPost("/Register")]
         [AllowAnonymous]
-        public async Task<ActionResult> Register(string googleToken, UserInput userInput)
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<UserInfo>> Register(string googleToken, UserInput userInput)
         {
             try
             {
@@ -120,7 +139,10 @@ namespace Api.Controllers
 
         [HttpPost("/Login")]
         [AllowAnonymous]
-        public async Task<ActionResult> Login(string googleToken)
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<UserInfo>> Login(string googleToken)
         {
             try
             {
