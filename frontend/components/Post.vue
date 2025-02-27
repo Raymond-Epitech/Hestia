@@ -7,7 +7,6 @@
 </template>
 
 <script setup>
-import { bridge } from '~/service/bridge';
 const props = defineProps({
     id: {
         type: String,
@@ -23,7 +22,8 @@ const props = defineProps({
     }
 })
 
-const api = new bridge();
+const { $bridge } = useNuxtApp()
+const api = $bridge;
 
 const emit = defineEmits(['delete'])
 const handleDelete = async () => {

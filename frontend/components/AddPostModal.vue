@@ -32,7 +32,6 @@
 
 <script setup lang="ts">
 import useModal from '~/composables/useModal';
-import { bridge } from '~/service/bridge';
 
 const props = withDefaults(
   defineProps<{
@@ -49,7 +48,8 @@ const props = withDefaults(
   }
 )
 
-const api = new bridge();
+const { $bridge } = useNuxtApp()
+const api = $bridge;
 
 const post = ref({
   createdBy: '',
