@@ -1,7 +1,7 @@
 import type { Reminder, User, Collocation, Chore } from "./type";
 
 export class bridge {
-    url: string = "http://localhost:8080";
+    url: string = "http://91.134.48.124:8080";
     jwt: string = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMTE1OTE1ODU5OTA5MDMxOTM3MzAiLCJlbWFpbCI6ImJlbmphbWluYm91cmV6QGdtYWlsLmNvbSIsIm5hbWUiOiJCZW5qYW1pbiIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NMbnpUTlJNOF9ERTBYWWVhcGdGWlNjNlUxTC11NXQtRzJxZzA1MVF3bllYLWZnV2EwPXM5Ni1jIiwiaXNzIjoiaGVzdGlhLWFwcCIsImF1ZCI6Imhlc3RpYS1tb2JpbGUifQ.E9bPI5VXWu5tH1Y0zq8_YQhZfkf962B2Ohnd_2aqMeg";
 
     seturl(new_url: string) {
@@ -104,19 +104,20 @@ export class bridge {
 
     // User section:
 
-    async login(client_id: string, google_token: string) {
-        return await fetch(this.url + "/Login?googleToken=" + google_token + "&clientId=" + client_id, {
+    async login(google_token: string) {
+        return await fetch(this.url + "/Login?googleToken=" + google_token, {
             method: 'POST'
         }).then(response => {
             if (response.status == 200) {
+                
                 return true;
             }
             return false;
         })
     }
 
-    async addUser(user: User) {
-        return await fetch(this.url + "/api/User", {
+    async addUser(user: User, google_token: string) {
+        return await fetch(this.url + "/Register?googleToken=" + google_token, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
