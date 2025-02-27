@@ -1,3 +1,4 @@
+import { json } from "stream/consumers";
 import type { Reminder, User, Collocation, Chore } from "./type";
 
 export class bridge {
@@ -107,12 +108,12 @@ export class bridge {
     async login(google_token: string) {
         return await fetch(this.url + "/Login?googleToken=" + google_token, {
             method: 'POST'
-        }).then(response => {
+        }).then(async response => {
+            console.log('response status: ' + response.status);
             if (response.status == 200) {
-                
-                return true;
+                return await response.json();;
             }
-            return false;
+            return {};
         })
     }
 
