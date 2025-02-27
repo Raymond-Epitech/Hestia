@@ -109,7 +109,6 @@ export class bridge {
         return await fetch(this.url + "/Login?googleToken=" + google_token, {
             method: 'POST'
         }).then(async response => {
-            console.log('response status: ' + response.status);
             if (response.status == 200) {
                 return await response.json();;
             }
