@@ -55,12 +55,12 @@ namespace Api.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult> AddReminder(ReminderInput input)
+        public async Task<ActionResult<Guid>> AddReminder(ReminderInput input)
         {
             try
             {
-                await reminderService.AddReminderAsync(input);
-                return Ok();
+                var id = await reminderService.AddReminderAsync(input);
+                return Ok(id);
             }
             catch (ContextException ex)
             {

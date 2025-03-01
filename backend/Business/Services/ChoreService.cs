@@ -109,7 +109,7 @@ public class ChoreService(
     /// </summary>
     /// <param name="input">The chore class with all info of a chore</param>
     /// <exception cref="ContextException">An error has occured while adding chore from db</exception>
-    public async Task AddChoreAsync(ChoreInput input)
+    public async Task<Guid> AddChoreAsync(ChoreInput input)
     {
         try
         {
@@ -117,6 +117,7 @@ public class ChoreService(
             await _context.Chore.AddAsync(chore);
             await _context.SaveChangesAsync();
             logger.LogInformation("Succes : Chore added");
+            return chore.Id;
         }
         catch (Exception ex)
         {
@@ -129,7 +130,7 @@ public class ChoreService(
     /// </summary>
     /// <param name="input">The chore message class with all info of a chore message</param>
     /// <exception cref="ContextException">An error has occured while adding chore message from db</exception>
-    public async Task AddChoreMessageAsync(ChoreMessageInput input)
+    public async Task<Guid> AddChoreMessageAsync(ChoreMessageInput input)
     {
         try
         {
@@ -137,6 +138,7 @@ public class ChoreService(
             await _context.ChoreMessage.AddAsync(choreMessage);
             await _context.SaveChangesAsync();
             logger.LogInformation("Succes : Chore message added");
+            return choreMessage.Id;
         }
         catch (Exception ex)
         {
