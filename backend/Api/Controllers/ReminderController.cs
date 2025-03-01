@@ -62,6 +62,8 @@ namespace Api.Controllers
 
         [HttpPost]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Guid>> AddReminder(ReminderInput input)
         {
             try
