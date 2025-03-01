@@ -13,7 +13,7 @@ namespace Api.Controllers
     {
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAllCollocations()
+        public async Task<ActionResult> GetAllCollocations()
         {
             try
             {
@@ -32,7 +32,7 @@ namespace Api.Controllers
 
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<IActionResult> GetCollocation(Guid id)
+        public async Task<ActionResult> GetCollocation(Guid id)
         {
             try
             {
@@ -54,13 +54,13 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> AddCollocation(CollocationInput collocation)
+        [AllowAnonymous]
+        public async Task<ActionResult<Guid>> AddCollocation(CollocationInput collocation, Guid? AddedBy)
         {
             try
             {
-                await collocationService.AddCollocation(collocation);
-                return Ok();
+                var collocId = await collocationService.AddCollocation(collocation, AddedBy);
+                return Ok(collocId);
             }
             catch (ContextException ex)
             {
@@ -74,7 +74,7 @@ namespace Api.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UpdateCollocation(CollocationUpdate collocation)
+        public async Task<ActionResult> UpdateCollocation(CollocationUpdate collocation)
         {
             try
             {
@@ -97,7 +97,7 @@ namespace Api.Controllers
 
         [HttpDelete("{id}")]
         [Authorize]
-        public async Task<IActionResult> DeleteCollocation(Guid id)
+        public async Task<ActionResult> DeleteCollocation(Guid id)
         {
             try
             {
