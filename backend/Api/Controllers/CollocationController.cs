@@ -56,7 +56,10 @@ namespace Api.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<Guid>> AddCollocation(CollocationInput collocation, Guid? AddedBy)
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> AddCollocation(CollocationInput collocation, Guid AddedBy)
         {
             try
             {
