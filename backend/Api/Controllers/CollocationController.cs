@@ -14,10 +14,7 @@ namespace Api.Controllers
     {
         [HttpGet]
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<CollocationOutput>>> GetAllCollocations()
+        public async Task<ActionResult> GetAllCollocations()
         {
             try
             {
@@ -36,11 +33,7 @@ namespace Api.Controllers
 
         [HttpGet("{id}")]
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<CollocationOutput>> GetCollocation(Guid id)
+        public async Task<ActionResult> GetCollocation(Guid id)
         {
             try
             {
@@ -62,16 +55,13 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        [Authorize]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> AddCollocation(CollocationInput collocation)
+        [AllowAnonymous]
+        public async Task<ActionResult<Guid>> AddCollocation(CollocationInput collocation, Guid? AddedBy)
         {
             try
             {
-                await collocationService.AddCollocation(collocation);
-                return Ok();
+                var collocId = await collocationService.AddCollocation(collocation, AddedBy);
+                return Ok(collocId);
             }
             catch (ContextException ex)
             {
@@ -85,10 +75,6 @@ namespace Api.Controllers
 
         [HttpPut]
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> UpdateCollocation(CollocationUpdate collocation)
         {
             try
@@ -112,10 +98,6 @@ namespace Api.Controllers
 
         [HttpDelete("{id}")]
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> DeleteCollocation(Guid id)
         {
             try
