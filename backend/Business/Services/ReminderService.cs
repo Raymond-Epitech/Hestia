@@ -84,7 +84,7 @@ public class ReminderService(
     /// </summary>
     /// <param name="input">The reminder class with all info of a reminder</param>
     /// <exception cref="ContextException">An error has occured while adding reminder from db</exception>
-    public async Task AddReminderAsync(ReminderInput input)
+    public async Task<Guid> AddReminderAsync(ReminderInput input)
     {
         try
         {
@@ -92,6 +92,7 @@ public class ReminderService(
             await _context.Reminder.AddAsync(reminder);
             await _context.SaveChangesAsync();
             logger.LogInformation("Succes : Reminder added");
+            return reminder.Id;
         }
         catch (Exception ex)
         {

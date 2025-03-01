@@ -89,12 +89,12 @@ namespace Api.Controllers
         [Authorize]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> AddChore(ChoreInput input)
+        public async Task<ActionResult<Guid>> AddChore(ChoreInput input)
         {
             try
             {
-                await choreService.AddChoreAsync(input);
-                return Ok();
+                var id = await choreService.AddChoreAsync(input);
+                return Ok(id);
             }
             catch (ContextException ex)
             {
@@ -110,12 +110,12 @@ namespace Api.Controllers
         [Authorize]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> AddChoreMessage(ChoreMessageInput input)
+        public async Task<ActionResult<Guid>> AddChoreMessage(ChoreMessageInput input)
         {
             try
             {
-                await choreService.AddChoreMessageAsync(input);
-                return Ok();
+                var id = await choreService.AddChoreMessageAsync(input);
+                return Ok(id);
             }
             catch (ContextException ex)
             {
