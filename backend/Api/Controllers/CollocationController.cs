@@ -1,6 +1,7 @@
 ﻿using Business.Exceptions;
 using Business.Interfaces;
 using Business.Models.Input;
+using Business.Models.Output;
 using Business.Models.Update;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,8 +32,8 @@ namespace Api.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
-        public async Task<ActionResult> GetCollocation(Guid id)
+        [AllowAnonymous]
+        public async Task<ActionResult<CollocationOutput>> GetCollocation(Guid id)
         {
             try
             {
@@ -54,7 +55,7 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<ActionResult<Guid>> AddCollocation(CollocationInput collocation, Guid? AddedBy)
         {
             try
