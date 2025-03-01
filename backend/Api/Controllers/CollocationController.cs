@@ -14,7 +14,10 @@ namespace Api.Controllers
     {
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult> GetAllCollocations()
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<CollocationOutput>>> GetAllCollocations()
         {
             try
             {
@@ -32,7 +35,11 @@ namespace Api.Controllers
         }
 
         [HttpGet("{id}")]
-        [AllowAnonymous]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<CollocationOutput>> GetCollocation(Guid id)
         {
             try
@@ -56,7 +63,10 @@ namespace Api.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<Guid>> AddCollocation(CollocationInput collocation, Guid? AddedBy)
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> AddCollocation(CollocationInput collocation)
         {
             try
             {
@@ -75,6 +85,10 @@ namespace Api.Controllers
 
         [HttpPut]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> UpdateCollocation(CollocationUpdate collocation)
         {
             try
@@ -98,6 +112,10 @@ namespace Api.Controllers
 
         [HttpDelete("{id}")]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> DeleteCollocation(Guid id)
         {
             try

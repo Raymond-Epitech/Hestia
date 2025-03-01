@@ -15,6 +15,9 @@ namespace Api.Controllers
     {
         [Authorize]
         [HttpGet("GetByCollocation/{CollocationId}")]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<List<ReminderOutput>>> GetAllReminders(Guid CollocationId)
         {
             try
@@ -33,6 +36,10 @@ namespace Api.Controllers
 
         [HttpGet("GetById/{Id}")]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ReminderOutput>> GetReminder(Guid Id)
         {
             try
@@ -55,6 +62,9 @@ namespace Api.Controllers
 
         [HttpPost]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> AddReminder(ReminderInput input)
         public async Task<ActionResult<Guid>> AddReminder(ReminderInput input)
         {
             try
@@ -74,6 +84,11 @@ namespace Api.Controllers
 
         [HttpPut]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> UpdateReminder(ReminderUpdate input)
         {
             try
@@ -101,6 +116,11 @@ namespace Api.Controllers
 
         [HttpPut("Range")]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> UpdateRangeReminder(List<ReminderUpdate> inputs)
         {
             try
@@ -128,6 +148,10 @@ namespace Api.Controllers
 
         [HttpDelete("{id}")]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> DeleteReminder(Guid Id)
         {
             try
