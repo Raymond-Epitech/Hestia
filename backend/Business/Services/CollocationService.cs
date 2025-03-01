@@ -28,6 +28,7 @@ namespace Business.Services
                     Id = x.Id,
                     Name = x.Name,
                     Address = x.Address,
+                    Collocataires = null
                 }).ToListAsync();
 
                 logger.LogInformation("Succes : All collocation were retrived from db");
@@ -56,6 +57,7 @@ namespace Business.Services
                     Id = x.Id,
                     Name = x.Name,
                     Address = x.Address,
+                    Collocataires = x.Users.Select(u => u.Id).ToList()
                 }).FirstOrDefaultAsync();
 
                 if (collocation == null)
