@@ -110,7 +110,14 @@ export class bridge {
             method: 'POST'
         }).then(async response => {
             if (response.status == 200) {
-                return await response.json();;
+                return await response.json();
+            } else if (response.status == 500) {
+                const jsonresponse = await response.json();
+                console.log(jsonresponse.innerException.message);
+                if (jsonresponse.innerException.message == "User not found") {
+                    return { error: "User not found" };
+                }
+                return { error: "Internal server error" };
             }
             return {};
         })
@@ -123,11 +130,11 @@ export class bridge {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(user)
-        }).then(response => {
+        }).then(async response => {
             if (response.status == 200) {
-                return true;
+                return await response.json();
             }
-            return false;
+            return {};
         })
     }
 
