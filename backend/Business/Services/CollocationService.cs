@@ -94,7 +94,7 @@ namespace Business.Services
                     CreatedBy = collocation.CreatedBy
                 };
                 _context.Collocation.Add(newCollocation);
-                if (AddedBy is not null)
+                if (AddedBy != Guid.Empty)
                 {
                     var user = await _context.User.FirstOrDefaultAsync(x => x.Id == AddedBy);
                     user.CollocationId = newCollocation.Id;
