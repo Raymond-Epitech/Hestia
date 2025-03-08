@@ -1,11 +1,11 @@
-﻿using Business.Exceptions;
-using Business.Interfaces;
+﻿using Business.Interfaces;
 using Business.Jwt;
-using Business.Models.Input;
-using Business.Models.Output;
-using Business.Models.Update;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Exceptions;
+using Shared.Models.Input;
+using Shared.Models.Output;
+using Shared.Models.Update;
 
 namespace Api.Controllers
 {
@@ -13,16 +13,16 @@ namespace Api.Controllers
     [ApiController]
     public class UserController(IUserService userService) : ControllerBase
     {
-        [HttpGet("GetByCollocationId/{CollocationId}")]
+        [HttpGet("GetByColocationId/{ColocationId}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<UserOutput>>> GetAllUser(Guid CollocationId)
+        public async Task<ActionResult<List<UserOutput>>> GetAllUser(Guid ColocationId)
         {
             try
             {
-                var users = await userService.GetAllUser(CollocationId);
+                var users = await userService.GetAllUser(ColocationId);
                 return Ok(users);
             }
             catch (ContextException ex)

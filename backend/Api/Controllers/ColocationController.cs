@@ -1,28 +1,28 @@
-﻿using Business.Exceptions;
-using Business.Interfaces;
-using Business.Models.Input;
-using Business.Models.Output;
-using Business.Models.Update;
+﻿using Business.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Exceptions;
+using Shared.Models.Input;
+using Shared.Models.Output;
+using Shared.Models.Update;
 
 namespace Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CollocationController(ICollocationService collocationService) : ControllerBase
+    public class ColocationController(IColocationService colocationService) : ControllerBase
     {
         [HttpGet]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<CollocationOutput>>> GetAllCollocations()
+        public async Task<ActionResult<List<ColocationOutput>>> GetAllCollocations()
         {
             try
             {
-                var collocations = await collocationService.GetAllCollocations();
-                return Ok(collocations);
+                var colocations = await colocationService.GetAllColocations();
+                return Ok(colocations);
             }
             catch (ContextException ex)
             {
@@ -40,12 +40,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<CollocationOutput>> GetCollocation(Guid id)
+        public async Task<ActionResult<ColocationOutput>> GetColocation(Guid id)
         {
             try
             {
-                var collocation = await collocationService.GetCollocation(id);
-                return Ok(collocation);
+                var colocation = await colocationService.GetColocation(id);
+                return Ok(colocation);
             }
             catch (NotFoundException ex)
             {
@@ -66,12 +66,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Guid>> AddCollocation(CollocationInput collocation, Guid AddedBy)
+        public async Task<ActionResult<Guid>> AddCollocation(ColocationInput colocation, Guid AddedBy)
         {
             try
             {
-                var collocId = await collocationService.AddCollocation(collocation, AddedBy);
-                return Ok(collocId);
+                var colocId = await colocationService.AddColocation(colocation, AddedBy);
+                return Ok(colocId);
             }
             catch (ContextException ex)
             {
@@ -89,11 +89,11 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> UpdateCollocation(CollocationUpdate collocation)
+        public async Task<ActionResult> UpdateCollocation(ColocationUpdate colocation)
         {
             try
             {
-                await collocationService.UpdateCollocation(collocation);
+                await colocationService.UpdateColocation(colocation);
                 return Ok();
             }
             catch (NotFoundException ex)
@@ -120,7 +120,7 @@ namespace Api.Controllers
         {
             try
             {
-                await collocationService.DeleteCollocation(id);
+                await colocationService.DeleteColocation(id);
                 return Ok();
             }
             catch (NotFoundException ex)

@@ -140,7 +140,6 @@ public class ChoreService(
             }
 
             chore.UpdateFromInput(input);
-            await choreRepository.UpdateChoreAsync(chore);
             await choreRepository.SaveChangesAsync();
 
             logger.LogInformation("Succes : Chore updated");
