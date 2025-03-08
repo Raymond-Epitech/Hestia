@@ -2,7 +2,6 @@
 using Business.Mappers;
 using EntityFramework.Models;
 using EntityFramework.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
 using Shared.Models.Input;
@@ -11,10 +10,17 @@ using Shared.Models.Update;
 
 namespace Business.Services;
 
-public class ChoreService(
-    ILogger<ChoreService> logger,
-    IChoreRepository choreRepository) : IChoreService
+public class ChoreService : IChoreService
 {
+    private readonly ILogger<ChoreService> _logger;
+    private readonly IChoreRepository _choreRepository;
+
+    public ChoreService(ILogger<ChoreService> logger, IChoreRepository choreRepository)
+    {
+        _logger = logger;
+        _choreRepository = choreRepository;
+    }
+
     /// <summary>
     /// Get all Chores
     /// </summary>
@@ -24,8 +30,8 @@ public class ChoreService(
     {
         try
         {
-            var chores = await choreRepository.GetAllChoreOutputsAsync(CollocationId);
-            logger.LogInformation($"Succes : All chores from the collocation {CollocationId} found");
+            var chores = await _choreRepository.GetAllChoreOutputsAsync(CollocationId);
+            _logger.LogInformation($"Succes : All chores from the collocation {CollocationId} found");
             return chores;
         }
         catch (Exception ex)
@@ -45,14 +51,14 @@ public class ChoreService(
     {
         try
         {
-            var chore = await choreRepository.GetChoreOutputByIdAsync(id); 
+            var chore = await _choreRepository.GetChoreOutputByIdAsync(id); 
 
             if (chore == null)
             {
                 throw new NotFoundException("Reminder not found");
             }
 
-            logger.LogInformation("Succes : Reminder found");
+            _logger.LogInformation("Succes : Reminder found");
             return chore;
         }
         catch (Exception ex)
@@ -65,7 +71,7 @@ public class ChoreService(
     {
         try
         {
-            var choreMessages = await choreRepository.GetAllChoreMessageOutputByChoreIdAsync(choreId);
+            var choreMessages = await _choreRepository.GetAllChoreMessageOutputByChoreIdAsync(choreId);
 
             if (choreMessages == null)
             {
@@ -90,9 +96,9 @@ public class ChoreService(
         try
         {
             var chore = input.ToDb();
-            await choreRepository.AddChoreAsync(chore);
-            await choreRepository.SaveChangesAsync();
-            logger.LogInformation("Succes : Chore added");
+            await _choreRepository.AddChoreAsync(chore);
+            await _choreRepository.SaveChangesAsync();
+            _logger.LogInformation("Succes : Chore added");
             return chore.Id;
         }
         catch (Exception ex)
@@ -111,9 +117,9 @@ public class ChoreService(
         try
         {
             var choreMessage = input.ToDb();
-            await choreRepository.AddChoreMessageAsync(choreMessage);
-            await choreRepository.SaveChangesAsync();
-            logger.LogInformation("Succes : Chore message added");
+            await _choreRepository.AddChoreMessageAsync(choreMessage);
+            await _choreRepository.SaveChangesAsync();
+            _logger.LogInformation("Succes : Chore message added");
             return choreMessage.Id;
         }
         catch (Exception ex)
@@ -133,16 +139,16 @@ public class ChoreService(
     {
         try
         {
-            var chore = await choreRepository.GetChoreByIdAsync(input.Id);
+            var chore = await _choreRepository.GetChoreByIdAsync(input.Id);
             if (chore == null)
             {
                 throw new NotFoundException($"Chore {input.Id} not found");
             }
 
             chore.UpdateFromInput(input);
-            await choreRepository.SaveChangesAsync();
+            await _choreRepository.SaveChangesAsync();
 
-            logger.LogInformation("Succes : Chore updated");
+            _logger.LogInformation("Succes : Chore updated");
         }
         catch (Exception ex)
         {
@@ -160,15 +166,15 @@ public class ChoreService(
     {
         try
         {
-            var chore = await choreRepository.GetChoreByIdAsync(id);
+            var chore = await _choreRepository.GetChoreByIdAsync(id);
             if (chore == null)
             {
                 throw new NotFoundException($"Chore {id} not found");
             }
-            await choreRepository.DeleteChoreAsync(chore);
-            await choreRepository.SaveChangesAsync();
+            await _choreRepository.DeleteChoreAsync(chore);
+            await _choreRepository.SaveChangesAsync();
 
-            logger.LogInformation("Succes : Chore deleted");
+            _logger.LogInformation("Succes : Chore deleted");
         }
         catch (Exception ex)
         {
@@ -186,15 +192,15 @@ public class ChoreService(
     {
         try
         {
-            var choreMessages = await choreRepository.GetChoreMessageFromChoreId(choreId);
+            var choreMessages = await _choreRepository.GetChoreMessageFromChoreId(choreId);
             if (choreMessages is null)
             {
                 throw new NotFoundException($"Chore {choreId} not found or no Chore message linked to this chore");
             }
-            await choreRepository.DeleteRangeChoreMessageFromChoreId(choreMessages);
-            await choreRepository.SaveChangesAsync();
+            await _choreRepository.DeleteRangeChoreMessageFromChoreId(choreMessages);
+            await _choreRepository.SaveChangesAsync();
 
-            logger.LogInformation("Succes : Chore message deleted");
+            _logger.LogInformation("Succes : Chore message deleted");
         }
         catch (Exception ex)
         {
@@ -212,9 +218,9 @@ public class ChoreService(
     {
         try
         {
-            var users = await choreRepository.GetEnrolledUserOutputFromChoreIdAsync(choreId);
+            var users = await _choreRepository.GetEnrolledUserOutputFromChoreIdAsync(choreId);
 
-            logger.LogInformation("Succes : Users found");
+            _logger.LogInformation("Succes : Users found");
 
             return users;
         }
@@ -234,9 +240,9 @@ public class ChoreService(
     {
         try
         {
-            var chores = await choreRepository.GetEnrolledChoreOutputFromUserIdAsync(userId);
+            var chores = await _choreRepository.GetEnrolledChoreOutputFromUserIdAsync(userId);
 
-            logger.LogInformation("Succes : Chores found");
+            _logger.LogInformation("Succes : Chores found");
 
             return chores;
         }
@@ -262,8 +268,8 @@ public class ChoreService(
                 ChoreId = ChoreId
             };
 
-            await choreRepository.AddChoreEnrollmentAsync(enroll);
-            await choreRepository.SaveChangesAsync();
+            await _choreRepository.AddChoreEnrollmentAsync(enroll);
+            await _choreRepository.SaveChangesAsync();
         }
         catch (Exception ex)
         {
@@ -282,14 +288,14 @@ public class ChoreService(
     {
         try
         {
-            var enrollement = await choreRepository.GetChoreEnrollmentByUserIdAndChoreIdAsync(userId, choreId);
+            var enrollement = await _choreRepository.GetChoreEnrollmentByUserIdAndChoreIdAsync(userId, choreId);
             if (enrollement == null)
             {
                 throw new NotFoundException("No enrollement found");
             }
 
-            await choreRepository.RemoveChoreEnrollmentAsync(enrollement);
-            await choreRepository.SaveChangesAsync();
+            await _choreRepository.RemoveChoreEnrollmentAsync(enrollement);
+            await _choreRepository.SaveChangesAsync();
         }
         catch (Exception ex)
         {

@@ -1,5 +1,4 @@
 ﻿using Business.Interfaces;
-using Business.Models.Jwt;
 using Business.Services;
 using EntityFramework.Context;
 using EntityFramework.Repositories.Implementations;

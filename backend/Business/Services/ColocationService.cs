@@ -1,7 +1,6 @@
 ﻿using Business.Interfaces;
 using EntityFramework.Models;
 using EntityFramework.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
 using Shared.Models.Input;
@@ -10,11 +9,18 @@ using Shared.Models.Update;
 
 namespace Business.Services
 {
-    public class ColocationService(
-        ILogger<ColocationService> logger,
-        IColocationRepository colocationRepository,
-        IUserRepository userRepository) : IColocationService
+    public class ColocationService : IColocationService
     {
+        private readonly ILogger<ChoreService> _logger;
+        private readonly IColocationRepository _colocationRepository;
+        private readonly IUserRepository _userRepository;
+
+        public ColocationService(ILogger<ChoreService> logger, IColocationRepository colocationRepository, IUserRepository userRepository)
+        {
+            _logger = logger;
+            _colocationRepository = colocationRepository;
+            _userRepository = userRepository;
+        }
         /// <summary>
         /// Get all Colocations
         /// </summary>
@@ -24,9 +30,9 @@ namespace Business.Services
         {
             try
             {
-                var colocations = await colocationRepository.GetAllColocationOutputAsync();
+                var colocations = await _colocationRepository.GetAllColocationOutputAsync();
 
-                logger.LogInformation("Succes : All collocation were retrived from db");
+                _logger.LogInformation("Succes : All collocation were retrived from db");
                 
                 return colocations;
             }
@@ -47,14 +53,14 @@ namespace Business.Services
         {
             try
             {
-                var colocation = await colocationRepository.GetColocationOutputFromIdAsync(id);
+                var colocation = await _colocationRepository.GetColocationOutputFromIdAsync(id);
 
                 if (colocation == null)
                 {
                     throw new NotFoundException($"The collocation with id {id} was not found");
                 }
 
-                logger.LogInformation($"Succes : Collocation {id} found");
+                _logger.LogInformation($"Succes : Collocation {id} found");
 
                 return colocation;
             }
@@ -70,7 +76,7 @@ namespace Business.Services
         /// <param name="colocation">The object colocation you want to add</param>
         /// <param name="AddedBy"> The User that added the colocation</param>
         /// <exception cref="ContextException">An error has occured while retriving the colocation from db</exception>
-        public async Task<Guid> AddCollocation(ColocationInput colocation, Guid? AddedBy)
+        public async Task<Guid> AddColocation(ColocationInput colocation, Guid? AddedBy)
         {
             try
             {
@@ -83,11 +89,11 @@ namespace Business.Services
                     CreatedBy = colocation.CreatedBy
                 };
 
-                await colocationRepository.AddColocationAsync(newColocation);
+                await _colocationRepository.AddColocationAsync(newColocation);
 
                 if (AddedBy != Guid.Empty)
                 {
-                    var user = await userRepository.GetUserByIdAsync(AddedBy!.Value);
+                    var user = await _userRepository.GetUserByIdAsync(AddedBy!.Value);
 
                     if (user is null)
                     {
@@ -95,12 +101,12 @@ namespace Business.Services
                     }
 
                     user.ColocationId = newColocation.Id;
-                    await userRepository.UpdateAsync(user);
+                    await _userRepository.UpdateAsync(user);
                 }
 
-                await colocationRepository.SaveChangesAsync();
+                await _colocationRepository.SaveChangesAsync();
 
-                logger.LogInformation($"Succes : Colocation {newColocation.Id} added");
+                _logger.LogInformation($"Succes : Colocation {newColocation.Id} added");
 
                 return newColocation.Id;
             }
@@ -121,7 +127,7 @@ namespace Business.Services
         {
             try
             {
-                var colocationToUpdate = await colocationRepository.GetColocationFromIdAsync(colocation.Id);
+                var colocationToUpdate = await _colocationRepository.GetColocationFromIdAsync(colocation.Id);
                 if (colocationToUpdate == null)
                 {
                     throw new NotFoundException($"The collocation with id {colocation.Id} was not found");
@@ -130,8 +136,8 @@ namespace Business.Services
                 colocationToUpdate.Name = colocation.Name;
                 colocationToUpdate.Address = colocation.Address;
 
-                await colocationRepository.SaveChangesAsync();
-                logger.LogInformation($"Succes : Colocation {colocation.Id} updated");
+                await _colocationRepository.SaveChangesAsync();
+                _logger.LogInformation($"Succes : Colocation {colocation.Id} updated");
             }
             catch (Exception ex)
             {
@@ -150,15 +156,15 @@ namespace Business.Services
         {
             try
             {
-                var colocation = await colocationRepository.GetColocationFromIdAsync(colocationId);
+                var colocation = await _colocationRepository.GetColocationFromIdAsync(colocationId);
                 if (colocation == null)
                 {
                     throw new NotFoundException($"The colocation with id {colocationId} was not found");
                 }
 
-                await colocationRepository.DeleteColocationAsync(colocation);
-                await colocationRepository.SaveChangesAsync();
-                logger.LogInformation($"Succes : Colocation {colocationId} deleted");
+                await _colocationRepository.DeleteColocationAsync(colocation);
+                await _colocationRepository.SaveChangesAsync();
+                _logger.LogInformation($"Succes : Colocation {colocationId} deleted");
             }
             catch (Exception ex)
             {

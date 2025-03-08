@@ -1,4 +1,4 @@
-﻿using Business.Models.Output;
+﻿using Shared.Models.Output;
 
 namespace Business.Jwt
 {
