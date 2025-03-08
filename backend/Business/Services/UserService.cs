@@ -1,14 +1,12 @@
-﻿using Business.Exceptions;
-using Business.Interfaces;
+﻿using Business.Interfaces;
 using Business.Jwt;
-using Business.Models.Input;
-using Business.Models.Output;
-using Business.Models.Update;
-using EntityFramework.Context;
 using EntityFramework.Models;
 using Google.Apis.Auth;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Shared.Exceptions;
+using Shared.Models.Input;
+using Shared.Models.Output;
+using Shared.Models.Update;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -28,7 +26,7 @@ namespace Business.Services
         {
             try
             {
-                
+                var users = await userRepository.GetAllAsync(CollocationId);
 
                 logger.LogInformation($"Succes : All users from the collocation {CollocationId} found");
 
@@ -51,12 +49,7 @@ namespace Business.Services
         {
             try
             {
-                var user = await _context.User.Where(x => x.Id == id).Select(x => new UserOutput
-                {
-                    Id = x.Id,
-                    Username = x.Username,
-                    Email = x.Email
-                }).FirstOrDefaultAsync();
+                var user = await userRepository.GetByIdAsync(id);
 
                 if (user == null)
                 {
@@ -83,7 +76,7 @@ namespace Business.Services
         {
             try
             {
-                var userToUpdate = await _context.User.FirstOrDefaultAsync(x => x.Id == user.Id);
+                var userToUpdate = await userRepository.GetUserByIdAsync(user.Id);
 
                 if (userToUpdate == null)
                 {
@@ -91,12 +84,11 @@ namespace Business.Services
                 }
 
                 userToUpdate.Username = user.Username;
-                userToUpdate.Email = user.Email;
                 userToUpdate.CollocationId = user.CollocationId;
 
-                _context.Update(userToUpdate);
+                await userRepository.UpdateAsync(userToUpdate);
 
-                await _context.SaveChangesAsync();
+                await userRepository.SaveChangesAsync();
 
                 logger.LogInformation($"Succes : User {user.Id} updated");
             }
@@ -116,13 +108,15 @@ namespace Business.Services
         {
             try
             {
-                var user = _context.User.Where(x => x.Id == id).FirstOrDefault();
+                var user = await userRepository.GetUserByIdAsync(id);
                 if (user == null)
                 {
                     throw new NotFoundException($"User {id} not found");
                 }
-                _context.User.Remove(user);
-                await _context.SaveChangesAsync();
+
+                await userRepository.RemoveAsync(user);
+
+                await userRepository.SaveChangesAsync();
 
                 logger.LogInformation("Succes : User deleted");
             }
@@ -154,7 +148,7 @@ namespace Business.Services
                     new Claim("picture", validPayload.Picture ?? ""),
                 };
 
-                if (await _context.User.AnyAsync(x => x.Email == validPayload.Email))
+                if (await userRepository.AnyExistingUserByEmail(validPayload.Email))
                 {
                     throw new AlreadyExistException("This user already exist with this email");
                 }
@@ -173,9 +167,9 @@ namespace Business.Services
 
                 try
                 {
-                    _context.Add(newUser);
+                    await userRepository.AddAsync(newUser);
 
-                    await _context.SaveChangesAsync();
+                    await userRepository.SaveChangesAsync();
 
                     logger.LogInformation($"Succes : User {newUser.Id} added");
                 }
@@ -188,12 +182,7 @@ namespace Business.Services
 
                 var jwt = jwtService.GenerateToken(claims);
 
-                var user = await _context.User.Where(x => x.Id == newUser.Id).Select(x => new UserOutput
-                {
-                    Id = x.Id,
-                    Username = x.Username,
-                    Email = x.Email
-                }).FirstOrDefaultAsync();
+                var user = await userRepository.GetByIdAsync(newUser.Id);
 
                 if (user is null)
                 {
@@ -234,27 +223,28 @@ namespace Business.Services
                     new Claim("picture", validPayload.Picture ?? ""),
                 };
 
-                var user = await _context.User.FirstOrDefaultAsync(x => x.Email == validPayload.Email);
+                var user = await userRepository.GetUserByEmailAsync(validPayload.Email);
 
                 if (user is null)
                 {
                     throw new NotFoundException("User not found");
                 }
+                else
+                {
+                    try
+                    {
+                        user.LastConnection = DateTime.UtcNow;
+                        await userRepository.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ContextException("Error while updating the user", ex);
+                    }
+                }
 
                 // Generate and return JWT
 
                 var jwt = jwtService.GenerateToken(claims);
-
-                try
-                {
-                    user.LastConnection = DateTime.Now.ToUniversalTime();
-                    _context.User.Update(user);
-                    _context.SaveChanges();
-                }
-                catch (Exception ex)
-                {
-                    throw new ContextException("Error while updating the user", ex);
-                }
 
                 var userOutput = new UserOutput
                 {

@@ -1,6 +1,7 @@
 ﻿using EntityFramework.Context;
 using EntityFramework.Models;
 using Microsoft.EntityFrameworkCore;
+using Shared.Models.Output;
 
 public class UserRepository : IUserRepository
 {
@@ -11,7 +12,7 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public async Task<User?> GetByIdAsync(Guid CollocationId)
+    public async Task<List<UserOutput>> GetAllAsync(Guid CollocationId)
     {
         var users = await _context.User.Where(x => x.CollocationId == CollocationId).Select(x => new UserOutput
         {
@@ -22,30 +23,47 @@ public class UserRepository : IUserRepository
         return users;
     }
 
-    public async Task<List<User>> GetAllAsync()
+    public async Task<UserOutput?> GetByIdAsync(Guid id)
     {
-        return await _context.User.ToListAsync();
+        return await _context.User.Where(x => x.Id == id).Select(x => new UserOutput
+        {
+            Id = x.Id,
+            Username = x.Username,
+            Email = x.Email
+        }).FirstOrDefaultAsync();
     }
 
     public async Task AddAsync(User user)
     {
-        _context.User.Add(user);
-        await _context.SaveChangesAsync();
+        await _context.User.AddAsync(user);
     }
 
+    public async Task<User?> GetUserByIdAsync(Guid id)
+    {
+        return await _context.User.FirstOrDefaultAsync(x => x.Id == id);
+    }
     public async Task UpdateAsync(User user)
     {
         _context.User.Update(user);
-        await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task RemoveAsync(User user)
     {
-        var user = await _context.User.FindAsync(id);
-        if (user != null)
-        {
-            _context.User.Remove(user);
-            await _context.SaveChangesAsync();
-        }
+        _context.User.Remove(user);
+    }
+
+    public async Task<User?> GetUserByEmailAsync(string email)
+    {
+        return await _context.User.FirstOrDefaultAsync(x => x.Email == email);
+    }
+
+    async Task<bool> AnyExistingUserByEmail(string email)
+    {
+        return await _context.User.AnyAsync(x => x.Email == email);
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
     }
 }
