@@ -5,7 +5,7 @@ namespace EntityFramework.Repositories.Interfaces
 {
     public interface IChoreRepository
     {
-        Task<List<ChoreOutput>> GetAllChoreOutputsAsync(Guid CollocationId);
+        Task<List<ChoreOutput>> GetAllChoreOutputsAsync(Guid ColocationId);
         Task<ChoreOutput?> GetChoreOutputByIdAsync(Guid id);
         Task<List<ChoreMessageOutput>> GetAllChoreMessageOutputByChoreIdAsync(Guid choreId);
         Task AddChoreAsync(Chore chore);

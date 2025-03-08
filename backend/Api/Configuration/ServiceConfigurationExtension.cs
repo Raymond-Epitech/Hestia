@@ -2,6 +2,8 @@
 using Business.Models.Jwt;
 using Business.Services;
 using EntityFramework.Context;
+using EntityFramework.Repositories.Implementations;
+using EntityFramework.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebApi.Configuration
@@ -23,11 +25,14 @@ namespace WebApi.Configuration
             services.AddScoped<IReminderService, ReminderService>();
             services.AddScoped<IChoreService, ChoreService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<ICollocationService, CollocationService>();
+            services.AddScoped<IColocationService, ColocationService>();
             services.AddScoped<IJwtService, JwtService>();
 
             // Repositories
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IChoreRepository, ChoreRepository>();
+            services.AddScoped<IColocationRepository, ColocationRepository>();
+            services.AddScoped<IReminderRepository, ReminderRepository>();
 
             // Others
             services.AddHttpContextAccessor();

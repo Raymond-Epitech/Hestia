@@ -2,7 +2,6 @@
 using EntityFramework.Models;
 using EntityFramework.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Shared.Models.Input;
 using Shared.Models.Output;
 
 namespace EntityFramework.Repositories.Implementations
@@ -16,9 +15,9 @@ namespace EntityFramework.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<List<ChoreOutput>> GetAllChoreOutputsAsync(Guid CollocationId)
+        public async Task<List<ChoreOutput>> GetAllChoreOutputsAsync(Guid ColocationId)
         {
-            var chores = await _context.Chore.Where(x => x.CollocationId == CollocationId).Select(x => new ChoreOutput
+            var chores = await _context.Chore.Where(x => x.ColocationId == ColocationId).Select(x => new ChoreOutput
             {
                 Id = x.Id,
                 CreatedBy = x.CreatedBy,
@@ -69,12 +68,16 @@ namespace EntityFramework.Repositories.Implementations
 
         public async Task<Chore?> GetChoreByIdAsync(Guid id)
         {
-            return await _context.Chore.FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Chore.FindAsync(id);
         }
 
         public async Task UpdateChoreAsync(Chore chore)
         {
             _context.Chore.Update(chore);
+        }
+        public async Task DeleteChoreAsync(Chore chore)
+        {
+            _context.Chore.Remove(chore);
         }
 
         public async Task<List<ChoreMessage>?> GetChoreMessageFromChoreId(Guid choreId)

@@ -1,6 +1,6 @@
 ﻿namespace EntityFramework.Models
 {
-    public class Collocation
+    public class Colocation
     {
         public Guid Id { get; set; }
         public DateTime CreatedAt { get; set; }

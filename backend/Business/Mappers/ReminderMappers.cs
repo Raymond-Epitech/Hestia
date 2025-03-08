@@ -4,7 +4,7 @@ using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
 
-namespace Shared.Mappers
+namespace Business.Mappers
 {
     public static class ReminderMappers
     {
@@ -21,7 +21,7 @@ namespace Shared.Mappers
             return new Reminder
             {
                 Id = Guid.NewGuid(),
-                CollocationId = reminder.CollocationId,
+                ColocationId = reminder.ColocationId,
                 CreatedAt = DateTime.Now.ToUniversalTime(),
                 CreatedBy = reminder.CreatedBy,
                 Content = reminder.Content,

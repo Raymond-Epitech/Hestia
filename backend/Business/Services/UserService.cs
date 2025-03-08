@@ -84,9 +84,7 @@ namespace Business.Services
                 }
 
                 userToUpdate.Username = user.Username;
-                userToUpdate.CollocationId = user.CollocationId;
-
-                await userRepository.UpdateAsync(userToUpdate);
+                userToUpdate.ColocationId = user.ColocationId;
 
                 await userRepository.SaveChangesAsync();
 

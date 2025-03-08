@@ -12,7 +12,7 @@ namespace Business.Mappers
             return new Chore
             {
                 Id = Guid.NewGuid(),
-                CollocationId = choreInput.CollocationId,
+                ColocationId = choreInput.ColocationId,
                 CreatedAt = DateTime.Now.ToUniversalTime(),
                 DueDate = choreInput.DueDate,
                 CreatedBy = choreInput.CreatedBy,
@@ -37,7 +37,7 @@ namespace Business.Mappers
         public static Chore UpdateFromInput(this Chore chore, ChoreUpdate input)
         {
             chore.Id = input.Id;
-            chore.CollocationId = input.CollocationId;
+            chore.ColocationId = input.ColocationId;
             chore.Title = input.Title;
             chore.Description = input.Description;
             chore.DueDate = input.DueDate;

@@ -1,19 +1,18 @@
-﻿using Business.Exceptions;
-using Business.Interfaces;
+﻿using Business.Interfaces;
 using Business.Mappers;
-using Business.Models.Input;
-using Business.Models.Output;
-using Business.Models.Update;
-using EntityFramework.Context;
-using EntityFramework.Models;
+using EntityFramework.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Shared.Exceptions;
+using Shared.Models.Input;
+using Shared.Models.Output;
+using Shared.Models.Update;
 
 namespace Business.Services;
 
 public class ReminderService(
     ILogger<ReminderService> logger,
-    HestiaContext _context) : IReminderService
+    IReminderRepository reminderRepository) : IReminderService
 {
     /// <summary>
     /// Get all reminders
@@ -24,15 +23,7 @@ public class ReminderService(
     {
         try
         {
-            var reminders = await _context.Reminder.Where(x => x.CollocationId == CollocationId).Select(x => new ReminderOutput
-            {
-                Id = x.Id,
-                Content = x.Content,
-                Color = x.Color,
-                CoordX = x.CoordX,
-                CoordY = x.CoordY,
-                CoordZ = x.CoordZ
-            }).ToListAsync();
+            var reminders = await reminderRepository.GetAllReminderOutputsAsync(CollocationId);
             logger.LogInformation("Succes : All reminders found");
             return reminders;
         }
@@ -53,17 +44,7 @@ public class ReminderService(
     {
         try
         {
-            var reminder = await _context.Reminder.Select(x => new ReminderOutput
-            {
-                Id = x.Id,
-                Content = x.Content,
-                Color = x.Color,
-                CreatedBy = x.CreatedBy,
-                CreatedAt = x.CreatedAt,
-                CoordX = x.CoordX,
-                CoordY = x.CoordY,
-                CoordZ = x.CoordZ
-            }).FirstOrDefaultAsync(x => x.Id == id);
+            var reminder = await reminderRepository.GetReminderOutputAsync(id);
 
             if (reminder == null)
             {
@@ -89,8 +70,8 @@ public class ReminderService(
         try
         {
             var reminder = input.ToDb();
-            await _context.Reminder.AddAsync(reminder);
-            await _context.SaveChangesAsync();
+            await reminderRepository.AddReminderAsync(reminder);
+            await reminderRepository.SaveChangesAsync();
             logger.LogInformation("Succes : Reminder added");
             return reminder.Id;
         }
@@ -111,14 +92,15 @@ public class ReminderService(
     {
         try
         {
-            var reminder = _context.Reminder.Where(x => x.Id == input.Id).FirstOrDefault();
+            var reminder = await reminderRepository.GetReminderAsync(input.Id);
             if (reminder == null)
             {
                 throw new NotFoundException($"Reminder {input.Id} not found");
             }
 
-            var updatedReminder = reminder.UpdateFromInput(input);
-            await _context.SaveChangesAsync();
+            reminder.UpdateFromInput(input);
+
+            await reminderRepository.SaveChangesAsync();
 
             logger.LogInformation("Succes : Reminder updated");
         }

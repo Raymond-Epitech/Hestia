@@ -1,11 +1,10 @@
-﻿using Business.Exceptions;
-using Business.Interfaces;
-using Business.Models.Input;
-using Business.Models.Output;
-using Business.Models.Update;
-using EntityFramework.Models;
+﻿using Business.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Exceptions;
+using Shared.Models.Input;
+using Shared.Models.Output;
+using Shared.Models.Update;
 
 namespace Api.Controllers
 {
@@ -14,15 +13,15 @@ namespace Api.Controllers
     public class ReminderController(IReminderService reminderService) : ControllerBase
     {
         [Authorize]
-        [HttpGet("GetByCollocation/{CollocationId}")]
+        [HttpGet("GetByColocation/{ColocationId}")]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<ReminderOutput>>> GetAllReminders(Guid CollocationId)
+        public async Task<ActionResult<List<ReminderOutput>>> GetAllReminders(Guid ColocationId)
         {
             try
             {
-                return Ok(await reminderService.GetAllRemindersAsync(CollocationId));
+                return Ok(await reminderService.GetAllRemindersAsync(ColocationId));
             }
             catch (ContextException ex)
             {

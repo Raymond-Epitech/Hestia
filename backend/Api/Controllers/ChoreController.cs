@@ -1,10 +1,10 @@
-﻿using Business.Exceptions;
-using Business.Interfaces;
-using Business.Models.Input;
-using Business.Models.Output;
-using Business.Models.Update;
+﻿using Business.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Exceptions;
+using Shared.Models.Input;
+using Shared.Models.Output;
+using Shared.Models.Update;
 
 namespace Api.Controllers
 {
@@ -12,16 +12,16 @@ namespace Api.Controllers
     [ApiController]
     public class ChoreController(IChoreService choreService) : ControllerBase
     {
-        [HttpGet("GetByCollocationId/{CollocationId}")]
+        [HttpGet("GetByColocationId/{ColocationId}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<ChoreOutput>>> GetAllChores(Guid CollocationId)
+        public async Task<ActionResult<List<ChoreOutput>>> GetAllChores(Guid ColocationId)
         {
             try
             {
-                return Ok(await choreService.GetAllChoresAsync(CollocationId));
+                return Ok(await choreService.GetAllChoresAsync(ColocationId));
             }
             catch (ContextException ex)
             {

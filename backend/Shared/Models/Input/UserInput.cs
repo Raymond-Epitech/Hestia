@@ -3,6 +3,6 @@
     public class UserInput
     {
         public string Username { get; set; } = null!;
-        public Guid? CollocationId { get; set; }
+        public Guid? ColocationId { get; set; }
     }
 }
