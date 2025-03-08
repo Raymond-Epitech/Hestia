@@ -1,5 +1,6 @@
 ﻿using Business.Models.Input;
 using Business.Models.Output;
+using Business.Models.Update;
 using EntityFramework.Models;
 
 namespace Business.Mappers
@@ -11,6 +12,7 @@ namespace Business.Mappers
             return new Chore
             {
                 Id = Guid.NewGuid(),
+                CollocationId = choreInput.CollocationId,
                 CreatedAt = DateTime.Now.ToUniversalTime(),
                 DueDate = choreInput.DueDate,
                 CreatedBy = choreInput.CreatedBy,
@@ -35,6 +37,7 @@ namespace Business.Mappers
         public static Chore UpdateFromInput(this Chore chore, ChoreUpdate input)
         {
             chore.Id = input.Id;
+            chore.CollocationId = input.CollocationId;
             chore.Title = input.Title;
             chore.Description = input.Description;
             chore.DueDate = input.DueDate;

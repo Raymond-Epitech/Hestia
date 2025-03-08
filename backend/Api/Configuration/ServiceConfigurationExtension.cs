@@ -1,4 +1,5 @@
 ﻿using Business.Interfaces;
+using Business.Models.Jwt;
 using Business.Services;
 using EntityFramework.Context;
 using Microsoft.EntityFrameworkCore;
@@ -12,12 +13,17 @@ namespace WebApi.Configuration
             services.AddDbContext(configuration, isDevelopment)
                 .AddBusinessServices()
                 .EnableCors();
+            //AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+            AppContext.SetSwitch("System.Globalization.Invariant", false);
         }
 
         private static IServiceCollection AddBusinessServices(this IServiceCollection services)
         {
             services.AddScoped<IReminderService, ReminderService>();
             services.AddScoped<IChoreService, ChoreService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ICollocationService, CollocationService>();
+            services.AddScoped<IJwtService, JwtService>();
             services.AddHttpContextAccessor();
             return services;
         }
@@ -37,11 +43,22 @@ namespace WebApi.Configuration
 
         private static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
         {
-            services.AddDbContext<HestiaContext>(opt =>
+            /*services.AddDbContext<HestiaContext>(opt =>
             {
                 opt.UseNpgsql(configuration.GetConnectionString("HestiaDb"));
                 opt.EnableDetailedErrors(isDevelopment);
                 opt.EnableSensitiveDataLogging(isDevelopment);
+            });*/
+
+            services.AddDbContext<HestiaContext>(opt =>
+            {
+                opt.UseSqlServer(configuration.GetConnectionString("HestiaDb"));
+
+                if (isDevelopment) // Vérifie si on est en mode développement
+                {
+                    opt.EnableDetailedErrors(); // Active les erreurs détaillées en développement
+                    opt.EnableSensitiveDataLogging(); // Active les logs de données sensibles en développement
+                }
             });
 
             return services;

@@ -1,6 +1,7 @@
 ﻿using Business.Models.DTO;
 using Business.Models.Input;
 using Business.Models.Output;
+using Business.Models.Update;
 using EntityFramework.Models;
 
 namespace Business.Mappers
@@ -20,6 +21,7 @@ namespace Business.Mappers
             return new Reminder
             {
                 Id = Guid.NewGuid(),
+                CollocationId = reminder.CollocationId,
                 CreatedAt = DateTime.Now.ToUniversalTime(),
                 CreatedBy = reminder.CreatedBy,
                 Content = reminder.Content,

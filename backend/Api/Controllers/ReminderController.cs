@@ -2,6 +2,9 @@
 using Business.Interfaces;
 using Business.Models.Input;
 using Business.Models.Output;
+using Business.Models.Update;
+using EntityFramework.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -10,12 +13,16 @@ namespace Api.Controllers
     [Route("api/[controller]")]
     public class ReminderController(IReminderService reminderService) : ControllerBase
     {
-        [HttpGet]
-        public async Task<ActionResult<List<ReminderOutput>>> GetAllReminders()
+        [Authorize]
+        [HttpGet("GetByCollocation/{CollocationId}")]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<ReminderOutput>>> GetAllReminders(Guid CollocationId)
         {
             try
             {
-                return Ok(await reminderService.GetAllRemindersAsync());
+                return Ok(await reminderService.GetAllRemindersAsync(CollocationId));
             }
             catch (ContextException ex)
             {
@@ -27,7 +34,12 @@ namespace Api.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetById/{Id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ReminderOutput>> GetReminder(Guid Id)
         {
             try
@@ -49,12 +61,15 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddReminder(ReminderInput input)
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> AddReminder(ReminderInput input)
         {
             try
             {
-                await reminderService.AddReminderAsync(input);
-                return Ok();
+                var id = await reminderService.AddReminderAsync(input);
+                return Ok(id);
             }
             catch (ContextException ex)
             {
@@ -67,6 +82,12 @@ namespace Api.Controllers
         }
 
         [HttpPut]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> UpdateReminder(ReminderUpdate input)
         {
             try
@@ -93,6 +114,12 @@ namespace Api.Controllers
         }
 
         [HttpPut("Range")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> UpdateRangeReminder(List<ReminderUpdate> inputs)
         {
             try
@@ -119,6 +146,11 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> DeleteReminder(Guid Id)
         {
             try

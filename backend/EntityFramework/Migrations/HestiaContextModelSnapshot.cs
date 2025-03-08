@@ -3,8 +3,8 @@ using System;
 using EntityFramework.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -17,61 +17,84 @@ namespace EntityFramework.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("ProductVersion", "8.0.12")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("EntityFramework.Models.Chore", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CollocationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DueDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDone")
-                        .HasColumnType("boolean");
+                        .HasColumnType("bit");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CollocationId");
+
                     b.ToTable("Chore");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.ChoreEnrollment", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ChoreId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("UserId", "ChoreId");
+
+                    b.HasIndex("ChoreId");
+
+                    b.ToTable("ChoreEnrollments");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.ChoreMessage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ChoreId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -80,39 +103,134 @@ namespace EntityFramework.Migrations
                     b.ToTable("ChoreMessage");
                 });
 
+            modelBuilder.Entity("EntityFramework.Models.Collocation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Collocation");
+                });
+
             modelBuilder.Entity("EntityFramework.Models.Reminder", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CollocationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Color")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CoordX")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("CoordY")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("CoordZ")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CollocationId");
+
                     b.ToTable("Reminder");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CollocationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("LastConnection")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PathToProfilePicture")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CollocationId");
+
+                    b.ToTable("User");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Chore", b =>
+                {
+                    b.HasOne("EntityFramework.Models.Collocation", "Collocation")
+                        .WithMany("Chores")
+                        .HasForeignKey("CollocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Collocation");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.ChoreEnrollment", b =>
+                {
+                    b.HasOne("EntityFramework.Models.Chore", "Chore")
+                        .WithMany("ChoreEnrollments")
+                        .HasForeignKey("ChoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EntityFramework.Models.User", "User")
+                        .WithMany("ChoreEnrollments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Chore");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.ChoreMessage", b =>
@@ -126,9 +244,46 @@ namespace EntityFramework.Migrations
                     b.Navigation("Chore");
                 });
 
+            modelBuilder.Entity("EntityFramework.Models.Reminder", b =>
+                {
+                    b.HasOne("EntityFramework.Models.Collocation", "Collocation")
+                        .WithMany("Reminders")
+                        .HasForeignKey("CollocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Collocation");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.User", b =>
+                {
+                    b.HasOne("EntityFramework.Models.Collocation", "Collocation")
+                        .WithMany("Users")
+                        .HasForeignKey("CollocationId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Collocation");
+                });
+
             modelBuilder.Entity("EntityFramework.Models.Chore", b =>
                 {
+                    b.Navigation("ChoreEnrollments");
+
                     b.Navigation("ChoreMessages");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Collocation", b =>
+                {
+                    b.Navigation("Chores");
+
+                    b.Navigation("Reminders");
+
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.User", b =>
+                {
+                    b.Navigation("ChoreEnrollments");
                 });
 #pragma warning restore 612, 618
         }

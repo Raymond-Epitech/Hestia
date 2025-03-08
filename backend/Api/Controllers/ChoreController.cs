@@ -2,6 +2,8 @@
 using Business.Interfaces;
 using Business.Models.Input;
 using Business.Models.Output;
+using Business.Models.Update;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -10,12 +12,16 @@ namespace Api.Controllers
     [ApiController]
     public class ChoreController(IChoreService choreService) : ControllerBase
     {
-        [HttpGet]
-        public async Task<ActionResult<List<ChoreOutput>>> GetAllChores()
+        [HttpGet("GetByCollocationId/{CollocationId}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<ChoreOutput>>> GetAllChores(Guid CollocationId)
         {
             try
             {
-                return Ok(await choreService.GetAllChoresAsync());
+                return Ok(await choreService.GetAllChoresAsync(CollocationId));
             }
             catch (ContextException ex)
             {
@@ -27,7 +33,12 @@ namespace Api.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetById/{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ChoreOutput>> GetChore(Guid id)
         {
             try
@@ -49,6 +60,11 @@ namespace Api.Controllers
         }
 
         [HttpGet("Message/{choreId}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<List<ChoreMessageOutput>>> GetChoreMessageFromChore(Guid choreId)
         {
             try
@@ -70,12 +86,15 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddChore(ChoreInput input)
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> AddChore(ChoreInput input)
         {
             try
             {
-                await choreService.AddChoreAsync(input);
-                return Ok();
+                var id = await choreService.AddChoreAsync(input);
+                return Ok(id);
             }
             catch (ContextException ex)
             {
@@ -88,12 +107,15 @@ namespace Api.Controllers
         }
 
         [HttpPost("Message/")]
-        public async Task<ActionResult> AddChoreMessage(ChoreMessageInput input)
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> AddChoreMessage(ChoreMessageInput input)
         {
             try
             {
-                await choreService.AddChoreMessageAsync(input);
-                return Ok();
+                var id = await choreService.AddChoreMessageAsync(input);
+                return Ok(id);
             }
             catch (ContextException ex)
             {
@@ -106,6 +128,11 @@ namespace Api.Controllers
         }
 
         [HttpPut]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> UpdateChore(ChoreUpdate input)
         {
             try
@@ -128,6 +155,11 @@ namespace Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> DeleteChore(Guid id)
         {
             try
@@ -150,11 +182,112 @@ namespace Api.Controllers
         }
 
         [HttpDelete("Message/{choreId}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> DeleteChoreMessageByChoreId(Guid choreId)
         {
             try
             {
                 await choreService.DeleteChoreMessageByChoreIdAsync(choreId);
+                return Ok();
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex);
+            }
+            catch (ContextException ex)
+            {
+                return UnprocessableEntity(ex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpGet("Enroll/ByUser")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<ChoreOutput>>> GetChoreFromUser(Guid UserId)
+        {
+            try
+            {
+                return Ok(await choreService.GetChoreFromUser(UserId));
+            }
+            catch (ContextException ex)
+            {
+                return UnprocessableEntity(ex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpGet("Enroll/ByChore")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<UserOutput>>> GetUserFromChore(Guid ChoreId)
+        {
+            try
+            {
+                return Ok(await choreService.GetUserFromChore(ChoreId));
+            }
+            catch (ContextException ex)
+            {
+                return UnprocessableEntity(ex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpPost("Enroll")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> EnrollToChore(Guid UserId, Guid ChoreId)
+        {
+            try
+            {
+                await choreService.EnrollToChore(UserId, ChoreId);
+                return Ok();
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex);
+            }
+            catch (ContextException ex)
+            {
+                return UnprocessableEntity(ex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpDelete("Enroll")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> UnenrollToChore(Guid UserId, Guid ChoreId)
+        {
+            try
+            {
+                await choreService.UnenrollToChore(UserId, ChoreId);
                 return Ok();
             }
             catch (NotFoundException ex)

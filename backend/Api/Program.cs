@@ -1,5 +1,7 @@
+using Business.Models.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using WebApi.Configuration;
 
@@ -18,29 +20,80 @@ try
     builder.Services.AddEndpointsApiExplorer();
 
     builder.Services.ConfigureServices(builder.Configuration, builder.Environment.IsDevelopment());
+    builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+
 
     builder.Services.AddAuthentication(options =>
     {
+        options.DefaultScheme = "Bearer"; // Schéma par défaut pour l'API
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-    }).AddJwtBearer(o =>
+    })
+    .AddJwtBearer(options =>
     {
-        o.TokenValidationParameters = new TokenValidationParameters
+        var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>();
+        
+        if (jwtOptions is null || jwtOptions.Issuer is null || jwtOptions.Audience is null)
         {
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey
-            (Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
+            throw new Exception("Missing jwt options");
+        }
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidateLifetime = false,
-            ValidateIssuerSigningKey = true
+            ValidateLifetime = false, //Set to true to check expire
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtOptions.Issuer,
+            ValidAudience = jwtOptions.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret))
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                return Task.CompletedTask;
+            },
+            OnChallenge = context =>
+            {
+                context.HandleResponse();
+                context.Response.StatusCode = 401;
+                context.Response.ContentType = "application/json";
+                return context.Response.WriteAsync("{\"error\": \"Token JWT manquant ou invalide.\"}");
+            }
         };
     });
 
     builder.Services.AddAuthorization();
-    builder.Services.AddSwaggerGen();
+    builder.Services.AddSwaggerGen(options =>
+    {
+        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "Saisissez votre token JWT.\n\nExemple : 'abc123def456ghi'"
+        });
+
+        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] {}
+            }
+        });
+    });
 
     var app = builder.Build();
 
@@ -52,15 +105,13 @@ try
         app.UseSwaggerUI();
     }
 
-    //app.UseHttpsRedirection();
-
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
 
     if (app.Environment.IsDevelopment())
     {
-        using (var connection = new Npgsql.NpgsqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
+        using (var connection = new Microsoft.Data.SqlClient.SqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
         {
             try
             {

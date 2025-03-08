@@ -2,16 +2,18 @@
     <div class="base">
         <img src="../public/logo-hestia.png" class="logo"/>
         <button @click.prevent='gettest'>call test</button>
-        <!-- <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton> -->
+        <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton>
     </div>
 </template>
 
 <script setup>
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/store/auth';
+import { bridge } from '~/service/bridge.ts';
 
 const { authenticateUser } = useAuthStore();
 const { authenticated } = storeToRefs(useAuthStore());
+const api = new bridge();
 
 const router = useRouter();
 const handleLoginSuccess = async (response) => {
@@ -28,11 +30,7 @@ const handleLoginError = () => {
 };
 
 const gettest = async () => {
-    const response = await fetch('http://localhost:8080/api/Reminder', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'}});
-    const data = await response.json();
+    const data = await api.getAllReminders();
     console.log(data);
     return data;
 }
