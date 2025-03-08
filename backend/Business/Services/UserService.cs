@@ -1,7 +1,7 @@
 ﻿using Business.Exceptions;
 using Business.Interfaces;
+using Business.Jwt;
 using Business.Models.Input;
-using Business.Models.Jwt;
 using Business.Models.Output;
 using Business.Models.Update;
 using EntityFramework.Context;
@@ -15,7 +15,7 @@ using System.Security.Claims;
 namespace Business.Services
 {
     public class UserService(ILogger<UserService> logger,
-    HestiaContext _context,
+    IUserRepository userRepository,
     IJwtService jwtService) : IUserService
     {
         /// <summary>
@@ -28,12 +28,7 @@ namespace Business.Services
         {
             try
             {
-                var users = await _context.User.Where(x => x.CollocationId == CollocationId).Select(x => new UserOutput
-                {
-                    Id = x.Id,
-                    Username = x.Username,
-                    Email = x.Email
-                }).ToListAsync();
+                
 
                 logger.LogInformation($"Succes : All users from the collocation {CollocationId} found");
 

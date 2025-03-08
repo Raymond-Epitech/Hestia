@@ -1,5 +1,5 @@
-﻿using Business.Models.Input;
-using Business.Models.Jwt;
+﻿using Business.Jwt;
+using Business.Models.Input;
 using Business.Models.Output;
 using Business.Models.Update;
 

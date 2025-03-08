@@ -1,5 +1,5 @@
 ﻿using Business.Interfaces;
-using Business.Models.Jwt;
+using Business.Jwt;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
