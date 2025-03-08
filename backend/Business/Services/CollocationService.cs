@@ -28,6 +28,7 @@ namespace Business.Services
                     Id = x.Id,
                     Name = x.Name,
                     Address = x.Address,
+                    Collocataires = null
                 }).ToListAsync();
 
                 logger.LogInformation("Succes : All collocation were retrived from db");
@@ -56,6 +57,7 @@ namespace Business.Services
                     Id = x.Id,
                     Name = x.Name,
                     Address = x.Address,
+                    Collocataires = x.Users.Select(u => u.Id).ToList()
                 }).FirstOrDefaultAsync();
 
                 if (collocation == null)
@@ -77,8 +79,9 @@ namespace Business.Services
         /// Add a new collocation
         /// </summary>
         /// <param name="collocation">The object collocation you want to add</param>
+        /// <param name="AddedBy"> The User that added the collocation</param>
         /// <exception cref="ContextException">An error has occured while retriving the collocation from db</exception>
-        public async Task AddCollocation(CollocationInput collocation)
+        public async Task<Guid> AddCollocation(CollocationInput collocation, Guid? AddedBy)
         {
             try
             {
@@ -91,8 +94,15 @@ namespace Business.Services
                     CreatedBy = collocation.CreatedBy
                 };
                 _context.Collocation.Add(newCollocation);
+                if (AddedBy is not null)
+                {
+                    var user = await _context.User.FirstOrDefaultAsync(x => x.Id == AddedBy);
+                    user.CollocationId = newCollocation.Id;
+                    _context.User.Update(user);
+                }
                 await _context.SaveChangesAsync();
                 logger.LogInformation($"Succes : Collocation {newCollocation.Id} added");
+                return newCollocation.Id;
             }
             catch (Exception ex)
             {

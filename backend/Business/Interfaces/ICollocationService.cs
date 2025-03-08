@@ -8,7 +8,7 @@ namespace Business.Interfaces
     {
         Task<List<CollocationOutput>> GetAllCollocations();
         Task<CollocationOutput> GetCollocation(Guid id);
-        Task AddCollocation(CollocationInput collocation);
+        Task<Guid> AddCollocation(CollocationInput collocation, Guid? AddedBy);
         Task UpdateCollocation(CollocationUpdate collocation);
         Task DeleteCollocation(Guid id);
     }

@@ -66,12 +66,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> AddCollocation(CollocationInput collocation)
+        public async Task<ActionResult<Guid>> AddCollocation(CollocationInput collocation, Guid AddedBy)
         {
             try
             {
-                await collocationService.AddCollocation(collocation);
-                return Ok();
+                var collocId = await collocationService.AddCollocation(collocation, AddedBy);
+                return Ok(collocId);
             }
             catch (ContextException ex)
             {

@@ -265,7 +265,8 @@ namespace Business.Services
                 {
                     Id = user.Id,
                     Username = user.Username,
-                    Email = user.Email
+                    Email = user.Email,
+                    CollocationId = user.CollocationId
                 };
 
                 var userInfo = new UserInfo
