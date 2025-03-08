@@ -12,7 +12,7 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public async Task<List<UserOutput>> GetAllAsync(Guid CollocationId)
+    public async Task<List<UserOutput>> GetAllUserOutputAsync(Guid CollocationId)
     {
         var users = await _context.User.Where(x => x.CollocationId == CollocationId).Select(x => new UserOutput
         {
@@ -23,7 +23,7 @@ public class UserRepository : IUserRepository
         return users;
     }
 
-    public async Task<UserOutput?> GetByIdAsync(Guid id)
+    public async Task<UserOutput?> GetUserOutputByIdAsync(Guid id)
     {
         return await _context.User.Where(x => x.Id == id).Select(x => new UserOutput
         {
@@ -57,7 +57,7 @@ public class UserRepository : IUserRepository
         return await _context.User.FirstOrDefaultAsync(x => x.Email == email);
     }
 
-    async Task<bool> AnyExistingUserByEmail(string email)
+    public async Task<bool> AnyExistingUserByEmail(string email)
     {
         return await _context.User.AnyAsync(x => x.Email == email);
     }

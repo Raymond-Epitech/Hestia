@@ -26,7 +26,7 @@ namespace Business.Services
         {
             try
             {
-                var users = await userRepository.GetAllAsync(CollocationId);
+                var users = await userRepository.GetAllUserOutputAsync(CollocationId);
 
                 logger.LogInformation($"Succes : All users from the collocation {CollocationId} found");
 
@@ -49,7 +49,7 @@ namespace Business.Services
         {
             try
             {
-                var user = await userRepository.GetByIdAsync(id);
+                var user = await userRepository.GetUserOutputByIdAsync(id);
 
                 if (user == null)
                 {
@@ -182,7 +182,7 @@ namespace Business.Services
 
                 var jwt = jwtService.GenerateToken(claims);
 
-                var user = await userRepository.GetByIdAsync(newUser.Id);
+                var user = await userRepository.GetUserByIdAsync(newUser.Id);
 
                 if (user is null)
                 {

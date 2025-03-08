@@ -1,7 +1,7 @@
-﻿using Business.Models.Input;
-using Business.Models.Output;
-using Business.Models.Update;
-using EntityFramework.Models;
+﻿using EntityFramework.Models;
+using Shared.Models.Input;
+using Shared.Models.Output;
+using Shared.Models.Update;
 
 namespace Business.Mappers
 {
