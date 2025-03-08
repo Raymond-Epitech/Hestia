@@ -1,36 +1,45 @@
-﻿using EntityFramework.Models;
+﻿using EntityFramework.Context;
+using EntityFramework.Models;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using System;
 
-public class UserRepositoryTests : IDisposable
+public class UserRepositoryTests
 {
-    private readonly AppDbContext _context;
-    private readonly UserRepository _repository;
+    private readonly DbContextOptions<HestiaContext> _dbContextOptions;
 
     public UserRepositoryTests()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestDb")
+        _dbContextOptions = new DbContextOptionsBuilder<HestiaContext>()
+            .UseInMemoryDatabase(databaseName: "HestiaDbForUnitTests")
             .Options;
-
-        _context = new AppDbContext(options);
-        _repository = new UserRepository(_context);
-
-        // Seed Data
-        _context.Users.Add(new User { Id = 1, Name = "TestUser" });
-        _context.SaveChanges();
     }
 
     [Fact]
-    public async Task GetByIdAsync_ShouldReturnUser_WhenUserExists()
+    public async Task GetUserByIdAsync_ShouldReturnUser_WhenUserExists()
     {
-        var user = await _repository.GetByIdAsync(1);
-        user.Should().NotBeNull();
-        user.Name.Should().Be("TestUser");
-    }
+        // Arrange
+        using var context = new HestiaContext(_dbContextOptions);
+        var userRepository = new UserRepository(context);
 
-    public void Dispose()
-    {
-        _context.Dispose();
+        var userId = Guid.NewGuid();
+        var expectedUser = new User
+        {
+            Id = userId,
+            Username = "TestUser",
+            Email = "test@example.com",
+            CreatedAt = DateTime.UtcNow,
+            LastConnection = DateTime.UtcNow,
+            PathToProfilePicture = ""
+        };
+
+        context.User.Add(expectedUser);
+        await context.SaveChangesAsync();
+
+        // Act
+        var result = await userRepository.GetUserByIdAsync(userId);
+
+        // Assert
+        result.Should().NotBeNull(); 
+        result!.Should().BeEquivalentTo(expectedUser);
     }
 }

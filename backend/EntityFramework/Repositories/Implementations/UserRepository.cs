@@ -14,7 +14,7 @@ public class UserRepository : IUserRepository
 
     public async Task<List<UserOutput>> GetAllUserOutputAsync(Guid CollocationId)
     {
-        var users = await _context.User.Where(x => x.CollocationId == CollocationId).Select(x => new UserOutput
+        var users = await _context.User.Where(x => x.ColocationId == CollocationId).Select(x => new UserOutput
         {
             Id = x.Id,
             Username = x.Username,

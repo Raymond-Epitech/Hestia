@@ -12,10 +12,19 @@ using System.Security.Claims;
 
 namespace Business.Services
 {
-    public class UserService(ILogger<UserService> logger,
-    IUserRepository userRepository,
-    IJwtService jwtService) : IUserService
+    public class UserService : IUserService
     {
+        private readonly ILogger<UserService> _logger;
+        private readonly IUserRepository _userRepository;
+        private readonly IJwtService _jwtService;
+
+        public UserService(ILogger<UserService> logger, IUserRepository userRepository, IJwtService jwtService)
+        {
+            _logger = logger;
+            _userRepository = userRepository;
+            _jwtService = jwtService;
+        }
+
         /// <summary>
         /// Get all users from a collocation
         /// </summary>
@@ -26,9 +35,9 @@ namespace Business.Services
         {
             try
             {
-                var users = await userRepository.GetAllUserOutputAsync(CollocationId);
+                var users = await _userRepository.GetAllUserOutputAsync(CollocationId);
 
-                logger.LogInformation($"Succes : All users from the collocation {CollocationId} found");
+                _logger.LogInformation($"Succes : All users from the collocation {CollocationId} found");
 
                 return users;
             }
@@ -49,14 +58,14 @@ namespace Business.Services
         {
             try
             {
-                var user = await userRepository.GetUserOutputByIdAsync(id);
+                var user = await _userRepository.GetUserOutputByIdAsync(id);
 
                 if (user == null)
                 {
                     throw new NotFoundException("User not found");
                 }
 
-                logger.LogInformation($"Succes : User {id} found");
+                _logger.LogInformation($"Succes : User {id} found");
 
                 return user;
             }
@@ -76,7 +85,7 @@ namespace Business.Services
         {
             try
             {
-                var userToUpdate = await userRepository.GetUserByIdAsync(user.Id);
+                var userToUpdate = await _userRepository.GetUserByIdAsync(user.Id);
 
                 if (userToUpdate == null)
                 {
@@ -86,9 +95,9 @@ namespace Business.Services
                 userToUpdate.Username = user.Username;
                 userToUpdate.ColocationId = user.ColocationId;
 
-                await userRepository.SaveChangesAsync();
+                await _userRepository.SaveChangesAsync();
 
-                logger.LogInformation($"Succes : User {user.Id} updated");
+                _logger.LogInformation($"Succes : User {user.Id} updated");
             }
             catch (Exception ex)
             {
@@ -106,17 +115,17 @@ namespace Business.Services
         {
             try
             {
-                var user = await userRepository.GetUserByIdAsync(id);
+                var user = await _userRepository.GetUserByIdAsync(id);
                 if (user == null)
                 {
                     throw new NotFoundException($"User {id} not found");
                 }
 
-                await userRepository.RemoveAsync(user);
+                await _userRepository.RemoveAsync(user);
 
-                await userRepository.SaveChangesAsync();
+                await _userRepository.SaveChangesAsync();
 
-                logger.LogInformation("Succes : User deleted");
+                _logger.LogInformation("Succes : User deleted");
             }
             catch (Exception ex)
             {
@@ -146,7 +155,7 @@ namespace Business.Services
                     new Claim("picture", validPayload.Picture ?? ""),
                 };
 
-                if (await userRepository.AnyExistingUserByEmail(validPayload.Email))
+                if (await _userRepository.AnyExistingUserByEmail(validPayload.Email))
                 {
                     throw new AlreadyExistException("This user already exist with this email");
                 }
@@ -157,7 +166,7 @@ namespace Business.Services
                     Id = Guid.NewGuid(),
                     Username = userInput.Username,
                     Email = validPayload.Email,
-                    CollocationId = userInput.CollocationId,
+                    ColocationId = userInput.ColocationId,
                     CreatedAt = DateTime.Now.ToUniversalTime(),
                     LastConnection = DateTime.Now.ToUniversalTime(),
                     PathToProfilePicture = "default.jpg"
@@ -165,11 +174,11 @@ namespace Business.Services
 
                 try
                 {
-                    await userRepository.AddAsync(newUser);
+                    await _userRepository.AddAsync(newUser);
 
-                    await userRepository.SaveChangesAsync();
+                    await _userRepository.SaveChangesAsync();
 
-                    logger.LogInformation($"Succes : User {newUser.Id} added");
+                    _logger.LogInformation($"Succes : User {newUser.Id} added");
                 }
                 catch (Exception ex)
                 {
@@ -178,9 +187,9 @@ namespace Business.Services
 
                 // Generate and return JWT
 
-                var jwt = jwtService.GenerateToken(claims);
+                var jwt = _jwtService.GenerateToken(claims);
 
-                var user = await userRepository.GetUserByIdAsync(newUser.Id);
+                var user = await _userRepository.GetUserOutputByIdAsync(newUser.Id);
 
                 if (user is null)
                 {
@@ -221,7 +230,7 @@ namespace Business.Services
                     new Claim("picture", validPayload.Picture ?? ""),
                 };
 
-                var user = await userRepository.GetUserByEmailAsync(validPayload.Email);
+                var user = await _userRepository.GetUserByEmailAsync(validPayload.Email);
 
                 if (user is null)
                 {
@@ -232,7 +241,7 @@ namespace Business.Services
                     try
                     {
                         user.LastConnection = DateTime.UtcNow;
-                        await userRepository.SaveChangesAsync();
+                        await _userRepository.SaveChangesAsync();
                     }
                     catch (Exception ex)
                     {
@@ -242,14 +251,14 @@ namespace Business.Services
 
                 // Generate and return JWT
 
-                var jwt = jwtService.GenerateToken(claims);
+                var jwt = _jwtService.GenerateToken(claims);
 
                 var userOutput = new UserOutput
                 {
                     Id = user.Id,
                     Username = user.Username,
                     Email = user.Email,
-                    CollocationId = user.CollocationId
+                    ColocationId = user.ColocationId
                 };
 
                 var userInfo = new UserInfo

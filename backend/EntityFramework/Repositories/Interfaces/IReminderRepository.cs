@@ -1,4 +1,5 @@
 ﻿using EntityFramework.Models;
+using Microsoft.EntityFrameworkCore.Storage;
 using Shared.Models.Output;
 
 namespace EntityFramework.Repositories.Interfaces
@@ -11,6 +12,8 @@ namespace EntityFramework.Repositories.Interfaces
         Task AddReminderAsync(Reminder reminder);
         Task UpdateReminderAsync(Reminder reminder);
         Task DeleteReminderAsync(Reminder reminder);
+        Task<List<Reminder>> GetReminderFromListOfId(List<Guid> ids);
+        Task<IDbContextTransaction> BeginTransactionAsync();
         Task SaveChangesAsync();
     }
 }

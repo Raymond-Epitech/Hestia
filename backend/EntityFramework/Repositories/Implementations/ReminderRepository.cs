@@ -2,6 +2,7 @@
 using EntityFramework.Models;
 using EntityFramework.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Shared.Models.Output;
 
 namespace EntityFramework.Repositories.Implementations
@@ -61,6 +62,16 @@ namespace EntityFramework.Repositories.Implementations
         public async Task DeleteReminderAsync(Reminder reminder)
         {
             _context.Reminder.Remove(reminder);
+        }
+
+        public async Task<List<Reminder>> GetReminderFromListOfId(List<Guid> ids)
+        {
+            return await _context.Reminder.Where(x => ids.Contains(x.Id)).ToListAsync();
+        }
+
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await _context.Database.BeginTransactionAsync();
         }
 
         public async Task SaveChangesAsync()

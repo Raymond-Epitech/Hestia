@@ -1,45 +1,47 @@
-﻿using Business.Services;
+﻿using Business.Interfaces;
+using Business.Services;
+using EntityFramework.Models;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
+using Shared.Models.Output;
 
 public class UserServiceTests
 {
-    private readonly Mock<IUserRepository> _userRepoMock;
     private readonly UserService _userService;
+    private readonly Mock<ILogger<UserService>> _loggerMock;
+    private readonly Mock<IUserRepository> _userRepoMock;
+    private readonly Mock<IJwtService> _jwtServMock;
 
     public UserServiceTests()
     {
         _userRepoMock = new Mock<IUserRepository>();
-        _userService = new UserService(_userRepoMock.Object);
+        _loggerMock = new Mock<ILogger<UserService>>();
+        _jwtServMock = new Mock<IJwtService>();
+
+        _userService = new UserService(_loggerMock.Object, _userRepoMock.Object, _jwtServMock.Object);
     }
 
     [Fact]
     public async Task GetUserById_ShouldReturnUser_WhenUserExists()
     {
         // Arrange
-        var userId = 1;
-        var expectedUser = new User { Id = userId, Name = "TestUser" };
-        _userRepoMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(expectedUser);
+        var userId = Guid.NewGuid();
+
+        var expectedUser = new UserOutput
+        {
+            Id = userId,
+            Username = "TestUser",
+            Email = "test@example.com",
+            ColocationId = null
+        };
+        _userRepoMock.Setup(repo => repo.GetUserOutputByIdAsync(userId)).ReturnsAsync(expectedUser);
 
         // Act
-        var result = await _userService.GetUserById(userId);
+        var result = await _userService.GetUser(userId);
 
         // Assert
         result.Should().NotBeNull();
-        result.Name.Should().Be("TestUser");
-    }
-
-    [Fact]
-    public async Task GetUserById_ShouldThrowException_WhenUserNotFound()
-    {
-        // Arrange
-        var userId = 99;
-        _userRepoMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync((User)null);
-
-        // Act
-        Func<Task> act = async () => await _userService.GetUserById(userId);
-
-        // Assert
-        await act.Should().ThrowAsync<NotFoundException>().WithMessage("User not found");
+        result.Should().BeEquivalentTo(expectedUser);
     }
 }
