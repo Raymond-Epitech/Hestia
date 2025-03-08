@@ -19,11 +19,17 @@ namespace WebApi.Configuration
 
         private static IServiceCollection AddBusinessServices(this IServiceCollection services)
         {
+            // Services
             services.AddScoped<IReminderService, ReminderService>();
             services.AddScoped<IChoreService, ChoreService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ICollocationService, CollocationService>();
             services.AddScoped<IJwtService, JwtService>();
+
+            // Repositories
+            services.AddScoped<IUserRepository, UserRepository>();
+
+            // Others
             services.AddHttpContextAccessor();
             return services;
         }

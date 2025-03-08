@@ -1,7 +1,7 @@
 ﻿using Business.Exceptions;
 using Business.Interfaces;
+using Business.Jwt;
 using Business.Models.Input;
-using Business.Models.Jwt;
 using Business.Models.Output;
 using Business.Models.Update;
 using Microsoft.AspNetCore.Authorization;

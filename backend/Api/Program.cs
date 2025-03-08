@@ -1,4 +1,4 @@
-using Business.Models.Jwt;
+using Business.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -111,7 +111,7 @@ try
 
     if (app.Environment.IsDevelopment())
     {
-        using (var connection = new Microsoft.Data.SqlClient.SqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
+        using (var connection = new Npgsql.NpgsqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
         {
             try
             {
