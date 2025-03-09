@@ -127,9 +127,13 @@ namespace Api.Controllers
             {
                 return Ok(await userService.RegisterUser(googleToken, userInput));
             }
-            catch (NotFoundException ex)
+            catch (AlreadyExistException ex)
             {
-                return NotFound(ex);
+                return Conflict(ex);
+            }
+            catch (ContextException ex)
+            {
+                return UnprocessableEntity(ex);
             }
             catch (Exception ex)
             {
