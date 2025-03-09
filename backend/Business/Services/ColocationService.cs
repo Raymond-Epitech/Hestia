@@ -64,6 +64,10 @@ namespace Business.Services
 
                 return colocation;
             }
+            catch (NotFoundException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 throw new ContextException("An error occurred while getting the collocation from the db", ex);
@@ -110,6 +114,10 @@ namespace Business.Services
 
                 return newColocation.Id;
             }
+            catch (NotFoundException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 throw new ContextException("An error occurred while adding the colocation to the db", ex);
@@ -139,6 +147,10 @@ namespace Business.Services
                 await _colocationRepository.SaveChangesAsync();
                 _logger.LogInformation($"Succes : Colocation {colocation.Id} updated");
             }
+            catch (NotFoundException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 throw new ContextException("An error occurred while updating the colocation in the db", ex);
@@ -165,6 +177,10 @@ namespace Business.Services
                 await _colocationRepository.DeleteColocationAsync(colocation);
                 await _colocationRepository.SaveChangesAsync();
                 _logger.LogInformation($"Succes : Colocation {colocationId} deleted");
+            }
+            catch (NotFoundException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

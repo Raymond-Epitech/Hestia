@@ -69,9 +69,9 @@ namespace Business.Services
 
                 return user;
             }
-            catch (NotFoundException ex)
+            catch (NotFoundException)
             {
-                throw new NotFoundException("User not found");
+                throw;
             }
             catch (Exception ex)
             {
@@ -104,6 +104,10 @@ namespace Business.Services
 
                 _logger.LogInformation($"Succes : User {user.Id} updated");
             }
+            catch (NotFoundException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 throw new ContextException("An error occurred while updating the user in the db", ex);
@@ -132,6 +136,10 @@ namespace Business.Services
 
                 _logger.LogInformation("Succes : User deleted");
             }
+            catch (NotFoundException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 throw new ContextException("An error occurred while deleting the user from the db", ex);
@@ -150,7 +158,7 @@ namespace Business.Services
         {
             try
             {
-                var validPayload = await GoogleJsonWebSignature.ValidateAsync(googleToken);
+                var validPayload = await _jwtService.ValidateGoogleTokenAsync(googleToken);
 
                 var claims = new List<Claim>
                 {
@@ -207,6 +215,10 @@ namespace Business.Services
                 };
                 
                 return userInfo;
+            }
+            catch (AlreadyExistException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -273,9 +285,13 @@ namespace Business.Services
 
                 return userInfo;
             }
+            catch (NotFoundException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
-                throw new ContextException("Invalid token", ex);
+                throw new Exception("Invalid token", ex);
             }
         }
     }

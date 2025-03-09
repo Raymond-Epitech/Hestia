@@ -60,6 +60,10 @@ public class ReminderService : IReminderService
             _logger.LogInformation("Succes : Reminder found");
             return reminder;
         }
+        catch (NotFoundException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             throw new ContextException("An error occurred while getting the reminder from the db", ex);
@@ -109,6 +113,10 @@ public class ReminderService : IReminderService
             await _reminderRepository.SaveChangesAsync();
 
             _logger.LogInformation("Succes : Reminder updated");
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -170,6 +178,10 @@ public class ReminderService : IReminderService
 
             _logger.LogInformation("Succes : Reminders all updated");
         }
+        catch (NotFoundException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             throw new ContextException("An error occurred while updating the reminder from the db", ex);
@@ -196,6 +208,10 @@ public class ReminderService : IReminderService
             await _reminderRepository.SaveChangesAsync();
 
             _logger.LogInformation("Succes : Reminder deleted");
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
