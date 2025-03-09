@@ -9,6 +9,7 @@ using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
 
+namespace Tests.Hestia;
 public class UserControllerTests
 {
     private readonly Mock<IUserService> _userServiceMock;
