@@ -2,7 +2,6 @@
 using Business.Jwt;
 using EntityFramework.Models;
 using Google.Apis.Auth;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
 using Shared.Models.Input;
@@ -70,6 +69,10 @@ namespace Business.Services
 
                 return user;
             }
+            catch (NotFoundException ex)
+            {
+                throw new NotFoundException("User not found");
+            }
             catch (Exception ex)
             {
                 throw new ContextException("An error occurred while getting the user from the db", ex);
@@ -95,6 +98,7 @@ namespace Business.Services
 
                 userToUpdate.Username = user.Username;
                 userToUpdate.ColocationId = user.ColocationId;
+                userToUpdate.PathToProfilePicture = user.PathToProfilePicture;
 
                 await _userRepository.SaveChangesAsync();
 
