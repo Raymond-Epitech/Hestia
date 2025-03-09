@@ -11,11 +11,11 @@ namespace Business.Services
 {
     public class ColocationService : IColocationService
     {
-        private readonly ILogger<ChoreService> _logger;
+        private readonly ILogger<ColocationService> _logger;
         private readonly IColocationRepository _colocationRepository;
         private readonly IUserRepository _userRepository;
 
-        public ColocationService(ILogger<ChoreService> logger, IColocationRepository colocationRepository, IUserRepository userRepository)
+        public ColocationService(ILogger<ColocationService> logger, IColocationRepository colocationRepository, IUserRepository userRepository)
         {
             _logger = logger;
             _colocationRepository = colocationRepository;

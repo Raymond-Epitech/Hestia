@@ -153,12 +153,21 @@ namespace Business.Services
         /// <param name="userInput">The info for the new user</param>
         /// <returns>The JWT and the new user's info</returns>
         /// <exception cref="ContextException">Error in the DB or context</exception>
-        /// <exception cref="NotFoundException">The user was not found</exception>
+        /// <exception cref="AlreadyExistException">User already registered</exception>
         public async Task<UserInfo> RegisterUser(string googleToken, UserInput userInput)
         {
             try
             {
-                var validPayload = await _jwtService.ValidateGoogleTokenAsync(googleToken);
+                GoogleJsonWebSignature.Payload validPayload = null!;
+                
+                try
+                {
+                    validPayload = await _jwtService.ValidateGoogleTokenAsync(googleToken);
+                }
+                catch (Exception)
+                {
+                    throw new InvalidTokenException("Google token invalid");
+                }
 
                 var claims = new List<Claim>
                 {
@@ -220,6 +229,10 @@ namespace Business.Services
             {
                 throw;
             }
+            catch (InvalidTokenException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 throw new Exception("Invalid token", ex);
@@ -227,16 +240,26 @@ namespace Business.Services
         }
 
         /// <summary>
-        /// Not implemented yet
+        /// Login a user using a google token
         /// </summary>
-        /// <param name="googleToken"></param>
-        /// <param name="clientId"></param>
-        /// <returns></returns>
+        /// <param name="googleToken">Token giving by google to connect with their API</param>
+        /// <exception cref="InvalidTokenException">Token is invalid</exception>
+        /// <exception cref="NotFoundException">User is not found</exception>
+        /// <returns>Info of user</returns>
         public async Task<UserInfo> LoginUser(string googleToken)
         {
             try
             {
-                var validPayload = await GoogleJsonWebSignature.ValidateAsync(googleToken);
+                GoogleJsonWebSignature.Payload validPayload = null!;
+
+                try
+                {
+                    validPayload = await _jwtService.ValidateGoogleTokenAsync(googleToken);
+                }
+                catch (Exception)
+                {
+                    throw new InvalidTokenException("Google token is invalid");
+                }
 
                 var claims = new List<Claim>
                 {
@@ -289,9 +312,13 @@ namespace Business.Services
             {
                 throw;
             }
+            catch (InvalidTokenException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
-                throw new Exception("Invalid token", ex);
+                throw new Exception("Erreur when saving the info in the DB", ex);
             }
         }
     }

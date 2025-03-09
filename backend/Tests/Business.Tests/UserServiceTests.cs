@@ -9,6 +9,7 @@ using Shared.Exceptions;
 using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace Tests.Hestia;
@@ -65,12 +66,14 @@ public class UserServiceTests
         // Arrange
         var colocationId = Guid.NewGuid();
 
-        _userRepoMock.Setup(repo => repo.GetAllUserOutputAsync(colocationId))
-            .ThrowsAsync(new ContextException("Colocation id do not exist"));
+        _userRepoMock.Setup(repo => repo.GetAllUserOutputAsync(colocationId)).ReturnsAsync(new List<UserOutput>());
 
-        // Act & Assert
-        await Assert.ThrowsAsync<ContextException>(() => _userService.GetAllUser(colocationId));
+        // Act
+        var result = await _userService.GetAllUser(colocationId);
 
+        // Assert
+        result.Should().NotBeNull();
+        result.Count.Should().Be(0);
         _userRepoMock.Verify(repo => repo.GetAllUserOutputAsync(colocationId), Times.Once);
     }
 
@@ -105,8 +108,7 @@ public class UserServiceTests
         // Arrange
         var userId = Guid.NewGuid();
 
-        _userRepoMock.Setup(repo => repo.GetUserOutputByIdAsync(userId))
-            .ThrowsAsync(new NotFoundException("user id do not exist"));
+        _userRepoMock.Setup(repo => repo.GetUserOutputByIdAsync(userId)).ReturnsAsync((UserOutput ?)null);
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(() => _userService.GetUser(userId));
@@ -121,7 +123,7 @@ public class UserServiceTests
         var userId = Guid.NewGuid();
 
         _userRepoMock.Setup(repo => repo.GetUserOutputByIdAsync(userId))
-            .ThrowsAsync(new ContextException("user is invalid"));
+            .ThrowsAsync(new Exception("user is invalid"));
 
         // Act & Assert
         await Assert.ThrowsAsync<ContextException>(() => _userService.GetUser(userId));
@@ -184,8 +186,7 @@ public class UserServiceTests
             ColocationId = null
         };
 
-        _userRepoMock.Setup(repo => repo.GetUserByIdAsync(userUpdate.Id))
-            .ThrowsAsync(new NotFoundException("User do not exist"));
+        _userRepoMock.Setup(repo => repo.GetUserByIdAsync(userUpdate.Id)).ReturnsAsync((User?)null);
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(() => _userService.UpdateUser(userUpdate));
@@ -236,8 +237,7 @@ public class UserServiceTests
             Email = "test@example.com"
         };
 
-        _userRepoMock.Setup(repo => repo.GetUserByIdAsync(existingUser.Id))
-            .ThrowsAsync(new NotFoundException("User do not exist"));
+        _userRepoMock.Setup(repo => repo.GetUserByIdAsync(existingUser.Id)).ReturnsAsync((User?)null);
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(() => _userService.DeleteUser(existingUser.Id));
@@ -251,48 +251,240 @@ public class UserServiceTests
     [Fact]
     public async Task RegisterUser_ShouldRegister_WhenGoogleTokenIsValid()
     {
+        // Arrange
         var googleToken = "ValidGoogleToken";
 
-        var validpayload = new GoogleJsonWebSignature.Payload();
+        var validPayload = new GoogleJsonWebSignature.Payload
+        {
+            Email = "ValidEmail@net.com",
+            Name = "Test User",
+            Subject = "123456789",
+            Picture = "default.jpg"
+        };
 
-        var user = new UserInput
+        var userInput = new UserInput
         {
             Username = "test",
             ColocationId = Guid.NewGuid()
         };
 
-        var newUser = new User
-        {
-            Id = Guid.NewGuid(),
-            Username = "test",
-            Email = "ValidEmail@net.com",
-            ColocationId = Guid.NewGuid(),
-            CreatedAt = DateTime.Now.ToUniversalTime(),
-            LastConnection = DateTime.Now.ToUniversalTime(),
-            PathToProfilePicture = "/"
-        };
-
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, ""),
-            new Claim(ClaimTypes.NameIdentifier, ""),
-            new Claim(ClaimTypes.Email, ""),
-            new Claim("CustomClaim", "")
+            new Claim(JwtRegisteredClaimNames.Sub, validPayload.Subject),
+            new Claim(JwtRegisteredClaimNames.Email, validPayload.Email),
+            new Claim(JwtRegisteredClaimNames.Name, validPayload.Name),
+            new Claim("picture", validPayload.Picture ?? "")
         };
 
         var jwt = "ValidJwt";
 
-        _jwtServMock.Setup(serv => serv.ValidateGoogleTokenAsync(googleToken)).ReturnsAsync(validpayload);
-        _userRepoMock.Setup(repo => repo.AnyExistingUserByEmail(newUser.Email)).ReturnsAsync(true);
-        _userRepoMock.Setup(repo => repo.AddAsync(newUser)).Returns(Task.CompletedTask);
+        _jwtServMock.Setup(serv => serv.ValidateGoogleTokenAsync(googleToken)).ReturnsAsync(validPayload);
+        _userRepoMock.Setup(repo => repo.AnyExistingUserByEmail(validPayload.Email)).ReturnsAsync(false);
+        _jwtServMock.Setup(serv => serv.GenerateToken(It.IsAny<IEnumerable<Claim>>())).Returns(jwt);
         _userRepoMock.Setup(repo => repo.SaveChangesAsync()).Returns(Task.CompletedTask);
-        _jwtServMock.Setup(serv => serv.GenerateToken(claims)).Returns(jwt);
+
+        User capturedUser = null!;
+        _userRepoMock.Setup(repo => repo.AddAsync(It.IsAny<User>()))
+            .Callback<User>(u => capturedUser = u)
+            .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _userService.RegisterUser(googleToken, user);
+        var result = await _userService.RegisterUser(googleToken, userInput);
 
         // Assert
+        result.Jwt.Should().BeEquivalentTo(jwt);
 
+        capturedUser.Should().NotBeNull();
+        capturedUser.Username.Should().Be(userInput.Username);
+        capturedUser.Email.Should().Be(validPayload.Email);
+        capturedUser.ColocationId.Should().Be(userInput.ColocationId);
+        capturedUser.PathToProfilePicture.Should().Be("default.jpg");
+
+        result.User.Should().BeEquivalentTo(new UserOutput
+        {
+            Id = capturedUser.Id,
+            Username = capturedUser.Username,
+            Email = capturedUser.Email,
+            ColocationId = capturedUser.ColocationId
+        });
+
+        _jwtServMock.Verify(repo => repo.ValidateGoogleTokenAsync(googleToken), Times.Once);
+        _userRepoMock.Verify(repo => repo.AnyExistingUserByEmail(validPayload.Email), Times.Once);
+        _userRepoMock.Verify(repo => repo.AddAsync(It.IsAny<User>()), Times.Once);
+        _userRepoMock.Verify(repo => repo.SaveChangesAsync(), Times.Once);
+        _jwtServMock.Verify(serv => serv.GenerateToken(It.IsAny<IEnumerable<Claim>>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task RegisterUser_ShouldReturnAlreadyExist_WhenGoogleTokenIsValid()
+    {
+        // Arrange
+        var googleToken = "ValidGoogleToken";
+
+        var validPayload = new GoogleJsonWebSignature.Payload
+        {
+            Email = "AlreadyExistingEmail@net.com",
+            Name = "AlreadyExistingUser",
+            Subject = "123456789",
+            Picture = "default.jpg"
+        };
+
+        var userInput = new UserInput
+        {
+            Username = "test",
+            ColocationId = Guid.NewGuid()
+        };
+
+        var jwt = "ValidJwt";
+
+        _jwtServMock.Setup(serv => serv.ValidateGoogleTokenAsync(googleToken)).ReturnsAsync(validPayload);
+        _userRepoMock.Setup(repo => repo.AnyExistingUserByEmail(validPayload.Email)).ReturnsAsync(true);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<AlreadyExistException>(() => _userService.RegisterUser(googleToken, userInput));
+
+        _jwtServMock.Verify(repo => repo.ValidateGoogleTokenAsync(googleToken), Times.Once);
+        _userRepoMock.Verify(repo => repo.AnyExistingUserByEmail(validPayload.Email), Times.Once);
+        _userRepoMock.Verify(repo => repo.AddAsync(It.IsAny<User>()), Times.Never);
+        _userRepoMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
+        _jwtServMock.Verify(serv => serv.GenerateToken(It.IsAny<IEnumerable<Claim>>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task RegisterUser_ShouldThrowInvalidToken_WhenGoogleTokenIsInvalid()
+    {
+        // Arrange
+        var googleToken = "InvalidGoogleToken";
+
+        var validPayload = new GoogleJsonWebSignature.Payload
+        {
+            Email = "ValidEmail@net.com",
+            Name = "Test User",
+            Subject = "123456789",
+            Picture = "default.jpg"
+        };
+
+        var userInput = new UserInput
+        {
+            Username = "test",
+            ColocationId = Guid.NewGuid()
+        };
+
+        _jwtServMock.Setup(serv => serv.ValidateGoogleTokenAsync(googleToken))
+            .ThrowsAsync(new Exception("Invalid token"));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidTokenException>(() => _userService.RegisterUser(googleToken, userInput));
+
+        _jwtServMock.Verify(repo => repo.ValidateGoogleTokenAsync(googleToken), Times.Once);
+        _userRepoMock.Verify(repo => repo.AnyExistingUserByEmail(validPayload.Email), Times.Never);
+        _userRepoMock.Verify(repo => repo.AddAsync(It.IsAny<User>()), Times.Never);
+        _userRepoMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
+        _jwtServMock.Verify(serv => serv.GenerateToken(It.IsAny<IEnumerable<Claim>>()), Times.Never);
+    }
+
+    // LOGIN USER
+
+    [Fact]
+    public async Task LoginUser_ShouldLogin_WhenGoogleTokenIsValid()
+    {
+        // Arrange
+        var googleToken = "ValidGoogleToken";
+
+        var validPayload = new GoogleJsonWebSignature.Payload
+        {
+            Email = "ValidEmail@net.com",
+            Name = "Test User",
+            Subject = "123456789",
+            Picture = "default.jpg"
+        };
+
+        var claims = new List<Claim>
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, validPayload.Subject),
+            new Claim(JwtRegisteredClaimNames.Email, validPayload.Email),
+            new Claim(JwtRegisteredClaimNames.Name, validPayload.Name),
+            new Claim("picture", validPayload.Picture ?? "")
+        };
+
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            CreatedAt = DateTime.UtcNow,
+            LastConnection = DateTime.UtcNow,
+            Username = "TestUser",
+            Email = "test@example.com"
+        };
+
+        var jwt = "ValidJwt";
+
+        _jwtServMock.Setup(serv => serv.ValidateGoogleTokenAsync(googleToken)).ReturnsAsync(validPayload);
+        _userRepoMock.Setup(repo => repo.GetUserByEmailAsync(validPayload.Email)).ReturnsAsync(user);
+        _userRepoMock.Setup(repo => repo.SaveChangesAsync()).Returns(Task.CompletedTask);
+        _jwtServMock.Setup(serv => serv.GenerateToken(It.IsAny<IEnumerable<Claim>>())).Returns(jwt);
+
+        // Act
+        var result = await _userService.LoginUser(googleToken);
+
+        // Assert
+        result.Jwt.Should().BeEquivalentTo(jwt);
+
+        _jwtServMock.Verify(repo => repo.ValidateGoogleTokenAsync(googleToken), Times.Once);
+        _userRepoMock.Verify(repo => repo.GetUserByEmailAsync(validPayload.Email), Times.Once);
+        _userRepoMock.Verify(repo => repo.SaveChangesAsync(), Times.Once);
+        _jwtServMock.Verify(serv => serv.GenerateToken(It.IsAny<IEnumerable<Claim>>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task LoginUser_ShouldReturnUserNotFound_WhenUserDoNotExist()
+    {
+        // Arrange
+        var googleToken = "ValidGoogleToken";
+
+        var validPayload = new GoogleJsonWebSignature.Payload
+        {
+            Email = "AlreadyExistingEmail@net.com",
+            Name = "AlreadyExistingUser",
+            Subject = "123456789",
+            Picture = "default.jpg"
+        };
+
+        _jwtServMock.Setup(serv => serv.ValidateGoogleTokenAsync(googleToken)).ReturnsAsync(validPayload);
+        var result = _userRepoMock.Setup(repo => repo.GetUserByEmailAsync(validPayload.Email)).ReturnsAsync((User ?)null);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(() => _userService.LoginUser(googleToken));
+
+        _jwtServMock.Verify(repo => repo.ValidateGoogleTokenAsync(googleToken), Times.Once);
+        _userRepoMock.Verify(repo => repo.GetUserByEmailAsync(validPayload.Email), Times.Once);
+        _userRepoMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
+        _jwtServMock.Verify(serv => serv.GenerateToken(It.IsAny<IEnumerable<Claim>>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task LoginUser_ShouldThrowInvalidToken_WhenTokenIsInvalid()
+    {
+        // Arrange
+        var googleToken = "InvalidGoogleToken";
+
+        var validPayload = new GoogleJsonWebSignature.Payload
+        {
+            Email = "ValidEmail@net.com",
+            Name = "Test User",
+            Subject = "123456789",
+            Picture = "default.jpg"
+        };
+
+        _jwtServMock.Setup(serv => serv.ValidateGoogleTokenAsync(googleToken))
+            .ThrowsAsync(new Exception("Invalid token"));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidTokenException>(() => _userService.LoginUser(googleToken));
+
+        _jwtServMock.Verify(repo => repo.ValidateGoogleTokenAsync(googleToken), Times.Once);
+        _userRepoMock.Verify(repo => repo.GetUserByEmailAsync(validPayload.Email), Times.Never);
+        _userRepoMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
+        _jwtServMock.Verify(serv => serv.GenerateToken(It.IsAny<IEnumerable<Claim>>()), Times.Never);
     }
 }
 
