@@ -3,6 +3,8 @@ using EntityFramework.Models;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 
+namespace Tests.Hestia;
+
 public class UserRepositoryTests
 {
     private readonly DbContextOptions<HestiaContext> _dbContextOptions;

@@ -1,10 +1,11 @@
 ﻿using Business.Interfaces;
 using Business.Services;
-using EntityFramework.Models;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shared.Models.Output;
+
+namespace Tests.Hestia;
 
 public class UserServiceTests
 {
