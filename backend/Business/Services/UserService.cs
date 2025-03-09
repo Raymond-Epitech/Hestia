@@ -2,6 +2,7 @@
 using Business.Jwt;
 using EntityFramework.Models;
 using Google.Apis.Auth;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
 using Shared.Models.Input;
@@ -189,17 +190,16 @@ namespace Business.Services
 
                 var jwt = _jwtService.GenerateToken(claims);
 
-                var user = await _userRepository.GetUserOutputByIdAsync(newUser.Id);
-
-                if (user is null)
-                {
-                    throw new NotFoundException("User not found");
-                }
-
                 var userInfo = new UserInfo
                 {
                     Jwt = jwt,
-                    User = user
+                    User = new UserOutput
+                    {
+                        Id = newUser.Id,
+                        Username = newUser.Username,
+                        Email = newUser.Email,
+                        ColocationId = newUser.ColocationId
+                    }
                 };
                 
                 return userInfo;
