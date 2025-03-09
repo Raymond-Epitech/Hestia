@@ -2,11 +2,14 @@
 using Business.Services;
 using EntityFramework.Models;
 using FluentAssertions;
+using Google.Apis.Auth;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shared.Exceptions;
+using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
+using System.Security.Claims;
 
 namespace Tests.Hestia;
 
@@ -129,7 +132,7 @@ public class UserServiceTests
     // UPDATE USER
 
     [Fact]
-    public async Task UpdateUser_ShouldUpdateUser_WhenUserExists()
+    public async Task UpdateUser_ShouldUpdateUser_WhenUserExist()
     {
         // Arrange
         var userUpdate = new UserUpdate
@@ -152,25 +155,144 @@ public class UserServiceTests
         };
 
         _userRepoMock.Setup(repo => repo.GetUserByIdAsync(userUpdate.Id)).ReturnsAsync(existingUser);
-
-        User updatedUser = null!;
-        _userRepoMock.Setup(repo => repo.UpdateAsync(It.IsAny<User>()))
-            .Callback<User>(u => updatedUser = u);
+        _userRepoMock.Setup(repo => repo.SaveChangesAsync()).Returns(Task.CompletedTask);
 
         // Act
         await _userService.UpdateUser(userUpdate);
 
         // Assert
         _userRepoMock.Verify(repo => repo.GetUserByIdAsync(userUpdate.Id), Times.Once);
+        _userRepoMock.Verify(repo => repo.SaveChangesAsync(), Times.Once);
 
-        updatedUser.Should().NotBeNull();
+        existingUser.Username.Should().Be(userUpdate.Username);
+        existingUser.PathToProfilePicture.Should().Be(userUpdate.PathToProfilePicture);
+        existingUser.ColocationId.Should().Be(userUpdate.ColocationId);
 
-        updatedUser.Username.Should().Be(userUpdate.Username);
-        updatedUser.PathToProfilePicture.Should().Be(userUpdate.PathToProfilePicture);
-        updatedUser.ColocationId.Should().Be(userUpdate.ColocationId);
+        existingUser.CreatedAt.Should().Be(existingUser.CreatedAt);
+        existingUser.Email.Should().Be(existingUser.Email);
+    }
 
-        updatedUser.CreatedAt.Should().Be(existingUser.CreatedAt);
-        updatedUser.Email.Should().Be(existingUser.Email);
+    [Fact]
+    public async Task UpdateUser_ShouldThrowNotFound_WhenUserDoNotExist()
+    {
+        // Arrange
+        var userUpdate = new UserUpdate
+        {
+            Id = Guid.NewGuid(),
+            Username = "UpdatedUser",
+            Email = "updated@example.com",
+            ColocationId = null
+        };
+
+        _userRepoMock.Setup(repo => repo.GetUserByIdAsync(userUpdate.Id))
+            .ThrowsAsync(new NotFoundException("User do not exist"));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(() => _userService.UpdateUser(userUpdate));
+
+        _userRepoMock.Verify(repo => repo.GetUserByIdAsync(userUpdate.Id), Times.Once);
+        _userRepoMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
+    }
+
+    // REMOVE USER
+
+    [Fact]
+    public async Task DeleteUser_ShouldRemoveUser_WhenUserExists()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var existingUser = new User
+        {
+            Id = userId,
+            CreatedAt = DateTime.UtcNow,
+            LastConnection = DateTime.UtcNow,
+            Username = "TestUser",
+            Email = "test@example.com"
+        };
+
+        _userRepoMock.Setup(repo => repo.GetUserByIdAsync(userId)).ReturnsAsync(existingUser);
+        _userRepoMock.Setup(repo => repo.RemoveAsync(existingUser)).Returns(Task.CompletedTask);
+        _userRepoMock.Setup(repo => repo.SaveChangesAsync()).Returns(Task.CompletedTask);
+
+        // Act
+        await _userService.DeleteUser(userId);
+
+        // Assert
+        _userRepoMock.Verify(repo => repo.GetUserByIdAsync(userId), Times.Once);
+        _userRepoMock.Verify(repo => repo.RemoveAsync(It.Is<User>(u => u.Id == userId)), Times.Once);
+        _userRepoMock.Verify(repo => repo.SaveChangesAsync(), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteUser_ShouldThrowNotFound_WhenUserDoNotExist()
+    {
+        // Arrange
+        var existingUser = new User
+        {
+            Id = Guid.NewGuid(),
+            CreatedAt = DateTime.UtcNow,
+            LastConnection = DateTime.UtcNow,
+            Username = "TestUser",
+            Email = "test@example.com"
+        };
+
+        _userRepoMock.Setup(repo => repo.GetUserByIdAsync(existingUser.Id))
+            .ThrowsAsync(new NotFoundException("User do not exist"));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(() => _userService.DeleteUser(existingUser.Id));
+
+        _userRepoMock.Verify(repo => repo.GetUserByIdAsync(existingUser.Id), Times.Once);
+        _userRepoMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
+    }
+
+    // REGISTER USER
+
+    [Fact]
+    public async Task RegisterUser_ShouldRegister_WhenGoogleTokenIsValid()
+    {
+        var googleToken = "ValidGoogleToken";
+
+        var validpayload = new GoogleJsonWebSignature.Payload();
+
+        var user = new UserInput
+        {
+            Username = "test",
+            ColocationId = Guid.NewGuid()
+        };
+
+        var newUser = new User
+        {
+            Id = Guid.NewGuid(),
+            Username = "test",
+            Email = "ValidEmail@net.com",
+            ColocationId = Guid.NewGuid(),
+            CreatedAt = DateTime.Now.ToUniversalTime(),
+            LastConnection = DateTime.Now.ToUniversalTime(),
+            PathToProfilePicture = "/"
+        };
+
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, ""),
+            new Claim(ClaimTypes.NameIdentifier, ""),
+            new Claim(ClaimTypes.Email, ""),
+            new Claim("CustomClaim", "")
+        };
+
+        var jwt = "ValidJwt";
+
+        _jwtServMock.Setup(serv => serv.ValidateGoogleTokenAsync(googleToken)).ReturnsAsync(validpayload);
+        _userRepoMock.Setup(repo => repo.AnyExistingUserByEmail(newUser.Email)).ReturnsAsync(true);
+        _userRepoMock.Setup(repo => repo.AddAsync(newUser)).Returns(Task.CompletedTask);
+        _userRepoMock.Setup(repo => repo.SaveChangesAsync()).Returns(Task.CompletedTask);
+        _jwtServMock.Setup(serv => serv.GenerateToken(claims)).Returns(jwt);
+
+        // Act
+        var result = await _userService.RegisterUser(googleToken, user);
+
+        // Assert
+
     }
 }
 

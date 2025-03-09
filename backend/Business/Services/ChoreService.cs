@@ -61,6 +61,10 @@ public class ChoreService : IChoreService
             _logger.LogInformation("Succes : Reminder found");
             return chore;
         }
+        catch (NotFoundException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             throw new ContextException("An error occurred while getting the reminder from the db", ex);
@@ -79,6 +83,10 @@ public class ChoreService : IChoreService
             }
 
             return choreMessages;
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -150,6 +158,10 @@ public class ChoreService : IChoreService
 
             _logger.LogInformation("Succes : Chore updated");
         }
+        catch (NotFoundException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             throw new ContextException("An error occurred while updating the chore from the db", ex);
@@ -176,6 +188,10 @@ public class ChoreService : IChoreService
 
             _logger.LogInformation("Succes : Chore deleted");
         }
+        catch (NotFoundException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             throw new ContextException("An error occurred while deleting the chore from the db", ex);
@@ -201,6 +217,10 @@ public class ChoreService : IChoreService
             await _choreRepository.SaveChangesAsync();
 
             _logger.LogInformation("Succes : Chore message deleted");
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -296,6 +316,10 @@ public class ChoreService : IChoreService
 
             await _choreRepository.RemoveChoreEnrollmentAsync(enrollement);
             await _choreRepository.SaveChangesAsync();
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
