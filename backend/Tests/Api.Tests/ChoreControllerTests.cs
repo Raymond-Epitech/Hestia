@@ -127,7 +127,7 @@ public class ChoreControllerTests
         _choreServiceMock.Verify(service => service.AddChoreAsync(choreInput), Times.Once);
     }
 
-    // 🔹 UPDATE CHORE
+    // UPDATE CHORE
     [Fact]
     public async Task UpdateChore_ReturnsOk_WhenSuccessful()
     {
