@@ -9,7 +9,7 @@ using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
 
-namespace Tests.Hestia;
+namespace Tests.Hestia.Service;
 
 public class ColocationServiceTests
 {

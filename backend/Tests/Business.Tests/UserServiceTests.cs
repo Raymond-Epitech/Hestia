@@ -12,8 +12,7 @@ using Shared.Models.Update;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace Tests.Hestia;
-
+namespace Tests.Hestia.Service;
 public class UserServiceTests
 {
     private readonly UserService _userService;

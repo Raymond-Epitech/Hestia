@@ -8,8 +8,7 @@ using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
 
-namespace Tests.Hestia;
-
+namespace Tests.Hestia.Controller;
 public class ColocationControllerTests
 {
     private readonly Mock<IColocationService> _colocationServiceMock;

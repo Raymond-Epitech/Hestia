@@ -7,8 +7,7 @@ using Shared.Exceptions;
 using Shared.Models.Output;
 using Shared.Models.Update;
 
-namespace Tests.Hestia;
-
+namespace Tests.Hestia.Controller;
 public class ChoreControllerTests
 {
     private readonly Mock<IChoreService> _choreServiceMock;
