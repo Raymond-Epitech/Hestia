@@ -2,28 +2,39 @@ name: Run .NET Tests
 
 on:
   push:
-    branches: [ main, develop, UnitTest ] # Exécute les tests sur les branches principales
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main, develop ] # Exécute les tests lors d'une Pull Request (PR)
+    branches: [ main, develop ]
 
 jobs:
   test:
-    runs-on: ubuntu-latest  # Utilise un runner GitHub avec Ubuntu
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4  # Récupère le code source
+        uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x' # Remplace par ta version de .NET si différente
+          dotnet-version: '8.0.x'
 
-      - name: Restore dependencies
+      - name: Restore dependencies for API
         run: dotnet restore
+        working-directory: backend/Api
 
-      - name: Build project
-        run: dotnet build --no-restore
+      - name: Build API
+        run: dotnet build --no-restore --configuration Release
+        working-directory: backend/Api
 
-      - name: Run tests
-        run: dotnet test --no-build --verbosity normal
+      - name: Restore dependencies for tests
+        run: dotnet restore
+        working-directory: backend/Tests
+
+      - name: Build tests
+        run: dotnet build --no-restore --configuration Release
+        working-directory: backend/Tests
+
+      - name: Run all tests
+        run: dotnet test --no-build --configuration Release --verbosity normal
+        working-directory: backend/Tests
