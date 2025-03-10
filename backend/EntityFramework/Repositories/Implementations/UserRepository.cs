@@ -18,7 +18,8 @@ public class UserRepository : IUserRepository
         {
             Id = x.Id,
             Username = x.Username,
-            Email = x.Email
+            Email = x.Email,
+            ColocationId = x.ColocationId
         }).ToListAsync();
         return users;
     }
@@ -29,7 +30,8 @@ public class UserRepository : IUserRepository
         {
             Id = x.Id,
             Username = x.Username,
-            Email = x.Email
+            Email = x.Email,
+            ColocationId = x.ColocationId
         }).FirstOrDefaultAsync();
     }
 
