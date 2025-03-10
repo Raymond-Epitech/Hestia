@@ -2,7 +2,7 @@ name: Run .NET Tests
 
 on:
   push:
-    branches: [ main, develop ] # Exécute les tests sur les branches principales
+    branches: [ main, develop, UnitTest ] # Exécute les tests sur les branches principales
   pull_request:
     branches: [ main, develop ] # Exécute les tests lors d'une Pull Request (PR)
 
