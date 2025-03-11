@@ -12,11 +12,11 @@ export type Reminder = {
 export type User = {
     username: string;
     email: string;
-    collocationId: string;
+    colocationId: string;
     id: string;
 }
 
-export type Collocation = {
+export type Colocation = {
     name: string;
     addresse: string;
     createdBy: string;

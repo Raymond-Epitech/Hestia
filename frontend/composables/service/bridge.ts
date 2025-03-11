@@ -1,5 +1,5 @@
 import { json } from "stream/consumers";
-import type { Reminder, User, Collocation, Chore } from "./type";
+import type { Reminder, User, Colocation, Chore } from "./type";
 
 export class bridge {
     url: string = "http://91.134.48.124:8080";
@@ -26,7 +26,7 @@ export class bridge {
     // Reminder section: get all reminders, get reminder by ID, add reminder, update reminder, delete reminder
 
     async getAllReminders(id_colloc: string) {
-        const response: Response = await fetch(this.url + "/api/Reminder/GetByCollocation/" + id_colloc,
+        const response: Response = await fetch(this.url + "/api/Reminder/GetByColocation/" + id_colloc,
             {
                 method: 'GET',
                 headers: {
@@ -111,10 +111,9 @@ export class bridge {
         }).then(async response => {
             if (response.status == 200) {
                 return await response.json();
-            } else if (response.status == 500) {
+            } else if (response.status == 404) {
                 const jsonresponse = await response.json();
-                console.log(jsonresponse.innerException.message);
-                if (jsonresponse.innerException.message == "User not found") {
+                if (jsonresponse.message == "User not found") {
                     return { error: "User not found" };
                 }
                 return { error: "Internal server error" };
@@ -176,7 +175,7 @@ export class bridge {
     }
 
     async getUserbyCollocId(collocid: string) {
-        return await fetch(this.url + "/api/User/GetByCollocationId/" + collocid, {
+        return await fetch(this.url + "/api/User/GetByColocationId/" + collocid, {
             method: 'GET'
         }).then(response => {
             if (response.status == 200) {
@@ -186,15 +185,15 @@ export class bridge {
         });
     }
 
-    // collocation section: 
+    // Colocation section: 
 
-    async addCollocation(collocation: Collocation) {
-        return await fetch(this.url + "/api/Collocation", {
+    async addColocation(colocation: Colocation) {
+        return await fetch(this.url + "/api/Colocation", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(collocation)
+            body: JSON.stringify(colocation)
         }).then(response => {
             if (response.status == 200) {
                 return true;
@@ -203,13 +202,13 @@ export class bridge {
         })
     }
 
-    async updateCollocation(collocation: Collocation) {
-        return await fetch(this.url + "/api/Collocation", {
+    async updateColocation(colocation: Colocation) {
+        return await fetch(this.url + "/api/Colocation", {
             method: 'PUT',
             headers: {
                 'Content-type': 'application/json'
             },
-            body: JSON.stringify(collocation)
+            body: JSON.stringify(colocation)
         }).then(response => {
             if (response.status == 200) {
                 return true;
@@ -218,8 +217,8 @@ export class bridge {
         })
     }
 
-    async deleteCollocation(id: string) {
-        return await fetch(this.url + "/api/Collocation/" + id, {
+    async deleteColocation(id: string) {
+        return await fetch(this.url + "/api/Colocation/" + id, {
             method: 'DELETE',
         }).then(response => {
             if (response.status == 200) {
@@ -229,8 +228,8 @@ export class bridge {
         })
     }
 
-    async getAllCollocation() {
-        return await fetch(this.url + "/api/Collocation", {
+    async getAllColocation() {
+        return await fetch(this.url + "/api/Colocation", {
             method: 'GET',
         }).then(response => {
             if (response.status == 200) {
@@ -240,8 +239,8 @@ export class bridge {
         })
     }
 
-    async getCollocationById(id: string) {
-        return await fetch(this.url + "/api/Collocation/" + id, {
+    async getColocationById(id: string) {
+        return await fetch(this.url + "/api/Colocation/" + id, {
             method: 'GET',
         }).then(response => {
             if (response.status == 200) {
@@ -294,8 +293,8 @@ export class bridge {
         })
     }
 
-    async getAllChore(collocationId: string) {
-        return await fetch(this.url + "/api/Chore/GetByCollocationId/" + collocationId, {
+    async getAllChore(colocationId: string) {
+        return await fetch(this.url + "/api/Chore/GetByColocationId/" + colocationId, {
             method: 'GET',
         }).then(response => {
             if (response.status == 200) {
