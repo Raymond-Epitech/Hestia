@@ -56,13 +56,13 @@ const handleLoginSuccess = async (response) => {
         registretion.value = true;
         return;
     }
-    // if (data) {
-    //     $bridge.setjwt(data.jwt);
-    //     await authenticateUser(data.jwt);
-    // }
-    // if (authenticated) {
-    //     router.push('/');
-    // }
+    if (data) {
+        $bridge.setjwt(data.jwt);
+        await authenticateUser(data.jwt);
+    }
+    if (authenticated) {
+        router.push('/');
+    }
 };
 
 const handleLoginError = () => {
