@@ -1,0 +1,40 @@
+name: Run .NET Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies for API
+        run: dotnet restore
+        working-directory: backend/Api
+
+      - name: Build API
+        run: dotnet build --no-restore --configuration Release
+        working-directory: backend/Api
+
+      - name: Restore dependencies for tests
+        run: dotnet restore
+        working-directory: backend/Tests
+
+      - name: Build tests
+        run: dotnet build --no-restore --configuration Release
+        working-directory: backend/Tests
+
+      - name: Run all tests
+        run: dotnet test --no-build --configuration Release --verbosity normal
+        working-directory: backend/Tests

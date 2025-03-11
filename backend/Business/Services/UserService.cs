@@ -1,23 +1,30 @@
-﻿using Business.Exceptions;
-using Business.Interfaces;
-using Business.Models.Input;
-using Business.Models.Jwt;
-using Business.Models.Output;
-using Business.Models.Update;
-using EntityFramework.Context;
+﻿using Business.Interfaces;
+using Business.Jwt;
 using EntityFramework.Models;
 using Google.Apis.Auth;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Shared.Exceptions;
+using Shared.Models.Input;
+using Shared.Models.Output;
+using Shared.Models.Update;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace Business.Services
 {
-    public class UserService(ILogger<UserService> logger,
-    HestiaContext _context,
-    IJwtService jwtService) : IUserService
+    public class UserService : IUserService
     {
+        private readonly ILogger<UserService> _logger;
+        private readonly IUserRepository _userRepository;
+        private readonly IJwtService _jwtService;
+
+        public UserService(ILogger<UserService> logger, IUserRepository userRepository, IJwtService jwtService)
+        {
+            _logger = logger;
+            _userRepository = userRepository;
+            _jwtService = jwtService;
+        }
+
         /// <summary>
         /// Get all users from a collocation
         /// </summary>
@@ -28,14 +35,9 @@ namespace Business.Services
         {
             try
             {
-                var users = await _context.User.Where(x => x.CollocationId == CollocationId).Select(x => new UserOutput
-                {
-                    Id = x.Id,
-                    Username = x.Username,
-                    Email = x.Email
-                }).ToListAsync();
+                var users = await _userRepository.GetAllUserOutputAsync(CollocationId);
 
-                logger.LogInformation($"Succes : All users from the collocation {CollocationId} found");
+                _logger.LogInformation($"Succes : All users from the collocation {CollocationId} found");
 
                 return users;
             }
@@ -56,21 +58,20 @@ namespace Business.Services
         {
             try
             {
-                var user = await _context.User.Where(x => x.Id == id).Select(x => new UserOutput
-                {
-                    Id = x.Id,
-                    Username = x.Username,
-                    Email = x.Email
-                }).FirstOrDefaultAsync();
+                var user = await _userRepository.GetUserOutputByIdAsync(id);
 
                 if (user == null)
                 {
                     throw new NotFoundException("User not found");
                 }
 
-                logger.LogInformation($"Succes : User {id} found");
+                _logger.LogInformation($"Succes : User {id} found");
 
                 return user;
+            }
+            catch (NotFoundException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -88,7 +89,7 @@ namespace Business.Services
         {
             try
             {
-                var userToUpdate = await _context.User.FirstOrDefaultAsync(x => x.Id == user.Id);
+                var userToUpdate = await _userRepository.GetUserByIdAsync(user.Id);
 
                 if (userToUpdate == null)
                 {
@@ -96,14 +97,16 @@ namespace Business.Services
                 }
 
                 userToUpdate.Username = user.Username;
-                userToUpdate.Email = user.Email;
-                userToUpdate.CollocationId = user.CollocationId;
+                userToUpdate.ColocationId = user.ColocationId;
+                userToUpdate.PathToProfilePicture = user.PathToProfilePicture;
 
-                _context.Update(userToUpdate);
+                await _userRepository.SaveChangesAsync();
 
-                await _context.SaveChangesAsync();
-
-                logger.LogInformation($"Succes : User {user.Id} updated");
+                _logger.LogInformation($"Succes : User {user.Id} updated");
+            }
+            catch (NotFoundException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -121,15 +124,21 @@ namespace Business.Services
         {
             try
             {
-                var user = _context.User.Where(x => x.Id == id).FirstOrDefault();
+                var user = await _userRepository.GetUserByIdAsync(id);
                 if (user == null)
                 {
                     throw new NotFoundException($"User {id} not found");
                 }
-                _context.User.Remove(user);
-                await _context.SaveChangesAsync();
 
-                logger.LogInformation("Succes : User deleted");
+                await _userRepository.RemoveAsync(user);
+
+                await _userRepository.SaveChangesAsync();
+
+                _logger.LogInformation("Succes : User deleted");
+            }
+            catch (NotFoundException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -144,12 +153,21 @@ namespace Business.Services
         /// <param name="userInput">The info for the new user</param>
         /// <returns>The JWT and the new user's info</returns>
         /// <exception cref="ContextException">Error in the DB or context</exception>
-        /// <exception cref="NotFoundException">The user was not found</exception>
+        /// <exception cref="AlreadyExistException">User already registered</exception>
         public async Task<UserInfo> RegisterUser(string googleToken, UserInput userInput)
         {
             try
             {
-                var validPayload = await GoogleJsonWebSignature.ValidateAsync(googleToken);
+                GoogleJsonWebSignature.Payload validPayload = null!;
+                
+                try
+                {
+                    validPayload = await _jwtService.ValidateGoogleTokenAsync(googleToken);
+                }
+                catch (Exception)
+                {
+                    throw new InvalidTokenException("Google token invalid");
+                }
 
                 var claims = new List<Claim>
                 {
@@ -159,7 +177,7 @@ namespace Business.Services
                     new Claim("picture", validPayload.Picture ?? ""),
                 };
 
-                if (await _context.User.AnyAsync(x => x.Email == validPayload.Email))
+                if (await _userRepository.AnyExistingUserByEmail(validPayload.Email))
                 {
                     throw new AlreadyExistException("This user already exist with this email");
                 }
@@ -170,7 +188,7 @@ namespace Business.Services
                     Id = Guid.NewGuid(),
                     Username = userInput.Username,
                     Email = validPayload.Email,
-                    CollocationId = userInput.CollocationId,
+                    ColocationId = userInput.ColocationId,
                     CreatedAt = DateTime.Now.ToUniversalTime(),
                     LastConnection = DateTime.Now.ToUniversalTime(),
                     PathToProfilePicture = "default.jpg"
@@ -178,11 +196,11 @@ namespace Business.Services
 
                 try
                 {
-                    _context.Add(newUser);
+                    await _userRepository.AddAsync(newUser);
 
-                    await _context.SaveChangesAsync();
+                    await _userRepository.SaveChangesAsync();
 
-                    logger.LogInformation($"Succes : User {newUser.Id} added");
+                    _logger.LogInformation($"Succes : User {newUser.Id} added");
                 }
                 catch (Exception ex)
                 {
@@ -191,27 +209,29 @@ namespace Business.Services
 
                 // Generate and return JWT
 
-                var jwt = jwtService.GenerateToken(claims);
-
-                var user = await _context.User.Where(x => x.Id == newUser.Id).Select(x => new UserOutput
-                {
-                    Id = x.Id,
-                    Username = x.Username,
-                    Email = x.Email
-                }).FirstOrDefaultAsync();
-
-                if (user is null)
-                {
-                    throw new NotFoundException("User not found");
-                }
+                var jwt = _jwtService.GenerateToken(claims);
 
                 var userInfo = new UserInfo
                 {
                     Jwt = jwt,
-                    User = user
+                    User = new UserOutput
+                    {
+                        Id = newUser.Id,
+                        Username = newUser.Username,
+                        Email = newUser.Email,
+                        ColocationId = newUser.ColocationId
+                    }
                 };
                 
                 return userInfo;
+            }
+            catch (AlreadyExistException)
+            {
+                throw;
+            }
+            catch (InvalidTokenException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -220,16 +240,26 @@ namespace Business.Services
         }
 
         /// <summary>
-        /// Not implemented yet
+        /// Login a user using a google token
         /// </summary>
-        /// <param name="googleToken"></param>
-        /// <param name="clientId"></param>
-        /// <returns></returns>
+        /// <param name="googleToken">Token giving by google to connect with their API</param>
+        /// <exception cref="InvalidTokenException">Token is invalid</exception>
+        /// <exception cref="NotFoundException">User is not found</exception>
+        /// <returns>Info of user</returns>
         public async Task<UserInfo> LoginUser(string googleToken)
         {
             try
             {
-                var validPayload = await GoogleJsonWebSignature.ValidateAsync(googleToken);
+                GoogleJsonWebSignature.Payload validPayload = null!;
+
+                try
+                {
+                    validPayload = await _jwtService.ValidateGoogleTokenAsync(googleToken);
+                }
+                catch (Exception)
+                {
+                    throw new InvalidTokenException("Google token is invalid");
+                }
 
                 var claims = new List<Claim>
                 {
@@ -239,34 +269,35 @@ namespace Business.Services
                     new Claim("picture", validPayload.Picture ?? ""),
                 };
 
-                var user = await _context.User.FirstOrDefaultAsync(x => x.Email == validPayload.Email);
+                var user = await _userRepository.GetUserByEmailAsync(validPayload.Email);
 
                 if (user is null)
                 {
                     throw new NotFoundException("User not found");
                 }
+                else
+                {
+                    try
+                    {
+                        user.LastConnection = DateTime.UtcNow;
+                        await _userRepository.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ContextException("Error while updating the user", ex);
+                    }
+                }
 
                 // Generate and return JWT
 
-                var jwt = jwtService.GenerateToken(claims);
-
-                try
-                {
-                    user.LastConnection = DateTime.Now.ToUniversalTime();
-                    _context.User.Update(user);
-                    _context.SaveChanges();
-                }
-                catch (Exception ex)
-                {
-                    throw new ContextException("Error while updating the user", ex);
-                }
+                var jwt = _jwtService.GenerateToken(claims);
 
                 var userOutput = new UserOutput
                 {
                     Id = user.Id,
                     Username = user.Username,
                     Email = user.Email,
-                    CollocationId = user.CollocationId
+                    ColocationId = user.ColocationId
                 };
 
                 var userInfo = new UserInfo
@@ -277,9 +308,17 @@ namespace Business.Services
 
                 return userInfo;
             }
+            catch (NotFoundException)
+            {
+                throw;
+            }
+            catch (InvalidTokenException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
-                throw new ContextException("Invalid token", ex);
+                throw new Exception("Erreur when saving the info in the DB", ex);
             }
         }
     }

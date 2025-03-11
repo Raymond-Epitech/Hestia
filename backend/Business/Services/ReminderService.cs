@@ -1,20 +1,25 @@
-﻿using Business.Exceptions;
-using Business.Interfaces;
+﻿using Business.Interfaces;
 using Business.Mappers;
-using Business.Models.Input;
-using Business.Models.Output;
-using Business.Models.Update;
-using EntityFramework.Context;
-using EntityFramework.Models;
-using Microsoft.EntityFrameworkCore;
+using EntityFramework.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
+using Shared.Exceptions;
+using Shared.Models.Input;
+using Shared.Models.Output;
+using Shared.Models.Update;
 
 namespace Business.Services;
 
-public class ReminderService(
-    ILogger<ReminderService> logger,
-    HestiaContext _context) : IReminderService
+public class ReminderService : IReminderService
 {
+    private readonly ILogger<ReminderService> _logger;
+    private readonly IReminderRepository _reminderRepository;
+
+    public ReminderService(ILogger<ReminderService> logger, IReminderRepository reminderRepository)
+    {
+        _logger = logger;
+        _reminderRepository = reminderRepository;
+    }
+
     /// <summary>
     /// Get all reminders
     /// </summary>
@@ -24,16 +29,8 @@ public class ReminderService(
     {
         try
         {
-            var reminders = await _context.Reminder.Where(x => x.CollocationId == CollocationId).Select(x => new ReminderOutput
-            {
-                Id = x.Id,
-                Content = x.Content,
-                Color = x.Color,
-                CoordX = x.CoordX,
-                CoordY = x.CoordY,
-                CoordZ = x.CoordZ
-            }).ToListAsync();
-            logger.LogInformation("Succes : All reminders found");
+            var reminders = await _reminderRepository.GetAllReminderOutputsAsync(CollocationId);
+            _logger.LogInformation("Succes : All reminders found");
             return reminders;
         }
         catch (Exception ex)
@@ -53,25 +50,19 @@ public class ReminderService(
     {
         try
         {
-            var reminder = await _context.Reminder.Select(x => new ReminderOutput
-            {
-                Id = x.Id,
-                Content = x.Content,
-                Color = x.Color,
-                CreatedBy = x.CreatedBy,
-                CreatedAt = x.CreatedAt,
-                CoordX = x.CoordX,
-                CoordY = x.CoordY,
-                CoordZ = x.CoordZ
-            }).FirstOrDefaultAsync(x => x.Id == id);
+            var reminder = await _reminderRepository.GetReminderOutputAsync(id);
 
             if (reminder == null)
             {
                 throw new NotFoundException($"Reminder {id} not found");
             }
 
-            logger.LogInformation("Succes : Reminder found");
+            _logger.LogInformation("Succes : Reminder found");
             return reminder;
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -89,9 +80,9 @@ public class ReminderService(
         try
         {
             var reminder = input.ToDb();
-            await _context.Reminder.AddAsync(reminder);
-            await _context.SaveChangesAsync();
-            logger.LogInformation("Succes : Reminder added");
+            await _reminderRepository.AddReminderAsync(reminder);
+            await _reminderRepository.SaveChangesAsync();
+            _logger.LogInformation("Succes : Reminder added");
             return reminder.Id;
         }
         catch (Exception ex)
@@ -111,16 +102,21 @@ public class ReminderService(
     {
         try
         {
-            var reminder = _context.Reminder.Where(x => x.Id == input.Id).FirstOrDefault();
+            var reminder = await _reminderRepository.GetReminderAsync(input.Id);
             if (reminder == null)
             {
                 throw new NotFoundException($"Reminder {input.Id} not found");
             }
 
-            var updatedReminder = reminder.UpdateFromInput(input);
-            await _context.SaveChangesAsync();
+            reminder.UpdateFromInput(input);
 
-            logger.LogInformation("Succes : Reminder updated");
+            await _reminderRepository.SaveChangesAsync();
+
+            _logger.LogInformation("Succes : Reminder updated");
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -139,27 +135,38 @@ public class ReminderService(
         try
         {
             var idsToMatch = inputs.Select(x => x.Id).ToList();
-            var reminders = await _context.Reminder.Where(x => idsToMatch.Contains(x.Id)).ToListAsync();
+            var reminders = await _reminderRepository.GetReminderFromListOfId(idsToMatch);
+            
             if (reminders == null)
             {
                 throw new NotFoundException($"No reminders found");
             }
+            
             var notfounds = inputs.Select(x => x.Id).Except(reminders.Select(x => x.Id)).ToList();
+            
             if (notfounds.Any())
             {
                 throw new NotFoundException($"Reminders {String.Join(", ", notfounds)} was/were not found");
             }
 
-            using (var transaction = await _context.Database.BeginTransactionAsync())
+            using (var transaction = await _reminderRepository.BeginTransactionAsync())
             {
                 try
                 {
                     foreach (var reminder in reminders)
                     {
                         var input = inputs.FirstOrDefault(x => x.Id == reminder.Id);
-                        reminder.UpdateFromInput(input);
+                        
+                        if (input is null)
+                        {
+                            throw new NotFoundException($"input not found");
+                        }
+                        else
+                        {
+                            reminder.UpdateFromInput(input);
+                        }
                     }
-                    await _context.SaveChangesAsync();
+                    await _reminderRepository.SaveChangesAsync();
                     transaction.Commit();
                 }
                 catch (Exception ex)
@@ -169,7 +176,11 @@ public class ReminderService(
                 }
             }
 
-            logger.LogInformation("Succes : Reminders all updated");
+            _logger.LogInformation("Succes : Reminders all updated");
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -188,15 +199,19 @@ public class ReminderService(
     {
         try
         {
-            var reminder = _context.Reminder.Where(x => x.Id == id).FirstOrDefault();
+            var reminder = await _reminderRepository.GetReminderAsync(id);
             if (reminder == null)
             {
                 throw new NotFoundException($"Reminder {id} not found");
             }
-            _context.Reminder.Remove(reminder);
-            await _context.SaveChangesAsync();
+            await _reminderRepository.DeleteReminderAsync(reminder);
+            await _reminderRepository.SaveChangesAsync();
 
-            logger.LogInformation("Succes : Reminder deleted");
+            _logger.LogInformation("Succes : Reminder deleted");
+        }
+        catch (NotFoundException)
+        {
+            throw;
         }
         catch (Exception ex)
         {

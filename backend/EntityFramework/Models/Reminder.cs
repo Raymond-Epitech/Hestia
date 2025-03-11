@@ -3,8 +3,8 @@
 public class Reminder
 {
     public Guid Id { get; set; }
-    public Guid CollocationId { get; set; }
-    public Collocation Collocation { get; set; } = null!;
+    public Guid ColocationId { get; set; }
+    public Colocation Colocation { get; set; } = null!;
     public string CreatedBy { get; set; } = null!;
     public DateTime CreatedAt { get; set; }
     public string Content { get; set; } = null!;

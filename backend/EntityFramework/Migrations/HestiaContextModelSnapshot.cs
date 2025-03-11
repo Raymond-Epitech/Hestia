@@ -28,7 +28,7 @@ namespace EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CollocationId")
+                    b.Property<Guid>("ColocationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -53,7 +53,7 @@ namespace EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CollocationId");
+                    b.HasIndex("ColocationId");
 
                     b.ToTable("Chore");
                 });
@@ -103,7 +103,7 @@ namespace EntityFramework.Migrations
                     b.ToTable("ChoreMessage");
                 });
 
-            modelBuilder.Entity("EntityFramework.Models.Collocation", b =>
+            modelBuilder.Entity("EntityFramework.Models.Colocation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -126,7 +126,7 @@ namespace EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Collocation");
+                    b.ToTable("Colocation");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.Reminder", b =>
@@ -135,7 +135,7 @@ namespace EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CollocationId")
+                    b.Property<Guid>("ColocationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Color")
@@ -164,7 +164,7 @@ namespace EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CollocationId");
+                    b.HasIndex("ColocationId");
 
                     b.ToTable("Reminder");
                 });
@@ -175,7 +175,7 @@ namespace EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("CollocationId")
+                    b.Property<Guid?>("ColocationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -198,20 +198,20 @@ namespace EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CollocationId");
+                    b.HasIndex("ColocationId");
 
                     b.ToTable("User");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.Chore", b =>
                 {
-                    b.HasOne("EntityFramework.Models.Collocation", "Collocation")
+                    b.HasOne("EntityFramework.Models.Colocation", "Colocation")
                         .WithMany("Chores")
-                        .HasForeignKey("CollocationId")
+                        .HasForeignKey("ColocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Collocation");
+                    b.Navigation("Colocation");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.ChoreEnrollment", b =>
@@ -246,23 +246,23 @@ namespace EntityFramework.Migrations
 
             modelBuilder.Entity("EntityFramework.Models.Reminder", b =>
                 {
-                    b.HasOne("EntityFramework.Models.Collocation", "Collocation")
+                    b.HasOne("EntityFramework.Models.Colocation", "Colocation")
                         .WithMany("Reminders")
-                        .HasForeignKey("CollocationId")
+                        .HasForeignKey("ColocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Collocation");
+                    b.Navigation("Colocation");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.User", b =>
                 {
-                    b.HasOne("EntityFramework.Models.Collocation", "Collocation")
+                    b.HasOne("EntityFramework.Models.Colocation", "Colocation")
                         .WithMany("Users")
-                        .HasForeignKey("CollocationId")
+                        .HasForeignKey("ColocationId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.Navigation("Collocation");
+                    b.Navigation("Colocation");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.Chore", b =>
@@ -272,7 +272,7 @@ namespace EntityFramework.Migrations
                     b.Navigation("ChoreMessages");
                 });
 
-            modelBuilder.Entity("EntityFramework.Models.Collocation", b =>
+            modelBuilder.Entity("EntityFramework.Models.Colocation", b =>
                 {
                     b.Navigation("Chores");
 

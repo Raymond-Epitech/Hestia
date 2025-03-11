@@ -5,7 +5,7 @@ namespace EntityFramework.Context
 {
     public class HestiaContext : DbContext
     {
-        public virtual DbSet<Collocation> Collocation { get; set; }
+        public virtual DbSet<Colocation> Colocation { get; set; }
         public virtual DbSet<Reminder> Reminder { get; set; } = null!;
         public virtual DbSet<Chore> Chore { get; set; } = null!;
         public virtual DbSet<ChoreMessage> ChoreMessage { get; set; } = null!;
@@ -16,22 +16,22 @@ namespace EntityFramework.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Collocation>(c =>
+            modelBuilder.Entity<Colocation>(c =>
             {
                 c.HasMany(x => x.Users)
-                    .WithOne(x => x.Collocation)
-                    .HasForeignKey(x => x.CollocationId)
+                    .WithOne(x => x.Colocation)
+                    .HasForeignKey(x => x.ColocationId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .IsRequired(false);
 
                 c.HasMany(x => x.Chores)
-                    .WithOne(x => x.Collocation)
-                    .HasForeignKey(x => x.CollocationId)
+                    .WithOne(x => x.Colocation)
+                    .HasForeignKey(x => x.ColocationId)
                     .OnDelete(DeleteBehavior.Cascade);
 
                 c.HasMany(x => x.Reminders)
-                    .WithOne(x => x.Collocation)
-                    .HasForeignKey(x => x.CollocationId)
+                    .WithOne(x => x.Colocation)
+                    .HasForeignKey(x => x.ColocationId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
             modelBuilder.Entity<Chore>(c =>

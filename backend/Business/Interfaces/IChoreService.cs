@@ -1,6 +1,6 @@
-﻿using Business.Models.Input;
-using Business.Models.Output;
-using Business.Models.Update;
+﻿using Shared.Models.Input;
+using Shared.Models.Output;
+using Shared.Models.Update;
 
 namespace Business.Interfaces
 {
