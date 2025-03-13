@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EntityFramework.Migrations
 {
     [DbContext(typeof(HestiaContext))]
-    [Migration("20250308170003_RenameCollocationToColocation")]
-    partial class RenameCollocationToColocation
+    [Migration("20250311044806_NewInitialMigration")]
+    partial class NewInitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
