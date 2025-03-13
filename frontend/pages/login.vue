@@ -1,7 +1,10 @@
 <template>
     <div class="base">
-        <img src="../public/logo-hestia.png" class="logo"/>
-        <button @click.prevent='gettest'>call test</button>
+        <img src="../public/logo-hestia.png" class="logo" />
+        <div v-if="registretion">
+            <h2>Pour vous enregistrer, veuillez entrer un nom d'utilisateur et relancer en sélectionnant le compte Google</h2>
+            <input type="text" placeholder="Nom d'utilisateur" v-model="username" />
+        </div>
         <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton>
     </div>
 </template>
@@ -9,31 +12,62 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/store/auth';
-import { bridge } from '~/service/bridge.ts';
+
+definePageMeta({
+    layout: false
+})
 
 const { authenticateUser } = useAuthStore();
 const { authenticated } = storeToRefs(useAuthStore());
-const api = new bridge();
-
+const { $bridge } = useNuxtApp()
+const username = ref('');
+const registretion = ref(false);
 const router = useRouter();
+
+const handleregistration = async (response) => {
+    const { credential } = response;
+    console.log("Access Token", credential);
+    const newuser = {
+        username: username.value
+    };
+    
+    const data = await $bridge.addUser(newuser, credential);
+    console.log("Data", data);
+    if (data) {
+        $bridge.setjwt(data.jwt);
+        await authenticateUser(data.jwt);
+    }
+    if (authenticated) {
+        router.push('/');
+    }
+};
+
 const handleLoginSuccess = async (response) => {
-  const { credential } = response;
-  console.log("Access Token", credential);
-  await authenticateUser(credential);
+    if (registretion.value) {
+        handleregistration(response);
+        return;
+    }
+    const { credential } = response;
+    console.log("Access Token", credential);
+    const data = await $bridge.login(credential);
+    console.log("Data", data);
+    if (data.error) {
+        console.error(data.error);
+        registretion.value = true;
+        return;
+    }
+    if (data) {
+        $bridge.setjwt(data.jwt);
+        await authenticateUser(data.jwt);
+    }
     if (authenticated) {
         router.push('/');
     }
 };
 
 const handleLoginError = () => {
-  console.error("Login failed");
+    console.error("Login failed");
 };
-
-const gettest = async () => {
-    const data = await api.getAllReminders();
-    console.log(data);
-    return data;
-}
 
 </script>
 
@@ -54,5 +88,4 @@ body {
     width: 280px;
     border-radius: 15px;
 }
-
 </style>

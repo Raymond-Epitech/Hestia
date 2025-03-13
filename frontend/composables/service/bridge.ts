@@ -1,10 +1,16 @@
-import type { Reminder, User, Collocation, Chore } from "./type";
+import { json } from "stream/consumers";
+import type { Reminder, User, Colocation, Chore } from "./type";
 
 export class bridge {
-    url: string = "http://localhost:8080";
+    url: string = "http://91.134.48.124:8080";
+    jwt: string = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMTE1OTE1ODU5OTA5MDMxOTM3MzAiLCJlbWFpbCI6ImJlbmphbWluYm91cmV6QGdtYWlsLmNvbSIsIm5hbWUiOiJCZW5qYW1pbiIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NMbnpUTlJNOF9ERTBYWWVhcGdGWlNjNlUxTC11NXQtRzJxZzA1MVF3bllYLWZnV2EwPXM5Ni1jIiwiaXNzIjoiaGVzdGlhLWFwcCIsImF1ZCI6Imhlc3RpYS1tb2JpbGUifQ.E9bPI5VXWu5tH1Y0zq8_YQhZfkf962B2Ohnd_2aqMeg";
 
     seturl(new_url: string) {
         this.url = new_url;
+    }
+
+    setjwt(new_jwt: string) {
+        this.jwt = new_jwt;
     }
 
     // Version section: get version
@@ -20,7 +26,14 @@ export class bridge {
     // Reminder section: get all reminders, get reminder by ID, add reminder, update reminder, delete reminder
 
     async getAllReminders(id_colloc: string) {
-        const response: Response = await fetch(this.url + "/api/Reminder/GetByCollocation/" + id_colloc);
+        const response: Response = await fetch(this.url + "/api/Reminder/GetByColocation/" + id_colloc,
+            {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            }
+        );
         if (response.status == 200) {
             return await response.json();
         }
@@ -35,14 +48,20 @@ export class bridge {
         return {};
     }
 
-    async addReminder(data: Reminder) {
+    async addReminder(data: any) {
         return await fetch(this.url + "/api/Reminder", {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
             },
             body: JSON.stringify(data)
-        }).then(response => response.json());
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
     }
 
     async updateReminder(data: Reminder) {
@@ -52,7 +71,12 @@ export class bridge {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
-        }).then(response => response.json());
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
     }
 
     async updateReminderRange(data: [Reminder]) {
@@ -67,35 +91,49 @@ export class bridge {
 
     async deleteReminder(id: string) {
         return await fetch(this.url + "/api/Reminder/" + id, {
-            method: 'DELETE'
-        }).then(response => response.json());
-    }
-
-    // User section:
-
-    async login(client_id: string, google_token: string) {
-        return await fetch(this.url + "/Login?googleToken=" + google_token + "&clientId=" + client_id, {
-            method: 'POST'
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
         }).then(response => {
             if (response.status == 200) {
                 return true;
             }
             return false;
+        });
+    }
+
+    // User section:
+
+    async login(google_token: string) {
+        return await fetch(this.url + "/Login?googleToken=" + google_token, {
+            method: 'POST'
+        }).then(async response => {
+            if (response.status == 200) {
+                return await response.json();
+            } else if (response.status == 404) {
+                const jsonresponse = await response.json();
+                if (jsonresponse.message == "User not found") {
+                    return { error: "User not found" };
+                }
+                return { error: "Internal server error" };
+            }
+            return {};
         })
     }
 
-    async addUser(user: User) {
-        return await fetch(this.url + "/api/User", {
+    async addUser(user: User, google_token: string) {
+        return await fetch(this.url + "/Register?googleToken=" + google_token, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(user)
-        }).then(response => {
+        }).then(async response => {
             if (response.status == 200) {
-                return true;
+                return await response.json();
             }
-            return false;
+            return {};
         })
     }
 
@@ -137,7 +175,7 @@ export class bridge {
     }
 
     async getUserbyCollocId(collocid: string) {
-        return await fetch(this.url + "/api/User/GetByCollocationId/" + collocid, {
+        return await fetch(this.url + "/api/User/GetByColocationId/" + collocid, {
             method: 'GET'
         }).then(response => {
             if (response.status == 200) {
@@ -147,15 +185,15 @@ export class bridge {
         });
     }
 
-    // collocation section: 
+    // Colocation section: 
 
-    async addCollocation(collocation: Collocation) {
-        return await fetch(this.url + "/api/Collocation", {
+    async addColocation(colocation: Colocation) {
+        return await fetch(this.url + "/api/Colocation", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(collocation)
+            body: JSON.stringify(colocation)
         }).then(response => {
             if (response.status == 200) {
                 return true;
@@ -164,13 +202,13 @@ export class bridge {
         })
     }
 
-    async updateCollocation(collocation: Collocation) {
-        return await fetch(this.url + "/api/Collocation", {
+    async updateColocation(colocation: Colocation) {
+        return await fetch(this.url + "/api/Colocation", {
             method: 'PUT',
             headers: {
                 'Content-type': 'application/json'
             },
-            body: JSON.stringify(collocation)
+            body: JSON.stringify(colocation)
         }).then(response => {
             if (response.status == 200) {
                 return true;
@@ -179,8 +217,8 @@ export class bridge {
         })
     }
 
-    async deleteCollocation(id: string) {
-        return await fetch(this.url + "/api/Collocation/" + id, {
+    async deleteColocation(id: string) {
+        return await fetch(this.url + "/api/Colocation/" + id, {
             method: 'DELETE',
         }).then(response => {
             if (response.status == 200) {
@@ -190,8 +228,8 @@ export class bridge {
         })
     }
 
-    async getAllCollocation() {
-        return await fetch(this.url + "/api/Collocation", {
+    async getAllColocation() {
+        return await fetch(this.url + "/api/Colocation", {
             method: 'GET',
         }).then(response => {
             if (response.status == 200) {
@@ -201,8 +239,8 @@ export class bridge {
         })
     }
 
-    async getCollocationById(id: string) {
-        return await fetch(this.url + "/api/Collocation/" + id, {
+    async getColocationById(id: string) {
+        return await fetch(this.url + "/api/Colocation/" + id, {
             method: 'GET',
         }).then(response => {
             if (response.status == 200) {
@@ -255,8 +293,8 @@ export class bridge {
         })
     }
 
-    async getAllChore(collocationId: string) {
-        return await fetch(this.url + "/api/Chore/GetByCollocationId/" + collocationId, {
+    async getAllChore(colocationId: string) {
+        return await fetch(this.url + "/api/Chore/GetByColocationId/" + colocationId, {
             method: 'GET',
         }).then(response => {
             if (response.status == 200) {

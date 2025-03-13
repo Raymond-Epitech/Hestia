@@ -1,19 +1,22 @@
 export type Reminder = {
-    id: string;
-    color: string;
-    content: string;
-    createdBy: string;
-    createdAt: string;
+
+    id: string,
+    createdBy: string,
+    content: string,
+    color: string,
+    coordX: number,
+    coordY: number,
+    coordZ: number
 };
 
 export type User = {
     username: string;
     email: string;
-    collocationId: string;
+    colocationId: string;
     id: string;
 }
 
-export type Collocation = {
+export type Colocation = {
     name: string;
     addresse: string;
     createdBy: string;
@@ -29,3 +32,4 @@ export type Chore = {
     dueDate: string;
     isDone: boolean;    
 }
+export type Locale = 'fr' | 'en' | 'es' | 'de' | 'zh' | 'ja';

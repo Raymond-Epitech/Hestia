@@ -173,3 +173,4 @@ msbuild.err
 msbuild.wrn
 
 appsettings.Development.json
+backend/Api/appsettings.json
