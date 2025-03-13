@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EntityFramework.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class NewInitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Collocation",
+                name: "Colocation",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -23,7 +23,7 @@ namespace EntityFramework.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Collocation", x => x.Id);
+                    table.PrimaryKey("PK_Colocation", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -33,7 +33,7 @@ namespace EntityFramework.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CollocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ColocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -43,9 +43,9 @@ namespace EntityFramework.Migrations
                 {
                     table.PrimaryKey("PK_Chore", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Chore_Collocation_CollocationId",
-                        column: x => x.CollocationId,
-                        principalTable: "Collocation",
+                        name: "FK_Chore_Colocation_ColocationId",
+                        column: x => x.ColocationId,
+                        principalTable: "Colocation",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -55,7 +55,7 @@ namespace EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CollocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ColocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -68,9 +68,9 @@ namespace EntityFramework.Migrations
                 {
                     table.PrimaryKey("PK_Reminder", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Reminder_Collocation_CollocationId",
-                        column: x => x.CollocationId,
-                        principalTable: "Collocation",
+                        name: "FK_Reminder_Colocation_ColocationId",
+                        column: x => x.ColocationId,
+                        principalTable: "Colocation",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -82,7 +82,7 @@ namespace EntityFramework.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastConnection = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CollocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ColocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PathToProfilePicture = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -91,9 +91,9 @@ namespace EntityFramework.Migrations
                 {
                     table.PrimaryKey("PK_User", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_User_Collocation_CollocationId",
-                        column: x => x.CollocationId,
-                        principalTable: "Collocation",
+                        name: "FK_User_Colocation_ColocationId",
+                        column: x => x.ColocationId,
+                        principalTable: "Colocation",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                 });
@@ -145,9 +145,9 @@ namespace EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chore_CollocationId",
+                name: "IX_Chore_ColocationId",
                 table: "Chore",
-                column: "CollocationId");
+                column: "ColocationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChoreEnrollments_ChoreId",
@@ -160,14 +160,14 @@ namespace EntityFramework.Migrations
                 column: "ChoreId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reminder_CollocationId",
+                name: "IX_Reminder_ColocationId",
                 table: "Reminder",
-                column: "CollocationId");
+                column: "ColocationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_CollocationId",
+                name: "IX_User_ColocationId",
                 table: "User",
-                column: "CollocationId");
+                column: "ColocationId");
         }
 
         /// <inheritdoc />
@@ -189,7 +189,7 @@ namespace EntityFramework.Migrations
                 name: "Chore");
 
             migrationBuilder.DropTable(
-                name: "Collocation");
+                name: "Colocation");
         }
     }
 }
