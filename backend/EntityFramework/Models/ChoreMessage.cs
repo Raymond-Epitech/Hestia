@@ -1,12 +1,25 @@
-﻿namespace EntityFramework.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace EntityFramework.Models
 {
     public class ChoreMessage
     {
+        [Key]
         public Guid Id { get; set; }
+
+        [Required]
         public string CreatedBy { get; set; } = null!;
-        public DateTime CreatedAt { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        [Required]
         public Guid ChoreId { get; set; }
+
+        [ForeignKey(nameof(ChoreId))]
         public Chore Chore { get; set; } = null!;
+
+        [Required]
         public string Content { get; set; } = null!;
     }
 }
