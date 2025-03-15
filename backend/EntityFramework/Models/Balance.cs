@@ -11,12 +11,6 @@ namespace EntityFramework.Models
         [ForeignKey(nameof(UserId))]
         public User User { get; set; } = null!;
 
-        [Required]
-        public Guid ColocationId { get; set; }
-        
-        [ForeignKey(nameof(ColocationId))]
-        public Colocation Colocation { get; set;} = null!;
-
         [Column(TypeName = "decimal(19,2)")]
         public decimal PersonalBalance { get; set; }
 

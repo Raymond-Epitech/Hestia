@@ -14,7 +14,7 @@ public class UserRepository : IUserRepository
 
     public async Task<List<UserOutput>> GetAllUserOutputAsync(Guid CollocationId)
     {
-        var users = await _context.User.Where(x => x.ColocationId == CollocationId).Select(x => new UserOutput
+        var users = await _context.Users.Where(x => x.ColocationId == CollocationId).Select(x => new UserOutput
         {
             Id = x.Id,
             Username = x.Username,
@@ -26,7 +26,7 @@ public class UserRepository : IUserRepository
 
     public async Task<UserOutput?> GetUserOutputByIdAsync(Guid id)
     {
-        return await _context.User.Where(x => x.Id == id).Select(x => new UserOutput
+        return await _context.Users.Where(x => x.Id == id).Select(x => new UserOutput
         {
             Id = x.Id,
             Username = x.Username,
@@ -37,31 +37,31 @@ public class UserRepository : IUserRepository
 
     public async Task AddAsync(User user)
     {
-        await _context.User.AddAsync(user);
+        await _context.Users.AddAsync(user);
     }
 
     public async Task<User?> GetUserByIdAsync(Guid id)
     {
-        return await _context.User.FindAsync(id);
+        return await _context.Users.FindAsync(id);
     }
     public async Task UpdateAsync(User user)
     {
-        _context.User.Update(user);
+        _context.Users.Update(user);
     }
 
     public async Task RemoveAsync(User user)
     {
-        _context.User.Remove(user);
+        _context.Users.Remove(user);
     }
 
     public async Task<User?> GetUserByEmailAsync(string email)
     {
-        return await _context.User.FirstOrDefaultAsync(x => x.Email == email);
+        return await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
     }
 
     public async Task<bool> AnyExistingUserByEmail(string email)
     {
-        return await _context.User.AnyAsync(x => x.Email == email);
+        return await _context.Users.AnyAsync(x => x.Email == email);
     }
 
     public async Task SaveChangesAsync()

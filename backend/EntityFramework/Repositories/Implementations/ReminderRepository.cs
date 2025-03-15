@@ -18,7 +18,7 @@ namespace EntityFramework.Repositories.Implementations
 
         public async Task<List<ReminderOutput>> GetAllReminderOutputsAsync(Guid colocationId)
         {
-            return await _context.Reminder.Where(x => x.ColocationId == colocationId).Select(x => new ReminderOutput
+            return await _context.Reminders.Where(x => x.ColocationId == colocationId).Select(x => new ReminderOutput
             {
                 Id = x.Id,
                 Content = x.Content,
@@ -31,7 +31,7 @@ namespace EntityFramework.Repositories.Implementations
 
         public async Task<ReminderOutput?> GetReminderOutputAsync(Guid id)
         {
-            return await _context.Reminder.Select(x => new ReminderOutput
+            return await _context.Reminders.Select(x => new ReminderOutput
             {
                 Id = x.Id,
                 Content = x.Content,
@@ -46,27 +46,27 @@ namespace EntityFramework.Repositories.Implementations
 
         public async Task<Reminder?> GetReminderAsync(Guid id)
         {
-            return await _context.Reminder.FindAsync(id);
+            return await _context.Reminders.FindAsync(id);
         }
 
         public async Task AddReminderAsync(Reminder reminder)
         {
-            await _context.Reminder.AddAsync(reminder);
+            await _context.Reminders.AddAsync(reminder);
         }
 
         public async Task UpdateReminderAsync(Reminder reminder)
         {
-            _context.Reminder.Update(reminder);
+            _context.Reminders.Update(reminder);
         }
 
         public async Task DeleteReminderAsync(Reminder reminder)
         {
-            _context.Reminder.Remove(reminder);
+            _context.Reminders.Remove(reminder);
         }
 
         public async Task<List<Reminder>> GetReminderFromListOfId(List<Guid> ids)
         {
-            return await _context.Reminder.Where(x => ids.Contains(x.Id)).ToListAsync();
+            return await _context.Reminders.Where(x => ids.Contains(x.Id)).ToListAsync();
         }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()

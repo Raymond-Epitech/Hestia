@@ -17,7 +17,7 @@ namespace EntityFramework.Repositories.Implementations
 
         public async Task<List<ChoreOutput>> GetAllChoreOutputsAsync(Guid ColocationId)
         {
-            var chores = await _context.Chore.Where(x => x.ColocationId == ColocationId).Select(x => new ChoreOutput
+            var chores = await _context.Chores.Where(x => x.ColocationId == ColocationId).Select(x => new ChoreOutput
             {
                 Id = x.Id,
                 CreatedBy = x.CreatedBy,
@@ -33,7 +33,7 @@ namespace EntityFramework.Repositories.Implementations
 
         public async Task<ChoreOutput?> GetChoreOutputByIdAsync(Guid id)
         {
-            return await _context.Chore.Select(x => new ChoreOutput
+            return await _context.Chores.Select(x => new ChoreOutput
             {
                 Id = x.Id,
                 CreatedBy = x.CreatedBy,
@@ -47,7 +47,7 @@ namespace EntityFramework.Repositories.Implementations
 
         public async Task<List<ChoreMessageOutput>> GetAllChoreMessageOutputByChoreIdAsync(Guid choreId)
         {
-            return await _context.ChoreMessage.Where(x => x.ChoreId == choreId).Select(x => new ChoreMessageOutput
+            return await _context.ChoreMessages.Where(x => x.ChoreId == choreId).Select(x => new ChoreMessageOutput
             {
                 Id = x.Id,
                 CreatedBy = x.CreatedBy,
@@ -58,44 +58,44 @@ namespace EntityFramework.Repositories.Implementations
 
         public async Task AddChoreAsync(Chore chore)
         {
-            await _context.Chore.AddAsync(chore);
+            await _context.Chores.AddAsync(chore);
         }
 
         public async Task AddChoreMessageAsync(ChoreMessage choreMessage)
         {
-            await _context.ChoreMessage.AddAsync(choreMessage);
+            await _context.ChoreMessages.AddAsync(choreMessage);
         }
 
         public async Task<Chore?> GetChoreByIdAsync(Guid id)
         {
-            return await _context.Chore.FindAsync(id);
+            return await _context.Chores.FindAsync(id);
         }
 
         public async Task UpdateChoreAsync(Chore chore)
         {
-            _context.Chore.Update(chore);
+            _context.Chores.Update(chore);
         }
         public async Task DeleteChoreAsync(Chore chore)
         {
-            _context.Chore.Remove(chore);
+            _context.Chores.Remove(chore);
         }
 
         public async Task<List<ChoreMessage>?> GetChoreMessageFromChoreId(Guid choreId)
         {
-            return await _context.Chore.AnyAsync(x => x.Id == choreId)
-            ? await _context.ChoreMessage.Where(x => x.ChoreId == choreId).ToListAsync()
+            return await _context.Chores.AnyAsync(x => x.Id == choreId)
+            ? await _context.ChoreMessages.Where(x => x.ChoreId == choreId).ToListAsync()
             : null;
         }
 
         public async Task DeleteRangeChoreMessageFromChoreId(List<ChoreMessage> choreMessages)
         {
-            _context.ChoreMessage.RemoveRange(choreMessages);
+            _context.ChoreMessages.RemoveRange(choreMessages);
         }
 
         public async Task<List<UserOutput>> GetEnrolledUserOutputFromChoreIdAsync(Guid choreId)
         {
             var enroll = _context.ChoreEnrollments.Where(x => x.ChoreId == choreId);
-            var users = await _context.User.Where(x => enroll.Select(x => x.UserId).Contains(x.Id)).Select(x => new UserOutput
+            var users = await _context.Users.Where(x => enroll.Select(x => x.UserId).Contains(x.Id)).Select(x => new UserOutput
             {
                 Id = x.Id,
                 Username = x.Username,
@@ -107,7 +107,7 @@ namespace EntityFramework.Repositories.Implementations
         public async Task<List<ChoreOutput>> GetEnrolledChoreOutputFromUserIdAsync(Guid userId)
         {
             var enroll = _context.ChoreEnrollments.Where(x => x.UserId == userId);
-            var chores = await _context.Chore.Where(x => enroll.Select(x => x.ChoreId).Contains(x.Id)).Select(x => new ChoreOutput
+            var chores = await _context.Chores.Where(x => enroll.Select(x => x.ChoreId).Contains(x.Id)).Select(x => new ChoreOutput
             {
                 Id = x.Id,
                 CreatedBy = x.CreatedBy,

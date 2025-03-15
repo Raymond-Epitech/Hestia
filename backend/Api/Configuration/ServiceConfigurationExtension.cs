@@ -26,12 +26,14 @@ namespace WebApi.Configuration
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IColocationService, ColocationService>();
             services.AddScoped<IJwtService, JwtService>();
+            services.AddScoped<IExpenseService, ExpenseService>();
 
             // Repositories
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IChoreRepository, ChoreRepository>();
             services.AddScoped<IColocationRepository, ColocationRepository>();
             services.AddScoped<IReminderRepository, ReminderRepository>();
+            services.AddScoped<IExpenseRepository, ExpenseRepository>();
 
             // Others
             services.AddHttpContextAccessor();

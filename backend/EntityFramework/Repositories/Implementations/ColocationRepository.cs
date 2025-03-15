@@ -17,7 +17,7 @@ namespace EntityFramework.Repositories.Implementations
 
         public async Task<List<ColocationOutput>> GetAllColocationOutputAsync()
         {
-            return await _context.Colocation.Select(x => new ColocationOutput
+            return await _context.Colocations.Select(x => new ColocationOutput
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -28,7 +28,7 @@ namespace EntityFramework.Repositories.Implementations
 
         public async Task<ColocationOutput?> GetColocationOutputFromIdAsync(Guid colocationId)
         {
-            return await _context.Colocation.Where(x => x.Id == colocationId).Select(x => new ColocationOutput
+            return await _context.Colocations.Where(x => x.Id == colocationId).Select(x => new ColocationOutput
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -39,22 +39,22 @@ namespace EntityFramework.Repositories.Implementations
 
         public async Task<Colocation?> GetColocationFromIdAsync(Guid colocationId)
         {
-            return await _context.Colocation.FindAsync(colocationId);
+            return await _context.Colocations.FindAsync(colocationId);
         }
 
         public async Task AddColocationAsync(Colocation colocation)
         {
-            await _context.Colocation.AddAsync(colocation);
+            await _context.Colocations.AddAsync(colocation);
         }
 
         public async Task UpdateColocationAsync(Colocation colocation)
         {
-            _context.Colocation.Update(colocation);
+            _context.Colocations.Update(colocation);
         }
 
         public async Task DeleteColocationAsync(Colocation colocation)
         {
-            _context.Colocation.Remove(colocation);
+            _context.Colocations.Remove(colocation);
         }
 
         public async Task SaveChangesAsync()
