@@ -1,7 +1,6 @@
 ﻿using Business.Interfaces;
 using Business.Mappers;
 using EntityFramework.Models;
-using EntityFramework.Repositories.Implementations;
 using EntityFramework.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
 using Shared.Enums;
@@ -78,10 +77,11 @@ namespace Business.Services
             return result;
         }
 
-        private static async Task AddEntryWithEvenlyType(ExpenseInput input)
+        private async Task AddEntryWithEvenlyType(ExpenseInput input)
         {
-            var splitAmounts = SplitAmountEvenly(input.Amount, input.SplitBetween.Count);
+            var splitAmounts = SplitAmountEvenly(input.Amount, input.SplitBetween!.Count);
             var entryList = new List<Entry>();
+            var balances = await _expenseRepository.GetBalanceFromUserIdListAsync(input.SplitBetween);
 
             for (int i = 0; i < input.SplitBetween.Count; i++)
             {
@@ -91,15 +91,21 @@ namespace Business.Services
                     Amount = splitAmounts[i]
                 };
                 entryList.Add(newEntry);
+                var balance = balances.First(x => x.UserId == newEntry.Id);
+                balance.PersonalBalance += newEntry.Amount;
+                balance.LastUpdate = DateTime.UtcNow;
             }
+            await _expenseRepository.UpdateRangeBalanceAsync(balances);
             await _expenseRepository.AddRangeEntryAsync(entryList);
         }
 
-        private static async Task AddEntryWithValueType(ExpenseInput input)
+        private async Task AddEntryWithValueType(ExpenseInput input)
         {
             var entryList = new List<Entry>();
+            var users = input.SplitValues!.Keys.ToList();
+            var balances = await _expenseRepository.GetBalanceFromUserIdListAsync(users);
 
-            foreach (var entry in input.SplitBetween)
+            foreach (var entry in input.SplitBetween!)
             {
                 var newEntry = new Entry
                 {
@@ -107,13 +113,20 @@ namespace Business.Services
                     Amount = input.SplitValues![entry]
                 };
                 entryList.Add(newEntry);
+                var balance = balances.First(x => x.UserId == entry);
+                balance.PersonalBalance += newEntry.Amount;
+                balance.LastUpdate = DateTime.UtcNow;
             }
+            await _expenseRepository.UpdateRangeBalanceAsync(balances);
             await _expenseRepository.AddRangeEntryAsync(entryList);
         }
 
-        private static async Task AddEntryWithPercentageType(ExpenseInput input)
+        private async Task AddEntryWithPercentageType(ExpenseInput input)
         {
             var entryList = new List<Entry>();
+            var users = input.SplitPercentages!.Keys.ToList();
+            var balances = await _expenseRepository.GetBalanceFromUserIdListAsync(users);
+
             foreach (var entry in input.SplitBetween!)
             {
                 var newEntry = new Entry
@@ -122,7 +135,11 @@ namespace Business.Services
                     Amount = input.Amount * input.SplitPercentages![entry] / 100
                 };
                 entryList.Add(newEntry);
+                var balance = balances.First(x => x.UserId == entry);
+                balance.PersonalBalance += newEntry.Amount;
+                balance.LastUpdate = DateTime.UtcNow;
             }
+            await _expenseRepository.UpdateRangeBalanceAsync(balances);
             await _expenseRepository.AddRangeEntryAsync(entryList);
         }
 
@@ -140,7 +157,7 @@ namespace Business.Services
         {
             try
             {
-                if (input is null ||input.SplitBetween!.Count == 0)
+                if (input is null || input.SplitBetween is null || input.SplitBetween!.Count == 0)
                 {
                     throw new InvalidEntityException("The expense must be split between at least one person");
                 }
@@ -190,6 +207,7 @@ namespace Business.Services
                         }
 
                         await _expenseRepository.AddExpenseAsync(expense);
+
                         await _expenseRepository.SaveChangesAsync();
                         transaction.Commit();
                         return expense.Id;
@@ -202,7 +220,7 @@ namespace Business.Services
                     catch (Exception ex)
                     {
                         await transaction.RollbackAsync();
-                        throw new ContextException("An error occurred while adding the expense to the db", ex);
+                        throw new ContextException("NO DATA WAS MODIFIED : An error occurred while adding the expense to the db", ex);
                     }
                 }
             }
@@ -216,7 +234,7 @@ namespace Business.Services
             }
             catch (Exception)
             {
-                throw new ContextException("An error happened during the creation of the transaction");
+                throw new ContextException("NO DATA WAS MODIFIED : An error happened during the creation of the transaction");
             }
         }
     }

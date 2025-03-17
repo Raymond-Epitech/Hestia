@@ -1,9 +1,9 @@
 ﻿using EntityFramework.Context;
+using EntityFramework.Models;
 using EntityFramework.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Shared.Models.DTO;
-using Shared.Models.Output;
 
 namespace EntityFramework.Repositories.Implementations
 {
@@ -52,6 +52,26 @@ namespace EntityFramework.Repositories.Implementations
                 SplitType = x.SplitType,
                 DateOfPayment = x.DateOfPayment
             }).FirstOrDefaultAsync();
+        }
+
+        public async Task AddRangeEntryAsync(List<Entry> entryList)
+        {
+            await _context.Entries.AddRangeAsync(entryList);
+        }
+
+        public async Task AddExpenseAsync(Expense expense)
+        {
+            await _context.Expenses.AddAsync(expense);
+        }
+
+        public async Task<List<Balance>> GetBalanceFromUserIdListAsync(List<Guid> userIds)
+        {
+            return await _context.Balances.Where(x => userIds.Contains(x.UserId)).ToListAsync();
+        }
+
+        public async Task UpdateRangeBalanceAsync(List<Balance> balances)
+        {
+            _context.Balances.UpdateRange(balances);
         }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()
