@@ -5,6 +5,7 @@ namespace Shared.Models.Input
     public class ExpenseInput()
     {
         public Guid ColocationId { get; set; }
+        public string CreatedBy { get; set; } = null!;
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
         public decimal Amount { get; set; }
