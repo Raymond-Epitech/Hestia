@@ -31,5 +31,6 @@ namespace EntityFramework.Models
         public ICollection<Balance> Balances { get; set; } = null!;
         public ICollection<Entry> Entries { get; set; } = null!;
         public ICollection<Expense> Expenses { get; set; } = null!;
+        public ICollection<SplitBetween> SplitBetweens { get; set; } = null!;
     }
 }

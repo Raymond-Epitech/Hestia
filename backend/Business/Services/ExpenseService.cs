@@ -14,14 +14,24 @@ namespace Business.Services
     {
         private readonly ILogger<ColocationService> _logger;
         private readonly IExpenseRepository _expenseRepository;
+        private readonly IUserRepository _userRepository;
 
-        public ExpenseService(ILogger<ColocationService> logger, IExpenseRepository expenseRepository)
+        public ExpenseService(ILogger<ColocationService> logger,
+            IExpenseRepository expenseRepository,
+            IUserRepository userRepository)
         {
             _logger = logger;
             _expenseRepository = expenseRepository;
+            _userRepository = userRepository;
         }
 
-        public async Task<List<ExpenseOutput>> GetAllExpenses(Guid ColocationId)
+        /// <summary>
+        /// Get all expenses
+        /// </summary>
+        /// <param name="ColocationId">The colocation of the returned expenses</param>
+        /// <returns>All the expense of the colocation</returns>
+        /// <exception cref="ContextException">An error happened during the retriving of expenses</exception>
+        public async Task<List<ExpenseOutput>> GetAllExpensesAsync(Guid ColocationId)
         {
             try
             {
@@ -29,14 +39,20 @@ namespace Business.Services
 
                 _logger.LogInformation("Succes : All expenses were retrived from db");
 
-                return expenses.Select(x => x.ToOutput()).ToList();
+                return expenses.Select(x => x.ToOutput()).OrderBy(x => x.DateOfPayment).ToList();
             }
             catch (Exception ex)
             {
                 throw new ContextException("An error occurred while getting all expenses from the db", ex);
             }
-        }   
+        }
 
+        /// <summary>
+        /// Get an expense
+        /// </summary>
+        /// <param name="id">The id of the expense</param>
+        /// <returns>The expense</returns>
+        /// <exception cref="ContextException">An error occured during the retrival of the expense</exception>
         public async Task<ExpenseOutput> GetExpenseAsync(Guid id)
         {
             try
@@ -62,6 +78,12 @@ namespace Business.Services
             }
         }
 
+        /// <summary>
+        /// Split the amount of the expense between the people
+        /// </summary>
+        /// <param name="totalAmount">The total of the ammount to share</param>
+        /// <param name="numPeople">The number of people</param>
+        /// <returns>A list of *numPeople* decimal splited</returns>
         private static List<decimal> SplitAmountEvenly(decimal totalAmount, int numPeople)
         {
             decimal baseAmount = Math.Floor(totalAmount / numPeople * 100) / 100;
@@ -77,6 +99,10 @@ namespace Business.Services
             return result;
         }
 
+        /// <summary>
+        /// Add the entries to the database and update the balance with the amount splited evenly
+        /// </summary>
+        /// <param name="input">The input of AddExpense</param>
         private async Task AddEntryWithEvenlyType(ExpenseInput input)
         {
             var splitAmounts = SplitAmountEvenly(input.Amount, input.SplitBetween!.Count);
@@ -95,10 +121,15 @@ namespace Business.Services
                 balance.PersonalBalance += newEntry.Amount;
                 balance.LastUpdate = DateTime.UtcNow;
             }
+
             await _expenseRepository.UpdateRangeBalanceAsync(balances);
             await _expenseRepository.AddRangeEntryAsync(entryList);
         }
 
+        /// <summary>
+        /// Add the entries to the database and update the balance with the amount splited with the value
+        /// </summary>
+        /// <param name="input">The input of AddExpense</param>
         private async Task AddEntryWithValueType(ExpenseInput input)
         {
             var entryList = new List<Entry>();
@@ -117,10 +148,15 @@ namespace Business.Services
                 balance.PersonalBalance += newEntry.Amount;
                 balance.LastUpdate = DateTime.UtcNow;
             }
+
             await _expenseRepository.UpdateRangeBalanceAsync(balances);
             await _expenseRepository.AddRangeEntryAsync(entryList);
         }
 
+        /// <summary>
+        /// Add the entries to the database and update the balance with the amount splited with the percentage
+        /// </summary>
+        /// <param name="input">The input of AddExpense</param>
         private async Task AddEntryWithPercentageType(ExpenseInput input)
         {
             var entryList = new List<Entry>();
@@ -139,6 +175,7 @@ namespace Business.Services
                 balance.PersonalBalance += newEntry.Amount;
                 balance.LastUpdate = DateTime.UtcNow;
             }
+
             await _expenseRepository.UpdateRangeBalanceAsync(balances);
             await _expenseRepository.AddRangeEntryAsync(entryList);
         }
@@ -184,7 +221,6 @@ namespace Business.Services
                             {
                                 throw new InvalidEntityException("The expense must have a value for each person");
                             }
-                            expense.SplitBetween = input.SplitValues.Keys.ToList();
                             await AddEntryWithValueType(input);
                         }
                         else if (input.SplitType == SplitTypeEnum.ByPercentage)
@@ -193,7 +229,6 @@ namespace Business.Services
                             {
                                 throw new InvalidEntityException("The expense must have a percentage for each person and it must be equal to 100%");
                             }
-                            expense.SplitBetween = input.SplitPercentages.Keys.ToList();
                             await AddEntryWithPercentageType(input);
                         }
                         else
@@ -202,14 +237,23 @@ namespace Business.Services
                             {
                                 throw new InvalidEntityException("The expense must be not null and split between number must at least 1 people");
                             }
-                            expense.SplitBetween = input.SplitBetween;
                             await AddEntryWithEvenlyType(input);
                         }
+
+                        var splitBetween = input.SplitBetween.Select(x => new SplitBetween
+                        {
+                            ExpenseId = expense.Id,
+                            UserId = x
+                        }).ToList();
+
+                        await _expenseRepository.AddRangeSplitBetweenAsync(splitBetween);
 
                         await _expenseRepository.AddExpenseAsync(expense);
 
                         await _expenseRepository.SaveChangesAsync();
+                        
                         transaction.Commit();
+                        
                         return expense.Id;
                     }
                     catch (InvalidEntityException)

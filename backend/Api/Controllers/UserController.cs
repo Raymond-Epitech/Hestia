@@ -22,7 +22,7 @@ namespace Api.Controllers
         {
             try
             {
-                var users = await userService.GetAllUser(ColocationId);
+                var users = await userService.GetAllUserAsync(ColocationId);
                 return Ok(users);
             }
             catch (ContextException ex)
@@ -45,7 +45,7 @@ namespace Api.Controllers
         {
             try
             {
-                var user = await userService.GetUser(id);
+                var user = await userService.GetUserAsync(id);
                 return Ok(user);
             }
             catch(NotFoundException ex)
@@ -72,7 +72,7 @@ namespace Api.Controllers
         {
             try
             {
-                await userService.UpdateUser(user);
+                await userService.UpdateUserAsync(user);
                 return Ok();
             }
             catch (NotFoundException ex)
@@ -99,7 +99,7 @@ namespace Api.Controllers
         {
             try
             {
-                await userService.DeleteUser(id);
+                await userService.DeleteUserAsync(id);
                 return Ok();
             }
             catch (NotFoundException ex)
@@ -125,7 +125,7 @@ namespace Api.Controllers
         {
             try
             {
-                return Ok(await userService.RegisterUser(googleToken, userInput));
+                return Ok(await userService.RegisterUserAsync(googleToken, userInput));
             }
             catch (AlreadyExistException ex)
             {
@@ -150,7 +150,7 @@ namespace Api.Controllers
         {
             try
             {
-                return Ok(await userService.LoginUser(googleToken));
+                return Ok(await userService.LoginUserAsync(googleToken));
             }
             catch (NotFoundException ex)
             {

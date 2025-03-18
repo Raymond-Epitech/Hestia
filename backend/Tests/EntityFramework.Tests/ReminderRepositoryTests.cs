@@ -32,7 +32,7 @@ public class ReminderRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.Reminder.AddRange(reminders);
+            context.Reminders.AddRange(reminders);
             await context.SaveChangesAsync();
         }
 
@@ -66,7 +66,7 @@ public class ReminderRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.Reminder.Add(reminder);
+            context.Reminders.Add(reminder);
             await context.SaveChangesAsync();
         }
 
@@ -100,7 +100,7 @@ public class ReminderRepositoryTests
         Reminder? result;
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            result = await context.Reminder.FindAsync(reminder.Id);
+            result = await context.Reminders.FindAsync(reminder.Id);
         }
 
         // Assert
@@ -116,7 +116,7 @@ public class ReminderRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.Reminder.Add(reminder);
+            context.Reminders.Add(reminder);
             await context.SaveChangesAsync();
         }
 
@@ -132,7 +132,7 @@ public class ReminderRepositoryTests
         Reminder? result;
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            result = await context.Reminder.FindAsync(reminder.Id);
+            result = await context.Reminders.FindAsync(reminder.Id);
         }
 
         // Assert
@@ -148,7 +148,7 @@ public class ReminderRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.Reminder.Add(reminder);
+            context.Reminders.Add(reminder);
             await context.SaveChangesAsync();
         }
 
@@ -163,7 +163,7 @@ public class ReminderRepositoryTests
         Reminder? result;
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            result = await context.Reminder.FindAsync(reminder.Id);
+            result = await context.Reminders.FindAsync(reminder.Id);
         }
 
         // Assert
@@ -182,7 +182,7 @@ public class ReminderRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.Reminder.AddRange(reminders);
+            context.Reminders.AddRange(reminders);
             await context.SaveChangesAsync();
         }
 
@@ -221,7 +221,7 @@ public class ReminderRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.Reminder.Add(reminder);
+            context.Reminders.Add(reminder);
             await context.SaveChangesAsync();
         }
 
@@ -266,7 +266,7 @@ public class ReminderRepositoryTests
         Reminder? result;
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            result = await context.Reminder.FindAsync(reminder.Id);
+            result = await context.Reminders.FindAsync(reminder.Id);
         }
 
         // Assert

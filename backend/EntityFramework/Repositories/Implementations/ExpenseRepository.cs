@@ -27,8 +27,8 @@ namespace EntityFramework.Repositories.Implementations
                 Name = x.Name,
                 Description = x.Description,
                 Amount = x.Amount,
-                PaidBy = x.PaidBy,
-                SplitBetween = x.SplitBetween,
+                PaidBy = x.User.Username,
+                SplitBetween = x.SplitBetweens.Select(y => y.User.Username).ToList(),
                 SplitType = x.SplitType,
                 DateOfPayment = x.DateOfPayment
             }).ToListAsync();
@@ -38,7 +38,8 @@ namespace EntityFramework.Repositories.Implementations
 
         public async Task<ExpenseDTO?> GetExpenseDTOAsync(Guid id)
         {
-            return await _context.Expenses.Where(x => x.Id == id).Select(x => new ExpenseDTO
+            return await _context.Expenses.Where(x => x.Id == id)
+                .Select(x => new ExpenseDTO
             {
                 Id = x.Id,
                 CreatedBy = x.CreatedBy,
@@ -47,8 +48,8 @@ namespace EntityFramework.Repositories.Implementations
                 Name = x.Name,
                 Description = x.Description,
                 Amount = x.Amount,
-                PaidBy = x.PaidBy,
-                SplitBetween = x.SplitBetween,
+                PaidBy = x.User.Username,
+                SplitBetween = x.SplitBetweens.Select(y => y.User.Username).ToList(),
                 SplitType = x.SplitType,
                 DateOfPayment = x.DateOfPayment
             }).FirstOrDefaultAsync();
@@ -72,6 +73,11 @@ namespace EntityFramework.Repositories.Implementations
         public async Task UpdateRangeBalanceAsync(List<Balance> balances)
         {
             _context.Balances.UpdateRange(balances);
+        }
+
+        public async Task AddRangeSplitBetweenAsync(List<SplitBetween> splitBetweenList)
+        {
+            await _context.SplitBetweens.AddRangeAsync(splitBetweenList);
         }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()

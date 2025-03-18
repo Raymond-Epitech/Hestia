@@ -23,12 +23,12 @@ namespace Api.Controllers
         {
             try
             {
-                var expenses = await expenseService.GetAllExpenses(ColocationId);
+                var expenses = await expenseService.GetAllExpensesAsync(ColocationId);
                 return Ok(expenses);
             }
             catch (ContextException ex)
             {
-                return StatusCode(400, ex);
+                return UnprocessableEntity(ex);
             }
             catch (Exception ex)
             {

@@ -12,6 +12,7 @@ namespace EntityFramework.Repositories.Interfaces
         Task AddExpenseAsync(Expense expense);
         Task<List<Balance>> GetBalanceFromUserIdListAsync(List<Guid> userIds);
         Task UpdateRangeBalanceAsync(List<Balance> balances);
+        Task AddRangeSplitBetweenAsync(List<SplitBetween> splitBetweenList);
         Task<IDbContextTransaction> BeginTransactionAsync();
         Task SaveChangesAsync();
     }

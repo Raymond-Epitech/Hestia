@@ -31,7 +31,7 @@ namespace Business.Services
         /// <param name="CollocationId">The Id of the collocation you want the users from</param>
         /// <returns>The list of the User in a collocation</returns>
         /// <exception cref="ContextException">An error occurred while getting all chores from the db</exception>
-        public async Task<List<UserOutput>> GetAllUser(Guid CollocationId)
+        public async Task<List<UserOutput>> GetAllUserAsync(Guid CollocationId)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace Business.Services
         /// <returns>The User that match the ID</returns>
         /// <exception cref="ContextException">An error occurred while getting all chores from the db</exception>
         /// <exception cref="NotFoundException">The user was not found</exception>
-        public async Task<UserOutput> GetUser(Guid id)
+        public async Task<UserOutput> GetUserAsync(Guid id)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace Business.Services
         /// <param name="user">The user to update with new info</param>
         /// <exception cref="NotFoundException">The user was not found</exception>
         /// <exception cref="ContextException">An error occurred while getting all chores from the db</exception>
-        public async Task UpdateUser(UserUpdate user)
+        public async Task UpdateUserAsync(UserUpdate user)
         {
             try
             {
@@ -120,7 +120,7 @@ namespace Business.Services
         /// <param name="id">The id of the user you want to delete</param>
         /// <exception cref="NotFoundException">The user was not found</exception>
         /// <exception cref="ContextException">An error occurred while getting all chores from the db</exception>
-        public async Task DeleteUser(Guid id)
+        public async Task DeleteUserAsync(Guid id)
         {
             try
             {
@@ -154,7 +154,7 @@ namespace Business.Services
         /// <returns>The JWT and the new user's info</returns>
         /// <exception cref="ContextException">Error in the DB or context</exception>
         /// <exception cref="AlreadyExistException">User already registered</exception>
-        public async Task<UserInfo> RegisterUser(string googleToken, UserInput userInput)
+        public async Task<UserInfo> RegisterUserAsync(string googleToken, UserInput userInput)
         {
             try
             {
@@ -246,7 +246,7 @@ namespace Business.Services
         /// <exception cref="InvalidTokenException">Token is invalid</exception>
         /// <exception cref="NotFoundException">User is not found</exception>
         /// <returns>Info of user</returns>
-        public async Task<UserInfo> LoginUser(string googleToken)
+        public async Task<UserInfo> LoginUserAsync(string googleToken)
         {
             try
             {

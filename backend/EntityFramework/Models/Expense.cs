@@ -32,16 +32,8 @@ namespace EntityFramework.Models
         [Required]
         public Guid PaidBy { get; set; }
 
-        [Required]
-        [Column(TypeName = "nvarchar(max)")]
-        public string SplitBetweenJson { get; set; } = "[]";
-
-        [NotMapped]
-        public List<Guid> SplitBetween
-        {
-            get => JsonConvert.DeserializeObject<List<Guid>>(SplitBetweenJson) ?? new List<Guid>();
-            set => SplitBetweenJson = JsonConvert.SerializeObject(value);
-        }
+        [ForeignKey("PaidBy")]
+        public User User { get; set; } = null!;
 
         [Required]
         public string SplitType { get; set; } = "Evenly";
@@ -49,6 +41,7 @@ namespace EntityFramework.Models
         [Required]
         public DateTime DateOfPayment { get; set; }
 
+        public ICollection<SplitBetween> SplitBetweens { get; set; } = null!;
         public ICollection<Entry> Entries { get; set; } = null!;
     }
 }

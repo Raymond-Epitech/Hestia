@@ -14,6 +14,7 @@ namespace EntityFramework.Context
         public virtual DbSet<Expense> Expenses { get; set; } = null!;
         public virtual DbSet<Entry> Entries { get; set; } = null!;
         public virtual DbSet<Balance> Balances { get; set; } = null!;
+        public virtual DbSet<SplitBetween> SplitBetweens { get; set; } = null!;
 
         public HestiaContext(DbContextOptions<HestiaContext> options) : base(options) { }
 
@@ -70,14 +71,26 @@ namespace EntityFramework.Context
                     .WithOne(x => x.User)
                     .HasForeignKey(x => x.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
+                c.HasMany(x => x.SplitBetweens)
+                    .WithOne(x => x.User)
+                    .HasForeignKey(x => x.UserId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
             modelBuilder.Entity<ChoreEnrollment>(c =>
             {
                 c.HasKey(x => new { x.UserId, x.ChoreId });
             });
+            modelBuilder.Entity<SplitBetween>(c =>
+            {
+                c.HasKey(x => new { x.UserId, x.ExpenseId });
+            });
             modelBuilder.Entity<Expense>(c =>
             {
                 c.HasMany(x => x.Entries)
+                    .WithOne(x => x.Expense)
+                    .HasForeignKey(x => x.ExpenseId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                c.HasMany(x => x.SplitBetweens)
                     .WithOne(x => x.Expense)
                     .HasForeignKey(x => x.ExpenseId)
                     .OnDelete(DeleteBehavior.Cascade);

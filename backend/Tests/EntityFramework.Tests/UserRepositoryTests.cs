@@ -48,7 +48,7 @@ public class UserRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.User.AddRange(users);
+            context.Users.AddRange(users);
             await context.SaveChangesAsync();
         }
 
@@ -90,7 +90,7 @@ public class UserRepositoryTests
 
         using (var arrangeContext = new HestiaContext(_dbContextOptions))
         {
-            arrangeContext.User.Add(expectedUser);
+            arrangeContext.Users.Add(expectedUser);
             await arrangeContext.SaveChangesAsync();
         }
 
@@ -134,7 +134,7 @@ public class UserRepositoryTests
         User? result;
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            result = await context.User.FindAsync(user.Id);
+            result = await context.Users.FindAsync(user.Id);
         }
 
         // Assert
@@ -160,7 +160,7 @@ public class UserRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.User.Add(user);
+            context.Users.Add(user);
             await context.SaveChangesAsync();
         }
 
@@ -195,7 +195,7 @@ public class UserRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.User.Add(user);
+            context.Users.Add(user);
             await context.SaveChangesAsync();
         }
 
@@ -211,7 +211,7 @@ public class UserRepositoryTests
         User? result;
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            result = await context.User.FindAsync(user.Id);
+            result = await context.Users.FindAsync(user.Id);
         }
 
         // Assert
@@ -235,7 +235,7 @@ public class UserRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.User.Add(user);
+            context.Users.Add(user);
             await context.SaveChangesAsync();
         }
 
@@ -250,7 +250,7 @@ public class UserRepositoryTests
         User? result;
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            result = await context.User.FindAsync(user.Id);
+            result = await context.Users.FindAsync(user.Id);
         }
 
         // Assert
@@ -274,7 +274,7 @@ public class UserRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.User.Add(user);
+            context.Users.Add(user);
             await context.SaveChangesAsync();
         }
 
@@ -308,7 +308,7 @@ public class UserRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.User.Add(user);
+            context.Users.Add(user);
             await context.SaveChangesAsync();
         }
 

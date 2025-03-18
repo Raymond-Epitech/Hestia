@@ -51,7 +51,7 @@ public class UserServiceTests
         _userRepoMock.Setup(repo => repo.GetAllUserOutputAsync(colocationId)).ReturnsAsync(expectedUserList);
 
         // Act
-        var result = await _userService.GetAllUser(colocationId);
+        var result = await _userService.GetAllUserAsync(colocationId);
 
         // Assert
         result.Should().NotBeNull();
@@ -68,7 +68,7 @@ public class UserServiceTests
         _userRepoMock.Setup(repo => repo.GetAllUserOutputAsync(colocationId)).ReturnsAsync(new List<UserOutput>());
 
         // Act
-        var result = await _userService.GetAllUser(colocationId);
+        var result = await _userService.GetAllUserAsync(colocationId);
 
         // Assert
         result.Should().NotBeNull();
@@ -94,7 +94,7 @@ public class UserServiceTests
         _userRepoMock.Setup(repo => repo.GetUserOutputByIdAsync(userId)).ReturnsAsync(expectedUser);
 
         // Act
-        var result = await _userService.GetUser(userId);
+        var result = await _userService.GetUserAsync(userId);
 
         // Assert
         result.Should().NotBeNull();
@@ -110,7 +110,7 @@ public class UserServiceTests
         _userRepoMock.Setup(repo => repo.GetUserOutputByIdAsync(userId)).ReturnsAsync((UserOutput ?)null);
 
         // Act & Assert
-        await Assert.ThrowsAsync<NotFoundException>(() => _userService.GetUser(userId));
+        await Assert.ThrowsAsync<NotFoundException>(() => _userService.GetUserAsync(userId));
 
         _userRepoMock.Verify(repo => repo.GetUserOutputByIdAsync(userId), Times.Once);
     }
@@ -125,7 +125,7 @@ public class UserServiceTests
             .ThrowsAsync(new Exception("user is invalid"));
 
         // Act & Assert
-        await Assert.ThrowsAsync<ContextException>(() => _userService.GetUser(userId));
+        await Assert.ThrowsAsync<ContextException>(() => _userService.GetUserAsync(userId));
 
         _userRepoMock.Verify(repo => repo.GetUserOutputByIdAsync(userId), Times.Once);
     }
@@ -159,7 +159,7 @@ public class UserServiceTests
         _userRepoMock.Setup(repo => repo.SaveChangesAsync()).Returns(Task.CompletedTask);
 
         // Act
-        await _userService.UpdateUser(userUpdate);
+        await _userService.UpdateUserAsync(userUpdate);
 
         // Assert
         _userRepoMock.Verify(repo => repo.GetUserByIdAsync(userUpdate.Id), Times.Once);
@@ -188,7 +188,7 @@ public class UserServiceTests
         _userRepoMock.Setup(repo => repo.GetUserByIdAsync(userUpdate.Id)).ReturnsAsync((User?)null);
 
         // Act & Assert
-        await Assert.ThrowsAsync<NotFoundException>(() => _userService.UpdateUser(userUpdate));
+        await Assert.ThrowsAsync<NotFoundException>(() => _userService.UpdateUserAsync(userUpdate));
 
         _userRepoMock.Verify(repo => repo.GetUserByIdAsync(userUpdate.Id), Times.Once);
         _userRepoMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
@@ -215,7 +215,7 @@ public class UserServiceTests
         _userRepoMock.Setup(repo => repo.SaveChangesAsync()).Returns(Task.CompletedTask);
 
         // Act
-        await _userService.DeleteUser(userId);
+        await _userService.DeleteUserAsync(userId);
 
         // Assert
         _userRepoMock.Verify(repo => repo.GetUserByIdAsync(userId), Times.Once);
@@ -239,7 +239,7 @@ public class UserServiceTests
         _userRepoMock.Setup(repo => repo.GetUserByIdAsync(existingUser.Id)).ReturnsAsync((User?)null);
 
         // Act & Assert
-        await Assert.ThrowsAsync<NotFoundException>(() => _userService.DeleteUser(existingUser.Id));
+        await Assert.ThrowsAsync<NotFoundException>(() => _userService.DeleteUserAsync(existingUser.Id));
 
         _userRepoMock.Verify(repo => repo.GetUserByIdAsync(existingUser.Id), Times.Once);
         _userRepoMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
@@ -288,7 +288,7 @@ public class UserServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _userService.RegisterUser(googleToken, userInput);
+        var result = await _userService.RegisterUserAsync(googleToken, userInput);
 
         // Assert
         result.Jwt.Should().BeEquivalentTo(jwt);
@@ -340,7 +340,7 @@ public class UserServiceTests
         _userRepoMock.Setup(repo => repo.AnyExistingUserByEmail(validPayload.Email)).ReturnsAsync(true);
 
         // Act & Assert
-        await Assert.ThrowsAsync<AlreadyExistException>(() => _userService.RegisterUser(googleToken, userInput));
+        await Assert.ThrowsAsync<AlreadyExistException>(() => _userService.RegisterUserAsync(googleToken, userInput));
 
         _jwtServMock.Verify(repo => repo.ValidateGoogleTokenAsync(googleToken), Times.Once);
         _userRepoMock.Verify(repo => repo.AnyExistingUserByEmail(validPayload.Email), Times.Once);
@@ -373,7 +373,7 @@ public class UserServiceTests
             .ThrowsAsync(new Exception("Invalid token"));
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidTokenException>(() => _userService.RegisterUser(googleToken, userInput));
+        await Assert.ThrowsAsync<InvalidTokenException>(() => _userService.RegisterUserAsync(googleToken, userInput));
 
         _jwtServMock.Verify(repo => repo.ValidateGoogleTokenAsync(googleToken), Times.Once);
         _userRepoMock.Verify(repo => repo.AnyExistingUserByEmail(validPayload.Email), Times.Never);
@@ -423,7 +423,7 @@ public class UserServiceTests
         _jwtServMock.Setup(serv => serv.GenerateToken(It.IsAny<IEnumerable<Claim>>())).Returns(jwt);
 
         // Act
-        var result = await _userService.LoginUser(googleToken);
+        var result = await _userService.LoginUserAsync(googleToken);
 
         // Assert
         result.Jwt.Should().BeEquivalentTo(jwt);
@@ -452,7 +452,7 @@ public class UserServiceTests
         var result = _userRepoMock.Setup(repo => repo.GetUserByEmailAsync(validPayload.Email)).ReturnsAsync((User ?)null);
 
         // Act & Assert
-        await Assert.ThrowsAsync<NotFoundException>(() => _userService.LoginUser(googleToken));
+        await Assert.ThrowsAsync<NotFoundException>(() => _userService.LoginUserAsync(googleToken));
 
         _jwtServMock.Verify(repo => repo.ValidateGoogleTokenAsync(googleToken), Times.Once);
         _userRepoMock.Verify(repo => repo.GetUserByEmailAsync(validPayload.Email), Times.Once);
@@ -478,7 +478,7 @@ public class UserServiceTests
             .ThrowsAsync(new Exception("Invalid token"));
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidTokenException>(() => _userService.LoginUser(googleToken));
+        await Assert.ThrowsAsync<InvalidTokenException>(() => _userService.LoginUserAsync(googleToken));
 
         _jwtServMock.Verify(repo => repo.ValidateGoogleTokenAsync(googleToken), Times.Once);
         _userRepoMock.Verify(repo => repo.GetUserByEmailAsync(validPayload.Email), Times.Never);

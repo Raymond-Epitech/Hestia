@@ -9,8 +9,8 @@
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
         public decimal Amount { get; set; }
-        public Guid PaidBy { get; set; }
-        public List<Guid> SplitBetween { get; set; } = new List<Guid>();
+        public string PaidBy { get; set; } = null!;
+        public List<string> SplitBetween { get; set; } = new List<string>();
         public string SplitType { get; set; } = null!;
         public DateTime DateOfPayment { get; set; }
     }

@@ -7,11 +7,11 @@ namespace Business.Interfaces
 {
     public interface IUserService
     {
-        Task<List<UserOutput>> GetAllUser(Guid CollocationId);
-        Task<UserOutput> GetUser(Guid id);
-        Task UpdateUser(UserUpdate user);
-        Task DeleteUser(Guid id);
-        Task<UserInfo> RegisterUser(string googleToken, UserInput userInput);
-        Task<UserInfo> LoginUser(string googleToken);
+        Task<List<UserOutput>> GetAllUserAsync(Guid CollocationId);
+        Task<UserOutput> GetUserAsync(Guid id);
+        Task UpdateUserAsync(UserUpdate user);
+        Task DeleteUserAsync(Guid id);
+        Task<UserInfo> RegisterUserAsync(string googleToken, UserInput userInput);
+        Task<UserInfo> LoginUserAsync(string googleToken);
     }
 }

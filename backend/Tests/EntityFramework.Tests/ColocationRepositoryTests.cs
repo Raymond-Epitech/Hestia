@@ -30,7 +30,7 @@ public class ColocationRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.Colocation.AddRange(colocations);
+            context.Colocations.AddRange(colocations);
             await context.SaveChangesAsync();
         }
 
@@ -62,8 +62,8 @@ public class ColocationRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.Colocation.Add(colocation);
-            context.User.Add(user);
+            context.Colocations.Add(colocation);
+            context.Users.Add(user);
             await context.SaveChangesAsync();
         }
 
@@ -98,7 +98,7 @@ public class ColocationRepositoryTests
         Colocation? result;
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            result = await context.Colocation.FindAsync(colocation.Id);
+            result = await context.Colocations.FindAsync(colocation.Id);
         }
 
         // Assert
@@ -114,7 +114,7 @@ public class ColocationRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.Colocation.Add(colocation);
+            context.Colocations.Add(colocation);
             await context.SaveChangesAsync();
         }
 
@@ -130,7 +130,7 @@ public class ColocationRepositoryTests
         Colocation? result;
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            result = await context.Colocation.FindAsync(colocation.Id);
+            result = await context.Colocations.FindAsync(colocation.Id);
         }
 
         // Assert
@@ -146,7 +146,7 @@ public class ColocationRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.Colocation.Add(colocation);
+            context.Colocations.Add(colocation);
             await context.SaveChangesAsync();
         }
 
@@ -161,7 +161,7 @@ public class ColocationRepositoryTests
         Colocation? result;
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            result = await context.Colocation.FindAsync(colocation.Id);
+            result = await context.Colocations.FindAsync(colocation.Id);
         }
 
         // Assert
@@ -176,7 +176,7 @@ public class ColocationRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.Colocation.Add(colocation);
+            context.Colocations.Add(colocation);
             await context.SaveChangesAsync();
         }
 
@@ -210,7 +210,7 @@ public class ColocationRepositoryTests
         Colocation? result;
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            result = await context.Colocation.FindAsync(colocation.Id);
+            result = await context.Colocations.FindAsync(colocation.Id);
         }
 
         // Assert

@@ -31,7 +31,7 @@ public class ChoreRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.Chore.AddRange(chores);
+            context.Chores.AddRange(chores);
             await context.SaveChangesAsync();
         }
 
@@ -66,7 +66,7 @@ public class ChoreRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.Chore.Add(chore);
+            context.Chores.Add(chore);
             await context.SaveChangesAsync();
         }
 
@@ -100,7 +100,7 @@ public class ChoreRepositoryTests
         Chore? result;
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            result = await context.Chore.FindAsync(chore.Id);
+            result = await context.Chores.FindAsync(chore.Id);
         }
 
         // Assert
@@ -116,7 +116,7 @@ public class ChoreRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.Chore.Add(chore);
+            context.Chores.Add(chore);
             await context.SaveChangesAsync();
         }
 
@@ -132,7 +132,7 @@ public class ChoreRepositoryTests
         Chore? result;
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            result = await context.Chore.FindAsync(chore.Id);
+            result = await context.Chores.FindAsync(chore.Id);
         }
 
         // Assert
@@ -148,7 +148,7 @@ public class ChoreRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.Chore.Add(chore);
+            context.Chores.Add(chore);
             await context.SaveChangesAsync();
         }
 
@@ -163,7 +163,7 @@ public class ChoreRepositoryTests
         Chore? result;
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            result = await context.Chore.FindAsync(chore.Id);
+            result = await context.Chores.FindAsync(chore.Id);
         }
 
         // Assert
@@ -183,7 +183,7 @@ public class ChoreRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.ChoreMessage.AddRange(messages);
+            context.ChoreMessages.AddRange(messages);
             await context.SaveChangesAsync();
         }
 
@@ -217,7 +217,7 @@ public class ChoreRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.User.Add(user);
+            context.Users.Add(user);
             context.ChoreEnrollments.Add(enrollment);
             await context.SaveChangesAsync();
         }
@@ -247,8 +247,8 @@ public class ChoreRepositoryTests
 
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            context.Chore.Add(chore);
-            context.User.Add(user);
+            context.Chores.Add(chore);
+            context.Users.Add(user);
             await context.SaveChangesAsync();
         }
 
@@ -349,7 +349,7 @@ public class ChoreRepositoryTests
         Chore? result;
         using (var context = new HestiaContext(_dbContextOptions))
         {
-            result = await context.Chore.FindAsync(chore.Id);
+            result = await context.Chores.FindAsync(chore.Id);
         }
 
         // Assert

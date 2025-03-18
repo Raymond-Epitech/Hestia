@@ -11,9 +11,9 @@ namespace Shared.Models.Input
         public decimal Amount { get; set; }
         public Guid PaidBy { get; set; }
         public SplitTypeEnum SplitType { get; set; }
-        public List<Guid>? SplitBetween { get; set; }
-        public Dictionary<Guid, decimal>? SplitValues { get; set; }
-        public Dictionary<Guid, int>? SplitPercentages { get; set; }
+        public List<Guid>? SplitBetween { get; set; } = null;
+        public Dictionary<Guid, decimal>? SplitValues { get; set; } = null;
+        public Dictionary<Guid, int>? SplitPercentages { get; set; } = null;
         public DateTime DateOfPayment { get; set; }
     }
 }
