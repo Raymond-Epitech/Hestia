@@ -17,17 +17,21 @@
 </template>
 
 <script setup>
+import { useUserStore } from '~/store/user';
+
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const userStore = useUserStore();
+const user = userStore.user;
 
+console.log(userStore.user)
 const colocation = ref({
     name: '',
     adress: '',
-    createdBy: '',
+    createdBy: user.id,
 })
 const handleProceed = async () => {
-    await api.addCollocation(colocation.value)
-    emit('proceed')
+    await api.addColocation(colocation.value)
 }
 </script>
 

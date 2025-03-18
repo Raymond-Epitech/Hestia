@@ -31,7 +31,6 @@
     background-color: #074338;
     display: flex;
     justify-content: space-around;
-    align-items: center;
     padding: 0%;
 }
 

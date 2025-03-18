@@ -1,0 +1,22 @@
+import { defineStore } from 'pinia';
+import type { User } from "~/composables/service/type";
+
+export const useUserStore = defineStore('user', {
+    state: () => ({
+        user: {
+            username: '',
+            email: '',
+            colocationId: '',
+            id: '',
+        },
+    }),
+    actions: {
+        setUser(data: User) {
+            this.user = data;
+            console.log(this.user)
+        },
+    },
+    persist: {
+        storage: piniaPluginPersistedstate.localStorage(),
+    },
+});

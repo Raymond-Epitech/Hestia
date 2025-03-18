@@ -2,7 +2,8 @@
     <div class="base">
         <img src="../public/logo-hestia.png" class="logo" />
         <div v-if="registretion">
-            <h2>Pour vous enregistrer, veuillez entrer un nom d'utilisateur et relancer en sélectionnant le compte Google</h2>
+            <h2>Pour vous enregistrer, veuillez entrer un nom d'utilisateur et relancer en sélectionnant le compte
+                Google</h2>
             <input type="text" placeholder="Nom d'utilisateur" v-model="username" />
         </div>
         <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton>
@@ -12,6 +13,7 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/store/auth';
+import { useUserStore } from '~/store/user';
 
 definePageMeta({
     layout: false
@@ -19,6 +21,7 @@ definePageMeta({
 
 const { authenticateUser } = useAuthStore();
 const { authenticated } = storeToRefs(useAuthStore());
+const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const username = ref('');
 const registretion = ref(false);
@@ -30,7 +33,7 @@ const handleregistration = async (response) => {
     const newuser = {
         username: username.value
     };
-    
+
     const data = await $bridge.addUser(newuser, credential);
     console.log("Data", data);
     if (data) {
@@ -58,6 +61,7 @@ const handleLoginSuccess = async (response) => {
     }
     if (data) {
         $bridge.setjwt(data.jwt);
+        await userStore.setUser(data.user);
         await authenticateUser(data.jwt);
     }
     if (authenticated) {
