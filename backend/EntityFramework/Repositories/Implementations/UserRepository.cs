@@ -40,6 +40,11 @@ public class UserRepository : IUserRepository
         await _context.Users.AddAsync(user);
     }
 
+    public async Task AddBalanceAsync(Balance balance)
+    {
+        await _context.Balances.AddAsync(balance);
+    }
+
     public async Task<User?> GetUserByIdAsync(Guid id)
     {
         return await _context.Users.FindAsync(id);

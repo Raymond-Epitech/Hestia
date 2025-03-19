@@ -103,7 +103,7 @@ namespace Business.Services
         /// Add the entries to the database and update the balance with the amount splited evenly
         /// </summary>
         /// <param name="input">The input of AddExpense</param>
-        private async Task AddEntryWithEvenlyType(ExpenseInput input)
+        private async Task AddEntryWithEvenlyType(ExpenseInput input, Guid expenseId)
         {
             var splitAmounts = SplitAmountEvenly(input.Amount, input.SplitBetween!.Count);
             var entryList = new List<Entry>();
@@ -114,13 +114,25 @@ namespace Business.Services
                 var newEntry = new Entry
                 {
                     UserId = input.SplitBetween[i],
-                    Amount = splitAmounts[i]
+                    ExpenseId = expenseId,
+                    Amount = -splitAmounts[i]
                 };
                 entryList.Add(newEntry);
-                var balance = balances.First(x => x.UserId == newEntry.Id);
+                var balance = balances.First(x => x.UserId == newEntry.UserId);
                 balance.PersonalBalance += newEntry.Amount;
                 balance.LastUpdate = DateTime.UtcNow;
             }
+
+            var paiment = new Entry
+            {
+                UserId = input.PaidBy,
+                ExpenseId = expenseId,
+                Amount = input.Amount
+            };
+            entryList.Add(paiment);
+            var paimentBalance = balances.First(x => x.UserId == input.PaidBy);
+            paimentBalance.PersonalBalance += input.Amount;
+            paimentBalance.LastUpdate = DateTime.UtcNow;
 
             await _expenseRepository.UpdateRangeBalanceAsync(balances);
             await _expenseRepository.AddRangeEntryAsync(entryList);
@@ -130,7 +142,7 @@ namespace Business.Services
         /// Add the entries to the database and update the balance with the amount splited with the value
         /// </summary>
         /// <param name="input">The input of AddExpense</param>
-        private async Task AddEntryWithValueType(ExpenseInput input)
+        private async Task AddEntryWithValueType(ExpenseInput input, Guid expenseId)
         {
             var entryList = new List<Entry>();
             var users = input.SplitValues!.Keys.ToList();
@@ -141,6 +153,7 @@ namespace Business.Services
                 var newEntry = new Entry
                 {
                     UserId = entry,
+                    ExpenseId = expenseId,
                     Amount = input.SplitValues![entry]
                 };
                 entryList.Add(newEntry);
@@ -148,6 +161,17 @@ namespace Business.Services
                 balance.PersonalBalance += newEntry.Amount;
                 balance.LastUpdate = DateTime.UtcNow;
             }
+
+            var paiment = new Entry
+            {
+                UserId = input.PaidBy,
+                ExpenseId = expenseId,
+                Amount = input.Amount
+            };
+            entryList.Add(paiment);
+            var paimentBalance = balances.First(x => x.UserId == input.PaidBy);
+            paimentBalance.PersonalBalance += input.Amount;
+            paimentBalance.LastUpdate = DateTime.UtcNow;
 
             await _expenseRepository.UpdateRangeBalanceAsync(balances);
             await _expenseRepository.AddRangeEntryAsync(entryList);
@@ -157,7 +181,7 @@ namespace Business.Services
         /// Add the entries to the database and update the balance with the amount splited with the percentage
         /// </summary>
         /// <param name="input">The input of AddExpense</param>
-        private async Task AddEntryWithPercentageType(ExpenseInput input)
+        private async Task AddEntryWithPercentageType(ExpenseInput input, Guid expenseId)
         {
             var entryList = new List<Entry>();
             var users = input.SplitPercentages!.Keys.ToList();
@@ -168,6 +192,7 @@ namespace Business.Services
                 var newEntry = new Entry
                 {
                     UserId = entry,
+                    ExpenseId = expenseId,
                     Amount = input.Amount * input.SplitPercentages![entry] / 100
                 };
                 entryList.Add(newEntry);
@@ -175,6 +200,17 @@ namespace Business.Services
                 balance.PersonalBalance += newEntry.Amount;
                 balance.LastUpdate = DateTime.UtcNow;
             }
+
+            var paiment = new Entry
+            {
+                UserId = input.PaidBy,
+                ExpenseId = expenseId,
+                Amount = input.Amount
+            };
+            entryList.Add(paiment);
+            var paimentBalance = balances.First(x => x.UserId == input.PaidBy);
+            paimentBalance.PersonalBalance += input.Amount;
+            paimentBalance.LastUpdate = DateTime.UtcNow;
 
             await _expenseRepository.UpdateRangeBalanceAsync(balances);
             await _expenseRepository.AddRangeEntryAsync(entryList);
@@ -205,6 +241,7 @@ namespace Business.Services
                     {
                         var expense = new Expense
                         {
+                            Id = Guid.NewGuid(),
                             ColocationId = input.ColocationId,
                             CreatedBy = input.CreatedBy,
                             Name = input.Name,
@@ -221,7 +258,7 @@ namespace Business.Services
                             {
                                 throw new InvalidEntityException("The expense must have a value for each person");
                             }
-                            await AddEntryWithValueType(input);
+                            await AddEntryWithValueType(input, expense.Id);
                         }
                         else if (input.SplitType == SplitTypeEnum.ByPercentage)
                         {
@@ -229,7 +266,7 @@ namespace Business.Services
                             {
                                 throw new InvalidEntityException("The expense must have a percentage for each person and it must be equal to 100%");
                             }
-                            await AddEntryWithPercentageType(input);
+                            await AddEntryWithPercentageType(input, expense.Id);
                         }
                         else
                         {
@@ -237,7 +274,7 @@ namespace Business.Services
                             {
                                 throw new InvalidEntityException("The expense must be not null and split between number must at least 1 people");
                             }
-                            await AddEntryWithEvenlyType(input);
+                            await AddEntryWithEvenlyType(input, expense.Id);
                         }
 
                         var splitBetween = input.SplitBetween.Select(x => new SplitBetween

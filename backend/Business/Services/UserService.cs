@@ -194,8 +194,16 @@ namespace Business.Services
                     PathToProfilePicture = "default.jpg"
                 };
 
+                var newBalance = new Balance
+                {
+                    UserId = newUser.Id,
+                    PersonalBalance = 0,
+                    LastUpdate = DateTime.Now.ToUniversalTime()
+                };
+
                 try
                 {
+                    await _userRepository.AddBalanceAsync(newBalance);
                     await _userRepository.AddAsync(newUser);
 
                     await _userRepository.SaveChangesAsync();
