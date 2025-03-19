@@ -132,6 +132,9 @@ h2 {
     background-color: #E7FEED;
     border-radius: 8px;
     border: none;
+    text-align: center;
+    color: #85AD7B;
+    font-weight: 600;
 }
 
 .register-font {
