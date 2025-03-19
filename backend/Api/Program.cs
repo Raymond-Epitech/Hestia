@@ -112,7 +112,7 @@ try
 
     if (app.Environment.IsDevelopment())
     {
-        using (var connection = new SqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
+        using (var connection = new Npgsql.NpgsqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
         {
             try
             {
