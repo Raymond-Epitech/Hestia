@@ -1,12 +1,18 @@
 <template>
     <div class="base">
         <img src="../public/logo-hestia.png" class="logo" />
-        <div v-if="registretion">
-            <h2>Pour vous enregistrer, veuillez entrer un nom d'utilisateur et relancer en sélectionnant le compte
-                Google</h2>
-            <input type="text" placeholder="Nom d'utilisateur" v-model="username" />
+        <div v-if="registretion" class="register">
+            <h2 class="login-font">Register : </h2>
+            <h2 class="register-font">Nom d'utilisateur :</h2>
+            <input class="input" type="text" placeholder="Nom d'utilisateur" v-model="username" />
+            <h2 class="register-font">Créer un compte :</h2>
+            <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton>
+
         </div>
-        <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton>
+        <div v-else class="login">
+            <h2 class="login-font">Login : </h2>
+            <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton>
+        </div>
     </div>
 </template>
 
@@ -75,7 +81,7 @@ const handleLoginError = () => {
 
 </script>
 
-<style>
+<style scoped>
 body {
     background-color: #E7FEED;
 }
@@ -91,5 +97,49 @@ body {
 .logo {
     width: 280px;
     border-radius: 15px;
+}
+
+.login {
+    height: 200px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #a3d397;
+    border-radius: 20px;
+}
+
+.register {
+    height: 400px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #a3d397;
+    border-radius: 20px;
+}
+
+h2 {
+    color: #E7FEED;
+    font-weight: 600;
+}
+
+.input {
+    margin-bottom: 10px;
+    outline: none;
+    background-color: #E7FEED;
+    border-radius: 8px;
+    border: none;
+}
+
+.register-font {
+    font-size: 20px;
+}
+
+.login-font {
+    padding-bottom: 25px;
+    font-size: 50px;
 }
 </style>
