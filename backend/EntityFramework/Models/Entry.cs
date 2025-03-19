@@ -14,13 +14,13 @@ namespace EntityFramework.Models
         [Required]
         public Guid ExpenseId { get; set; }
 
-        [ForeignKey("Expense")]
+        [ForeignKey("ExpenseId")]
         public Expense Expense { get; set; } = null!;
 
         [Required]
         public Guid UserId { get; set; }
 
-        [ForeignKey("User")]
+        [ForeignKey("UserId")]
         public User User { get; set; } = null!;
 
         [Required]

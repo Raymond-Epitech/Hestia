@@ -13,10 +13,10 @@ namespace EntityFramework.Models
         public DateTime LastConnection { get; set; } = DateTime.UtcNow;
 
         [Required]
-        public Guid? ColocationId { get; set; }
+        public Guid? ColocationId { get; set; } = null;
 
         [ForeignKey(nameof(ColocationId))]
-        public Colocation Colocation { get; set; } = null!;
+        public Colocation? Colocation { get; set; } = null;
 
         [Required]
         public string Username { get; set; } = null!;

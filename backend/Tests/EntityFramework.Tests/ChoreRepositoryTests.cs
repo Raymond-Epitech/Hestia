@@ -212,7 +212,7 @@ public class ChoreRepositoryTests
     {
         // Arrange
         var choreId = Guid.NewGuid();
-        var user = new User { Id = Guid.NewGuid(), Username = "User1", Email = "user1@example.com", CreatedAt = DateTime.UtcNow, LastConnection = DateTime.UtcNow, PathToProfilePicture = "default.jpg" };
+        var user = new User { Id = Guid.NewGuid(), Username = "User1", Email = "user1@example.com", CreatedAt = DateTime.UtcNow, LastConnection = DateTime.UtcNow, PathToProfilePicture = "default.jpg" , ColocationId = Guid.NewGuid()};
         var enrollment = new ChoreEnrollment { ChoreId = choreId, UserId = user.Id, CreatedAt = DateTime.UtcNow };
 
         using (var context = new HestiaContext(_dbContextOptions))
@@ -241,7 +241,7 @@ public class ChoreRepositoryTests
     {
         // Arrange
         var chore = new Chore { Id = Guid.NewGuid(), Title = "Test Chore", CreatedBy = "User1", CreatedAt = DateTime.UtcNow, DueDate = DateTime.UtcNow.AddDays(1), IsDone = false };
-        var user = new User { Id = Guid.NewGuid(), Username = "Test User", Email = "test@example.com", CreatedAt = DateTime.UtcNow, LastConnection = DateTime.UtcNow, PathToProfilePicture = "default.jpg" };
+        var user = new User { Id = Guid.NewGuid(), Username = "Test User", Email = "test@example.com", CreatedAt = DateTime.UtcNow, LastConnection = DateTime.UtcNow, PathToProfilePicture = "default.jpg", ColocationId = Guid.NewGuid() };
 
         var enrollment = new ChoreEnrollment { ChoreId = chore.Id, UserId = user.Id, CreatedAt = DateTime.UtcNow };
 

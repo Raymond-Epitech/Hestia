@@ -18,7 +18,7 @@ namespace EntityFramework.Models
         [Required]
         public Guid ColocationId { get; set; }
 
-        [ForeignKey("Colocation")]
+        [ForeignKey("ColocationId")]
         public Colocation Colocation { get; set; } = null!;
 
         [Required]
