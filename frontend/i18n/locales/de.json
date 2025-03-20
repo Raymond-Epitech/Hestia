@@ -11,5 +11,10 @@
     "Accessibility": "Barrierefreiheit",
     "Rules": "Lebensregeln",
     "Confidentiality": "Vertraulichkeit",
-    "Informations": "Informationen"
+    "Informations": "Informationen",
+    "regularize": "regulieren",
+    "global": "Gesamtausgaben",
+    "food_expenses": "Lebensmittelkosten",
+    "Health_expenses": "Gesundheitskosten",
+    "partie_expenses": "Partykosten"
 }

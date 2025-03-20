@@ -1,5 +1,5 @@
 <template>
-{{ $t(source) }} 
+    <p class="text">{{ $t(source) }}</p> 
 </template>
 
 <script setup>
@@ -10,3 +10,9 @@ const props = defineProps({
     }
 });
 </script>
+
+<style scoped>
+.text {
+  white-space: pre-line;
+}
+</style>
