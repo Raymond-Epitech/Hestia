@@ -13,5 +13,8 @@
     "Confidentiality": "Confidentiality",
     "Informations": "Informations",
     "regularize": "regularize",
-    "global": "overall expenditure"
+    "global": "overall\nexpenditure",
+    "food_expenses": "food\nexpenses",
+    "Health_expenses": "health\nexpenses",
+    "partie_expenses": "party\nexpenses"
 }
