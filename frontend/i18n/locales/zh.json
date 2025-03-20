@@ -13,5 +13,8 @@
     "Confidentiality": "保密性",
     "Informations": "信息",
     "regularize": "规范化",
-    "global": "总支出"
+    "global": "总支出",
+    "food_expenses": "食品费用",
+    "Health_expenses": "医疗费用",
+    "partie_expenses": "派对费用"
 }

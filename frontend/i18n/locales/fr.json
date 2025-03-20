@@ -13,5 +13,8 @@
     "Confidentiality": "Confidentialité",
     "Informations": "Informations",
     "regularize": "régulariser",
-    "global": "dépenses globales"
+    "global": "dépenses\nglobales",
+    "food_expenses": "dépenses\nalimentaires",
+    "Health_expenses": "dépenses\nsanitaires",
+    "partie_expenses": "dépenses\nsoirées"
 }
