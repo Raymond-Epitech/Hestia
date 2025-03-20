@@ -92,8 +92,46 @@ namespace Api.Controllers
 
         // Remove expense
 
-        // Get balance
+        [HttpGet("GetBalance/{colocationId}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<BalanceOutput>>> GetBalance(Guid colocationId)
+        {
+            try
+            {
+                return await expenseService.GetAllBalanceAsync(colocationId);
+            }
+            catch (ContextException ex)
+            {
+                return UnprocessableEntity(ex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
 
-        // Recalcul balance total
+        [HttpPut("CalculBalance/{colocationId}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<BalanceOutput>>> RecalculBalance(Guid colocationId)
+        {
+            try
+            {
+                return await expenseService.RecalculateBalanceAsync(colocationId);
+            }
+            catch (ContextException ex)
+            {
+                return StatusCode(500, ex);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
     }
 }

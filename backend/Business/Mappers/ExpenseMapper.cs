@@ -19,10 +19,20 @@ namespace Business.Mappers
                 Name = expenseDTO.Name,
                 Description = expenseDTO.Description,
                 Amount = expenseDTO.Amount,
-                PaidBy = expenseDTO.PaidBy.ToString(),
-                SplitBetween = expenseDTO.SplitBetween.Select(x => x.ToString()).ToList(),
+                PaidBy = expenseDTO.PaidBy,
+                SplitBetween = expenseDTO.SplitBetween,
                 SplitType = Enum.Parse<SplitTypeEnum>(expenseDTO.SplitType),
                 DateOfPayment = expenseDTO.DateOfPayment
+            };
+        }
+
+        public static BalanceOutput ToOutput(this Balance balance)
+        {
+            return new BalanceOutput
+            {
+                UserId = balance.UserId,
+                PersonalBalance = balance.PersonalBalance,
+                LastUpdate = balance.LastUpdate
             };
         }
     }

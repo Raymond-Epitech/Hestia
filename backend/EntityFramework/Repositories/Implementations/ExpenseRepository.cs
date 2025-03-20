@@ -4,6 +4,7 @@ using EntityFramework.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Shared.Models.DTO;
+using Shared.Models.Output;
 
 namespace EntityFramework.Repositories.Implementations
 {
@@ -27,8 +28,8 @@ namespace EntityFramework.Repositories.Implementations
                 Name = x.Name,
                 Description = x.Description,
                 Amount = x.Amount,
-                PaidBy = x.User.Username,
-                SplitBetween = x.SplitBetweens.Select(y => y.User.Username).ToList(),
+                PaidBy = x.User.Id,
+                SplitBetween = x.SplitBetweens.Select(y => y.User.Id).ToList(),
                 SplitType = x.SplitType,
                 DateOfPayment = x.DateOfPayment
             }).ToListAsync();
@@ -48,8 +49,8 @@ namespace EntityFramework.Repositories.Implementations
                 Name = x.Name,
                 Description = x.Description,
                 Amount = x.Amount,
-                PaidBy = x.User.Username,
-                SplitBetween = x.SplitBetweens.Select(y => y.User.Username).ToList(),
+                PaidBy = x.User.Id,
+                SplitBetween = x.SplitBetweens.Select(y => y.User.Id).ToList(),
                 SplitType = x.SplitType,
                 DateOfPayment = x.DateOfPayment
             }).FirstOrDefaultAsync();
@@ -78,6 +79,26 @@ namespace EntityFramework.Repositories.Implementations
         public async Task AddRangeSplitBetweenAsync(List<SplitBetween> splitBetweenList)
         {
             await _context.SplitBetweens.AddRangeAsync(splitBetweenList);
+        }
+
+        public async Task<List<BalanceOutput>> GetAllBalancesOutputFromColocationIdListAsync(Guid colocationId)
+        {
+            return await _context.Balances.Where(x => x.User.ColocationId == colocationId).Select(x => new BalanceOutput
+            {
+                UserId = x.UserId,
+                PersonalBalance = x.PersonalBalance,
+                LastUpdate = x.LastUpdate
+            }).ToListAsync();
+        }
+
+        public async Task<List<Balance>> GetAllBalancesFromColocationIdListAsync(Guid colocationId)
+        {
+            return await _context.Balances.Where(x => x.User.ColocationId == colocationId).ToListAsync();
+        }
+
+        public async Task<List<Entry>> GetAllEntriesFromColocationIdAsync(Guid colocationId)
+        {
+            return await _context.Entries.Where(x => x.User.ColocationId == colocationId).ToListAsync();
         }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()

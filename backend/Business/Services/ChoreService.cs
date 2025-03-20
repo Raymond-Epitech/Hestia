@@ -26,12 +26,12 @@ public class ChoreService : IChoreService
     /// </summary>
     /// <returns>All the chores available</returns>
     /// <exception cref="ContextException">An error has occured while retriving the chores from db</exception>
-    public async Task<List<ChoreOutput>> GetAllChoresAsync(Guid CollocationId)
+    public async Task<List<ChoreOutput>> GetAllChoresAsync(Guid ColocationId)
     {
         try
         {
-            var chores = await _choreRepository.GetAllChoreOutputsAsync(CollocationId);
-            _logger.LogInformation($"Succes : All chores from the collocation {CollocationId} found");
+            var chores = await _choreRepository.GetAllChoreOutputsAsync(ColocationId);
+            _logger.LogInformation($"Succes : All chores from the colocation {ColocationId} found");
             return chores;
         }
         catch (Exception ex)

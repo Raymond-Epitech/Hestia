@@ -138,6 +138,8 @@ namespace Business.Services
             var splitAmounts = SplitAmountEvenly(input.Amount, input.SplitBetween!.Count);
             var entryList = new List<Entry>();
             var balances = await _expenseRepository.GetBalanceFromUserIdListAsync(input.SplitBetween);
+            
+            _logger.LogInformation($"Succes : All balances from the users found");
 
             for (int i = 0; i < input.SplitBetween.Count; i++)
             {
@@ -151,6 +153,7 @@ namespace Business.Services
                 var balance = balances.First(x => x.UserId == newEntry.UserId);
                 balance.PersonalBalance += newEntry.Amount;
                 balance.LastUpdate = DateTime.UtcNow;
+                _logger.LogInformation($"Succes : Entry for user {newEntry.UserId} added");
             }
 
             var paiment = new Entry
@@ -164,8 +167,13 @@ namespace Business.Services
             paimentBalance.PersonalBalance += input.Amount;
             paimentBalance.LastUpdate = DateTime.UtcNow;
 
+            _logger.LogInformation($"Succes : Entry for user {paiment.UserId} added");
+
             await _expenseRepository.UpdateRangeBalanceAsync(balances);
             await _expenseRepository.AddRangeEntryAsync(entryList);
+
+            _logger.LogInformation($"Succes : All entries added to the db");
+            _logger.LogInformation($"Succes : All balances updated");
         }
 
         /// <summary>
@@ -177,6 +185,8 @@ namespace Business.Services
             var entryList = new List<Entry>();
             var users = input.SplitValues!.Keys.ToList();
             var balances = await _expenseRepository.GetBalanceFromUserIdListAsync(users);
+
+            _logger.LogInformation($"Succes : All balances from the users found");
 
             foreach (var entry in input.SplitValues)
             {
@@ -190,6 +200,7 @@ namespace Business.Services
                 var balance = balances.First(x => x.UserId == entry.Key);
                 balance.PersonalBalance += newEntry.Amount;
                 balance.LastUpdate = DateTime.UtcNow;
+                _logger.LogInformation($"Succes : Entry for user {newEntry.UserId} added");
             }
 
             var paiment = new Entry
@@ -203,8 +214,13 @@ namespace Business.Services
             paimentBalance.PersonalBalance += input.Amount;
             paimentBalance.LastUpdate = DateTime.UtcNow;
 
+            _logger.LogInformation($"Succes : Entry for user {paiment.UserId} added");
+
             await _expenseRepository.UpdateRangeBalanceAsync(balances);
             await _expenseRepository.AddRangeEntryAsync(entryList);
+
+            _logger.LogInformation($"Succes : All entries added to the db");
+            _logger.LogInformation($"Succes : All balances updated");
         }
 
         /// <summary>
@@ -217,6 +233,8 @@ namespace Business.Services
             var entryList = new List<Entry>();
             var users = input.SplitPercentages!.Keys.ToList();
             var balances = await _expenseRepository.GetBalanceFromUserIdListAsync(users);
+            
+            _logger.LogInformation($"Succes : All balances from the users found");
 
             foreach (var entry in input.SplitPercentages)
             {
@@ -230,6 +248,8 @@ namespace Business.Services
                 var balance = balances.First(x => x.UserId == entry.Key);
                 balance.PersonalBalance += newEntry.Amount;
                 balance.LastUpdate = DateTime.UtcNow;
+
+                _logger.LogInformation($"Succes : Entry for user {newEntry.UserId} added");
             }
 
             var paiment = new Entry
@@ -243,8 +263,13 @@ namespace Business.Services
             paimentBalance.PersonalBalance += input.Amount;
             paimentBalance.LastUpdate = DateTime.UtcNow;
 
+            _logger.LogInformation($"Succes : Entry for user {paiment.UserId} added");
+
             await _expenseRepository.UpdateRangeBalanceAsync(balances);
             await _expenseRepository.AddRangeEntryAsync(entryList);
+
+            _logger.LogInformation($"Succes : All entries added to the db");
+            _logger.LogInformation($"Succes : All balances updated");
         }
         
         /// <summary>
@@ -298,6 +323,8 @@ namespace Business.Services
                 {
                     try
                     {
+                        _logger.LogInformation("Succes : Transaction started");
+
                         var expense = new Expense
                         {
                             Id = Guid.NewGuid(),
@@ -320,6 +347,9 @@ namespace Business.Services
                                 {
                                     throw new InvalidEntityException("The expense must have a value for each person and the total must be equal to the sum of the expenses");
                                 }
+
+                                _logger.LogInformation("Succes : Expense is split by value");
+
                                 await AddEntryWithValueType(input, expense.Id);
 
                                 splitBetween = input.SplitValues.Select(x => new SplitBetween
@@ -334,6 +364,9 @@ namespace Business.Services
                                 {
                                     throw new InvalidEntityException("The expense must have a percentage for each person and the percentage must be equal to 100%");
                                 }
+
+                                _logger.LogInformation("Succes : Expense is split by percentage");
+
                                 await AddEntryWithPercentageType(input, expense.Id);
 
                                 splitBetween = input.SplitPercentages.Select(x => new SplitBetween
@@ -348,6 +381,9 @@ namespace Business.Services
                                 {
                                     throw new InvalidEntityException("The expense must be not null and split between number must at least be 1 people");
                                 }
+
+                                _logger.LogInformation("Succes : Expense is split evenly");
+
                                 await AddEntryWithEvenlyType(input, expense.Id);
 
                                 splitBetween = input.SplitBetween.Select(x => new SplitBetween
@@ -363,9 +399,13 @@ namespace Business.Services
                         await _expenseRepository.AddExpenseAsync(expense);
 
                         await _expenseRepository.SaveChangesAsync();
-                        
+
+                        _logger.LogInformation("Succes : All data added to the db");
+
                         transaction.Commit();
                         
+                        _logger.LogInformation("Succes : Transaction commited");
+
                         return expense.Id;
                     }
                     catch (InvalidEntityException)
@@ -391,6 +431,45 @@ namespace Business.Services
             catch (Exception)
             {
                 throw new ContextException("NO DATA WAS MODIFIED : An error happened during the creation of the transaction");
+            }
+        }
+
+        /// <summary>
+        /// Get all balances from a colocation
+        /// </summary>
+        /// <param name="ColocationId">The colocation id of the balance you want</param>
+        /// <returns>The list of all balances</returns>
+        /// <exception cref="ContextException">Error in db</exception>
+        public async Task<List<BalanceOutput>> GetAllBalanceAsync(Guid ColocationId)
+        {
+            try
+            {
+                var balances = await _expenseRepository.GetAllBalancesOutputFromColocationIdListAsync(ColocationId);
+                _logger.LogInformation($"Succes : All balances from the colocation {ColocationId} found");
+                return balances;
+            }
+            catch (Exception ex)
+            {
+                throw new ContextException("An error occurred while getting all balances from the db", ex);
+            }
+        }
+
+        public async Task<List<BalanceOutput>> RecalculateBalanceAsync(Guid colocationId)
+        {
+            try
+            {
+                var entries = await _expenseRepository.GetAllEntriesFromColocationIdAsync(colocationId);
+                var balances = await _expenseRepository.GetAllBalancesFromColocationIdListAsync(colocationId);
+
+                balances.Select(b => b.PersonalBalance = entries.Where(e => e.UserId == b.UserId).Select(x => x.Amount).Sum()).ToList();
+
+                await _expenseRepository.UpdateRangeBalanceAsync(balances);
+                await _expenseRepository.SaveChangesAsync();
+                return balances.Select(x => x.ToOutput()).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new ContextException("An error occurred while recalculating the balance", ex);
             }
         }
     }

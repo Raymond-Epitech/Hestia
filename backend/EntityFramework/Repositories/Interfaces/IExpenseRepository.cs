@@ -1,6 +1,7 @@
 ﻿using EntityFramework.Models;
 using Microsoft.EntityFrameworkCore.Storage;
 using Shared.Models.DTO;
+using Shared.Models.Output;
 
 namespace EntityFramework.Repositories.Interfaces
 {
@@ -13,6 +14,10 @@ namespace EntityFramework.Repositories.Interfaces
         Task<List<Balance>> GetBalanceFromUserIdListAsync(List<Guid> userIds);
         Task UpdateRangeBalanceAsync(List<Balance> balances);
         Task AddRangeSplitBetweenAsync(List<SplitBetween> splitBetweenList);
+        Task<List<BalanceOutput>> GetAllBalancesOutputFromColocationIdListAsync(Guid colocationId);
+        Task<List<Balance>> GetAllBalancesFromColocationIdListAsync(Guid colocationId);
+
+        Task<List<Entry>> GetAllEntriesFromColocationIdAsync(Guid colocationId);
         Task<IDbContextTransaction> BeginTransactionAsync();
         Task SaveChangesAsync();
     }
