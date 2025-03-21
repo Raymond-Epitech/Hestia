@@ -36,6 +36,7 @@ public class ChoreService : IChoreService
         }
         catch (Exception ex)
         {
+            _logger.LogError("An error occurred while getting all chores from the db");
             throw new ContextException("An error occurred while getting all chores from the db", ex);
         }
     }
@@ -63,10 +64,12 @@ public class ChoreService : IChoreService
         }
         catch (NotFoundException)
         {
+            _logger.LogError("No reminder found");
             throw;
         }
         catch (Exception ex)
         {
+            _logger.LogError("An error occurred while getting the reminder from the db");
             throw new ContextException("An error occurred while getting the reminder from the db", ex);
         }
     }
@@ -82,14 +85,18 @@ public class ChoreService : IChoreService
                 throw new NotFoundException("No chore messages found");
             }
 
+            _logger.LogInformation("Succes : Chore messages found");
+
             return choreMessages;
         }
         catch (NotFoundException)
         {
+            _logger.LogError("No chore messages found");
             throw;
         }
         catch (Exception ex)
         {
+            _logger.LogError("An error occurred while getting the chore messages from the db");
             throw new ContextException("An error occurred while getting the chore messages from the db", ex);
         }
     }
@@ -104,13 +111,17 @@ public class ChoreService : IChoreService
         try
         {
             var chore = input.ToDb();
+            
             await _choreRepository.AddChoreAsync(chore);
             await _choreRepository.SaveChangesAsync();
+            
             _logger.LogInformation("Succes : Chore added");
+            
             return chore.Id;
         }
         catch (Exception ex)
         {
+            _logger.LogError("An error occurred while adding the chore from the db");
             throw new ContextException("An error occurred while adding the chore from the db", ex);
         }
     }
@@ -125,13 +136,17 @@ public class ChoreService : IChoreService
         try
         {
             var choreMessage = input.ToDb();
+            
             await _choreRepository.AddChoreMessageAsync(choreMessage);
             await _choreRepository.SaveChangesAsync();
+            
             _logger.LogInformation("Succes : Chore message added");
+            
             return choreMessage.Id;
         }
         catch (Exception ex)
         {
+            _logger.LogError("An error occurred while adding the chore message from the db");
             throw new ContextException("An error occurred while adding the chore message from the db", ex);
         }
     }
@@ -160,10 +175,12 @@ public class ChoreService : IChoreService
         }
         catch (NotFoundException)
         {
+            _logger.LogError("No chore found");
             throw;
         }
         catch (Exception ex)
         {
+            _logger.LogError("An error occurred while updating the chore from the db");
             throw new ContextException("An error occurred while updating the chore from the db", ex);
         }
     }
@@ -179,10 +196,12 @@ public class ChoreService : IChoreService
         try
         {
             var chore = await _choreRepository.GetChoreByIdAsync(id);
+            
             if (chore == null)
             {
                 throw new NotFoundException($"Chore {id} not found");
             }
+            
             await _choreRepository.DeleteChoreAsync(chore);
             await _choreRepository.SaveChangesAsync();
 
@@ -190,10 +209,12 @@ public class ChoreService : IChoreService
         }
         catch (NotFoundException)
         {
+            _logger.LogError("No chore found");
             throw;
         }
         catch (Exception ex)
         {
+            _logger.LogError("An error occurred while deleting the chore from the db");
             throw new ContextException("An error occurred while deleting the chore from the db", ex);
         }
     }
@@ -209,10 +230,12 @@ public class ChoreService : IChoreService
         try
         {
             var choreMessages = await _choreRepository.GetChoreMessageFromChoreId(choreId);
+            
             if (choreMessages is null)
             {
                 throw new NotFoundException($"Chore {choreId} not found or no Chore message linked to this chore");
             }
+            
             await _choreRepository.DeleteRangeChoreMessageFromChoreId(choreMessages);
             await _choreRepository.SaveChangesAsync();
 
@@ -220,10 +243,12 @@ public class ChoreService : IChoreService
         }
         catch (NotFoundException)
         {
+            _logger.LogError("No chore found or no Chore message linked to this chore");
             throw;
         }
         catch (Exception ex)
         {
+            _logger.LogError("An error occurred while deleting the chore from the db");
             throw new ContextException("An error occurred while deleting the chore from the db", ex);
         }
     }
@@ -246,6 +271,7 @@ public class ChoreService : IChoreService
         }
         catch (Exception ex)
         {
+            _logger.LogError("An error occurred while adding the user to the db");
             throw new ContextException("An error occurred while adding the user to the db", ex);
         }
     }
@@ -268,6 +294,7 @@ public class ChoreService : IChoreService
         }
         catch (Exception ex)
         {
+            _logger.LogError("An error occurred while adding the user to the db");
             throw new ContextException("An error occurred while adding the user to the db", ex);
         }
     }
@@ -290,9 +317,12 @@ public class ChoreService : IChoreService
 
             await _choreRepository.AddChoreEnrollmentAsync(enroll);
             await _choreRepository.SaveChangesAsync();
+
+            _logger.LogInformation("Succes : User enrolled to the chore");
         }
         catch (Exception ex)
         {
+            _logger.LogError("An error occurred while adding the user to the db");
             throw new ContextException("An error occurred while adding the user to the db", ex);
         }
     }
@@ -309,6 +339,7 @@ public class ChoreService : IChoreService
         try
         {
             var enrollement = await _choreRepository.GetChoreEnrollmentByUserIdAndChoreIdAsync(userId, choreId);
+            
             if (enrollement == null)
             {
                 throw new NotFoundException("No enrollement found");
@@ -316,13 +347,17 @@ public class ChoreService : IChoreService
 
             await _choreRepository.RemoveChoreEnrollmentAsync(enrollement);
             await _choreRepository.SaveChangesAsync();
+
+            _logger.LogInformation("Succes : User unenrolled to the chore");
         }
         catch (NotFoundException)
         {
+            _logger.LogError("No enrollement found");
             throw;
         }
         catch (Exception ex)
         {
+            _logger.LogError("An error occurred while adding the user to the db");
             throw new ContextException("An error occurred while adding the user to the db", ex);
         }
     }

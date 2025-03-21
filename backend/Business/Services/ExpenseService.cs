@@ -43,6 +43,7 @@ namespace Business.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred while getting all expenses from the db");
                 throw new ContextException("An error occurred while getting all expenses from the db", ex);
             }
         }
@@ -70,10 +71,12 @@ namespace Business.Services
             }
             catch (NotFoundException)
             {
+                _logger.LogError($"The expense with id {id} was not found");
                 throw;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred while getting the expense from the db");
                 throw new ContextException("An error occurred while getting the expense from the db", ex);
             }
         }
@@ -135,45 +138,53 @@ namespace Business.Services
         /// <param name="input">The input of AddExpense</param>
         private async Task AddEntryWithEvenlyType(ExpenseInput input, Guid expenseId)
         {
-            var splitAmounts = SplitAmountEvenly(input.Amount, input.SplitBetween!.Count);
-            var entryList = new List<Entry>();
-            var balances = await _expenseRepository.GetBalanceFromUserIdListAsync(input.SplitBetween);
-            
-            _logger.LogInformation($"Succes : All balances from the users found");
-
-            for (int i = 0; i < input.SplitBetween.Count; i++)
+            try
             {
-                var newEntry = new Entry
+                var splitAmounts = SplitAmountEvenly(input.Amount, input.SplitBetween!.Count);
+                var entryList = new List<Entry>();
+                var balances = await _expenseRepository.GetBalanceFromUserIdListAsync(input.SplitBetween);
+
+                _logger.LogInformation($"Succes : All balances from the users found");
+
+                for (int i = 0; i < input.SplitBetween.Count; i++)
                 {
-                    UserId = input.SplitBetween[i],
+                    var newEntry = new Entry
+                    {
+                        UserId = input.SplitBetween[i],
+                        ExpenseId = expenseId,
+                        Amount = -splitAmounts[i]
+                    };
+                    entryList.Add(newEntry);
+                    var balance = balances.First(x => x.UserId == newEntry.UserId);
+                    balance.PersonalBalance += newEntry.Amount;
+                    balance.LastUpdate = DateTime.UtcNow;
+                    _logger.LogInformation($"Succes : Entry for user {newEntry.UserId} added");
+                }
+
+                var paiment = new Entry
+                {
+                    UserId = input.PaidBy,
                     ExpenseId = expenseId,
-                    Amount = -splitAmounts[i]
+                    Amount = input.Amount
                 };
-                entryList.Add(newEntry);
-                var balance = balances.First(x => x.UserId == newEntry.UserId);
-                balance.PersonalBalance += newEntry.Amount;
-                balance.LastUpdate = DateTime.UtcNow;
-                _logger.LogInformation($"Succes : Entry for user {newEntry.UserId} added");
+                entryList.Add(paiment);
+                var paimentBalance = balances.First(x => x.UserId == input.PaidBy);
+                paimentBalance.PersonalBalance += input.Amount;
+                paimentBalance.LastUpdate = DateTime.UtcNow;
+
+                _logger.LogInformation($"Succes : Entry for user {paiment.UserId} added");
+
+                await _expenseRepository.UpdateRangeBalanceAsync(balances);
+                await _expenseRepository.AddRangeEntryAsync(entryList);
+
+                _logger.LogInformation($"Succes : All entries added to the db");
+                _logger.LogInformation($"Succes : All balances updated");
             }
-
-            var paiment = new Entry
+            catch (Exception ex)
             {
-                UserId = input.PaidBy,
-                ExpenseId = expenseId,
-                Amount = input.Amount
-            };
-            entryList.Add(paiment);
-            var paimentBalance = balances.First(x => x.UserId == input.PaidBy);
-            paimentBalance.PersonalBalance += input.Amount;
-            paimentBalance.LastUpdate = DateTime.UtcNow;
-
-            _logger.LogInformation($"Succes : Entry for user {paiment.UserId} added");
-
-            await _expenseRepository.UpdateRangeBalanceAsync(balances);
-            await _expenseRepository.AddRangeEntryAsync(entryList);
-
-            _logger.LogInformation($"Succes : All entries added to the db");
-            _logger.LogInformation($"Succes : All balances updated");
+                _logger.LogError(ex, "An error occurred while adding the entries to the db");
+                throw new ContextException("An error occurred while adding the entries to the db", ex);
+            }
         }
 
         /// <summary>
@@ -182,45 +193,53 @@ namespace Business.Services
         /// <param name="input">The input of AddExpense</param>
         private async Task AddEntryWithValueType(ExpenseInput input, Guid expenseId)
         {
-            var entryList = new List<Entry>();
-            var users = input.SplitValues!.Keys.ToList();
-            var balances = await _expenseRepository.GetBalanceFromUserIdListAsync(users);
-
-            _logger.LogInformation($"Succes : All balances from the users found");
-
-            foreach (var entry in input.SplitValues)
+            try
             {
-                var newEntry = new Entry
+                var entryList = new List<Entry>();
+                var users = input.SplitValues!.Keys.ToList();
+                var balances = await _expenseRepository.GetBalanceFromUserIdListAsync(users);
+
+                _logger.LogInformation($"Succes : All balances from the users found");
+
+                foreach (var entry in input.SplitValues)
                 {
-                    UserId = entry.Key,
+                    var newEntry = new Entry
+                    {
+                        UserId = entry.Key,
+                        ExpenseId = expenseId,
+                        Amount = -input.SplitValues![entry.Key]
+                    };
+                    entryList.Add(newEntry);
+                    var balance = balances.First(x => x.UserId == entry.Key);
+                    balance.PersonalBalance += newEntry.Amount;
+                    balance.LastUpdate = DateTime.UtcNow;
+                    _logger.LogInformation($"Succes : Entry for user {newEntry.UserId} added");
+                }
+
+                var paiment = new Entry
+                {
+                    UserId = input.PaidBy,
                     ExpenseId = expenseId,
-                    Amount = -input.SplitValues![entry.Key]
+                    Amount = input.Amount
                 };
-                entryList.Add(newEntry);
-                var balance = balances.First(x => x.UserId == entry.Key);
-                balance.PersonalBalance += newEntry.Amount;
-                balance.LastUpdate = DateTime.UtcNow;
-                _logger.LogInformation($"Succes : Entry for user {newEntry.UserId} added");
+                entryList.Add(paiment);
+                var paimentBalance = balances.First(x => x.UserId == input.PaidBy);
+                paimentBalance.PersonalBalance += input.Amount;
+                paimentBalance.LastUpdate = DateTime.UtcNow;
+
+                _logger.LogInformation($"Succes : Entry for user {paiment.UserId} added");
+
+                await _expenseRepository.UpdateRangeBalanceAsync(balances);
+                await _expenseRepository.AddRangeEntryAsync(entryList);
+
+                _logger.LogInformation($"Succes : All entries added to the db");
+                _logger.LogInformation($"Succes : All balances updated");
             }
-
-            var paiment = new Entry
+            catch (Exception ex)
             {
-                UserId = input.PaidBy,
-                ExpenseId = expenseId,
-                Amount = input.Amount
-            };
-            entryList.Add(paiment);
-            var paimentBalance = balances.First(x => x.UserId == input.PaidBy);
-            paimentBalance.PersonalBalance += input.Amount;
-            paimentBalance.LastUpdate = DateTime.UtcNow;
-
-            _logger.LogInformation($"Succes : Entry for user {paiment.UserId} added");
-
-            await _expenseRepository.UpdateRangeBalanceAsync(balances);
-            await _expenseRepository.AddRangeEntryAsync(entryList);
-
-            _logger.LogInformation($"Succes : All entries added to the db");
-            _logger.LogInformation($"Succes : All balances updated");
+                _logger.LogError(ex, "An error occurred while adding the entries to the db");
+                throw new ContextException("An error occurred while adding the entries to the db", ex);
+            }
         }
 
         /// <summary>
@@ -229,47 +248,55 @@ namespace Business.Services
         /// <param name="input">The input of AddExpense</param>
         private async Task AddEntryWithPercentageType(ExpenseInput input, Guid expenseId)
         {
-            var splitAmounts = SplitAmountByPercentage(input.Amount, input.SplitPercentages!);
-            var entryList = new List<Entry>();
-            var users = input.SplitPercentages!.Keys.ToList();
-            var balances = await _expenseRepository.GetBalanceFromUserIdListAsync(users);
+            try
+            { 
+                var splitAmounts = SplitAmountByPercentage(input.Amount, input.SplitPercentages!);
+                var entryList = new List<Entry>();
+                var users = input.SplitPercentages!.Keys.ToList();
+                var balances = await _expenseRepository.GetBalanceFromUserIdListAsync(users);
             
-            _logger.LogInformation($"Succes : All balances from the users found");
+                _logger.LogInformation($"Succes : All balances from the users found");
 
-            foreach (var entry in input.SplitPercentages)
-            {
-                var newEntry = new Entry
+                foreach (var entry in input.SplitPercentages)
                 {
-                    UserId = entry.Key,
+                    var newEntry = new Entry
+                    {
+                        UserId = entry.Key,
+                        ExpenseId = expenseId,
+                        Amount = -splitAmounts[entry.Key]
+                    };
+                    entryList.Add(newEntry);
+                    var balance = balances.First(x => x.UserId == entry.Key);
+                    balance.PersonalBalance += newEntry.Amount;
+                    balance.LastUpdate = DateTime.UtcNow;
+
+                    _logger.LogInformation($"Succes : Entry for user {newEntry.UserId} added");
+                }
+
+                var paiment = new Entry
+                {
+                    UserId = input.PaidBy,
                     ExpenseId = expenseId,
-                    Amount = -splitAmounts[entry.Key]
+                    Amount = input.Amount
                 };
-                entryList.Add(newEntry);
-                var balance = balances.First(x => x.UserId == entry.Key);
-                balance.PersonalBalance += newEntry.Amount;
-                balance.LastUpdate = DateTime.UtcNow;
+                entryList.Add(paiment);
+                var paimentBalance = balances.First(x => x.UserId == input.PaidBy);
+                paimentBalance.PersonalBalance += input.Amount;
+                paimentBalance.LastUpdate = DateTime.UtcNow;
 
-                _logger.LogInformation($"Succes : Entry for user {newEntry.UserId} added");
+                _logger.LogInformation($"Succes : Entry for user {paiment.UserId} added");
+
+                await _expenseRepository.UpdateRangeBalanceAsync(balances);
+                await _expenseRepository.AddRangeEntryAsync(entryList);
+
+                _logger.LogInformation($"Succes : All entries added to the db");
+                _logger.LogInformation($"Succes : All balances updated");
             }
-
-            var paiment = new Entry
+            catch (Exception ex)
             {
-                UserId = input.PaidBy,
-                ExpenseId = expenseId,
-                Amount = input.Amount
-            };
-            entryList.Add(paiment);
-            var paimentBalance = balances.First(x => x.UserId == input.PaidBy);
-            paimentBalance.PersonalBalance += input.Amount;
-            paimentBalance.LastUpdate = DateTime.UtcNow;
-
-            _logger.LogInformation($"Succes : Entry for user {paiment.UserId} added");
-
-            await _expenseRepository.UpdateRangeBalanceAsync(balances);
-            await _expenseRepository.AddRangeEntryAsync(entryList);
-
-            _logger.LogInformation($"Succes : All entries added to the db");
-            _logger.LogInformation($"Succes : All balances updated");
+                _logger.LogError(ex, "An error occurred while adding the entries to the db");
+                throw new ContextException("An error occurred while adding the entries to the db", ex);
+            }
         }
         
         /// <summary>
@@ -410,11 +437,13 @@ namespace Business.Services
                     }
                     catch (InvalidEntityException)
                     {
+                        _logger.LogError("The input is invalid, transaction rollbacked");
                         await transaction.RollbackAsync();
                         throw;
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "An error occurred while adding the expense to the db, transaction rollbacked");
                         await transaction.RollbackAsync();
                         throw new ContextException("NO DATA WAS MODIFIED : An error occurred while adding the expense to the db", ex);
                     }
@@ -445,11 +474,14 @@ namespace Business.Services
             try
             {
                 var balances = await _expenseRepository.GetAllBalancesOutputFromColocationIdListAsync(ColocationId);
+                
                 _logger.LogInformation($"Succes : All balances from the colocation {ColocationId} found");
+                
                 return balances;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred while getting all balances from the db");
                 throw new ContextException("An error occurred while getting all balances from the db", ex);
             }
         }
@@ -461,14 +493,20 @@ namespace Business.Services
                 var entries = await _expenseRepository.GetAllEntriesFromColocationIdAsync(colocationId);
                 var balances = await _expenseRepository.GetAllBalancesFromColocationIdListAsync(colocationId);
 
+                _logger.LogInformation($"Succes : All entries and balances from the colocation {colocationId} found");
+
                 balances.Select(b => b.PersonalBalance = entries.Where(e => e.UserId == b.UserId).Select(x => x.Amount).Sum()).ToList();
 
                 await _expenseRepository.UpdateRangeBalanceAsync(balances);
                 await _expenseRepository.SaveChangesAsync();
+                
+                _logger.LogInformation($"Succes : All balances updated");
+
                 return balances.Select(x => x.ToOutput()).ToList();
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred while recalculating the balance");
                 throw new ContextException("An error occurred while recalculating the balance", ex);
             }
         }

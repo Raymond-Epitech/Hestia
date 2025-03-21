@@ -38,6 +38,7 @@ namespace Business.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred while getting all collocations from the db");
                 throw new ContextException("An error occurred while getting all collocations from the db", ex);
             }
         }
@@ -66,10 +67,12 @@ namespace Business.Services
             }
             catch (NotFoundException)
             {
+                _logger.LogError($"The collocation with id {id} was not found");
                 throw;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred while getting the collocation from the db");
                 throw new ContextException("An error occurred while getting the collocation from the db", ex);
             }
         }
@@ -106,6 +109,8 @@ namespace Business.Services
 
                     user.ColocationId = newColocation.Id;
                     await _userRepository.UpdateAsync(user);
+
+                    _logger.LogInformation($"Succes : User {user.Id} added to colocation {newColocation.Id}");
                 }
 
                 await _colocationRepository.SaveChangesAsync();
@@ -116,10 +121,12 @@ namespace Business.Services
             }
             catch (NotFoundException)
             {
+                _logger.LogError($"The user {AddedBy} who created the colocation do not exist");
                 throw;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred while adding the colocation to the db");
                 throw new ContextException("An error occurred while adding the colocation to the db", ex);
             }
         }
@@ -136,6 +143,7 @@ namespace Business.Services
             try
             {
                 var colocationToUpdate = await _colocationRepository.GetColocationFromIdAsync(colocation.Id);
+                
                 if (colocationToUpdate == null)
                 {
                     throw new NotFoundException($"The collocation with id {colocation.Id} was not found");
@@ -145,14 +153,17 @@ namespace Business.Services
                 colocationToUpdate.Address = colocation.Address;
 
                 await _colocationRepository.SaveChangesAsync();
+                
                 _logger.LogInformation($"Succes : Colocation {colocation.Id} updated");
             }
             catch (NotFoundException)
             {
+                _logger.LogError($"The colocation with id {colocation.Id} was not found");
                 throw;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred while updating the colocation in the db");
                 throw new ContextException("An error occurred while updating the colocation in the db", ex);
             }
         }
@@ -169,6 +180,7 @@ namespace Business.Services
             try
             {
                 var colocation = await _colocationRepository.GetColocationFromIdAsync(colocationId);
+                
                 if (colocation == null)
                 {
                     throw new NotFoundException($"The colocation with id {colocationId} was not found");
@@ -176,14 +188,17 @@ namespace Business.Services
 
                 await _colocationRepository.DeleteColocationAsync(colocation);
                 await _colocationRepository.SaveChangesAsync();
+                
                 _logger.LogInformation($"Succes : Colocation {colocationId} deleted");
             }
             catch (NotFoundException)
             {
+                _logger.LogError($"The colocation with id {colocationId} was not found");
                 throw;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred while deleting the colocation from the db");
                 throw new ContextException("An error occurred while deleting the colocation from the db", ex);
             }
         }

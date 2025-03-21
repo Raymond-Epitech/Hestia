@@ -14,8 +14,6 @@ namespace WebApi.Configuration
             services.AddDbContext(configuration, isDevelopment)
                 .AddBusinessServices()
                 .EnableCors();
-            //AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-            AppContext.SetSwitch("System.Globalization.Invariant", false);
         }
 
         private static IServiceCollection AddBusinessServices(this IServiceCollection services)

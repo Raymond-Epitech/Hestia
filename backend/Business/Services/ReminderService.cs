@@ -30,11 +30,14 @@ public class ReminderService : IReminderService
         try
         {
             var reminders = await _reminderRepository.GetAllReminderOutputsAsync(CollocationId);
+            
             _logger.LogInformation("Succes : All reminders found");
+            
             return reminders;
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "An error occurred while getting all reminders from the db");
             throw new ContextException("An error occurred while getting all reminders from the db", ex);
         }
     }
@@ -58,14 +61,17 @@ public class ReminderService : IReminderService
             }
 
             _logger.LogInformation("Succes : Reminder found");
+            
             return reminder;
         }
         catch (NotFoundException)
         {
+            _logger.LogError("Reminder not found");
             throw;
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "An error occurred while getting the reminder from the db");
             throw new ContextException("An error occurred while getting the reminder from the db", ex);
         }
     }
@@ -80,13 +86,17 @@ public class ReminderService : IReminderService
         try
         {
             var reminder = input.ToDb();
+            
             await _reminderRepository.AddReminderAsync(reminder);
             await _reminderRepository.SaveChangesAsync();
+            
             _logger.LogInformation("Succes : Reminder added");
+            
             return reminder.Id;
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "An error occurred while adding the reminder from the db");
             throw new ContextException("An error occurred while adding the reminder from the db", ex);
         }
     }
@@ -103,6 +113,7 @@ public class ReminderService : IReminderService
         try
         {
             var reminder = await _reminderRepository.GetReminderAsync(input.Id);
+            
             if (reminder == null)
             {
                 throw new NotFoundException($"Reminder {input.Id} not found");
@@ -116,10 +127,12 @@ public class ReminderService : IReminderService
         }
         catch (NotFoundException)
         {
+            _logger.LogError("Reminder not found");
             throw;
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "An error occurred while updating the reminder from the db");
             throw new ContextException("An error occurred while updating the reminder from the db", ex);
         }
     }
@@ -153,6 +166,8 @@ public class ReminderService : IReminderService
             {
                 try
                 {
+                    _logger.LogInformation("Transaction begin");
+                    
                     foreach (var reminder in reminders)
                     {
                         var input = inputs.FirstOrDefault(x => x.Id == reminder.Id);
@@ -166,11 +181,15 @@ public class ReminderService : IReminderService
                             reminder.UpdateFromInput(input);
                         }
                     }
+                    
                     await _reminderRepository.SaveChangesAsync();
                     transaction.Commit();
+
+                    _logger.LogInformation("Transaction commit");
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogError(ex, "An error occurred while updating the reminder from the db, Transaction rollbacked");
                     transaction.Rollback();
                     throw new ContextException("An error occurred while updating the reminder from the db", ex);
                 }
@@ -180,10 +199,12 @@ public class ReminderService : IReminderService
         }
         catch (NotFoundException)
         {
+            _logger.LogError("Reminder not found");
             throw;
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "An error occurred while updating the reminder from the db");
             throw new ContextException("An error occurred while updating the reminder from the db", ex);
         }
     }
@@ -200,10 +221,12 @@ public class ReminderService : IReminderService
         try
         {
             var reminder = await _reminderRepository.GetReminderAsync(id);
+            
             if (reminder == null)
             {
                 throw new NotFoundException($"Reminder {id} not found");
             }
+            
             await _reminderRepository.DeleteReminderAsync(reminder);
             await _reminderRepository.SaveChangesAsync();
 
@@ -211,10 +234,12 @@ public class ReminderService : IReminderService
         }
         catch (NotFoundException)
         {
+            _logger.LogError("Reminder not found");
             throw;
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "An error occurred while deleting the reminder from the db");
             throw new ContextException("An error occurred while deleting the reminder from the db", ex);
         }
     }

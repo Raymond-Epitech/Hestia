@@ -43,6 +43,7 @@ namespace Business.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred while getting all chores from the db");
                 throw new ContextException("An error occurred while getting all chores from the db", ex);
             }
         }
@@ -71,10 +72,12 @@ namespace Business.Services
             }
             catch (NotFoundException)
             {
+                _logger.LogError($"User {id} not found");
                 throw;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred while getting the user from the db");
                 throw new ContextException("An error occurred while getting the user from the db", ex);
             }
         }
@@ -106,10 +109,12 @@ namespace Business.Services
             }
             catch (NotFoundException)
             {
+                _logger.LogError($"User {user.Id} not found");
                 throw;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred while updating the user in the db");
                 throw new ContextException("An error occurred while updating the user in the db", ex);
             }
         }
@@ -125,6 +130,7 @@ namespace Business.Services
             try
             {
                 var user = await _userRepository.GetUserByIdAsync(id);
+                
                 if (user == null)
                 {
                     throw new NotFoundException($"User {id} not found");
@@ -138,10 +144,12 @@ namespace Business.Services
             }
             catch (NotFoundException)
             {
+                _logger.LogError($"User {id} not found");
                 throw;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred while deleting the user from the db");
                 throw new ContextException("An error occurred while deleting the user from the db", ex);
             }
         }
@@ -163,6 +171,7 @@ namespace Business.Services
                 try
                 {
                     validPayload = await _jwtService.ValidateGoogleTokenAsync(googleToken);
+                    _logger.LogInformation("Token valid");
                 }
                 catch (Exception)
                 {
@@ -231,18 +240,23 @@ namespace Business.Services
                     }
                 };
                 
+                _logger.LogInformation("Succes : User registered and JWT created");
+
                 return userInfo;
             }
             catch (AlreadyExistException)
             {
+                _logger.LogError("User already exist with this email");
                 throw;
             }
             catch (InvalidTokenException)
             {
+                _logger.LogError("Google token invalid");
                 throw;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error when saving the info in the DB");
                 throw new Exception("Invalid token", ex);
             }
         }
@@ -263,6 +277,7 @@ namespace Business.Services
                 try
                 {
                     validPayload = await _jwtService.ValidateGoogleTokenAsync(googleToken);
+                    _logger.LogInformation("Token valid");
                 }
                 catch (Exception)
                 {
@@ -289,6 +304,8 @@ namespace Business.Services
                     {
                         user.LastConnection = DateTime.UtcNow;
                         await _userRepository.SaveChangesAsync();
+
+                        _logger.LogInformation($"Succes : User {user.Id}'s last connexion updated");
                     }
                     catch (Exception ex)
                     {
@@ -314,18 +331,23 @@ namespace Business.Services
                     User = userOutput
                 };
 
+                _logger.LogInformation("Succes : User logged in and JWT created");
+
                 return userInfo;
             }
             catch (NotFoundException)
             {
+                _logger.LogError("User not found");
                 throw;
             }
             catch (InvalidTokenException)
             {
+                _logger.LogError("Google token invalid");
                 throw;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error when saving the info in the DB");
                 throw new Exception("Erreur when saving the info in the DB", ex);
             }
         }
