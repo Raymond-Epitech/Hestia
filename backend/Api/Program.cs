@@ -22,7 +22,6 @@ try
     builder.Services.ConfigureServices(builder.Configuration, builder.Environment.IsDevelopment());
     builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 
-
     builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = "Bearer"; // Schéma par défaut pour l'API

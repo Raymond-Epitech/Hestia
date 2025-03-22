@@ -40,8 +40,8 @@ public class ExpenseControllerTests
                 Name = "TestExpense1",
                 Description = "TestDescription1",
                 Amount = 10,
-                PaidBy = "TestUser1",
-                SplitBetween = new List<string> { "TestUser1", "TestUser2" },
+                PaidBy = Guid.NewGuid(),
+                SplitBetween = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
                 DateOfPayment = DateTime.Now,
             },
             new ExpenseOutput
@@ -53,8 +53,8 @@ public class ExpenseControllerTests
                 Name = "TestExpense2",
                 Description = "TestDescription2",
                 Amount = 10,
-                PaidBy = "TestUser2",
-                SplitBetween = new List<string> { "TestUser1", "TestUser2" },
+                PaidBy = Guid.NewGuid(),
+                SplitBetween = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
                 DateOfPayment = DateTime.Now,
             }
         };
@@ -103,8 +103,8 @@ public class ExpenseControllerTests
             Name = "TestExpense1",
             Description = "TestDescription1",
             Amount = 10,
-            PaidBy = "TestUser1",
-            SplitBetween = new List<string> { "TestUser1", "TestUser2" },
+            PaidBy = Guid.NewGuid(),
+            SplitBetween = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
             DateOfPayment = DateTime.Now,
         };
 

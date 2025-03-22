@@ -87,16 +87,21 @@ namespace Business.Services
         /// <param name="totalAmount">The total of the ammount to share</param>
         /// <param name="numPeople">The number of people</param>
         /// <returns>A list of *numPeople* decimal splited</returns>
-        private static List<decimal> SplitAmountEvenly(decimal totalAmount, int numPeople)
+        private static Dictionary<Guid, decimal> SplitAmountEvenly(decimal totalAmount, List<Guid> peopleList)
         {
-            decimal baseAmount = Math.Floor(totalAmount / numPeople * 100) / 100;
-            decimal remainingCents = totalAmount - (baseAmount * numPeople);
+            decimal baseAmount = Math.Floor(totalAmount / peopleList.Count * 100) / 100;
+            decimal remainingCents = totalAmount - (baseAmount * peopleList.Count);
 
-            List<decimal> result = Enumerable.Repeat(baseAmount, numPeople).ToList();
+            Dictionary<Guid, decimal> result = new Dictionary<Guid, decimal>();
+
+            foreach (var person in peopleList)
+            {
+                result[person] = baseAmount;
+            }
 
             for (int i = 0; i < remainingCents * 100; i++)
             {
-                result[i] += 0.01m;
+                result[peopleList[i % peopleList.Count]] += 0.01m;
             }
 
             return result;
@@ -136,140 +141,27 @@ namespace Business.Services
         /// Add the entries to the database and update the balance with the amount splited evenly
         /// </summary>
         /// <param name="input">The input of AddExpense</param>
-        private async Task AddEntryWithEvenlyType(ExpenseInput input, Guid expenseId)
+        private async Task AddEntriesAndUpdateBalance(ExpenseInput input, Guid expenseId, Dictionary<Guid, decimal> splitedAmounts)
         {
             try
             {
-                var splitAmounts = SplitAmountEvenly(input.Amount, input.SplitBetween!.Count);
                 var entryList = new List<Entry>();
-                var balances = await _expenseRepository.GetBalanceFromUserIdListAsync(input.SplitBetween);
+                var balances = await _expenseRepository.GetBalanceFromUserIdListAsync(input.SplitBetween!);
 
                 _logger.LogInformation($"Succes : All balances from the users found");
 
-                for (int i = 0; i < input.SplitBetween.Count; i++)
+                for (int i = 0; i < input.SplitBetween!.Count; i++)
                 {
                     var newEntry = new Entry
                     {
                         UserId = input.SplitBetween[i],
                         ExpenseId = expenseId,
-                        Amount = -splitAmounts[i]
+                        Amount = -splitedAmounts[input.SplitBetween[i]]
                     };
                     entryList.Add(newEntry);
                     var balance = balances.First(x => x.UserId == newEntry.UserId);
                     balance.PersonalBalance += newEntry.Amount;
                     balance.LastUpdate = DateTime.UtcNow;
-                    _logger.LogInformation($"Succes : Entry for user {newEntry.UserId} added");
-                }
-
-                var paiment = new Entry
-                {
-                    UserId = input.PaidBy,
-                    ExpenseId = expenseId,
-                    Amount = input.Amount
-                };
-                entryList.Add(paiment);
-                var paimentBalance = balances.First(x => x.UserId == input.PaidBy);
-                paimentBalance.PersonalBalance += input.Amount;
-                paimentBalance.LastUpdate = DateTime.UtcNow;
-
-                _logger.LogInformation($"Succes : Entry for user {paiment.UserId} added");
-
-                await _expenseRepository.UpdateRangeBalanceAsync(balances);
-                await _expenseRepository.AddRangeEntryAsync(entryList);
-
-                _logger.LogInformation($"Succes : All entries added to the db");
-                _logger.LogInformation($"Succes : All balances updated");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while adding the entries to the db");
-                throw new ContextException("An error occurred while adding the entries to the db", ex);
-            }
-        }
-
-        /// <summary>
-        /// Add the entries to the database and update the balance with the amount splited with the value
-        /// </summary>
-        /// <param name="input">The input of AddExpense</param>
-        private async Task AddEntryWithValueType(ExpenseInput input, Guid expenseId)
-        {
-            try
-            {
-                var entryList = new List<Entry>();
-                var users = input.SplitValues!.Keys.ToList();
-                var balances = await _expenseRepository.GetBalanceFromUserIdListAsync(users);
-
-                _logger.LogInformation($"Succes : All balances from the users found");
-
-                foreach (var entry in input.SplitValues)
-                {
-                    var newEntry = new Entry
-                    {
-                        UserId = entry.Key,
-                        ExpenseId = expenseId,
-                        Amount = -input.SplitValues![entry.Key]
-                    };
-                    entryList.Add(newEntry);
-                    var balance = balances.First(x => x.UserId == entry.Key);
-                    balance.PersonalBalance += newEntry.Amount;
-                    balance.LastUpdate = DateTime.UtcNow;
-                    _logger.LogInformation($"Succes : Entry for user {newEntry.UserId} added");
-                }
-
-                var paiment = new Entry
-                {
-                    UserId = input.PaidBy,
-                    ExpenseId = expenseId,
-                    Amount = input.Amount
-                };
-                entryList.Add(paiment);
-                var paimentBalance = balances.First(x => x.UserId == input.PaidBy);
-                paimentBalance.PersonalBalance += input.Amount;
-                paimentBalance.LastUpdate = DateTime.UtcNow;
-
-                _logger.LogInformation($"Succes : Entry for user {paiment.UserId} added");
-
-                await _expenseRepository.UpdateRangeBalanceAsync(balances);
-                await _expenseRepository.AddRangeEntryAsync(entryList);
-
-                _logger.LogInformation($"Succes : All entries added to the db");
-                _logger.LogInformation($"Succes : All balances updated");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while adding the entries to the db");
-                throw new ContextException("An error occurred while adding the entries to the db", ex);
-            }
-        }
-
-        /// <summary>
-        /// Add the entries to the database and update the balance with the amount splited with the percentage
-        /// </summary>
-        /// <param name="input">The input of AddExpense</param>
-        private async Task AddEntryWithPercentageType(ExpenseInput input, Guid expenseId)
-        {
-            try
-            { 
-                var splitAmounts = SplitAmountByPercentage(input.Amount, input.SplitPercentages!);
-                var entryList = new List<Entry>();
-                var users = input.SplitPercentages!.Keys.ToList();
-                var balances = await _expenseRepository.GetBalanceFromUserIdListAsync(users);
-            
-                _logger.LogInformation($"Succes : All balances from the users found");
-
-                foreach (var entry in input.SplitPercentages)
-                {
-                    var newEntry = new Entry
-                    {
-                        UserId = entry.Key,
-                        ExpenseId = expenseId,
-                        Amount = -splitAmounts[entry.Key]
-                    };
-                    entryList.Add(newEntry);
-                    var balance = balances.First(x => x.UserId == entry.Key);
-                    balance.PersonalBalance += newEntry.Amount;
-                    balance.LastUpdate = DateTime.UtcNow;
-
                     _logger.LogInformation($"Succes : Entry for user {newEntry.UserId} added");
                 }
 
@@ -377,7 +269,9 @@ namespace Business.Services
 
                                 _logger.LogInformation("Succes : Expense is split by value");
 
-                                await AddEntryWithValueType(input, expense.Id);
+                                input.SplitBetween = input.SplitValues.Keys.ToList();
+
+                                await AddEntriesAndUpdateBalance(input, expense.Id, input.SplitValues);
 
                                 splitBetween = input.SplitValues.Select(x => new SplitBetween
                                 {
@@ -394,7 +288,9 @@ namespace Business.Services
 
                                 _logger.LogInformation("Succes : Expense is split by percentage");
 
-                                await AddEntryWithPercentageType(input, expense.Id);
+                                input.SplitBetween = input.SplitPercentages.Keys.ToList();
+
+                                await AddEntriesAndUpdateBalance(input, expense.Id, SplitAmountByPercentage(input.Amount, input.SplitPercentages));
 
                                 splitBetween = input.SplitPercentages.Select(x => new SplitBetween
                                 {
@@ -411,7 +307,7 @@ namespace Business.Services
 
                                 _logger.LogInformation("Succes : Expense is split evenly");
 
-                                await AddEntryWithEvenlyType(input, expense.Id);
+                                await AddEntriesAndUpdateBalance(input, expense.Id, SplitAmountEvenly(input.Amount, input.SplitBetween));
 
                                 splitBetween = input.SplitBetween.Select(x => new SplitBetween
                                 {

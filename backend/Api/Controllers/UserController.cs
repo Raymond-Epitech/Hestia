@@ -48,7 +48,7 @@ namespace Api.Controllers
                 var user = await userService.GetUserAsync(id);
                 return Ok(user);
             }
-            catch(NotFoundException ex)
+            catch (NotFoundException ex)
             {
                 return NotFound(ex);
             }

@@ -42,7 +42,7 @@ public class UserRepositoryTests
                 CreatedAt = DateTime.UtcNow,
                 LastConnection = DateTime.UtcNow,
                 ColocationId = colocationId,
-                PathToProfilePicture = "default.jpg"
+                PathToProfilePicture = "default.jpg",
             }
         };
 
@@ -85,7 +85,8 @@ public class UserRepositoryTests
             Email = "test@example.com",
             CreatedAt = DateTime.UtcNow,
             LastConnection = DateTime.UtcNow,
-            PathToProfilePicture = ""
+            PathToProfilePicture = "",
+            ColocationId = null
         };
 
         using (var arrangeContext = new HestiaContext(_dbContextOptions))
@@ -120,7 +121,8 @@ public class UserRepositoryTests
             Email = "newuser@example.com",
             CreatedAt = DateTime.UtcNow,
             LastConnection = DateTime.UtcNow,
-            PathToProfilePicture = ""
+            PathToProfilePicture = "",
+            ColocationId = null
         };
 
         using (var context = new HestiaContext(_dbContextOptions))
@@ -155,7 +157,8 @@ public class UserRepositoryTests
             Email = "existing@example.com",
             CreatedAt = DateTime.UtcNow,
             LastConnection = DateTime.UtcNow,
-            PathToProfilePicture = ""
+            PathToProfilePicture = "",
+            ColocationId = null
         };
 
         using (var context = new HestiaContext(_dbContextOptions))
@@ -190,7 +193,8 @@ public class UserRepositoryTests
             Email = "user@example.com",
             CreatedAt = DateTime.UtcNow,
             LastConnection = DateTime.UtcNow,
-            PathToProfilePicture = ""
+            PathToProfilePicture = "",
+            ColocationId = null
         };
 
         using (var context = new HestiaContext(_dbContextOptions))
@@ -230,7 +234,8 @@ public class UserRepositoryTests
             Email = "delete@example.com",
             CreatedAt = DateTime.UtcNow,
             LastConnection = DateTime.UtcNow,
-            PathToProfilePicture = ""
+            PathToProfilePicture = "",
+            ColocationId = null
         };
 
         using (var context = new HestiaContext(_dbContextOptions))
@@ -269,7 +274,8 @@ public class UserRepositoryTests
             Email = email,
             CreatedAt = DateTime.UtcNow,
             LastConnection = DateTime.UtcNow,
-            PathToProfilePicture = ""
+            PathToProfilePicture = "",
+            ColocationId = null
         };
 
         using (var context = new HestiaContext(_dbContextOptions))
@@ -303,7 +309,8 @@ public class UserRepositoryTests
             Email = email,
             CreatedAt = DateTime.UtcNow,
             LastConnection = DateTime.UtcNow,
-            PathToProfilePicture = ""
+            PathToProfilePicture = "",
+            ColocationId = null
         };
 
         using (var context = new HestiaContext(_dbContextOptions))

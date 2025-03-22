@@ -94,7 +94,7 @@ public class ChoreServiceTests
         var existingChore = new EntityFramework.Models.Chore { Id = choreUpdate.Id, Title = "Old Chore", IsDone = false };
 
         _choreRepoMock.Setup(repo => repo.GetChoreByIdAsync(choreUpdate.Id)).ReturnsAsync(existingChore);
-        _choreRepoMock.Setup(repo => repo.SaveChangesAsync()).Returns(Task.CompletedTask);
+        _choreRepoMock.Setup(repo => repo.SaveChangesAsync());
 
         await _choreService.UpdateChoreAsync(choreUpdate);
 
