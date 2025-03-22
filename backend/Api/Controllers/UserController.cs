@@ -23,8 +23,7 @@ namespace Api.Controllers
             if (colocationId == Guid.Empty)
                 throw new InvalidEntityException("ColocationId is empty");
 
-            var users = await userService.GetAllUserAsync(colocationId);
-            return Ok(users);
+            return Ok(await userService.GetAllUserAsync(colocationId));
         }
 
         [HttpGet("GetById/{id}")]
@@ -38,8 +37,7 @@ namespace Api.Controllers
             if (id == Guid.Empty)
                 throw new InvalidEntityException("ColocationId is empty");
 
-            var user = await userService.GetUserAsync(id);
-            return Ok(user);
+            return Ok(await userService.GetUserAsync(id));
         }
 
         [HttpPut]
@@ -53,8 +51,7 @@ namespace Api.Controllers
             if (user.Id == Guid.Empty)
                 throw new InvalidEntityException("User Id is empty");
 
-            var userId = await userService.UpdateUserAsync(user);
-            return Ok(userId);
+            return Ok(await userService.UpdateUserAsync(user));
         }
 
         [HttpDelete("{id}")]
@@ -65,23 +62,10 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Guid>> DeleteUser(Guid id)
         {
-            try
-            {
-                var userId = await userService.DeleteUserAsync(id);
-                return Ok(userId);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (id == Guid.Empty)
+                throw new InvalidEntityException("User Id is empty");
+
+            return Ok(await userService.DeleteUserAsync(id));
         }
 
         [HttpPost("/Register")]
