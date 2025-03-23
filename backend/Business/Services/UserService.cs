@@ -1,6 +1,7 @@
 ﻿using Business.Interfaces;
 using Business.Jwt;
 using EntityFramework.Models;
+using EntityFramework.Repositories;
 using Google.Apis.Auth;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
@@ -12,7 +13,11 @@ using System.Security.Claims;
 
 namespace Business.Services;
 
-public class UserService(ILogger<UserService> logger, IUserRepository userRepository, IJwtService jwtService) : IUserService
+public class UserService(ILogger<UserService> _logger,
+    IRepository<User> _repository,
+    IColocationRepository<User> _colocationIdRepository,
+    IRepository<Balance> _balanceRepository,
+    IJwtService jwtService) : IUserService
 {
     /// <summary>
     /// Get all users from a collocation
@@ -20,11 +25,17 @@ public class UserService(ILogger<UserService> logger, IUserRepository userReposi
     /// <param name="CollocationId">The Id of the collocation you want the users from</param>
     /// <returns>The list of the User in a collocation</returns>
     /// <exception cref="ContextException">An error occurred while getting all chores from the db</exception>
-    public async Task<List<UserOutput>> GetAllUserAsync(Guid CollocationId)
+    public async Task<List<UserOutput>> GetAllUserAsync(Guid collocationId)
     {
-        var users = await userRepository.GetAllUserOutputAsync(CollocationId);
+        var users = await _colocationIdRepository.GetAllByColocationIdAsTypeAsync(collocationId, u => new UserOutput
+        {
+            Id = u.Id,
+            Username = u.Username,
+            Email = u.Email,
+            ColocationId = u.ColocationId
+        });
 
-        logger.LogInformation($"Succes : All users from the collocation {CollocationId} found");
+        _logger.LogInformation($"Succes : All users from the collocation {collocationId} found");
 
         return users;
     }
@@ -38,12 +49,18 @@ public class UserService(ILogger<UserService> logger, IUserRepository userReposi
     /// <exception cref="NotFoundException">The user was not found</exception>
     public async Task<UserOutput> GetUserAsync(Guid id)
     {
-        var user = await userRepository.GetUserOutputByIdAsync(id);
+        var user = await _repository.GetByIdAsTypeAsync(id, u => new UserOutput
+        {
+            Id = u.Id,
+            Username = u.Username,
+            Email = u.Email,
+            ColocationId = u.ColocationId
+        });
 
         if (user == null)
             throw new NotFoundException("User not found");
 
-        logger.LogInformation($"Succes : User {id} found");
+        _logger.LogInformation($"Succes : User {id} found");
 
         return user;
     }
@@ -56,7 +73,7 @@ public class UserService(ILogger<UserService> logger, IUserRepository userReposi
     /// <exception cref="ContextException">An error occurred while getting all chores from the db</exception>
     public async Task<Guid> UpdateUserAsync(UserUpdate user)
     {
-        var userToUpdate = await userRepository.GetUserByIdAsync(user.Id);
+        var userToUpdate = await _repository.GetByIdAsync(user.Id);
 
         if (userToUpdate == null)
             throw new NotFoundException($"User {user.Id} not found");
@@ -65,9 +82,9 @@ public class UserService(ILogger<UserService> logger, IUserRepository userReposi
         userToUpdate.ColocationId = user.ColocationId;
         userToUpdate.PathToProfilePicture = user.PathToProfilePicture;
 
-        await userRepository.SaveChangesAsync();
+        await _repository.SaveChangesAsync();
 
-        logger.LogInformation($"Succes : User {user.Id} updated");
+        _logger.LogInformation($"Succes : User {user.Id} updated");
         
         return userToUpdate.Id;
     }
@@ -80,16 +97,11 @@ public class UserService(ILogger<UserService> logger, IUserRepository userReposi
     /// <exception cref="ContextException">An error occurred while getting all chores from the db</exception>
     public async Task<Guid> DeleteUserAsync(Guid id)
     {
-        var user = await userRepository.GetUserByIdAsync(id);
-                
-        if (user == null)
-            throw new NotFoundException($"User {id} not found");
+        await _repository.DeleteFromIdAsync(id);
 
-        await userRepository.RemoveAsync(user);
+        await _repository.SaveChangesAsync();
 
-        await userRepository.SaveChangesAsync();
-
-        logger.LogInformation("Succes : User deleted");
+        _logger.LogInformation("Succes : User deleted");
 
         return id;
     }
@@ -109,11 +121,11 @@ public class UserService(ILogger<UserService> logger, IUserRepository userReposi
         try
         {
             validPayload = await jwtService.ValidateGoogleTokenAsync(googleToken);
-            logger.LogInformation("Token valid");
+            _logger.LogInformation("Token valid");
         }
         catch (Exception ex)
         {
-            logger.LogWarning(ex, "Google token validation failed.");
+            _logger.LogWarning(ex, "Google token validation failed.");
             throw new InvalidTokenException("Google token invalid");
         }
             
@@ -148,19 +160,12 @@ public class UserService(ILogger<UserService> logger, IUserRepository userReposi
             LastUpdate = DateTime.Now.ToUniversalTime()
         };
 
-        try
-        {
-            await userRepository.AddBalanceAsync(newBalance);
-            await userRepository.AddAsync(newUser);
+        await _balanceRepository.AddAsync(newBalance);
+        await _repository.AddAsync(newUser);
 
-            await userRepository.SaveChangesAsync();
+        await _repository.SaveChangesAsync();
 
-            logger.LogInformation($"Succes : User {newUser.Id} added");
-        }
-        catch (Exception ex)
-        {
-            throw new ContextException("An error occurred while adding the user to the db", ex);
-        }
+        _logger.LogInformation($"Succes : User {newUser.Id} added");
 
         // Generate and return JWT
 
@@ -178,7 +183,7 @@ public class UserService(ILogger<UserService> logger, IUserRepository userReposi
             }
         };
                 
-        logger.LogInformation("Succes : User registered and JWT created");
+        _logger.LogInformation("Succes : User registered and JWT created");
 
         return userInfo;
     }
@@ -197,11 +202,11 @@ public class UserService(ILogger<UserService> logger, IUserRepository userReposi
         try
         {
             validPayload = await jwtService.ValidateGoogleTokenAsync(googleToken);
-            logger.LogInformation("Token valid");
+            _logger.LogInformation("Token valid");
         }
         catch (Exception ex)
         {
-            logger.LogWarning(ex, "Google token validation failed.");
+            _logger.LogWarning(ex, "Google token validation failed.");
             throw new InvalidTokenException("Google token invalid");
         }
 
@@ -213,24 +218,19 @@ public class UserService(ILogger<UserService> logger, IUserRepository userReposi
             new Claim("picture", validPayload.Picture ?? ""),
         };
 
-        var user = await userRepository.GetUserByEmailAsync(validPayload.Email);
+        var user = await _repository.GetUserByEmailAsync(validPayload.Email);
 
         if (user is null)
         {
             throw new NotFoundException("User not found");
         }
 
-        try
-        {
-            user.LastConnection = DateTime.UtcNow;
-            await userRepository.SaveChangesAsync();
+        user.LastConnection = DateTime.UtcNow;
 
-            logger.LogInformation($"Succes : User {user.Id}'s last connexion updated");
-        }
-        catch (Exception ex)
-        {
-            throw new ContextException("Error while updating the user", ex);
-        }
+        _repository.Update(user);
+        await _repository.SaveChangesAsync();
+
+        _logger.LogInformation($"Succes : User {user.Id}'s last connexion updated");
 
         var jwt = jwtService.GenerateToken(claims);
 
@@ -248,7 +248,7 @@ public class UserService(ILogger<UserService> logger, IUserRepository userReposi
             User = userOutput
         };
 
-        logger.LogInformation("Succes : User logged in and JWT created");
+        _logger.LogInformation("Succes : User logged in and JWT created");
 
         return userInfo;
     }

@@ -11,6 +11,6 @@ namespace Shared.Models.Input
         public string Address { get; set; } = null!;
 
         [Required]
-        public string CreatedBy { get; set; } = null!;
+        public Guid CreatedBy { get; set; }
     }
 }

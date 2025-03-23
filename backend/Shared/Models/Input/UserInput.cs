@@ -7,6 +7,6 @@ namespace Shared.Models.Input
         [Required]
         public string Username { get; set; } = null!;
 
-        public Guid? ColocationId { get; set; } = null;
+        public Guid ColocationId { get; set; }
     }
 }

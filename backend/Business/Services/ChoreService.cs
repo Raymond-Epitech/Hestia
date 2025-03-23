@@ -1,7 +1,7 @@
 ﻿using Business.Interfaces;
 using Business.Mappers;
 using EntityFramework.Models;
-using EntityFramework.Repositories.Interfaces;
+using EntityFramework.Repositories;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
 using Shared.Models.Input;
@@ -10,27 +10,30 @@ using Shared.Models.Update;
 
 namespace Business.Services;
 
-public class ChoreService : IChoreService
+public class ChoreService(
+    ILogger<ChoreService> _logger,
+    IColocationRepository<Chore> _colocationIdRepository,
+    IRepository<Chore> _repository) : IChoreService
 {
-    private readonly ILogger<ChoreService> _logger;
-    private readonly IChoreRepository _choreRepository;
-
-    public ChoreService(ILogger<ChoreService> logger, IChoreRepository choreRepository)
-    {
-        _logger = logger;
-        _choreRepository = choreRepository;
-    }
-
     /// <summary>
     /// Get all Chores
     /// </summary>
     /// <returns>All the chores available</returns>
     /// <exception cref="ContextException">An error has occured while retriving the chores from db</exception>
-    public async Task<List<ChoreOutput>> GetAllChoresAsync(Guid ColocationId)
+    public async Task<List<ChoreOutput>> GetAllChoresAsync(Guid colocationId)
     {
-        var chores = await _choreRepository.GetAllChoreOutputsAsync(ColocationId);
-        
-        _logger.LogInformation($"Succes : All chores from the colocation {ColocationId} found");
+        var chores = await _colocationIdRepository.GetAllByColocationIdAsTypeAsync(colocationId, c => new ChoreOutput
+        {
+            Id = c.Id,
+            CreatedBy = c.CreatedBy,
+            CreatedAt = c.CreatedAt,
+            DueDate = c.DueDate,
+            Title = c.Title,
+            Description = c.Description,
+            IsDone = c.IsDone
+        });
+
+        _logger.LogInformation($"Succes : All chores from the colocation {colocationId} found");
         
         return chores;
     }
@@ -44,7 +47,16 @@ public class ChoreService : IChoreService
     /// <exception cref="ContextException">An error has occured while retriving chore from db</exception>
     public async Task<ChoreOutput> GetChoreAsync(Guid id)
     {
-        var chore = await _choreRepository.GetChoreOutputByIdAsync(id); 
+        var chore = await _repository.GetByIdAsTypeAsync(id, user => new ChoreOutput
+        {
+            Id = user.Id,
+            CreatedBy = user.CreatedBy,
+            CreatedAt = user.CreatedAt,
+            DueDate = user.DueDate,
+            Title = user.Title,
+            Description = user.Description,
+            IsDone = user.IsDone
+        });
 
         if (chore == null)
         {
@@ -57,7 +69,7 @@ public class ChoreService : IChoreService
 
     public async Task<List<ChoreMessageOutput>> GetChoreMessageFromChoreAsync(Guid choreId)
     {
-        var choreMessages = await _choreRepository.GetAllChoreMessageOutputByChoreIdAsync(choreId);
+        var choreMessages = await _repository.GetAllChoreMessageOutputByChoreIdAsync(choreId);
 
         if (choreMessages == null)
         {
@@ -78,16 +90,8 @@ public class ChoreService : IChoreService
     {
         var chore = input.ToDb();
         
-        try
-        {
-            await _choreRepository.AddChoreAsync(chore);
-            await _choreRepository.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("An error occurred while adding the chore from the db");
-            throw new ContextException("An error occurred while adding the chore from the db", ex);
-        }
+        await _repository.AddAsync(chore);
+        await _repository.SaveChangesAsync();
 
         _logger.LogInformation("Succes : Chore added");
             
@@ -103,16 +107,8 @@ public class ChoreService : IChoreService
     {
         var choreMessage = input.ToDb();
         
-        try
-        {
-            await _choreRepository.AddChoreMessageAsync(choreMessage);
-            await _choreRepository.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("An error occurred while adding the chore message from the db");
-            throw new ContextException("An error occurred while adding the chore message from the db", ex);
-        }
+        await _repository.AddChoreMessageAsync(choreMessage);
+        await _repository.SaveChangesAsync();
 
         _logger.LogInformation("Succes : Chore message added");
             
@@ -128,23 +124,17 @@ public class ChoreService : IChoreService
     /// <exception cref="ContextException">An error has occured while adding chore from db</exception>
     public async Task<Guid> UpdateChoreAsync(ChoreUpdate input)
     {
-        var chore = await _choreRepository.GetChoreByIdAsync(input.Id);
+        var chore = await _repository.GetByIdAsync(input.Id);
         
         if (chore == null)
         {
             throw new NotFoundException($"Chore {input.Id} not found");
         }
 
-        try
-        {
-            chore.UpdateFromInput(input);
-            await _choreRepository.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("An error occurred while updating the chore from the db");
-            throw new ContextException("An error occurred while updating the chore from the db", ex);
-        }
+        chore.UpdateFromInput(input);
+
+        _ = _repository.Update(chore);
+        await _repository.SaveChangesAsync();
 
         _logger.LogInformation("Succes : Chore updated");
 
@@ -159,27 +149,12 @@ public class ChoreService : IChoreService
     /// <exception cref="ContextException">An error has occured while adding chore from db</exception>
     public async Task<Guid> DeleteChoreAsync(Guid id)
     {
-        var chore = await _choreRepository.GetChoreByIdAsync(id);
-            
-        if (chore == null)
-        {
-            throw new NotFoundException($"Chore {id} not found");
-        }
-        
-        try
-        {
-            await _choreRepository.DeleteChoreAsync(chore);
-            await _choreRepository.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("An error occurred while deleting the chore from the db");
-            throw new ContextException("An error occurred while deleting the chore from the db", ex);
-        }
+        _ = _repository.DeleteFromIdAsync(id);
+        await _repository.SaveChangesAsync();
 
         _logger.LogInformation("Succes : Chore deleted");
 
-        return chore.Id;
+        return id;
     }
 
     /// <summary>
@@ -190,23 +165,8 @@ public class ChoreService : IChoreService
     /// <exception cref="ContextException">An error has occured while adding chore from db</exception>
     public async Task<Guid> DeleteChoreMessageByChoreIdAsync(Guid choreId)
     {
-        var choreMessages = await _choreRepository.GetChoreMessageFromChoreId(choreId);
-            
-        if (choreMessages is null)
-        {
-            throw new NotFoundException($"Chore {choreId} not found or no Chore message linked to this chore");
-        }
-        
-        try
-        {
-            await _choreRepository.DeleteRangeChoreMessageFromChoreId(choreMessages);
-            await _choreRepository.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("An error occurred while deleting the chore message from the db");
-            throw new ContextException("An error occurred while deleting the chore message from the db", ex);
-        }
+        await _repository.DeleteRangeChoreMessageFromChoreId(choreMessages);
+        await _repository.SaveChangesAsync();
 
         _logger.LogInformation("Succes : Chore message deleted");
 
@@ -221,7 +181,7 @@ public class ChoreService : IChoreService
     /// <exception cref="ContextException">An error occurred while adding the user to the db</exception>
     public async Task<List<UserOutput>> GetUserFromChore(Guid choreId)
     {
-        var users = await _choreRepository.GetEnrolledUserOutputFromChoreIdAsync(choreId);
+        var users = await _repository.GetEnrolledUserOutputFromChoreIdAsync(choreId);
 
         _logger.LogInformation("Succes : Users found");
 
@@ -236,7 +196,7 @@ public class ChoreService : IChoreService
     /// <exception cref="ContextException">An error occurred while adding the user to the db</exception>
     public async Task<List<ChoreOutput>> GetChoreFromUser(Guid userId)
     {
-        var chores = await _choreRepository.GetEnrolledChoreOutputFromUserIdAsync(userId);
+        var chores = await _repository.GetEnrolledChoreOutputFromUserIdAsync(userId);
 
         _logger.LogInformation("Succes : Chores found");
 
@@ -259,8 +219,8 @@ public class ChoreService : IChoreService
 
         try
         {
-            await _choreRepository.AddChoreEnrollmentAsync(enroll);
-            await _choreRepository.SaveChangesAsync();
+            await _repository.AddChoreEnrollmentAsync(enroll);
+            await _repository.SaveChangesAsync();
         }
         catch (Exception ex)
         {
@@ -282,7 +242,7 @@ public class ChoreService : IChoreService
     /// <exception cref="ContextException">An error occurred while adding the user to the db</exception>
     public async Task<Guid> UnenrollToChore(Guid userId, Guid choreId)
     {
-        var enrollement = await _choreRepository.GetChoreEnrollmentByUserIdAndChoreIdAsync(userId, choreId);
+        var enrollement = await _repository.GetChoreEnrollmentByUserIdAndChoreIdAsync(userId, choreId);
             
         if (enrollement == null)
         {
@@ -291,8 +251,8 @@ public class ChoreService : IChoreService
 
         try
         {
-            await _choreRepository.RemoveChoreEnrollmentAsync(enrollement);
-            await _choreRepository.SaveChangesAsync();
+            await _repository.RemoveChoreEnrollmentAsync(enrollement);
+            await _repository.SaveChangesAsync();
         }
         catch (Exception ex)
         {

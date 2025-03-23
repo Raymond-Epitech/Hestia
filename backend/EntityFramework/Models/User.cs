@@ -3,20 +3,22 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EntityFramework.Models
 {
-    public class User
+    public class User : IColocationEntity
     {
         [Key]
         public Guid Id { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public DateTime LastConnection { get; set; } = DateTime.UtcNow;
+        public Guid CreatedBy { get; set; }
 
         [Required]
-        public Guid? ColocationId { get; set; } = null;
+        public Guid ColocationId { get; set; }
 
         [ForeignKey(nameof(ColocationId))]
-        public Colocation? Colocation { get; set; } = null;
+        public Colocation Colocation { get; set; } = null!;
+
+        public DateTime LastConnection { get; set; } = DateTime.UtcNow;
 
         [Required]
         public string Username { get; set; } = null!;

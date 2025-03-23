@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EntityFramework.Models;
 
-public class Reminder
+public class Reminder : IColocationEntity
 {
     [Key]
     public Guid Id { get; set; }
@@ -15,7 +15,7 @@ public class Reminder
     public Colocation Colocation { get; set; } = null!;
 
     [Required]
-    public string CreatedBy { get; set; } = null!;
+    public Guid CreatedBy { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 

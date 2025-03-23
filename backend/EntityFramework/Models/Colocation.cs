@@ -2,7 +2,7 @@
 
 namespace EntityFramework.Models
 {
-    public class Colocation
+    public class Colocation : IEntity
     {
         [Key]
         public Guid Id { get; set; }
@@ -10,7 +10,7 @@ namespace EntityFramework.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Required]
-        public string CreatedBy { get; set; } = null!;
+        public Guid CreatedBy { get; set; }
 
         [Required]
         public string Name { get; set; } = null!;

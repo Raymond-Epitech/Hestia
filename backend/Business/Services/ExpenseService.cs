@@ -125,7 +125,7 @@ namespace Business.Services
             var entryList = new List<Entry>();
             var balances = await _expenseRepository.GetBalanceFromUserIdListAsync(input.SplitBetween!);
 
-            if (balances.Count != input.SplitBetween!.Count)
+            if (balances.Count() != input.SplitBetween!.Count())
             {
                 throw new InvalidEntityException("Some users in the split between list are not in the colocation");
             }

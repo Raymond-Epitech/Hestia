@@ -16,6 +16,6 @@ namespace Shared.Models.Update
         [Required]
         public string PathToProfilePicture { get; set; } = null!;
 
-        public Guid? ColocationId { get; set; } = null;
+        public Guid ColocationId { get; set; }
     }
 }

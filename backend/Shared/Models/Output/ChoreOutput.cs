@@ -3,7 +3,7 @@
     public class ChoreOutput
     {
         public Guid Id { get; set; }
-        public string CreatedBy { get; set; } = null!;
+        public Guid CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime DueDate { get; set; }
         public string Title { get; set; } = null!;

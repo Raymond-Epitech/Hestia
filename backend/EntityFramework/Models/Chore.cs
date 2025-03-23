@@ -4,13 +4,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EntityFramework.Models
 {
-    public class Chore
+    public class Chore : IColocationEntity
     {
         [Key]
         public Guid Id { get; set; }
 
         [Required]
-        public string CreatedBy { get; set; } = null!;
+        public Guid CreatedBy { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
