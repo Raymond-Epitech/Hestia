@@ -17,20 +17,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<ReminderOutput>>> GetAllReminders(Guid ColocationId)
+        public async Task<ActionResult<List<ReminderOutput>>> GetAllReminders(Guid colocationId)
         {
-            try
-            {
-                return Ok(await reminderService.GetAllRemindersAsync(ColocationId));
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (colocationId == Guid.Empty)
+                throw new InvalidEntityException("ColocationId is empty");
+
+            return Ok(await reminderService.GetAllRemindersAsync(colocationId));
         }
 
         [HttpGet("GetById/{Id}")]
@@ -41,22 +33,10 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ReminderOutput>> GetReminder(Guid Id)
         {
-            try
-            {
-                return Ok(await reminderService.GetReminderAsync(Id));
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (Id == Guid.Empty)
+                throw new InvalidEntityException("Id is empty");
+
+            return Ok(await reminderService.GetReminderAsync(Id));
         }
 
         [HttpPost]
@@ -65,19 +45,10 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Guid>> AddReminder(ReminderInput input)
         {
-            try
-            {
-                var id = await reminderService.AddReminderAsync(input);
-                return Ok(id);
-            }
-            catch (ContextException ex)
-            {
-                return StatusCode(500, ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (input.ColocationId == Guid.Empty)
+                throw new InvalidEntityException("ColocationId is empty");
+
+            return Ok(await reminderService.AddReminderAsync(input));
         }
 
         [HttpPut]
@@ -87,29 +58,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> UpdateReminder(ReminderUpdate input)
+        public async Task<ActionResult<Guid>> UpdateReminder(ReminderUpdate input)
         {
-            try
-            {
-                await reminderService.UpdateReminderAsync(input);
-                return Ok();
-            }
-            catch (MissingArgumentException ex)
-            {
-                return BadRequest(ex);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (input.Id == Guid.Empty)
+                throw new InvalidEntityException("Id is empty");
+
+            return Ok(await reminderService.UpdateReminderAsync(input));
         }
 
         [HttpPut("Range")]
@@ -119,29 +73,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> UpdateRangeReminder(List<ReminderUpdate> inputs)
+        public async Task<ActionResult<int>> UpdateRangeReminder(List<ReminderUpdate> inputs)
         {
-            try
-            {
-                await reminderService.UpdateRangeReminderAsync(inputs);
-                return Ok();
-            }
-            catch (MissingArgumentException ex)
-            {
-                return BadRequest(ex);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (inputs.Any(x => x.Id == Guid.Empty))
+                throw new InvalidEntityException("Id is empty");
+
+            return Ok(await reminderService.UpdateRangeReminderAsync(inputs));
         }
 
         [HttpDelete("{id}")]
@@ -150,25 +87,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> DeleteReminder(Guid Id)
+        public async Task<ActionResult<Guid>> DeleteReminder(Guid Id)
         {
-            try
-            {
-                await reminderService.DeleteReminderAsync(Id);
-                return Ok();
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (Id == Guid.Empty)
+                throw new InvalidEntityException("Id is empty");
+
+            return Ok(await reminderService.DeleteReminderAsync(Id));
         }
     }
 }

@@ -14,26 +14,17 @@ namespace Api.Controllers
     public class ExpenseController(IExpenseService expenseService) : Controller
     {
 
-        [HttpGet("GetByColocationId/{ColocationId}")]
+        [HttpGet("GetByColocationId/{colocationId}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<ExpenseOutput>>> GetAllExpense(Guid ColocationId)
+        public async Task<ActionResult<List<ExpenseOutput>>> GetAllExpense(Guid colocationId)
         {
-            try
-            {
-                var expenses = await expenseService.GetAllExpensesAsync(ColocationId);
-                return Ok(expenses);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (colocationId == Guid.Empty)
+                throw new InvalidEntityException("ColocationId is required");
+
+            return Ok(await expenseService.GetAllExpensesAsync(colocationId));
         }
 
         [HttpGet("GetById/{id}")]
@@ -44,22 +35,10 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ExpenseOutput>> GetExpense(Guid id)
         {
-            try
-            {
-                return Ok(await expenseService.GetExpenseAsync(id));
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (id == Guid.Empty)
+                throw new InvalidEntityException("Id is required");
+
+            return Ok(await expenseService.GetExpenseAsync(id));
         }
 
         [HttpPost]
@@ -69,23 +48,10 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Guid>> AddExpense(ExpenseInput input)
         {
-            try
-            {
-                var id = await expenseService.AddExpenseAsync(input);
-                return Ok(id);
-            }
-            catch (ContextException ex)
-            {
-                return StatusCode(500, ex);
-            }
-            catch (InvalidEntityException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (input.ColocationId == Guid.Empty)
+                throw new InvalidEntityException("ColocationId is required");
+
+            return Ok(await expenseService.AddExpenseAsync(input));
         }
 
         // Update expense
@@ -99,18 +65,10 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<List<BalanceOutput>>> GetBalance(Guid colocationId)
         {
-            try
-            {
-                return await expenseService.GetAllBalanceAsync(colocationId);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (colocationId == Guid.Empty)
+                throw new InvalidEntityException("ColocationId is required");
+
+            return await expenseService.GetAllBalanceAsync(colocationId);
         }
 
         [HttpPut("CalculBalance/{colocationId}")]
@@ -120,18 +78,10 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<List<BalanceOutput>>> RecalculBalance(Guid colocationId)
         {
-            try
-            {
-                return await expenseService.RecalculateBalanceAsync(colocationId);
-            }
-            catch (ContextException ex)
-            {
-                return StatusCode(500, ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (colocationId == Guid.Empty)
+                throw new InvalidEntityException("ColocationId is required");
+
+            return await expenseService.RecalculateBalanceAsync(colocationId);
         }
     }
 }

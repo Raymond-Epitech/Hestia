@@ -14,7 +14,7 @@ namespace Shared.Models.Input
         [Required]
         public string Name { get; set; } = null!;
 
-        public string? Description { get; set; }
+        public string? Description { get; set; } = null;
 
         [Required]
         public decimal Amount { get; set; }

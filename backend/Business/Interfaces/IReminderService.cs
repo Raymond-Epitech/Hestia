@@ -9,8 +9,8 @@ namespace Business.Interfaces
         Task<List<ReminderOutput>> GetAllRemindersAsync(Guid ColocationId);
         Task<ReminderOutput> GetReminderAsync(Guid id);
         Task<Guid> AddReminderAsync(ReminderInput input);
-        Task UpdateReminderAsync(ReminderUpdate input);
-        Task UpdateRangeReminderAsync(List<ReminderUpdate> inputs);
-        Task DeleteReminderAsync(Guid id);
+        Task<Guid> UpdateReminderAsync(ReminderUpdate input);
+        Task<int> UpdateRangeReminderAsync(List<ReminderUpdate> inputs);
+        Task<Guid> DeleteReminderAsync(Guid id);
     }
 }
