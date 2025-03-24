@@ -9,7 +9,7 @@ namespace Shared.Models.Input
         public Guid ColocationId { get; set; }
 
         [Required]
-        public string CreatedBy { get; set; } = null!;
+        public Guid CreatedBy { get; set; }
 
         [Required]
         public string Name { get; set; } = null!;

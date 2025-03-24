@@ -3,6 +3,7 @@ using EntityFramework.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
+using Shared.Exceptions;
 using System.Linq.Expressions;
 
 namespace EntityFramework.Repositories;
@@ -63,7 +64,22 @@ public class Repository<T>(
         catch (Exception e)
         {
             logger.LogError(e, $"Error adding entity of type {typeof(T).Name}");
-            throw;
+            throw new ContextException("Error during the changing of information, see log for better details");
+        }
+    }
+
+    public async Task<int> AddRangeAsync(IEnumerable<T> entities)
+    {
+        try
+        {
+            await context.Set<T>().AddRangeAsync(entities);
+            logger.LogInformation($"Adding entities of type {typeof(T).Name}");
+            return entities.Count();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, $"Error adding entities of type {typeof(T).Name}");
+            throw new ContextException("Error during the changing of information, see log for better details");
         }
     }
 
@@ -78,11 +94,11 @@ public class Repository<T>(
         catch (Exception e)
         {
             logger.LogError(e, $"Error updating entity of type {typeof(T).Name}");
-            throw;
+            throw new ContextException("Error during the changing of information, see log for better details");
         }
     }
 
-    public int UpdatRange(IEnumerable<T> entities)
+    public int UpdateRange(IEnumerable<T> entities)
     {
         try
         {
@@ -93,7 +109,7 @@ public class Repository<T>(
         catch (Exception e)
         {
             logger.LogError(e, $"Error updating entities of type {typeof(T).Name}");
-            throw;
+            throw new ContextException("Error during the changing of information, see log for better details");
         }
     }
 
@@ -108,23 +124,28 @@ public class Repository<T>(
         catch (Exception e)
         {
             logger.LogError(e, $"Error deleting entity of type {typeof(T).Name}");
-            throw;
+            throw new ContextException("Error during the changing of information, see log for better details");
         }
     }
 
-    public T DeleteFromIdAsync(Guid id)
+    public async Task<T> DeleteFromIdAsync(Guid id)
     {
         try
         {
             logger.LogInformation($"Deleting entity of type {typeof(T).Name} with id {id}");
-            var entity = context.Set<T>().Find(id);
+            var entity = await context.Set<T>().FindAsync(id);
+            if (entity == null)
+            {
+                logger.LogWarning($"Entity of type {typeof(T).Name} with id {id} not found");
+                throw new NotFoundException($"Entity of type {typeof(T).Name} with id {id} not found");
+            }
             context.Set<T>().Remove(entity);
             return entity;
         }
         catch (Exception e)
         {
             logger.LogError(e, $"Error deleting entity of type {typeof(T).Name} with id {id}");
-            throw;
+            throw new ContextException("Error during the changing of information, see log for better details");
         }
     }
 
@@ -138,7 +159,7 @@ public class Repository<T>(
         catch (Exception e)
         {
             logger.LogError(e, "Error saving changes");
-            throw;
+            throw new ContextException("Error during the changing of information, see log for better details");
         }
     }
 

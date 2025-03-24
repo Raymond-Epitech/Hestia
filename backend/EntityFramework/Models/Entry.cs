@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EntityFramework.Models
 {
-    public class Entry : IEntity
+    public class Entry : IColocationEntity
     {
         [Key]
         public Guid Id { get; set; }
@@ -12,6 +12,12 @@ namespace EntityFramework.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public Guid CreatedBy { get; set; } = Guid.Empty;
+
+        [Required]
+        public Guid ColocationId { get; set; }
+
+        [ForeignKey("ColocationId")]
+        public Colocation Colocation { get; set; } = null!;
 
         [Required]
         public Guid ExpenseId { get; set; }

@@ -1,7 +1,7 @@
 ﻿using Business.Interfaces;
 using Business.Mappers;
 using EntityFramework.Models;
-using EntityFramework.Repositories.Interfaces;
+using EntityFramework.Repositories;
 using Microsoft.Extensions.Logging;
 using Shared.Enums;
 using Shared.Exceptions;
@@ -10,34 +10,38 @@ using Shared.Models.Output;
 
 namespace Business.Services
 {
-    public class ExpenseService : IExpenseService
+    public class ExpenseService(ILogger<ColocationService> _logger,
+        IRepository<Expense> _repository,
+        IColocationRepository<Expense> _colocationIdRepository,
+        IRepository<Entry> _entryRepository,
+        IColocationRepository<Entry> _colocationIdEntryRepository,
+        IRepository<SplitBetween> _splitbetweenRepository) : IExpenseService
     {
-        private readonly ILogger<ColocationService> _logger;
-        private readonly IExpenseRepository _expenseRepository;
-        private readonly IUserRepository _userRepository;
-
-        public ExpenseService(ILogger<ColocationService> logger,
-            IExpenseRepository expenseRepository,
-            IUserRepository userRepository)
-        {
-            _logger = logger;
-            _expenseRepository = expenseRepository;
-            _userRepository = userRepository;
-        }
-
         /// <summary>
         /// Get all expenses
         /// </summary>
         /// <param name="ColocationId">The colocation of the returned expenses</param>
         /// <returns>All the expense of the colocation</returns>
         /// <exception cref="ContextException">An error happened during the retriving of expenses</exception>
-        public async Task<List<ExpenseOutput>> GetAllExpensesAsync(Guid colocationId)
+        public async Task<Dictionary<string, List<ExpenseOutput>>> GetAllExpensesAsync(Guid colocationId)
         {
-            var expenses = await _expenseRepository.GetAllExpensesDTOAsync(colocationId);
+            var expenses = await _colocationIdRepository.GetAllByColocationIdAsTypeAsync(colocationId, e => new ExpenseOutput
+            {
+                Id = e.Id,
+                ColocationId = e.ColocationId,
+                CreatedBy = e.CreatedBy,
+                Name = e.Name,
+                Description = e.Description,
+                Amount = e.Amount,
+                PaidBy = e.PaidBy,
+                SplitType = Enum.Parse<SplitTypeEnum>(e.SplitType),
+                DateOfPayment = e.DateOfPayment,
+                ShoppingListName = e.ShoppingList.Name
+            });
 
             _logger.LogInformation("Succes : All expenses were retrived from db");
 
-            return expenses.Select(x => x.ToOutput()).OrderBy(x => x.DateOfPayment).ToList();
+            return expenses.ToCategories();
         }
 
         /// <summary>
@@ -48,7 +52,19 @@ namespace Business.Services
         /// <exception cref="ContextException">An error occured during the retrival of the expense</exception>
         public async Task<ExpenseOutput> GetExpenseAsync(Guid id)
         {
-            var expense = await _expenseRepository.GetExpenseDTOAsync(id);
+            var expense = await _repository.GetByIdAsTypeAsync(id, e => new ExpenseOutput
+            {
+                Id = e.Id,
+                ColocationId = e.ColocationId,
+                CreatedBy = e.CreatedBy,
+                Name = e.Name,
+                Description = e.Description,
+                Amount = e.Amount,
+                PaidBy = e.PaidBy,
+                SplitType = Enum.Parse<SplitTypeEnum>(e.SplitType),
+                DateOfPayment = e.DateOfPayment,
+                ShoppingListName = e.ShoppingList.Name
+            });
                 
             if (expense == null)
             {
@@ -57,7 +73,7 @@ namespace Business.Services
                 
             _logger.LogInformation($"Succes : Expense with id {id} was retrived from db");
                 
-            return expense.ToOutput();
+            return expense;
         }
 
         /// <summary>
@@ -160,17 +176,9 @@ namespace Business.Services
 
             _logger.LogInformation($"Succes : Entry for user {paiment.UserId} added");
 
-            try
-            {
-                await _expenseRepository.UpdateRangeBalanceAsync(balances);
-                await _expenseRepository.AddRangeEntryAsync(entryList);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while adding/updating the entries and balances to the db");
-                throw new ContextException("An error occurred while adding/updating the entries and balances to the db", ex);
-            }
-
+            await _repository.UpdatRange(balances);
+            await _entryRepository.AddRangeAsync(entryList);
+            
             _logger.LogInformation($"Succes : All entries added to the db");
             _logger.LogInformation($"Succes : All balances updated");
         }
@@ -215,7 +223,7 @@ namespace Business.Services
         /// <exception cref="ContextException">An error when the expense is created in the DB</exception>
         public async Task<Guid> AddExpenseAsync(ExpenseInput input)
         {
-            using (var transaction = await _expenseRepository.BeginTransactionAsync())
+            using (var transaction = await _repository.BeginTransactionAsync())
             {
                 try
                 {
@@ -294,17 +302,9 @@ namespace Business.Services
                             break;
                     }
 
-                    try
-                    {
-                        await _expenseRepository.AddRangeSplitBetweenAsync(splitBetween);
-                        await _expenseRepository.AddExpenseAsync(expense);
-                        await _expenseRepository.SaveChangesAsync();
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "An error occurred while adding the expense to the db");
-                        throw new ContextException("An error occurred while adding the expense to the db", ex);
-                    }
+                    await _splitbetweenRepository.AddRangeAsync(splitBetween);
+                    await _repository.AddAsync(expense);
+                    await _repository.SaveChangesAsync();
 
                     _logger.LogInformation("Succes : All data added to the db");
 
@@ -345,7 +345,7 @@ namespace Business.Services
 
         public async Task<List<BalanceOutput>> RecalculateBalanceAsync(Guid colocationId)
         {
-            var entries = await _expenseRepository.GetAllEntriesFromColocationIdAsync(colocationId);
+            var entries = await _colocationIdEntryRepository.GetAllByColocationIdAsync(colocationId);
             var balances = await _expenseRepository.GetAllBalancesFromColocationIdListAsync(colocationId);
 
             if (entries.Count == 0 || balances.Count == 0)
@@ -358,8 +358,8 @@ namespace Business.Services
 
             balances.Select(b => b.PersonalBalance = entries.Where(e => e.UserId == b.UserId).Select(x => x.Amount).Sum()).ToList();
 
-            await _expenseRepository.UpdateRangeBalanceAsync(balances);
-            await _expenseRepository.SaveChangesAsync();
+            await _repository.UpdateRange(balances);
+            await _repository.SaveChangesAsync();
                 
             _logger.LogInformation($"Succes : All balances updated");
 

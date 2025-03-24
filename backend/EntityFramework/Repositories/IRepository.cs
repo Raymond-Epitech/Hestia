@@ -11,8 +11,9 @@ public interface IRepository<T> where T : class
     Task<T?> GetByIdAsync(Guid id);
     Task<TResult?> GetByIdAsTypeAsync<TResult>(Guid id, Expression<Func<T, TResult>> selector);
     Task<T> AddAsync(T entity);
+    Task<int> AddRangeAsync(IEnumerable<T> entities);
     T Update(T entity);
-    int UpdatRange(IEnumerable<T> entities);
+    int UpdateRange(IEnumerable<T> entities);
     T Delete(T entity);
     Task<T> DeleteFromIdAsync(Guid id);
     Task SaveChangesAsync();

@@ -4,7 +4,7 @@
     {
         public Guid Id { get; set; }
         public DateTime CreatedAt { get; set; }
-        public string CreatedBy { get; set; } = null!;
+        public Guid CreatedBy { get; set; }
         public Guid ColocationId { get; set; }
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
@@ -13,5 +13,6 @@
         public List<Guid> SplitBetween { get; set; } = new List<Guid>();
         public string SplitType { get; set; } = null!;
         public DateTime DateOfPayment { get; set; }
+        public string ShoppingListName { get; set; } = null!;
     }
 }
