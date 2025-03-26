@@ -5,8 +5,10 @@ using EntityFramework.Repositories;
 using Microsoft.Extensions.Logging;
 using Shared.Enums;
 using Shared.Exceptions;
+using Shared.Models.DTO;
 using Shared.Models.Input;
 using Shared.Models.Output;
+using Shared.Models.Update;
 
 namespace Business.Services
 {
@@ -77,6 +79,37 @@ namespace Business.Services
         }
 
         /// <summary>
+        /// Check if the percentage of the split is equal to 100%
+        /// </summary>
+        /// <param name="splitPercentages">The percentage</param>
+        /// <returns>true if its equal to 100%, false if not</returns>
+        private static bool CheckPercent(Dictionary<Guid, int> splitPercentages)
+        {
+            int sum = 0;
+            foreach (var percentage in splitPercentages)
+            {
+                sum += percentage.Value;
+            }
+            return sum == 100;
+        }
+
+        /// <summary>
+        /// Check if the total match with all the amount splited
+        /// </summary>
+        /// <param name="splitValue"></param>
+        /// <param name="total"></param>
+        /// <returns></returns>
+        private static bool CheckTotalAmount(Dictionary<Guid, decimal> splitValue, decimal total)
+        {
+            decimal sum = 0;
+            foreach (var value in splitValue)
+            {
+                sum += value.Value;
+            }
+            return sum == total;
+        }
+
+        /// <summary>
         /// Split the amount of the expense between the people
         /// </summary>
         /// <param name="totalAmount">The total of the ammount to share</param>
@@ -136,7 +169,7 @@ namespace Business.Services
         /// Add the entries to the database and update the balance with the amount splited evenly
         /// </summary>
         /// <param name="input">The input of AddExpense</param>
-        private async Task AddEntriesAndUpdateBalance(ExpenseInput input, Guid expenseId, Dictionary<Guid, decimal> splitedAmounts)
+        private async Task AddEntriesAndUpdateBalance(InputExpenseDTO input, Guid expenseId, Dictionary<Guid, decimal> splitedAmounts)
         {
             var entryList = new List<Entry>();
             var balances = await _expenseRepository.GetBalanceFromUserIdListAsync(input.SplitBetween!);
@@ -176,42 +209,78 @@ namespace Business.Services
 
             _logger.LogInformation($"Succes : Entry for user {paiment.UserId} added");
 
-            await _repository.UpdatRange(balances);
+            await _repository.UpdateRange(balances);
             await _entryRepository.AddRangeAsync(entryList);
             
             _logger.LogInformation($"Succes : All entries added to the db");
             _logger.LogInformation($"Succes : All balances updated");
         }
         
-        /// <summary>
-        /// Check if the percentage of the split is equal to 100%
-        /// </summary>
-        /// <param name="splitPercentages">The percentage</param>
-        /// <returns>true if its equal to 100%, false if not</returns>
-        private static bool CheckPercent(Dictionary<Guid, int> splitPercentages)
+        private async Task CreateEntriesAndUpdateBalance(InputExpenseDTO input, Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction, Expense expense)
         {
-            int sum = 0;
-            foreach (var percentage in splitPercentages)
-            {
-                sum += percentage.Value;
-            }
-            return sum == 100;
-        }
+            List<SplitBetween> splitBetween = null!;
 
-        /// <summary>
-        /// Check if the total match with all the amount splited
-        /// </summary>
-        /// <param name="splitValue"></param>
-        /// <param name="total"></param>
-        /// <returns></returns>
-        private static bool CheckTotalAmount(Dictionary<Guid, decimal> splitValue, decimal total)
-        {
-            decimal sum = 0;
-            foreach (var value in splitValue)
+            switch (input.SplitType)
             {
-                sum += value.Value;
+                case SplitTypeEnum.ByValue:
+                    if (input.SplitValues is null || !CheckTotalAmount(input.SplitValues, input.Amount))
+                    {
+                        throw new InvalidEntityException("The expense must have a value for each person and the total must be equal to the sum of the expenses");
+                    }
+
+                    _logger.LogInformation("Succes : Expense is split by value");
+
+                    input.SplitBetween = input.SplitValues.Keys.ToList();
+
+                    await AddEntriesAndUpdateBalance(input, expense.Id, input.SplitValues);
+
+                    splitBetween = input.SplitValues.Select(x => new SplitBetween
+                    {
+                        ExpenseId = expense.Id,
+                        UserId = x.Key
+                    }).ToList();
+                    break;
+
+                case SplitTypeEnum.ByPercentage:
+                    if (input.SplitPercentages is null || !CheckPercent(input.SplitPercentages))
+                    {
+                        throw new InvalidEntityException("The expense must have a percentage for each person and the percentage must be equal to 100%");
+                    }
+
+                    _logger.LogInformation("Succes : Expense is split by percentage");
+
+                    input.SplitBetween = input.SplitPercentages.Keys.ToList();
+
+                    await AddEntriesAndUpdateBalance(input, expense.Id, SplitAmountByPercentage(input.Amount, input.SplitPercentages));
+
+                    splitBetween = input.SplitPercentages.Select(x => new SplitBetween
+                    {
+                        ExpenseId = expense.Id,
+                        UserId = x.Key
+                    }).ToList();
+                    break;
+
+                default:
+                    if (input.SplitBetween is null || input.SplitBetween.Count == 0)
+                    {
+                        throw new InvalidEntityException("The expense must be not null and split between number must at least be 1 people");
+                    }
+
+                    _logger.LogInformation("Succes : Expense is split evenly");
+
+                    await AddEntriesAndUpdateBalance(input, expense.Id, SplitAmountEvenly(input.Amount, input.SplitBetween));
+
+                    splitBetween = input.SplitBetween.Select(x => new SplitBetween
+                    {
+                        ExpenseId = expense.Id,
+                        UserId = x
+                    }).ToList();
+                    break;
             }
-            return sum == total;
+
+            await _splitbetweenRepository.AddRangeAsync(splitBetween);
+
+            _logger.LogInformation("Succes : All data added to the db");
         }
 
         /// <summary>
@@ -223,93 +292,40 @@ namespace Business.Services
         /// <exception cref="ContextException">An error when the expense is created in the DB</exception>
         public async Task<Guid> AddExpenseAsync(ExpenseInput input)
         {
+            _logger.LogInformation("Succes : Transaction started");
+
+            var expense = new Expense
+            {
+                Id = Guid.NewGuid(),
+                ColocationId = input.ColocationId,
+                CreatedBy = input.CreatedBy,
+                Name = input.Name,
+                Description = input.Description,
+                Amount = input.Amount,
+                PaidBy = input.PaidBy,
+                SplitType = input.SplitType.ToString(),
+                DateOfPayment = input.DateOfPayment
+            };
+
             using (var transaction = await _repository.BeginTransactionAsync())
             {
                 try
                 {
-                    _logger.LogInformation("Succes : Transaction started");
-
-                    var expense = new Expense
+                    await CreateEntriesAndUpdateBalance(new InputExpenseDTO
                     {
-                        Id = Guid.NewGuid(),
-                        ColocationId = input.ColocationId,
-                        CreatedBy = input.CreatedBy,
-                        Name = input.Name,
-                        Description = input.Description,
                         Amount = input.Amount,
                         PaidBy = input.PaidBy,
-                        SplitType = input.SplitType.ToString(),
-                        DateOfPayment = input.DateOfPayment
-                    };
+                        SplitBetween = input.SplitBetween,
+                        SplitPercentages = input.SplitPercentages,
+                        SplitValues = input.SplitValues,
+                        SplitType = input.SplitType
+                    }, transaction, expense);
 
-                    List<SplitBetween> splitBetween = null!;
-
-                    switch (input.SplitType)
-                    {
-                        case SplitTypeEnum.ByValue:
-                            if (input.SplitValues is null || !CheckTotalAmount(input.SplitValues, input.Amount))
-                            {
-                                throw new InvalidEntityException("The expense must have a value for each person and the total must be equal to the sum of the expenses");
-                            }
-
-                            _logger.LogInformation("Succes : Expense is split by value");
-
-                            input.SplitBetween = input.SplitValues.Keys.ToList();
-
-                            await AddEntriesAndUpdateBalance(input, expense.Id, input.SplitValues);
-
-                            splitBetween = input.SplitValues.Select(x => new SplitBetween
-                            {
-                                ExpenseId = expense.Id,
-                                UserId = x.Key
-                            }).ToList();
-                            break;
-
-                        case SplitTypeEnum.ByPercentage:
-                            if (input.SplitPercentages is null || !CheckPercent(input.SplitPercentages))
-                            {
-                                throw new InvalidEntityException("The expense must have a percentage for each person and the percentage must be equal to 100%");
-                            }
-
-                            _logger.LogInformation("Succes : Expense is split by percentage");
-
-                            input.SplitBetween = input.SplitPercentages.Keys.ToList();
-
-                            await AddEntriesAndUpdateBalance(input, expense.Id, SplitAmountByPercentage(input.Amount, input.SplitPercentages));
-
-                            splitBetween = input.SplitPercentages.Select(x => new SplitBetween
-                            {
-                                ExpenseId = expense.Id,
-                                UserId = x.Key
-                            }).ToList();
-                            break;
-
-                        default:
-                            if (input.SplitBetween is null || input.SplitBetween.Count == 0)
-                            {
-                                throw new InvalidEntityException("The expense must be not null and split between number must at least be 1 people");
-                            }
-
-                            _logger.LogInformation("Succes : Expense is split evenly");
-
-                            await AddEntriesAndUpdateBalance(input, expense.Id, SplitAmountEvenly(input.Amount, input.SplitBetween));
-
-                            splitBetween = input.SplitBetween.Select(x => new SplitBetween
-                            {
-                                ExpenseId = expense.Id,
-                                UserId = x
-                            }).ToList();
-                            break;
-                    }
-
-                    await _splitbetweenRepository.AddRangeAsync(splitBetween);
                     await _repository.AddAsync(expense);
                     await _repository.SaveChangesAsync();
 
-                    _logger.LogInformation("Succes : All data added to the db");
-
                     transaction.Commit();
-                        
+
                     _logger.LogInformation("Succes : Transaction commited");
 
                     return expense.Id;
@@ -326,6 +342,73 @@ namespace Business.Services
                     throw;
                 }
             }
+        }
+
+        /// <summary>
+        /// Update an expense
+        /// </summary>
+        /// <param name="input">The model to update the existing expense</param>
+        /// <returns>The Guid of the updated expense</returns>
+        public async Task<Guid> UpdateExpenseAsync(ExpenseUpdate input)
+        {
+            var expense = await _repository.GetByIdAsync(input.Id);
+
+            if (expense is null)
+                throw new NotFoundException($"The expense with id {input.Id} was not found");
+
+            using (var transaction = await _repository.BeginTransactionAsync())
+            {
+                try
+                {
+                    expense.Name = input.Name;
+                    expense.Description = input.Description;
+                    expense.DateOfPayment = input.DateOfPayment;
+                    _entryRepository.DeleteAllById(expense.Id);
+
+                    await CreateEntriesAndUpdateBalance(new InputExpenseDTO
+                    {
+                        Amount = input.Amount,
+                        PaidBy = input.PaidBy,
+                        SplitBetween = input.SplitBetween,
+                        SplitPercentages = input.SplitPercentages,
+                        SplitValues = input.SplitValues,
+                        SplitType = input.SplitType
+                    }, transaction, expense);
+
+                    _repository.Update(expense);
+                    await _repository.SaveChangesAsync();
+
+                    transaction.Commit();
+
+                    _logger.LogInformation("Succes : Transaction commited");
+
+                    return expense.Id;
+                }
+                catch (InvalidEntityException)
+                {
+                    _logger.LogError("The input object is invalid, transaction rollbacked");
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+                catch (ContextException)
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Delete an expense
+        /// </summary>
+        /// <param name="id">The id of the expense to delete</param>
+        /// <returns>The Guid of the deleted expense</returns>
+        public async Task<Guid> DeleteExpenseAsync(Guid id)
+        {
+            await _repository.DeleteFromIdAsync(id);
+            await _repository.SaveChangesAsync();
+            _logger.LogInformation($"Succes : Expense with id {id} deleted");
+            return id;
         }
 
         /// <summary>

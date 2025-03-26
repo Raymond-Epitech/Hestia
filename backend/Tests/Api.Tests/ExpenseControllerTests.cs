@@ -35,7 +35,7 @@ public class ExpenseControllerTests
             {
                 Id = Guid.NewGuid(),
                 CreatedAt = DateTime.Now,
-                CreatedBy = "TestUser1",
+                CreatedBy = Guid.NewGuid(),
                 ColocationId = colocationId,
                 Name = "TestExpense1",
                 Description = "TestDescription1",
@@ -48,7 +48,7 @@ public class ExpenseControllerTests
             {
                 Id = Guid.NewGuid(),
                 CreatedAt = DateTime.Now,
-                CreatedBy = "TestUser2",
+                CreatedBy = Guid.NewGuid(),
                 ColocationId = colocationId,
                 Name = "TestExpense2",
                 Description = "TestDescription2",
@@ -98,7 +98,7 @@ public class ExpenseControllerTests
         {
             Id = Guid.NewGuid(),
             CreatedAt = DateTime.Now,
-            CreatedBy = "TestUser1",
+            CreatedBy = Guid.NewGuid(),
             ColocationId = Guid.NewGuid(),
             Name = "TestExpense1",
             Description = "TestDescription1",
@@ -160,7 +160,7 @@ public class ExpenseControllerTests
         var expenseInput = new ExpenseInput
         {
             ColocationId = Guid.NewGuid(),
-            CreatedBy = "TestUser1",
+            CreatedBy = Guid.NewGuid(),
             Name = "TestExpense",
             Description = "TestDescription",
             Amount = 10,
@@ -179,6 +179,30 @@ public class ExpenseControllerTests
         var actionResult = await _controller.AddExpense(expenseInput);
 
         actionResult.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(reminderId);
+        _expenseServiceMock.Verify(service => service.AddExpenseAsync(expenseInput), Times.Once);
+    }
+
+    [Fact]
+    public async Task AddExpense_ShouldReturnInvalidEntity_WhenExpenseInputIsInvalid()
+    {
+        var expenseInput = new ExpenseInput
+        {
+            ColocationId = Guid.NewGuid(),
+            CreatedBy = Guid.NewGuid(),
+            Name = "TestExpense",
+            Description = "TestDescription",
+            Amount = 10,
+            PaidBy = Guid.NewGuid(),
+            SplitType = SplitTypeEnum.Evenly,
+            SplitBetween = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
+            SplitPercentages = null,
+            SplitValues = null,
+            DateOfPayment = DateTime.Now
+        };
+        _expenseServiceMock.Setup(service => service.AddExpenseAsync(expenseInput))
+            .ThrowsAsync(new ContextException("Error in db"));
+        var actionResult = await _controller.AddExpense(expenseInput);
+        actionResult.Result.Should().BeOfType<UnprocessableEntityObjectResult>();
         _expenseServiceMock.Verify(service => service.AddExpenseAsync(expenseInput), Times.Once);
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shared.Exceptions;
 using Shared.Models.Input;
 using Shared.Models.Output;
+using Shared.Models.Update;
 
 namespace Api.Controllers
 {
@@ -54,9 +55,32 @@ namespace Api.Controllers
             return Ok(await expenseService.AddExpenseAsync(input));
         }
 
-        // Update expense
+        [HttpPut]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType (StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> UpdateExpense(ExpenseUpdate input)
+        {
+            if (input.Id == Guid.Empty)
+                throw new InvalidEntityException("Id is required");
 
-        // Remove expense
+            return Ok(await expenseService.UpdateExpenseAsync(input));
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> DeleteExpense(Guid id)
+        {
+            if (id == Guid.Empty)
+                throw new InvalidEntityException("Id is required");
+
+            return Ok(await expenseService.DeleteExpenseAsync(id));
+        }
 
         [HttpGet("GetBalance/{colocationId}")]
         [Authorize]
