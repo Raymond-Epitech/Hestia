@@ -16,5 +16,7 @@
     "global": "gasto\ngenerales",
     "food_expenses": "gastos de comida",
     "Health_expenses": "gastos de salud",
-    "partie_expenses": "gastos de fiesta"
+    "partie_expenses": "gastos de fiesta",
+    "header_add_expense": "Añadir un gasto",
+    "expense_name": "Nombre del gasto"
 }

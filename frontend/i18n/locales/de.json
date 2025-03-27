@@ -16,5 +16,7 @@
     "global": "Gesamtausgaben",
     "food_expenses": "Lebensmittelkosten",
     "Health_expenses": "Gesundheitskosten",
-    "partie_expenses": "Partykosten"
+    "partie_expenses": "Partykosten",
+    "header_add_expense": "Eine Ausgabe hinzufügen",
+    "expense_name": "Ausgabename"
 }
