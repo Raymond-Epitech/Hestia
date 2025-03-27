@@ -2,8 +2,11 @@ import { json } from "stream/consumers";
 import type { Reminder, User, Colocation, Chore } from "./type";
 
 export class bridge {
+    constructor() {
+        console.log('Bridge instance created')
+    }
     url: string = "http://91.134.48.124:8080";
-    jwt: string = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMTE1OTE1ODU5OTA5MDMxOTM3MzAiLCJlbWFpbCI6ImJlbmphbWluYm91cmV6QGdtYWlsLmNvbSIsIm5hbWUiOiJCZW5qYW1pbiIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NMbnpUTlJNOF9ERTBYWWVhcGdGWlNjNlUxTC11NXQtRzJxZzA1MVF3bllYLWZnV2EwPXM5Ni1jIiwiaXNzIjoiaGVzdGlhLWFwcCIsImF1ZCI6Imhlc3RpYS1tb2JpbGUifQ.E9bPI5VXWu5tH1Y0zq8_YQhZfkf962B2Ohnd_2aqMeg";
+    jwt: string = "";
 
     seturl(new_url: string) {
         this.url = new_url;
@@ -11,6 +14,11 @@ export class bridge {
 
     setjwt(new_jwt: string) {
         this.jwt = new_jwt;
+    }
+
+    getjwt() {
+        console.log("jwt:", this.jwt);
+        return this.jwt;
     }
 
     // Version section: get version
