@@ -16,5 +16,7 @@
     "global": "总支出",
     "food_expenses": "食品费用",
     "Health_expenses": "医疗费用",
-    "partie_expenses": "派对费用"
+    "partie_expenses": "派对费用",
+    "header_add_expense": "添加费用",
+    "expense_name": "费用名称"
 }
