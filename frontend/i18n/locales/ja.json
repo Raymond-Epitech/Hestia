@@ -11,5 +11,12 @@
     "Accessibility": "アクセシビリティ",
     "Rules": "生活のルール",
     "Confidentiality": "機密保持",
-    "Informations": "情報"
+    "Informations": "情報",
+    "regularize": "バランス",
+    "global": "総支出",
+    "food_expenses": "食費",
+    "Health_expenses": "医療費",
+    "partie_expenses": "パーティー費用",
+    "header_add_expense": "費用を追加",
+    "expense_name": "費用名"
 }
