@@ -1,5 +1,4 @@
 <template>
-  <AddExpenseModal v-model="isModalOpen"/>
     <div class="expense">
       <div class="expense-header">
         <span class="expense-name">{{ expense.name }}</span>
