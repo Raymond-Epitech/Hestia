@@ -18,10 +18,15 @@ namespace Business.Mappers
             };
         }
 
-        public static Dictionary<string, List<ExpenseOutput>> ToCategories(this List<ExpenseOutput> expenses)
+        public static List<OutputFormatForExpenses> ToOutputFormat(this List<ExpenseOutput> expenses)
         {
             return expenses.GroupBy(e => e.ShoppingListName)
-                .ToDictionary(g => g.Key, g => g.OrderBy(e => e.DateOfPayment).ToList());
+                .Select(e => new OutputFormatForExpenses
+                {
+                    ShoppingListName = e.Key,
+                    TotalAmount = e.Sum(x => x.Amount),
+                    Expenses = e.ToList()
+                }).ToList();
         }
     }
 }

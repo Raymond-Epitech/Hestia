@@ -15,8 +15,8 @@ namespace Business.Services;
 
 public class UserService(ILogger<UserService> _logger,
     IRepository<User> _repository,
-    IColocationRepository<User> _colocationIdRepository,
     IRepository<Balance> _balanceRepository,
+    ITempRepository _tempRepository,
     IJwtService jwtService) : IUserService
 {
     /// <summary>
@@ -27,13 +27,7 @@ public class UserService(ILogger<UserService> _logger,
     /// <exception cref="ContextException">An error occurred while getting all chores from the db</exception>
     public async Task<List<UserOutput>> GetAllUserAsync(Guid collocationId)
     {
-        var users = await _colocationIdRepository.GetAllByColocationIdAsTypeAsync(collocationId, u => new UserOutput
-        {
-            Id = u.Id,
-            Username = u.Username,
-            Email = u.Email,
-            ColocationId = u.ColocationId
-        });
+        var users = await _tempRepository.GetAllByColocationIdAsTypeAsync(collocationId);
 
         _logger.LogInformation($"Succes : All users from the collocation {collocationId} found");
 
@@ -137,7 +131,7 @@ public class UserService(ILogger<UserService> _logger,
             new Claim("picture", validPayload.Picture ?? ""),
         };
 
-        if (await userRepository.AnyExistingUserByEmail(validPayload.Email))
+        if (await _tempRepository.AnyExistingUserByEmail(validPayload.Email))
         {
             throw new AlreadyExistException("This user already exist with this email");
         }
@@ -218,7 +212,7 @@ public class UserService(ILogger<UserService> _logger,
             new Claim("picture", validPayload.Picture ?? ""),
         };
 
-        var user = await _repository.GetUserByEmailAsync(validPayload.Email);
+        var user = await _tempRepository.GetUserByEmailAsync(validPayload.Email);
 
         if (user is null)
         {

@@ -1,8 +1,8 @@
 ﻿using Business.Interfaces;
 using Business.Services;
 using EntityFramework.Context;
-using EntityFramework.Repositories.Implementations;
-using EntityFramework.Repositories.Interfaces;
+using EntityFramework.Models;
+using EntityFramework.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebApi.Configuration
@@ -27,11 +27,10 @@ namespace WebApi.Configuration
             services.AddScoped<IExpenseService, ExpenseService>();
 
             // Repositories
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IChoreRepository, ChoreRepository>();
-            services.AddScoped<IColocationRepository, ColocationRepository>();
-            services.AddScoped<IReminderRepository, ReminderRepository>();
-            services.AddScoped<IExpenseRepository, ExpenseRepository>();
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped(typeof(IColocationRepository<>), typeof(ColocationRepository<>));
+            services.AddScoped<ITempRepository, TempRepository>();
+
 
             // Others
             services.AddHttpContextAccessor();

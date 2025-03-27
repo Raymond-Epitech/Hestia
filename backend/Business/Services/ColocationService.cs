@@ -137,7 +137,7 @@ namespace Business.Services
         /// <exception cref="ContextException">An error has occured while retriving the colocation from db</exception>
         public async Task<Guid> DeleteColocation(Guid colocationId)
         {
-            _repository.DeleteFromIdAsync(colocationId);
+            await _repository.DeleteFromIdAsync(colocationId);
             await _repository.SaveChangesAsync();
                 
             _logger.LogInformation($"Succes : Colocation {colocationId} deleted");

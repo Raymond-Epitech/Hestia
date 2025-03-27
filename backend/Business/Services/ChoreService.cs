@@ -13,7 +13,10 @@ namespace Business.Services;
 public class ChoreService(
     ILogger<ChoreService> _logger,
     IColocationRepository<Chore> _colocationIdRepository,
-    IRepository<Chore> _repository) : IChoreService
+    IRepository<Chore> _repository,
+    IRepository<ChoreMessage> _choreMessageRepository,
+    IRepository<ChoreEnrollment> _choreEnrollmentRepository,
+    ITempRepository _tempRepository) : IChoreService
 {
     /// <summary>
     /// Get all Chores
@@ -69,7 +72,7 @@ public class ChoreService(
 
     public async Task<List<ChoreMessageOutput>> GetChoreMessageFromChoreAsync(Guid choreId)
     {
-        var choreMessages = await _repository.GetAllChoreMessageOutputByChoreIdAsync(choreId);
+        var choreMessages = await _tempRepository.GetAllChoreMessageOutputByChoreIdAsync(choreId);
 
         if (choreMessages == null)
         {
@@ -107,7 +110,7 @@ public class ChoreService(
     {
         var choreMessage = input.ToDb();
         
-        await _repository.AddChoreMessageAsync(choreMessage);
+        await _choreMessageRepository.AddAsync(choreMessage);
         await _repository.SaveChangesAsync();
 
         _logger.LogInformation("Succes : Chore message added");
@@ -165,7 +168,7 @@ public class ChoreService(
     /// <exception cref="ContextException">An error has occured while adding chore from db</exception>
     public async Task<Guid> DeleteChoreMessageByChoreIdAsync(Guid choreId)
     {
-        await _repository.DeleteRangeChoreMessageFromChoreId(choreMessages);
+        await _tempRepository.DeleteRangeChoreMessageFromChoreId(choreId);
         await _repository.SaveChangesAsync();
 
         _logger.LogInformation("Succes : Chore message deleted");
@@ -181,7 +184,7 @@ public class ChoreService(
     /// <exception cref="ContextException">An error occurred while adding the user to the db</exception>
     public async Task<List<UserOutput>> GetUserFromChore(Guid choreId)
     {
-        var users = await _repository.GetEnrolledUserOutputFromChoreIdAsync(choreId);
+        var users = await _tempRepository.GetEnrolledUserOutputFromChoreIdAsync(choreId);
 
         _logger.LogInformation("Succes : Users found");
 
@@ -196,7 +199,7 @@ public class ChoreService(
     /// <exception cref="ContextException">An error occurred while adding the user to the db</exception>
     public async Task<List<ChoreOutput>> GetChoreFromUser(Guid userId)
     {
-        var chores = await _repository.GetEnrolledChoreOutputFromUserIdAsync(userId);
+        var chores = await _tempRepository.GetEnrolledChoreOutputFromUserIdAsync(userId);
 
         _logger.LogInformation("Succes : Chores found");
 
@@ -217,16 +220,8 @@ public class ChoreService(
             ChoreId = ChoreId
         };
 
-        try
-        {
-            await _repository.AddChoreEnrollmentAsync(enroll);
-            await _repository.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("An error occurred while adding the user to the db");
-            throw new ContextException("An error occurred while adding the user to the db", ex);
-        }
+        await _choreEnrollmentRepository.AddAsync(enroll);
+        await _repository.SaveChangesAsync();
 
         _logger.LogInformation("Succes : User enrolled to the chore");
 
@@ -242,26 +237,11 @@ public class ChoreService(
     /// <exception cref="ContextException">An error occurred while adding the user to the db</exception>
     public async Task<Guid> UnenrollToChore(Guid userId, Guid choreId)
     {
-        var enrollement = await _repository.GetChoreEnrollmentByUserIdAndChoreIdAsync(userId, choreId);
-            
-        if (enrollement == null)
-        {
-            throw new NotFoundException("No enrollement found");
-        }
-
-        try
-        {
-            await _repository.RemoveChoreEnrollmentAsync(enrollement);
-            await _repository.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("An error occurred while removing the user from the db");
-            throw new ContextException("An error occurred while removing the user from the db", ex);
-        }
+        await _tempRepository.RemoveChoreEnrollmentAsync(userId, choreId);
+        await _repository.SaveChangesAsync();
 
         _logger.LogInformation("Succes : User unenrolled to the chore");
 
-        return enrollement.ChoreId;
+        return userId;
     }
 }

@@ -8,8 +8,7 @@ namespace Shared.Models.Output
         public Guid ColocationId { get; set; }
 
         [Required]
-        public string CreatedBy { get; set; } = null!;
-
+        public Guid CreatedBy { get; set; }
         public DateTime DueDate { get; set; } = DateTime.Now.ToUniversalTime();
 
         [Required]

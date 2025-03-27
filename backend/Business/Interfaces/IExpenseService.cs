@@ -6,7 +6,7 @@ namespace Business.Interfaces
 {
     public interface IExpenseService
     {
-        Task<List<ExpenseOutput>> GetAllExpensesAsync(Guid ColocationId);
+        Task<List<OutputFormatForExpenses>> GetAllExpensesAsync(Guid ColocationId);
         Task<ExpenseOutput> GetExpenseAsync(Guid id);
         Task<Guid> AddExpenseAsync(ExpenseInput input);
         Task<Guid> UpdateExpenseAsync(ExpenseUpdate input);
