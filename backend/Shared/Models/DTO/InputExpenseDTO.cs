@@ -9,6 +9,7 @@ namespace Shared.Models.DTO
         public Dictionary<Guid, decimal>? SplitValues { get; set; } = null;
         public Dictionary<Guid, int>? SplitPercentages { get; set; } = null;
         public decimal Amount { get; set; }
+        public Guid ColocationId { get; set; }
         public Guid PaidBy { get; set; }
     }
 }

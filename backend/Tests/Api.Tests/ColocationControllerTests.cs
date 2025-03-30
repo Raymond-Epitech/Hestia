@@ -67,10 +67,9 @@ public class ColocationControllerTests
             .ThrowsAsync(new ContextException("Context error"));
 
         // Act
-        var actionResult = await _controller.GetAllCollocations();
+        await Assert.ThrowsAsync<ContextException>(() => _controller.GetAllCollocations());
 
         // Assert
-        actionResult.Result.Should().BeOfType<UnprocessableEntityObjectResult>();
         _colocationServiceMock.Verify(service => service.GetAllColocations(), Times.Once);
     }
 
@@ -114,10 +113,9 @@ public class ColocationControllerTests
             .ThrowsAsync(new NotFoundException("Colocation not found"));
 
         // Act
-        var actionResult = await _controller.GetColocation(colocationId);
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.GetColocation(colocationId));
 
         // Assert
-        actionResult.Result.Should().BeOfType<NotFoundObjectResult>();
         _colocationServiceMock.Verify(service => service.GetColocation(colocationId), Times.Once);
     }
 
@@ -131,10 +129,9 @@ public class ColocationControllerTests
             .ThrowsAsync(new ContextException("Context error"));
 
         // Act
-        var actionResult = await _controller.GetColocation(colocationId);
+        await Assert.ThrowsAsync<ContextException>(() => _controller.GetColocation(colocationId));
 
         // Assert
-        actionResult.Result.Should().BeOfType<UnprocessableEntityObjectResult>();
         _colocationServiceMock.Verify(service => service.GetColocation(colocationId), Times.Once);
     }
 
@@ -148,7 +145,7 @@ public class ColocationControllerTests
         {
             Name = "Colocation 1",
             Address = "Adresse test",
-            CreatedBy = "testUser"
+            CreatedBy = Guid.NewGuid()
         };
         var addedBy = Guid.NewGuid();
         var colocationId = Guid.NewGuid();
@@ -175,7 +172,7 @@ public class ColocationControllerTests
         {
             Name = "Colocation 1",
             Address = "Adresse test",
-            CreatedBy = "testUser"
+            CreatedBy = Guid.NewGuid()
         };
         var addedBy = Guid.NewGuid();
 
@@ -183,14 +180,13 @@ public class ColocationControllerTests
             .ThrowsAsync(new ContextException("Invalid colocation"));
 
         // Act
-        var actionResult = await _controller.AddCollocation(colocationInput, addedBy);
+        await Assert.ThrowsAsync<ContextException>(() => _controller.AddCollocation(colocationInput, addedBy));
 
         // Assert
-        actionResult.Result.Should().BeOfType<UnprocessableEntityObjectResult>();
         _colocationServiceMock.Verify(service => service.AddColocation(colocationInput, addedBy), Times.Once);
     }
 
-    // 🔹 UPDATE COLOCATION
+    // UPDATE COLOCATION
 
     [Fact]
     public async Task UpdateColocation_ReturnsOk_WhenSuccessful()
@@ -203,13 +199,13 @@ public class ColocationControllerTests
             Address = "Adresse test"
         };
 
-        _colocationServiceMock.Setup(service => service.UpdateColocation(colocationUpdate));
+        _colocationServiceMock.Setup(service => service.UpdateColocation(colocationUpdate)).ReturnsAsync(colocationUpdate.Id);
 
         // Act
         var actionResult = await _controller.UpdateCollocation(colocationUpdate);
 
         // Assert
-        actionResult.Should().BeOfType<OkResult>();
+        actionResult.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(colocationUpdate.Id);
         _colocationServiceMock.Verify(service => service.UpdateColocation(colocationUpdate), Times.Once);
     }
 
@@ -228,14 +224,13 @@ public class ColocationControllerTests
             .ThrowsAsync(new NotFoundException("Colocation not found"));
 
         // Act
-        var actionResult = await _controller.UpdateCollocation(colocationUpdate);
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.UpdateCollocation(colocationUpdate));
 
         // Assert
-        actionResult.Should().BeOfType<NotFoundObjectResult>();
         _colocationServiceMock.Verify(service => service.UpdateColocation(colocationUpdate), Times.Once);
     }
 
-    // 🔹 DELETE COLOCATION
+    // DELETE COLOCATION
 
     [Fact]
     public async Task DeleteColocation_ReturnsOk_WhenSuccessful()
@@ -243,13 +238,13 @@ public class ColocationControllerTests
         // Arrange
         var colocationId = Guid.NewGuid();
 
-        _colocationServiceMock.Setup(service => service.DeleteColocation(colocationId));
+        _colocationServiceMock.Setup(service => service.DeleteColocation(colocationId)).ReturnsAsync(colocationId);
 
         // Act
         var actionResult = await _controller.DeleteCollocation(colocationId);
 
         // Assert
-        actionResult.Should().BeOfType<OkResult>();
+        actionResult.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(colocationId);
         _colocationServiceMock.Verify(service => service.DeleteColocation(colocationId), Times.Once);
     }
 
@@ -263,10 +258,9 @@ public class ColocationControllerTests
             .ThrowsAsync(new NotFoundException("Colocation not found"));
 
         // Act
-        var actionResult = await _controller.DeleteCollocation(colocationId);
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.DeleteCollocation(colocationId));
 
         // Assert
-        actionResult.Should().BeOfType<NotFoundObjectResult>();
         _colocationServiceMock.Verify(service => service.DeleteColocation(colocationId), Times.Once);
     }
 }

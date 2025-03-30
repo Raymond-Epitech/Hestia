@@ -15,8 +15,6 @@ namespace Business.Services
     public class ExpenseService(ILogger<ColocationService> _logger,
         IRepository<Expense> _repository,
         IRepository<Entry> _entryRepository,
-        IRepository<SplitBetween> _splitbetweenRepository,
-        IRepository<Balance> _balanceRepository,
         ITempRepository _tempRepository,
         IColocationRepository<Expense> _colocationIdRepository,
         IColocationRepository<Entry> _colocationIdEntryRepository) : IExpenseService
@@ -39,8 +37,9 @@ namespace Business.Services
                 Amount = e.Amount,
                 PaidBy = e.PaidBy,
                 SplitType = Enum.Parse<SplitTypeEnum>(e.SplitType),
+                SplitBetween = e.SplitBetweens.Select(e => e.UserId).ToList(),
                 DateOfPayment = e.DateOfPayment,
-                ShoppingListName = e.ShoppingList.Name
+                Category = e.Category
             });
 
             _logger.LogInformation("Succes : All expenses were retrived from db");
@@ -66,8 +65,9 @@ namespace Business.Services
                 Amount = e.Amount,
                 PaidBy = e.PaidBy,
                 SplitType = Enum.Parse<SplitTypeEnum>(e.SplitType),
+                SplitBetween = e.SplitBetweens.Select(e => e.UserId).ToList(),
                 DateOfPayment = e.DateOfPayment,
-                ShoppingListName = e.ShoppingList.Name
+                Category = e.Category
             });
                 
             if (expense == null)
@@ -188,6 +188,7 @@ namespace Business.Services
                 var newEntry = new Entry
                 {
                     UserId = input.SplitBetween[i],
+                    ColocationId = input.ColocationId,
                     ExpenseId = expenseId,
                     Amount = -splitedAmounts[input.SplitBetween[i]]
                 };
@@ -202,7 +203,8 @@ namespace Business.Services
             {
                 UserId = input.PaidBy,
                 ExpenseId = expenseId,
-                Amount = input.Amount
+                Amount = input.Amount,
+                ColocationId = input.ColocationId,
             };
             entryList.Add(paiment);
             var paimentBalance = balances.First(x => x.UserId == input.PaidBy);
@@ -211,7 +213,7 @@ namespace Business.Services
 
             _logger.LogInformation($"Succes : Entry for user {paiment.UserId} added");
 
-            _balanceRepository.UpdateRange(balances);
+            _tempRepository.UpdateBalanceRange(balances);
             await _entryRepository.AddRangeAsync(entryList);
             
             _logger.LogInformation($"Succes : All entries added to the db");
@@ -280,7 +282,7 @@ namespace Business.Services
                     break;
             }
 
-            await _splitbetweenRepository.AddRangeAsync(splitBetween);
+            await _tempRepository.AddSplitBetweenRangeAsync(splitBetween);
 
             _logger.LogInformation("Succes : All data added to the db");
         }
@@ -304,6 +306,7 @@ namespace Business.Services
                 Name = input.Name,
                 Description = input.Description,
                 Amount = input.Amount,
+                Category = input.Category,
                 PaidBy = input.PaidBy,
                 SplitType = input.SplitType.ToString(),
                 DateOfPayment = input.DateOfPayment
@@ -316,6 +319,7 @@ namespace Business.Services
                     await CreateEntriesAndUpdateBalance(new InputExpenseDTO
                     {
                         Amount = input.Amount,
+                        ColocationId = input.ColocationId,
                         PaidBy = input.PaidBy,
                         SplitBetween = input.SplitBetween,
                         SplitPercentages = input.SplitPercentages,
@@ -437,7 +441,7 @@ namespace Business.Services
 
         public async Task<List<BalanceOutput>> RecalculateBalanceAsync(Guid colocationId)
         {
-            var entries = await _tempRepository.GetAllByColocationIdAsync(colocationId);
+            var entries = await _colocationIdEntryRepository.GetAllByColocationIdAsync(colocationId);
             var balances = await _tempRepository.GetAllBalancesFromColocationIdListAsync(colocationId);
 
             if (entries.Count == 0 || balances.Count == 0)
@@ -448,14 +452,14 @@ namespace Business.Services
 
             _logger.LogInformation($"Succes : All entries and balances from the colocation {colocationId} found");
 
-            balances.Select(b => b.PersonalBalance = entries.Where(e => e.UserId == b.UserId).Select(x => x.PersonalBalance).Sum()).ToList();
+            balances.Select(b => b.PersonalBalance = entries.Where(e => e.UserId == b.UserId).Select(x => x.Amount).Sum()).ToList();
 
-            _balanceRepository.UpdateRange(balances);
+            _tempRepository.UpdateBalanceRange(balances);
             await _repository.SaveChangesAsync();
                 
             _logger.LogInformation($"Succes : All balances updated");
 
-            return balances.Select(x => x.ToOutput()).ToList();
+            return balances.Select(x => x.ToOutput()).OrderBy(x => x.PersonalBalance).ToList();
         }
     }
 }

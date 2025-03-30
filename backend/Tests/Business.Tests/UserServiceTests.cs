@@ -34,7 +34,6 @@ public class UserServiceTests
         _userService = new UserService(
             _loggerMock.Object,
             _repositoryMock.Object,
-            _balanceRepositoryMock.Object,
             _tempRepositoryMock.Object,
             _jwtServiceMock.Object
         );

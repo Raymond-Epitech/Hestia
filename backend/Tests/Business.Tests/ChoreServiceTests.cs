@@ -18,7 +18,6 @@ public class ChoreServiceTests
     private readonly Mock<IColocationRepository<Chore>> _colocationIdRepositoryMock;
     private readonly Mock<IRepository<Chore>> _repositoryMock;
     private readonly Mock<IRepository<ChoreMessage>> _choreMessageRepositoryMock;
-    private readonly Mock<IRepository<ChoreEnrollment>> _choreEnrollmentRepositoryMock;
     private readonly Mock<ITempRepository> _tempRepositoryMock;
 
     public ChoreServiceTests()
@@ -27,7 +26,6 @@ public class ChoreServiceTests
         _colocationIdRepositoryMock = new Mock<IColocationRepository<Chore>>();
         _repositoryMock = new Mock<IRepository<Chore>>();
         _choreMessageRepositoryMock = new Mock<IRepository<ChoreMessage>>();
-        _choreEnrollmentRepositoryMock = new Mock<IRepository<ChoreEnrollment>>();
         _tempRepositoryMock = new Mock<ITempRepository>();
 
         _choreService = new ChoreService(
@@ -35,7 +33,6 @@ public class ChoreServiceTests
             _colocationIdRepositoryMock.Object,
             _repositoryMock.Object,
             _choreMessageRepositoryMock.Object,
-            _choreEnrollmentRepositoryMock.Object,
             _tempRepositoryMock.Object
         );
     }

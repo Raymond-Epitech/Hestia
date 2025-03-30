@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EntityFramework.Models
 {
-    public class User
+    public class User : IEntity
     {
         [Key]
         public Guid Id { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public Guid CreatedBy { get; set; }
+        public Guid CreatedBy { get; set; } = Guid.Empty;
 
         [Required]
         public Guid? ColocationId { get; set; }

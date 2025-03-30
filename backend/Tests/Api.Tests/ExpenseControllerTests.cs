@@ -1,6 +1,5 @@
 ﻿using Api.Controllers;
 using Business.Interfaces;
-using EntityFramework.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -29,36 +28,45 @@ public class ExpenseControllerTests
     {
         // Arange
         var colocationId = Guid.NewGuid();
-        var expenseList = new List<ExpenseOutput>()
+        var expenseResult = new List<OutputFormatForExpenses>()
         {
-            new ExpenseOutput
+            new OutputFormatForExpenses
             {
-                Id = Guid.NewGuid(),
-                CreatedAt = DateTime.Now,
-                CreatedBy = Guid.NewGuid(),
-                ColocationId = colocationId,
-                Name = "TestExpense1",
-                Description = "TestDescription1",
-                Amount = 10,
-                PaidBy = Guid.NewGuid(),
-                SplitBetween = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
-                DateOfPayment = DateTime.Now,
-            },
-            new ExpenseOutput
-            {
-                Id = Guid.NewGuid(),
-                CreatedAt = DateTime.Now,
-                CreatedBy = Guid.NewGuid(),
-                ColocationId = colocationId,
-                Name = "TestExpense2",
-                Description = "TestDescription2",
-                Amount = 10,
-                PaidBy = Guid.NewGuid(),
-                SplitBetween = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
-                DateOfPayment = DateTime.Now,
+                Category = "test",
+                TotalAmount = 100,
+                Expenses = new List<ExpenseOutput>()
+                {
+                    new ExpenseOutput
+                    {
+                        Id = Guid.NewGuid(),
+                        CreatedAt = DateTime.Now,
+                        CreatedBy = Guid.NewGuid(),
+                        ColocationId = colocationId,
+                        Name = "TestExpense1",
+                        Description = "TestDescription1",
+                        Amount = 10,
+                        PaidBy = Guid.NewGuid(),
+                        SplitBetween = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
+                        DateOfPayment = DateTime.Now,
+                    },
+                    new ExpenseOutput
+                    {
+                        Id = Guid.NewGuid(),
+                        CreatedAt = DateTime.Now,
+                        CreatedBy = Guid.NewGuid(),
+                        ColocationId = colocationId,
+                        Name = "TestExpense2",
+                        Description = "TestDescription2",
+                        Amount = 10,
+                        PaidBy = Guid.NewGuid(),
+                        SplitBetween = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
+                        DateOfPayment = DateTime.Now,
+                    }
+                }
             }
         };
-        _expenseServiceMock.Setup(service => service.GetAllExpensesAsync(colocationId)).ReturnsAsync(expenseList);
+
+        _expenseServiceMock.Setup(service => service.GetAllExpensesAsync(colocationId)).ReturnsAsync(expenseResult);
 
         // Act
         var actionResult = await _controller.GetAllExpense(colocationId);
@@ -68,7 +76,7 @@ public class ExpenseControllerTests
 
         var okResult = actionResult.Result as OkObjectResult;
         okResult.Should().NotBeNull();
-        okResult!.Value.Should().BeEquivalentTo(expenseList);
+        okResult!.Value.Should().BeEquivalentTo(expenseResult);
         _expenseServiceMock.Verify(service => service.GetAllExpensesAsync(colocationId), Times.Once);
     }
 
@@ -82,10 +90,9 @@ public class ExpenseControllerTests
             .ThrowsAsync(new ContextException("Context error"));
 
         // Act
-        var actionResult = await _controller.GetAllExpense(colocationId);
+        await Assert.ThrowsAsync<ContextException>(() => _controller.GetAllExpense(colocationId));
 
         // Assert
-        actionResult.Result.Should().BeOfType<UnprocessableEntityObjectResult>();
         _expenseServiceMock.Verify(service => service.GetAllExpensesAsync(colocationId), Times.Once);
     }
 
@@ -131,10 +138,9 @@ public class ExpenseControllerTests
             .ThrowsAsync(new NotFoundException("Expense not found"));
 
         // Act
-        var actionResult = await _controller.GetExpense(expenseId);
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.GetExpense(expenseId));
 
         // Assert
-        actionResult.Result.Should().BeOfType<NotFoundObjectResult>();
         _expenseServiceMock.Verify(service => service.GetExpenseAsync(expenseId), Times.Once);
     }
 
@@ -147,10 +153,9 @@ public class ExpenseControllerTests
             .ThrowsAsync(new ContextException("Error in db"));
 
         // Act
-        var actionResult = await _controller.GetExpense(expenseId);
+        await Assert.ThrowsAsync<ContextException>(() => _controller.GetExpense(expenseId));
 
         // Assert
-        actionResult.Result.Should().BeOfType<UnprocessableEntityObjectResult>();
         _expenseServiceMock.Verify(service => service.GetExpenseAsync(expenseId), Times.Once);
     }
 
@@ -201,8 +206,9 @@ public class ExpenseControllerTests
         };
         _expenseServiceMock.Setup(service => service.AddExpenseAsync(expenseInput))
             .ThrowsAsync(new ContextException("Error in db"));
-        var actionResult = await _controller.AddExpense(expenseInput);
-        actionResult.Result.Should().BeOfType<UnprocessableEntityObjectResult>();
+
+        await Assert.ThrowsAsync<ContextException>(() => _controller.AddExpense(expenseInput));
+
         _expenseServiceMock.Verify(service => service.AddExpenseAsync(expenseInput), Times.Once);
     }
 }

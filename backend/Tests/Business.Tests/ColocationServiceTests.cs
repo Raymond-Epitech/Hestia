@@ -1,14 +1,11 @@
 ﻿using Business.Services;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
-using EntityFramework.Repositories.Interfaces;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shared.Exceptions;
-using Shared.Models.Input;
 using Shared.Models.Output;
-using Shared.Models.Update;
 
 namespace Tests.Hestia.Service;
 

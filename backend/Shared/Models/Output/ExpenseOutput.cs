@@ -15,6 +15,6 @@ namespace Shared.Models.Output
         public List<Guid> SplitBetween { get; set; } = new List<Guid>();
         public SplitTypeEnum SplitType { get; set; }
         public DateTime DateOfPayment { get; set; }
-        public string ShoppingListName { get; set; } = null!;
+        public string Category { get; set; } = null!;
     }
 }

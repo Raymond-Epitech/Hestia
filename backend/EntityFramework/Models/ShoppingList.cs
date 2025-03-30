@@ -21,6 +21,4 @@ public class ShoppingList : IColocationEntity
 
     [Required]
     public string Name { get; set; } = null!;
-
-    public ICollection<Expense> Expenses { get; set; } = null!;
 }

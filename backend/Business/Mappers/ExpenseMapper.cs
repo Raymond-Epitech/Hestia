@@ -1,7 +1,4 @@
 ﻿using EntityFramework.Models;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Shared.Enums;
-using Shared.Models.DTO;
 using Shared.Models.Output;
 
 namespace Business.Mappers
@@ -20,10 +17,10 @@ namespace Business.Mappers
 
         public static List<OutputFormatForExpenses> ToOutputFormat(this List<ExpenseOutput> expenses)
         {
-            return expenses.GroupBy(e => e.ShoppingListName)
+            return expenses.GroupBy(e => e.Category)
                 .Select(e => new OutputFormatForExpenses
                 {
-                    ShoppingListName = e.Key,
+                    Category = e.Key,
                     TotalAmount = e.Sum(x => x.Amount),
                     Expenses = e.ToList()
                 }).ToList();

@@ -15,7 +15,6 @@ public class ChoreService(
     IColocationRepository<Chore> _colocationIdRepository,
     IRepository<Chore> _repository,
     IRepository<ChoreMessage> _choreMessageRepository,
-    IRepository<ChoreEnrollment> _choreEnrollmentRepository,
     ITempRepository _tempRepository) : IChoreService
 {
     /// <summary>
@@ -220,7 +219,7 @@ public class ChoreService(
             ChoreId = ChoreId
         };
 
-        await _choreEnrollmentRepository.AddAsync(enroll);
+        await _tempRepository.AddChoreEnrollmentAsync(enroll);
         await _repository.SaveChangesAsync();
 
         _logger.LogInformation("Succes : User enrolled to the chore");

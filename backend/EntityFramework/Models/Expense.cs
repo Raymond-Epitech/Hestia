@@ -42,10 +42,7 @@ public class Expense : IColocationEntity
     public DateTime DateOfPayment { get; set; }
 
     [Required]
-    public Guid ShoppingListId { get; set; }
-
-    [ForeignKey("GroupTypeId")]
-    public ShoppingList ShoppingList { get; set; } = null!;
+    public string Category { get; set; } = null!;
 
     public ICollection<SplitBetween> SplitBetweens { get; set; } = null!;
     public ICollection<Entry> Entries { get; set; } = null!;

@@ -18,5 +18,9 @@ namespace EntityFramework.Repositories
         Task<User?> GetUserByEmailAsync(string email);
         Task<List<UserOutput>> GetAllByColocationIdAsTypeAsync(Guid colocationId);
         Task<List<BalanceOutput>> GetAllBalancesOutputFromColocationIdAsync(Guid colocationId);
+        Task AddChoreEnrollmentAsync(ChoreEnrollment choreEnrollment);
+        Task<int> AddSplitBetweenRangeAsync(List<SplitBetween> splitList);
+        int UpdateBalanceRange(List<Balance> balances);
+        Task AddBalanceAsync(Balance balance);
     }
 }

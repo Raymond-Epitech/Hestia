@@ -166,7 +166,31 @@ namespace EntityFramework.Repositories
                     LastUpdate = b.LastUpdate,
                 })
                 .AsNoTracking()
+                .OrderBy(x => x.PersonalBalance)
                 .ToListAsync();
+        }
+
+        public async Task AddChoreEnrollmentAsync(ChoreEnrollment choreEnrollment)
+        {
+            await context.ChoreEnrollments.AddAsync(choreEnrollment);
+        }
+
+        public async Task<int> AddSplitBetweenRangeAsync(List<SplitBetween> splitList)
+        {
+            await context.SplitBetweens.AddRangeAsync(splitList);
+            return splitList.Count;
+        }
+
+        public int UpdateBalanceRange(List<Balance> balances)
+        {
+            
+            context.Balances.UpdateRange(balances);
+            return balances.Count;
+        }
+
+        public async Task AddBalanceAsync(Balance balance)
+        {
+            await context.Balances.AddAsync(balance);
         }
     }
 }
