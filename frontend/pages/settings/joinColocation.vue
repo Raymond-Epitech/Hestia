@@ -4,7 +4,7 @@
             <h1>
                 <Texte_language source="ColocationID" />:
             </h1>
-            <input type="text" class="input" v-model="colocation.id" required />
+            <input type="text" class="input" v-model="new_data.colocationId" required />
             <button class="button" @click.prevent="handleProceed()">
                 <Texte_language source="JoinColocation" />
             </button>
@@ -13,14 +13,21 @@
 </template>
 
 <script setup>
+import { useUserStore } from '~/store/user';
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 
-const colocation = ref({
-    id: '',
+const userStore = useUserStore();
+const user = userStore.user;
+
+const new_data = ref({
+    username: user.username,
+    email: user.email,
+    colocationId: '',
+    id: user.id,
 })
 const handleProceed = async () => {
-    await api.addCollocation(colocation.value)
+    await api.updateUser(new_data.value)
     emit('proceed')
 }
 </script>

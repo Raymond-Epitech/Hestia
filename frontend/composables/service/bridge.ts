@@ -199,6 +199,7 @@ export class bridge {
         return await fetch(this.url + "/api/Colocation", {
             method: 'POST',
             headers: {
+                'Authorization': 'Bearer ' + this.jwt,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(colocation)

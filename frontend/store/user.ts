@@ -15,6 +15,9 @@ export const useUserStore = defineStore('user', {
             this.user = data;
             console.log(this.user)
         },
+        setColocation(data: string) {
+            this.user.colocationId = data;
+        }
     },
     persist: {
         storage: piniaPluginPersistedstate.localStorage(),

@@ -24,14 +24,16 @@ const api = $bridge;
 const userStore = useUserStore();
 const user = userStore.user;
 
-console.log(userStore.user)
 const colocation = ref({
     name: '',
     adress: '',
     createdBy: user.id,
 })
 const handleProceed = async () => {
-    await api.addColocation(colocation.value)
+    const data = await api.addColocation(colocation.value);
+    if (data) {
+        userStore.setColocation(data);
+    }
 }
 </script>
 
