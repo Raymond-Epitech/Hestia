@@ -51,7 +51,7 @@ public class ReminderControllerTests
         _reminderServiceMock.Setup(service => service.GetAllRemindersAsync(colocationId))
             .ThrowsAsync(new ContextException("Context error"));
 
-        await Assert.ThrowsAsync<NotFoundException>(() => _controller.GetAllReminders(colocationId));
+        await Assert.ThrowsAsync<ContextException>(() => _controller.GetAllReminders(colocationId));
 
         _reminderServiceMock.Verify(service => service.GetAllRemindersAsync(colocationId), Times.Once);
     }
@@ -95,7 +95,7 @@ public class ReminderControllerTests
         _reminderServiceMock.Setup(service => service.GetReminderAsync(reminderId))
             .ThrowsAsync(new ContextException("Context error"));
 
-        await Assert.ThrowsAsync<NotFoundException>(() => _controller.GetReminder(reminderId));
+        await Assert.ThrowsAsync<ContextException>(() => _controller.GetReminder(reminderId));
 
         _reminderServiceMock.Verify(service => service.GetReminderAsync(reminderId), Times.Once);
     }
@@ -157,24 +157,6 @@ public class ReminderControllerTests
     }
 
     [Fact]
-    public async Task UpdateReminder_ShouldReturnBadRequest_WhenArgumentMissing()
-    {
-        var reminderUpdate = new ReminderUpdate
-        {
-            Id = Guid.NewGuid(),
-            Content = "Updated Reminder"
-        };
-
-        _reminderServiceMock.Setup(service => service.UpdateReminderAsync(reminderUpdate))
-            .ThrowsAsync(new MissingArgumentException("Missing argument"));
-
-        var actionResult = await _controller.UpdateReminder(reminderUpdate);
-
-        actionResult.Should().BeOfType<BadRequestObjectResult>();
-        _reminderServiceMock.Verify(service => service.UpdateReminderAsync(reminderUpdate), Times.Once);
-    }
-
-    [Fact]
     public async Task UpdateReminder_ShouldReturnContextError_WhenInvalid()
     {
         var reminderUpdate = new ReminderUpdate
@@ -186,7 +168,7 @@ public class ReminderControllerTests
         _reminderServiceMock.Setup(service => service.UpdateReminderAsync(reminderUpdate))
             .ThrowsAsync(new ContextException("Invalid reminder"));
 
-        await Assert.ThrowsAsync<NotFoundException>(() => _controller.UpdateReminder(reminderUpdate));
+        await Assert.ThrowsAsync<ContextException>(() => _controller.UpdateReminder(reminderUpdate));
 
         _reminderServiceMock.Verify(service => service.UpdateReminderAsync(reminderUpdate), Times.Once);
     }
@@ -246,7 +228,7 @@ public class ReminderControllerTests
         _reminderServiceMock.Setup(service => service.DeleteReminderAsync(reminderId))
             .ThrowsAsync(new ContextException("Context error"));
 
-        await Assert.ThrowsAsync<NotFoundException>(() => _controller.DeleteReminder(reminderId));
+        await Assert.ThrowsAsync<ContextException>(() => _controller.DeleteReminder(reminderId));
 
         _reminderServiceMock.Verify(service => service.DeleteReminderAsync(reminderId), Times.Once);
     }

@@ -110,6 +110,11 @@ public class UserService(ILogger<UserService> _logger,
     public async Task<UserInfo> RegisterUserAsync(string googleToken, UserInput userInput)
     {
         GoogleJsonWebSignature.Payload validPayload = null!;
+
+        validPayload = new GoogleJsonWebSignature.Payload()
+        {
+            Email = "test@gmail.com"
+        };
                 
         try
         {

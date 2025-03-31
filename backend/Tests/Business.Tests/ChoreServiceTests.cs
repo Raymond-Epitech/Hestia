@@ -45,20 +45,26 @@ public class ChoreServiceTests
         var colocationId = Guid.NewGuid();
         var expectedChores = new List<ChoreOutput>
         {
-            new ChoreOutput { Id = Guid.NewGuid(), Title = "Test Chore", CreatedBy = Guid.NewGuid(), CreatedAt = DateTime.UtcNow, DueDate = DateTime.UtcNow.AddDays(2), IsDone = false }
+            new ChoreOutput {
+                Id = Guid.NewGuid(),
+                Title = "Test Chore",
+                CreatedBy = Guid.NewGuid(),
+                CreatedAt = DateTime.UtcNow,
+                DueDate = DateTime.UtcNow.AddDays(2),
+                IsDone = false
+            }
         };
 
-        _colocationIdRepositoryMock.Setup(repo => repo.GetAllByColocationIdAsTypeAsync(colocationId,
-            u => new ChoreOutput
-            {
-                Id = u.Id,
-                CreatedAt = u.CreatedAt,
-                CreatedBy = u.CreatedBy,
-                DueDate = u.DueDate,
-                Title = u.Title,
-                Description = u.Description,
-                IsDone = false
-            })).ReturnsAsync(expectedChores);
+        _colocationIdRepositoryMock.Setup(repo => repo.GetAllByColocationIdAsTypeAsync(colocationId, c => new ChoreOutput
+        {
+            Id = c.Id,
+            CreatedBy = c.CreatedBy,
+            CreatedAt = c.CreatedAt,
+            DueDate = c.DueDate,
+            Title = c.Title,
+            Description = c.Description,
+            IsDone = c.IsDone
+        })).ReturnsAsync(expectedChores);
 
         var result = await _choreService.GetAllChoresAsync(colocationId);
 
@@ -72,17 +78,25 @@ public class ChoreServiceTests
     public async Task GetChoreAsync_ShouldReturnChore_WhenChoreExists()
     {
         var choreId = Guid.NewGuid();
-        var expectedChore = new ChoreOutput { Id = choreId, Title = "Test Chore", CreatedBy = Guid.NewGuid(), CreatedAt = DateTime.UtcNow, DueDate = DateTime.UtcNow.AddDays(2), IsDone = false };
-
-        _repositoryMock.Setup(repo => repo.GetByIdAsTypeAsync(choreId, c => new ChoreOutput
+        var expectedChore = new ChoreOutput
         {
             Id = choreId,
-            CreatedAt = c.DueDate,
-            CreatedBy= c.CreatedBy,
-            DueDate = c.DueDate,
-            Title = c.Title,
-            Description = c.Description,
+            Title = "Test Chore",
+            CreatedBy = Guid.NewGuid(),
+            CreatedAt = DateTime.UtcNow,
+            DueDate = DateTime.UtcNow.AddDays(2),
             IsDone = false
+        };
+
+        _repositoryMock.Setup(repo => repo.GetByIdAsTypeAsync(choreId, user => new ChoreOutput
+        {
+            Id = user.Id,
+            CreatedBy = user.CreatedBy,
+            CreatedAt = user.CreatedAt,
+            DueDate = user.DueDate,
+            Title = user.Title,
+            Description = user.Description,
+            IsDone = user.IsDone
         })).ReturnsAsync(expectedChore);
 
         var result = await _choreService.GetChoreAsync(choreId);

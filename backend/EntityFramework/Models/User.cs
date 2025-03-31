@@ -12,11 +12,10 @@ namespace EntityFramework.Models
 
         public Guid CreatedBy { get; set; } = Guid.Empty;
 
-        [Required]
         public Guid? ColocationId { get; set; }
 
         [ForeignKey(nameof(ColocationId))]
-        public Colocation Colocation { get; set; } = null!;
+        public Colocation? Colocation { get; set; }
 
         public DateTime LastConnection { get; set; } = DateTime.UtcNow;
 

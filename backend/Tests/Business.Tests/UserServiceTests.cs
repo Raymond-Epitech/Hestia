@@ -155,7 +155,7 @@ public class UserServiceTests
             Username = u.Username,
             Email = u.Email,
             ColocationId = u.ColocationId
-        })).ThrowsAsync(new Exception("user is invalid"));
+        })).ThrowsAsync(new ContextException("user is invalid"));
 
         // Act & Assert
         await Assert.ThrowsAsync<ContextException>(() => _userService.GetUserAsync(userId));

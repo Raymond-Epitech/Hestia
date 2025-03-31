@@ -48,7 +48,8 @@ public class ColocationServiceTests
         {
             Id = c.Id,
             Name = c.Name,
-            Address = c.Address
+            Address = c.Address,
+            Colocataires = c.Users.Select(u => u.Id).ToList()
         })).ReturnsAsync(expectedColocations);
 
         // Act
@@ -61,7 +62,8 @@ public class ColocationServiceTests
         {
             Id = c.Id,
             Name = c.Name,
-            Address = c.Address
+            Address = c.Address,
+            Colocataires = c.Users.Select(u => u.Id).ToList()
         }), Times.Once);
     }
 
@@ -82,7 +84,8 @@ public class ColocationServiceTests
         {
             Id = c.Id,
             Name = c.Name,
-            Address = c.Address
+            Address = c.Address,
+            Colocataires = c.Users.Select(u => u.Id).ToList()
         })).ReturnsAsync(expectedColocation);
 
         // Act
@@ -95,7 +98,8 @@ public class ColocationServiceTests
         {
             Id = c.Id,
             Name = c.Name,
-            Address = c.Address
+            Address = c.Address,
+            Colocataires = c.Users.Select(u => u.Id).ToList()
         }), Times.Once);
     }
 
@@ -108,7 +112,8 @@ public class ColocationServiceTests
         {
             Id = c.Id,
             Name = c.Name,
-            Address = c.Address
+            Address = c.Address,
+            Colocataires = c.Users.Select(u => u.Id).ToList()
         })).ReturnsAsync((ColocationOutput?)null);
 
         // Act & Assert
@@ -117,7 +122,8 @@ public class ColocationServiceTests
         {
             Id = c.Id,
             Name = c.Name,
-            Address = c.Address
+            Address = c.Address,
+            Colocataires = c.Users.Select(u => u.Id).ToList()
         }), Times.Once);
     }
 
