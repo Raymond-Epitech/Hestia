@@ -34,7 +34,12 @@ function handleClick() {
 
 <style scoped>
 .rectangle {
+    height: 70px;
     padding: 10px;
     border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
 }
 </style>

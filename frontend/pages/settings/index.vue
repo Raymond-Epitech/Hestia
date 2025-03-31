@@ -52,8 +52,15 @@ const redirect = (page) => {
 <style scoped>
 .conteneur {
     display: grid;
+    align-items: center;
     gap: 40px;
     width: 80%;
     margin: 40px auto;
+}
+
+h1 {
+    align-items: center;
+    font-weight: 600;
+    margin: 0;
 }
 </style>
