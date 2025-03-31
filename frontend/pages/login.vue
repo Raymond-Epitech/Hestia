@@ -39,7 +39,6 @@ const handleregistration = async (response) => {
     const newuser = {
         username: username.value
     };
-
     const data = await $bridge.addUser(newuser, credential);
     console.log("Data", data);
     if (data) {

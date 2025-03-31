@@ -2,6 +2,9 @@ import { json } from "stream/consumers";
 import type { Reminder, User, Colocation, Chore } from "./type";
 
 export class bridge {
+    constructor() {
+        console.log('Bridge instance created')
+    }
     url: string = "http://91.134.48.124:8080";
     jwt: string = "";
 
@@ -11,6 +14,11 @@ export class bridge {
 
     setjwt(new_jwt: string) {
         this.jwt = new_jwt;
+    }
+
+    getjwt() {
+        console.log("jwt:", this.jwt);
+        return this.jwt;
     }
 
     // Version section: get version
