@@ -1,9 +1,16 @@
-﻿namespace Shared.Models.Input
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Shared.Models.Input
 {
     public class ChoreMessageInput
     {
+        [Required]
         public Guid ChoreId { get; set; }
-        public string CreatedBy { get; set; } = null!;
+
+        [Required]
+        public Guid CreatedBy { get; set; }
+
+        [Required]
         public string Content { get; set; } = null!;
     }
 }

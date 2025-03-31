@@ -46,7 +46,7 @@ public class UserControllerTests
                 ColocationId = colocationId
             }
         };
-        _userServiceMock.Setup(service => service.GetAllUser(colocationId)).ReturnsAsync(userList);
+        _userServiceMock.Setup(service => service.GetAllUserAsync(colocationId)).ReturnsAsync(userList);
 
         // Act
         var actionResult = await _controller.GetAllUser(colocationId);
@@ -57,7 +57,7 @@ public class UserControllerTests
         var okResult = actionResult.Result as OkObjectResult;
         okResult.Should().NotBeNull();
         okResult!.Value.Should().BeEquivalentTo(userList);
-        _userServiceMock.Verify(service => service.GetAllUser(colocationId), Times.Once);
+        _userServiceMock.Verify(service => service.GetAllUserAsync(colocationId), Times.Once);
     }
 
     [Fact]
@@ -66,15 +66,14 @@ public class UserControllerTests
         // Arange
         var colocationId = Guid.NewGuid();
 
-        _userServiceMock.Setup(service => service.GetAllUser(colocationId))
+        _userServiceMock.Setup(service => service.GetAllUserAsync(colocationId))
             .ThrowsAsync(new ContextException("Context error"));
 
         // Act
-        var actionResult = await _controller.GetAllUser(colocationId);
+        await Assert.ThrowsAsync<ContextException>(() => _controller.GetAllUser(colocationId));
 
         // Assert
-        actionResult.Result.Should().BeOfType<UnprocessableEntityObjectResult>();
-        _userServiceMock.Verify(service => service.GetAllUser(colocationId), Times.Once);
+        _userServiceMock.Verify(service => service.GetAllUserAsync(colocationId), Times.Once);
     }
 
     // Get User
@@ -91,7 +90,7 @@ public class UserControllerTests
             Email = "test@example.com",
             ColocationId = null
         };
-        _userServiceMock.Setup(service => service.GetUser(userId)).ReturnsAsync(expectedUser);
+        _userServiceMock.Setup(service => service.GetUserAsync(userId)).ReturnsAsync(expectedUser);
 
         // Act
         var actionResult = await _controller.GetUser(userId);
@@ -102,7 +101,7 @@ public class UserControllerTests
         var okResult = actionResult.Result as OkObjectResult;
         okResult.Should().NotBeNull();
         okResult!.Value.Should().BeEquivalentTo(expectedUser);
-        _userServiceMock.Verify(service => service.GetUser(userId), Times.Once);
+        _userServiceMock.Verify(service => service.GetUserAsync(userId), Times.Once);
     }
 
     [Fact]
@@ -110,15 +109,14 @@ public class UserControllerTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        _userServiceMock.Setup(service => service.GetUser(userId))
+        _userServiceMock.Setup(service => service.GetUserAsync(userId))
             .ThrowsAsync(new NotFoundException("User not found"));
 
         // Act
-        var actionResult = await _controller.GetUser(userId);
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.GetUser(userId));
 
         // Assert
-        actionResult.Result.Should().BeOfType<NotFoundObjectResult>();
-        _userServiceMock.Verify(service => service.GetUser(userId), Times.Once);
+        _userServiceMock.Verify(service => service.GetUserAsync(userId), Times.Once);
     }
 
     [Fact]
@@ -127,15 +125,14 @@ public class UserControllerTests
         // Arange
         var userId = Guid.NewGuid();
 
-        _userServiceMock.Setup(service => service.GetUser(userId))
+        _userServiceMock.Setup(service => service.GetUserAsync(userId))
             .ThrowsAsync(new ContextException("Context error"));
 
         // Act
-        var actionResult = await _controller.GetUser(userId);
+        await Assert.ThrowsAsync<ContextException>(() => _controller.GetUser(userId));
 
         // Assert
-        actionResult.Result.Should().BeOfType<UnprocessableEntityObjectResult>();
-        _userServiceMock.Verify(service => service.GetUser(userId), Times.Once);
+        _userServiceMock.Verify(service => service.GetUserAsync(userId), Times.Once);
     }
 
     // Update User
@@ -151,14 +148,14 @@ public class UserControllerTests
             Email = "test@example.com",
             ColocationId = null
         };
-        _userServiceMock.Setup(service => service.UpdateUser(expectedUser));
+        _userServiceMock.Setup(service => service.UpdateUserAsync(expectedUser)).ReturnsAsync(expectedUser.Id);
 
         // Act
         var actionResult = await _controller.UpdateUser(expectedUser);
 
         // Assert
-        actionResult.Should().BeOfType<OkResult>();
-        _userServiceMock.Verify(service => service.UpdateUser(expectedUser), Times.Once);
+        actionResult.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(expectedUser.Id);
+        _userServiceMock.Verify(service => service.UpdateUserAsync(expectedUser), Times.Once);
     }
 
     [Fact]
@@ -172,15 +169,14 @@ public class UserControllerTests
             Email = "test@example.com",
             ColocationId = null
         };
-        _userServiceMock.Setup(service => service.UpdateUser(expectedUser))
+        _userServiceMock.Setup(service => service.UpdateUserAsync(expectedUser))
             .ThrowsAsync(new NotFoundException("User not found"));
 
         // Act
-        var actionResult = await _controller.UpdateUser(expectedUser);
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.UpdateUser(expectedUser));
 
         // Assert
-        actionResult.Should().BeOfType<NotFoundObjectResult>();
-        _userServiceMock.Verify(service => service.UpdateUser(expectedUser), Times.Once);
+        _userServiceMock.Verify(service => service.UpdateUserAsync(expectedUser), Times.Once);
     }
 
     [Fact]
@@ -194,15 +190,14 @@ public class UserControllerTests
             Email = "test@example.com",
             ColocationId = null
         };
-        _userServiceMock.Setup(service => service.UpdateUser(expectedUser))
+        _userServiceMock.Setup(service => service.UpdateUserAsync(expectedUser))
             .ThrowsAsync(new ContextException("User is invalid"));
 
         // Act
-        var actionResult = await _controller.UpdateUser(expectedUser);
+        await Assert.ThrowsAsync<ContextException>(() => _controller.UpdateUser(expectedUser));
 
         // Assert
-        actionResult.Should().BeOfType<UnprocessableEntityObjectResult>();
-        _userServiceMock.Verify(service => service.UpdateUser(expectedUser), Times.Once);
+        _userServiceMock.Verify(service => service.UpdateUserAsync(expectedUser), Times.Once);
     }
 
     // Remove User
@@ -212,14 +207,14 @@ public class UserControllerTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        _userServiceMock.Setup(service => service.DeleteUser(userId));
+        _userServiceMock.Setup(service => service.DeleteUserAsync(userId)).ReturnsAsync(userId);
 
         // Act
         var actionResult = await _controller.DeleteUser(userId);
 
         // Assert
-        actionResult.Should().BeOfType<OkResult>();
-        _userServiceMock.Verify(service => service.DeleteUser(userId), Times.Once);
+        actionResult.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(userId);
+        _userServiceMock.Verify(service => service.DeleteUserAsync(userId), Times.Once);
     }
 
     [Fact]
@@ -228,15 +223,14 @@ public class UserControllerTests
         // Arrange
         var userId = Guid.NewGuid();
 
-        _userServiceMock.Setup(service => service.DeleteUser(userId))
+        _userServiceMock.Setup(service => service.DeleteUserAsync(userId))
             .ThrowsAsync(new NotFoundException("User not found"));
 
         // Act
-        var actionResult = await _controller.DeleteUser(userId);
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.DeleteUser(userId));
 
         // Assert
-        actionResult.Should().BeOfType<NotFoundObjectResult>();
-        _userServiceMock.Verify(service => service.DeleteUser(userId), Times.Once);
+        _userServiceMock.Verify(service => service.DeleteUserAsync(userId), Times.Once);
     }
 
     [Fact]
@@ -245,15 +239,14 @@ public class UserControllerTests
         // Arrange
         var userId = Guid.NewGuid();
 
-        _userServiceMock.Setup(service => service.DeleteUser(userId))
+        _userServiceMock.Setup(service => service.DeleteUserAsync(userId))
             .ThrowsAsync(new ContextException("User invalid"));
 
         // Act
-        var actionResult = await _controller.DeleteUser(userId);
+        await Assert.ThrowsAsync<ContextException>(() => _controller.DeleteUser(userId));
 
         // Assert
-        actionResult.Should().BeOfType<UnprocessableEntityObjectResult>();
-        _userServiceMock.Verify(service => service.DeleteUser(userId), Times.Once);
+        _userServiceMock.Verify(service => service.DeleteUserAsync(userId), Times.Once);
     }
 
     // Register
@@ -280,7 +273,7 @@ public class UserControllerTests
             }
         };
 
-        _userServiceMock.Setup(service => service.RegisterUser(googleToken, userInput)).ReturnsAsync(userInfo);
+        _userServiceMock.Setup(service => service.RegisterUserAsync(googleToken, userInput)).ReturnsAsync(userInfo);
 
         // Act
         var actionResult = await _controller.Register(googleToken, userInput);
@@ -291,7 +284,7 @@ public class UserControllerTests
         var okResult = actionResult.Result as OkObjectResult;
         okResult.Should().NotBeNull();
         okResult!.Value.Should().BeEquivalentTo(userInfo);
-        _userServiceMock.Verify(service => service.RegisterUser(googleToken, userInput), Times.Once);
+        _userServiceMock.Verify(service => service.RegisterUserAsync(googleToken, userInput), Times.Once);
     }
 
     [Fact]
@@ -305,15 +298,14 @@ public class UserControllerTests
             ColocationId = Guid.NewGuid()
         };
 
-        _userServiceMock.Setup(service => service.RegisterUser(googleToken, userInput))
+        _userServiceMock.Setup(service => service.RegisterUserAsync(googleToken, userInput))
             .ThrowsAsync(new AlreadyExistException("User already exist"));
 
         // Act
-        var actionResult = await _controller.Register(googleToken, userInput);
+        await Assert.ThrowsAsync<AlreadyExistException>(() => _controller.Register(googleToken, userInput));
 
         // Assert
-        actionResult.Result.Should().BeOfType<ConflictObjectResult>();
-        _userServiceMock.Verify(service => service.RegisterUser(googleToken, userInput), Times.Once);
+        _userServiceMock.Verify(service => service.RegisterUserAsync(googleToken, userInput), Times.Once);
     }
 
     [Fact]
@@ -327,15 +319,14 @@ public class UserControllerTests
             ColocationId = Guid.NewGuid()
         };
 
-        _userServiceMock.Setup(service => service.RegisterUser(googleToken, userInput))
+        _userServiceMock.Setup(service => service.RegisterUserAsync(googleToken, userInput))
             .ThrowsAsync(new ContextException("User is invalid"));
 
         // Act
-        var actionResult = await _controller.Register(googleToken, userInput);
+        await Assert.ThrowsAsync<ContextException>(() => _controller.Register(googleToken, userInput));
 
         // Assert
-        actionResult.Result.Should().BeOfType<UnprocessableEntityObjectResult>();
-        _userServiceMock.Verify(service => service.RegisterUser(googleToken, userInput), Times.Once);
+        _userServiceMock.Verify(service => service.RegisterUserAsync(googleToken, userInput), Times.Once);
     }
 
     // Login
@@ -357,7 +348,7 @@ public class UserControllerTests
             }
         };
 
-        _userServiceMock.Setup(service => service.LoginUser(googleToken)).ReturnsAsync(userInfo);
+        _userServiceMock.Setup(service => service.LoginUserAsync(googleToken)).ReturnsAsync(userInfo);
 
         // Act
         var actionResult = await _controller.Login(googleToken);
@@ -368,7 +359,7 @@ public class UserControllerTests
         var okResult = actionResult.Result as OkObjectResult;
         okResult.Should().NotBeNull();
         okResult!.Value.Should().BeEquivalentTo(userInfo);
-        _userServiceMock.Verify(service => service.LoginUser(googleToken), Times.Once);
+        _userServiceMock.Verify(service => service.LoginUserAsync(googleToken), Times.Once);
     }
 
     [Fact]
@@ -382,15 +373,14 @@ public class UserControllerTests
             ColocationId = Guid.NewGuid()
         };
 
-        _userServiceMock.Setup(service => service.LoginUser(googleToken))
+        _userServiceMock.Setup(service => service.LoginUserAsync(googleToken))
             .ThrowsAsync(new NotFoundException("User not found"));
 
         // Act
-        var actionResult = await _controller.Login(googleToken);
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.Login(googleToken));
 
         // Assert
-        actionResult.Result.Should().BeOfType<NotFoundObjectResult>();
-        _userServiceMock.Verify(service => service.LoginUser(googleToken), Times.Once);
+        _userServiceMock.Verify(service => service.LoginUserAsync(googleToken), Times.Once);
     }
 }
 

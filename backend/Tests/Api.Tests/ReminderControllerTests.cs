@@ -51,9 +51,8 @@ public class ReminderControllerTests
         _reminderServiceMock.Setup(service => service.GetAllRemindersAsync(colocationId))
             .ThrowsAsync(new ContextException("Context error"));
 
-        var actionResult = await _controller.GetAllReminders(colocationId);
+        await Assert.ThrowsAsync<ContextException>(() => _controller.GetAllReminders(colocationId));
 
-        actionResult.Result.Should().BeOfType<UnprocessableEntityObjectResult>();
         _reminderServiceMock.Verify(service => service.GetAllRemindersAsync(colocationId), Times.Once);
     }
 
@@ -84,9 +83,8 @@ public class ReminderControllerTests
         _reminderServiceMock.Setup(service => service.GetReminderAsync(reminderId))
             .ThrowsAsync(new NotFoundException("Reminder not found"));
 
-        var actionResult = await _controller.GetReminder(reminderId);
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.GetReminder(reminderId));
 
-        actionResult.Result.Should().BeOfType<NotFoundObjectResult>();
         _reminderServiceMock.Verify(service => service.GetReminderAsync(reminderId), Times.Once);
     }
 
@@ -97,9 +95,8 @@ public class ReminderControllerTests
         _reminderServiceMock.Setup(service => service.GetReminderAsync(reminderId))
             .ThrowsAsync(new ContextException("Context error"));
 
-        var actionResult = await _controller.GetReminder(reminderId);
+        await Assert.ThrowsAsync<ContextException>(() => _controller.GetReminder(reminderId));
 
-        actionResult.Result.Should().BeOfType<UnprocessableEntityObjectResult>();
         _reminderServiceMock.Verify(service => service.GetReminderAsync(reminderId), Times.Once);
     }
 
@@ -134,11 +131,11 @@ public class ReminderControllerTests
             Content = "Updated Reminder"
         };
 
-        _reminderServiceMock.Setup(service => service.UpdateReminderAsync(reminderUpdate));
+        _reminderServiceMock.Setup(service => service.UpdateReminderAsync(reminderUpdate)).ReturnsAsync(reminderUpdate.Id);
 
         var actionResult = await _controller.UpdateReminder(reminderUpdate);
 
-        actionResult.Should().BeOfType<OkResult>();
+        actionResult.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(reminderUpdate.Id);
         _reminderServiceMock.Verify(service => service.UpdateReminderAsync(reminderUpdate), Times.Once);
     }
 
@@ -154,27 +151,8 @@ public class ReminderControllerTests
         _reminderServiceMock.Setup(service => service.UpdateReminderAsync(reminderUpdate))
             .ThrowsAsync(new NotFoundException("Reminder not found"));
 
-        var actionResult = await _controller.UpdateReminder(reminderUpdate);
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.UpdateReminder(reminderUpdate));
 
-        actionResult.Should().BeOfType<NotFoundObjectResult>();
-        _reminderServiceMock.Verify(service => service.UpdateReminderAsync(reminderUpdate), Times.Once);
-    }
-
-    [Fact]
-    public async Task UpdateReminder_ShouldReturnBadRequest_WhenArgumentMissing()
-    {
-        var reminderUpdate = new ReminderUpdate
-        {
-            Id = Guid.NewGuid(),
-            Content = "Updated Reminder"
-        };
-
-        _reminderServiceMock.Setup(service => service.UpdateReminderAsync(reminderUpdate))
-            .ThrowsAsync(new MissingArgumentException("Missing argument"));
-
-        var actionResult = await _controller.UpdateReminder(reminderUpdate);
-
-        actionResult.Should().BeOfType<BadRequestObjectResult>();
         _reminderServiceMock.Verify(service => service.UpdateReminderAsync(reminderUpdate), Times.Once);
     }
 
@@ -190,9 +168,8 @@ public class ReminderControllerTests
         _reminderServiceMock.Setup(service => service.UpdateReminderAsync(reminderUpdate))
             .ThrowsAsync(new ContextException("Invalid reminder"));
 
-        var actionResult = await _controller.UpdateReminder(reminderUpdate);
+        await Assert.ThrowsAsync<ContextException>(() => _controller.UpdateReminder(reminderUpdate));
 
-        actionResult.Should().BeOfType<UnprocessableEntityObjectResult>();
         _reminderServiceMock.Verify(service => service.UpdateReminderAsync(reminderUpdate), Times.Once);
     }
 
@@ -210,11 +187,11 @@ public class ReminderControllerTests
             }
         };
 
-        _reminderServiceMock.Setup(service => service.UpdateRangeReminderAsync(remindersToUpdate));
+        _reminderServiceMock.Setup(service => service.UpdateRangeReminderAsync(remindersToUpdate)).ReturnsAsync(remindersToUpdate.Count);
 
         var actionResult = await _controller.UpdateRangeReminder(remindersToUpdate);
 
-        actionResult.Should().BeOfType<OkResult>();
+        actionResult.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(remindersToUpdate.Count);
         _reminderServiceMock.Verify(service => service.UpdateRangeReminderAsync(remindersToUpdate), Times.Once);
     }
 
@@ -224,11 +201,11 @@ public class ReminderControllerTests
     public async Task DeleteReminder_ReturnsOk_WhenSuccessful()
     {
         var reminderId = Guid.NewGuid();
-        _reminderServiceMock.Setup(service => service.DeleteReminderAsync(reminderId));
+        _reminderServiceMock.Setup(service => service.DeleteReminderAsync(reminderId)).ReturnsAsync(reminderId);
 
         var actionResult = await _controller.DeleteReminder(reminderId);
 
-        actionResult.Should().BeOfType<OkResult>();
+        actionResult.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(reminderId);
         _reminderServiceMock.Verify(service => service.DeleteReminderAsync(reminderId), Times.Once);
     }
 
@@ -239,9 +216,8 @@ public class ReminderControllerTests
         _reminderServiceMock.Setup(service => service.DeleteReminderAsync(reminderId))
             .ThrowsAsync(new NotFoundException("Reminder not found"));
 
-        var actionResult = await _controller.DeleteReminder(reminderId);
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.DeleteReminder(reminderId));
 
-        actionResult.Should().BeOfType<NotFoundObjectResult>();
         _reminderServiceMock.Verify(service => service.DeleteReminderAsync(reminderId), Times.Once);
     }
 
@@ -252,9 +228,8 @@ public class ReminderControllerTests
         _reminderServiceMock.Setup(service => service.DeleteReminderAsync(reminderId))
             .ThrowsAsync(new ContextException("Context error"));
 
-        var actionResult = await _controller.DeleteReminder(reminderId);
+        await Assert.ThrowsAsync<ContextException>(() => _controller.DeleteReminder(reminderId));
 
-        actionResult.Should().BeOfType<UnprocessableEntityObjectResult>();
         _reminderServiceMock.Verify(service => service.DeleteReminderAsync(reminderId), Times.Once);
     }
 }

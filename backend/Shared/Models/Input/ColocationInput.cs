@@ -1,9 +1,16 @@
-﻿namespace Shared.Models.Input
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Shared.Models.Input
 {
     public class ColocationInput
     {
+        [Required]
         public string Name { get; set; } = null!;
+
+        [Required]
         public string Address { get; set; } = null!;
-        public string CreatedBy { get; set; } = null!;
+
+        [Required]
+        public Guid CreatedBy { get; set; }
     }
 }

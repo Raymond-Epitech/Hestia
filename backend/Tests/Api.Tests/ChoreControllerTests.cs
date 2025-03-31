@@ -1,5 +1,6 @@
 ﻿using Api.Controllers;
 using Business.Interfaces;
+using EntityFramework.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -51,9 +52,8 @@ public class ChoreControllerTests
         _choreServiceMock.Setup(service => service.GetAllChoresAsync(colocationId))
             .ThrowsAsync(new ContextException("Context error"));
 
-        var actionResult = await _controller.GetAllChores(colocationId);
+        await Assert.ThrowsAsync<ContextException>(() => _controller.GetAllChores(colocationId));
 
-        actionResult.Result.Should().BeOfType<UnprocessableEntityObjectResult>();
         _choreServiceMock.Verify(service => service.GetAllChoresAsync(colocationId), Times.Once);
     }
 
@@ -86,9 +86,8 @@ public class ChoreControllerTests
         _choreServiceMock.Setup(service => service.GetChoreAsync(choreId))
             .ThrowsAsync(new NotFoundException("Chore not found"));
 
-        var actionResult = await _controller.GetChore(choreId);
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.GetChore(choreId));
 
-        actionResult.Result.Should().BeOfType<NotFoundObjectResult>();
         _choreServiceMock.Verify(service => service.GetChoreAsync(choreId), Times.Once);
     }
 
@@ -99,9 +98,8 @@ public class ChoreControllerTests
         _choreServiceMock.Setup(service => service.GetChoreAsync(choreId))
             .ThrowsAsync(new ContextException("Context error"));
 
-        var actionResult = await _controller.GetChore(choreId);
+        await Assert.ThrowsAsync<ContextException>(() => _controller.GetChore(choreId));
 
-        actionResult.Result.Should().BeOfType<UnprocessableEntityObjectResult>();
         _choreServiceMock.Verify(service => service.GetChoreAsync(choreId), Times.Once);
     }
 
@@ -137,11 +135,11 @@ public class ChoreControllerTests
             IsDone = true
         };
 
-        _choreServiceMock.Setup(service => service.UpdateChoreAsync(choreUpdate));
+        _choreServiceMock.Setup(service => service.UpdateChoreAsync(choreUpdate)).ReturnsAsync(choreUpdate.Id);
 
         var actionResult = await _controller.UpdateChore(choreUpdate);
 
-        actionResult.Should().BeOfType<OkResult>();
+        actionResult.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(choreUpdate.Id);
         _choreServiceMock.Verify(service => service.UpdateChoreAsync(choreUpdate), Times.Once);
     }
 
@@ -158,9 +156,8 @@ public class ChoreControllerTests
         _choreServiceMock.Setup(service => service.UpdateChoreAsync(choreUpdate))
             .ThrowsAsync(new NotFoundException("Chore not found"));
 
-        var actionResult = await _controller.UpdateChore(choreUpdate);
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.UpdateChore(choreUpdate));
 
-        actionResult.Should().BeOfType<NotFoundObjectResult>();
         _choreServiceMock.Verify(service => service.UpdateChoreAsync(choreUpdate), Times.Once);
     }
 
@@ -177,9 +174,8 @@ public class ChoreControllerTests
         _choreServiceMock.Setup(service => service.UpdateChoreAsync(choreUpdate))
             .ThrowsAsync(new ContextException("Invalid chore"));
 
-        var actionResult = await _controller.UpdateChore(choreUpdate);
+        await Assert.ThrowsAsync<ContextException>(() => _controller.UpdateChore(choreUpdate));
 
-        actionResult.Should().BeOfType<UnprocessableEntityObjectResult>();
         _choreServiceMock.Verify(service => service.UpdateChoreAsync(choreUpdate), Times.Once);
     }
 
@@ -188,11 +184,11 @@ public class ChoreControllerTests
     public async Task DeleteChore_ReturnsOk_WhenSuccessful()
     {
         var choreId = Guid.NewGuid();
-        _choreServiceMock.Setup(service => service.DeleteChoreAsync(choreId));
+        _choreServiceMock.Setup(service => service.DeleteChoreAsync(choreId)).ReturnsAsync(choreId);
 
         var actionResult = await _controller.DeleteChore(choreId);
 
-        actionResult.Should().BeOfType<OkResult>();
+        actionResult.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(choreId);
         _choreServiceMock.Verify(service => service.DeleteChoreAsync(choreId), Times.Once);
     }
 
@@ -203,9 +199,8 @@ public class ChoreControllerTests
         _choreServiceMock.Setup(service => service.DeleteChoreAsync(choreId))
             .ThrowsAsync(new NotFoundException("Chore not found"));
 
-        var actionResult = await _controller.DeleteChore(choreId);
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.DeleteChore(choreId));
 
-        actionResult.Should().BeOfType<NotFoundObjectResult>();
         _choreServiceMock.Verify(service => service.DeleteChoreAsync(choreId), Times.Once);
     }
 
@@ -216,9 +211,8 @@ public class ChoreControllerTests
         _choreServiceMock.Setup(service => service.DeleteChoreAsync(choreId))
             .ThrowsAsync(new ContextException("Context error"));
 
-        var actionResult = await _controller.DeleteChore(choreId);
+        await Assert.ThrowsAsync<ContextException>(() => _controller.DeleteChore(choreId));
 
-        actionResult.Should().BeOfType<UnprocessableEntityObjectResult>();
         _choreServiceMock.Verify(service => service.DeleteChoreAsync(choreId), Times.Once);
     }
 
@@ -229,11 +223,11 @@ public class ChoreControllerTests
         var userId = Guid.NewGuid();
         var choreId = Guid.NewGuid();
 
-        _choreServiceMock.Setup(service => service.EnrollToChore(userId, choreId));
+        _choreServiceMock.Setup(service => service.EnrollToChore(userId, choreId)).ReturnsAsync(choreId);
 
         var actionResult = await _controller.EnrollToChore(userId, choreId);
 
-        actionResult.Should().BeOfType<OkResult>();
+        actionResult.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(choreId);
         _choreServiceMock.Verify(service => service.EnrollToChore(userId, choreId), Times.Once);
     }
 
@@ -246,9 +240,8 @@ public class ChoreControllerTests
         _choreServiceMock.Setup(service => service.EnrollToChore(userId, choreId))
             .ThrowsAsync(new NotFoundException("Not found"));
 
-        var actionResult = await _controller.EnrollToChore(userId, choreId);
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.EnrollToChore(userId, choreId));
 
-        actionResult.Should().BeOfType<NotFoundObjectResult>();
         _choreServiceMock.Verify(service => service.EnrollToChore(userId, choreId), Times.Once);
     }
 
@@ -261,9 +254,8 @@ public class ChoreControllerTests
         _choreServiceMock.Setup(service => service.EnrollToChore(userId, choreId))
             .ThrowsAsync(new ContextException("Invalid"));
 
-        var actionResult = await _controller.EnrollToChore(userId, choreId);
+        await Assert.ThrowsAsync<ContextException>(() => _controller.EnrollToChore(userId, choreId));
 
-        actionResult.Should().BeOfType<UnprocessableEntityObjectResult>();
         _choreServiceMock.Verify(service => service.EnrollToChore(userId, choreId), Times.Once);
     }
 }

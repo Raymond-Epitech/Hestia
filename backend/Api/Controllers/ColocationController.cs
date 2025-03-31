@@ -19,19 +19,7 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<List<ColocationOutput>>> GetAllCollocations()
         {
-            try
-            {
-                var colocations = await colocationService.GetAllColocations();
-                return Ok(colocations);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            return Ok(await colocationService.GetAllColocations());
         }
 
         [HttpGet("{id}")]
@@ -42,23 +30,10 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ColocationOutput>> GetColocation(Guid id)
         {
-            try
-            {
-                var colocation = await colocationService.GetColocation(id);
-                return Ok(colocation);
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (id == Guid.Empty)
+                throw new InvalidEntityException("id is empty");
+
+            return Ok(await colocationService.GetColocation(id));
         }
 
         [HttpPost]
@@ -68,19 +43,7 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Guid>> AddCollocation(ColocationInput colocation, Guid AddedBy)
         {
-            try
-            {
-                var colocId = await colocationService.AddColocation(colocation, AddedBy);
-                return Ok(colocId);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            return Ok(await colocationService.AddColocation(colocation, AddedBy));
         }
 
         [HttpPut]
@@ -89,25 +52,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> UpdateCollocation(ColocationUpdate colocation)
+        public async Task<ActionResult<Guid>> UpdateCollocation(ColocationUpdate colocation)
         {
-            try
-            {
-                await colocationService.UpdateColocation(colocation);
-                return Ok();
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (colocation.Id == Guid.Empty)
+                throw new InvalidEntityException("id is empty");
+
+            return Ok(await colocationService.UpdateColocation(colocation));
         }
 
         [HttpDelete("{id}")]
@@ -116,25 +66,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> DeleteCollocation(Guid id)
+        public async Task<ActionResult<Guid>> DeleteCollocation(Guid id)
         {
-            try
-            {
-                await colocationService.DeleteColocation(id);
-                return Ok();
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (id == Guid.Empty)
+                throw new InvalidEntityException("id is empty");
+
+            return Ok(await colocationService.DeleteColocation(id));
         }
     }
 }

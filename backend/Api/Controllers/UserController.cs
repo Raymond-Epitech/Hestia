@@ -13,26 +13,17 @@ namespace Api.Controllers
     [ApiController]
     public class UserController(IUserService userService) : ControllerBase
     {
-        [HttpGet("GetByColocationId/{ColocationId}")]
+        [HttpGet("GetByColocationId/{colocationId}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<UserOutput>>> GetAllUser(Guid ColocationId)
+        public async Task<ActionResult<List<UserOutput>>> GetAllUser(Guid colocationId)
         {
-            try
-            {
-                var users = await userService.GetAllUser(ColocationId);
-                return Ok(users);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (colocationId == Guid.Empty)
+                throw new InvalidEntityException("ColocationId is empty");
+
+            return Ok(await userService.GetAllUserAsync(colocationId));
         }
 
         [HttpGet("GetById/{id}")]
@@ -43,23 +34,10 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<UserOutput>> GetUser(Guid id)
         {
-            try
-            {
-                var user = await userService.GetUser(id);
-                return Ok(user);
-            }
-            catch(NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (id == Guid.Empty)
+                throw new InvalidEntityException("ColocationId is empty");
+
+            return Ok(await userService.GetUserAsync(id));
         }
 
         [HttpPut]
@@ -68,25 +46,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> UpdateUser(UserUpdate user)
+        public async Task<ActionResult<Guid>> UpdateUser(UserUpdate user)
         {
-            try
-            {
-                await userService.UpdateUser(user);
-                return Ok();
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (user.Id == Guid.Empty)
+                throw new InvalidEntityException("User Id is empty");
+
+            return Ok(await userService.UpdateUserAsync(user));
         }
 
         [HttpDelete("{id}")]
@@ -95,25 +60,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> DeleteUser(Guid id)
+        public async Task<ActionResult<Guid>> DeleteUser(Guid id)
         {
-            try
-            {
-                await userService.DeleteUser(id);
-                return Ok();
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (id == Guid.Empty)
+                throw new InvalidEntityException("User Id is empty");
+
+            return Ok(await userService.DeleteUserAsync(id));
         }
 
         [HttpPost("/Register")]
@@ -123,22 +75,10 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<UserInfo>> Register(string googleToken, UserInput userInput)
         {
-            try
-            {
-                return Ok(await userService.RegisterUser(googleToken, userInput));
-            }
-            catch (AlreadyExistException ex)
-            {
-                return Conflict(ex);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (googleToken is "")
+                throw new InvalidEntityException("Google token is empty");
+
+            return Ok(await userService.RegisterUserAsync(googleToken, userInput));
         }
 
         [HttpPost("/Login")]
@@ -148,18 +88,10 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<UserInfo>> Login(string googleToken)
         {
-            try
-            {
-                return Ok(await userService.LoginUser(googleToken));
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (googleToken is "")
+                throw new InvalidEntityException("Google token is empty");
+
+            return Ok(await userService.LoginUserAsync(googleToken));
         }
     }
 }
