@@ -18,6 +18,8 @@ const openModal = () => (isModalOpen.value = true)
 
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+api.setjwt(useCookie('token').value ?? '');
+
 const posts = ref([]);
 
 const getall = async () => {

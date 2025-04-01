@@ -50,6 +50,7 @@ const props = withDefaults(
 
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+api.setjwt(useCookie('token').value ?? '');
 
 const post = ref({
   createdBy: '',

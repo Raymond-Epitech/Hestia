@@ -24,6 +24,7 @@ const props = defineProps({
 
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+api.setjwt(useCookie('token').value ?? '');
 
 const emit = defineEmits(['delete'])
 const handleDelete = async () => {
