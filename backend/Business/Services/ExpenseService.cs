@@ -369,14 +369,9 @@ namespace Business.Services
                     expense.Name = input.Name;
                     expense.Description = input.Description;
                     expense.DateOfPayment = input.DateOfPayment;
-                    await _tempRepository.DeleteAllEntriesByExpenseId(expense.Id);
-                    /*
-                     * DeleteAllEntriesById()
-                     * -> foreach entry 
-                     *    get entry
-                     *    remove from balance -entry.amount
-                     *    context.delete(entry)
-                     */
+
+                    await _tempRepository.DeleteRangeEntriesByExpenseId(expense.Id);
+                    await _tempRepository.DeleteRangeSplitBetweenExpenseId(expense.Id);
 
                     await CreateEntriesAndUpdateBalance(new InputExpenseDTO
                     {

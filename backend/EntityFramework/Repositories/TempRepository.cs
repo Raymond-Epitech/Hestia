@@ -192,5 +192,20 @@ namespace EntityFramework.Repositories
         {
             await context.Balances.AddAsync(balance);
         }
+
+        public async Task<int> DeleteRangeSplitBetweenExpenseId(Guid expenseId)
+        {
+            var splitbetweens = await context.SplitBetweens.Where(x => x.ExpenseId == expenseId).ToListAsync();
+            context.SplitBetweens.RemoveRange(splitbetweens);
+            return splitbetweens.Count;
+        }
+
+        public async Task<int> DeleteRangeEntriesByExpenseId(Guid expenseId)
+        {
+            var entries = await context.Entries.Where(x => x.ExpenseId == expenseId).ToListAsync();
+            context.Entries.RemoveRange(entries);
+            return entries.Count();
+        }
+
     }
 }

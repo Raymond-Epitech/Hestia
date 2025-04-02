@@ -55,18 +55,21 @@ namespace Api.Controllers
             return Ok(await expenseService.AddExpenseAsync(input));
         }
 
-        [HttpPut]
+        [HttpPut("{colocationId}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType (StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Guid>> UpdateExpense(ExpenseUpdate input)
+        public async Task<ActionResult<Guid>> UpdateExpense(Guid colocationId, ExpenseUpdate input)
         {
             if (input.Id == Guid.Empty)
                 throw new InvalidEntityException("Id is required");
 
-            return Ok(await expenseService.UpdateExpenseAsync(input));
+            await expenseService.UpdateExpenseAsync(input);
+            await expenseService.RecalculateBalanceAsync(colocationId);
+
+            return Ok();
         }
 
         [HttpDelete("{id}")]
