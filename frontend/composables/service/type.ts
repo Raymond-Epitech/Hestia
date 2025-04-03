@@ -1,5 +1,4 @@
 export type Reminder = {
-
     id: string,
     createdBy: string,
     content: string,
@@ -8,6 +7,25 @@ export type Reminder = {
     coordY: number,
     coordZ: number
 };
+
+export type Expense = {
+    colocationId: string,
+    createdBy: string,
+    name: string,
+    description: string,
+    amount: number,
+    category: string,
+    paidBy: string
+    splitType: number,
+    splitBetween: string[],
+    splitValues: {
+        [key: string]: number
+    }
+    splitPercentages: {
+        [key: string]: number
+    }
+    dateOfPayment: string,
+}
 
 export type User = {
     username: string;
