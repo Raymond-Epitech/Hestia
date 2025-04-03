@@ -11,7 +11,7 @@ namespace EntityFramework.Repositories
         Task<List<ChoreOutput>> GetEnrolledChoreOutputFromUserIdAsync(Guid userId);
         Task RemoveChoreEnrollmentAsync(Guid userId, Guid choreId);
         Task<List<Balance>> GetBalanceFromUserIdListAsync(List<Guid> userList);
-        Task DeleteAllEntriesByExpenseId(Guid expenseId);
+        Task<int> DeleteRangeEntriesByExpenseId(Guid expenseId);
         Task<List<BalanceOutput>> GetAllByColocationIdAsync(Guid colocationId);
         Task<List<Balance>> GetAllBalancesFromColocationIdListAsync(Guid colocationId);
         Task<bool> AnyExistingUserByEmail(string email);
@@ -22,5 +22,6 @@ namespace EntityFramework.Repositories
         Task<int> AddSplitBetweenRangeAsync(List<SplitBetween> splitList);
         int UpdateBalanceRange(List<Balance> balances);
         Task AddBalanceAsync(Balance balance);
+        Task<int> DeleteRangeSplitBetweenExpenseId(Guid expenseId);
     }
 }
