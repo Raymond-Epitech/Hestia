@@ -355,7 +355,7 @@ namespace Business.Services
         /// </summary>
         /// <param name="input">The model to update the existing expense</param>
         /// <returns>The Guid of the updated expense</returns>
-        public async Task<Guid> UpdateExpenseAsync(ExpenseUpdate input)
+        public async Task<Guid> UpdateExpenseAsync(Guid colocationId, ExpenseUpdate input)
         {
             var expense = await _repository.GetByIdAsync(input.Id);
 
@@ -369,6 +369,11 @@ namespace Business.Services
                     expense.Name = input.Name;
                     expense.Description = input.Description;
                     expense.DateOfPayment = input.DateOfPayment;
+                    expense.Amount = input.Amount;
+                    expense.PaidBy = input.PaidBy;
+                    expense.SplitType = input.SplitType.ToString();
+                    expense.Category = input.Category;
+                    expense.DateOfPayment = input.DateOfPayment;
 
                     await _tempRepository.DeleteRangeEntriesByExpenseId(expense.Id);
                     await _tempRepository.DeleteRangeSplitBetweenExpenseId(expense.Id);
@@ -380,11 +385,15 @@ namespace Business.Services
                         SplitBetween = input.SplitBetween,
                         SplitPercentages = input.SplitPercentages,
                         SplitValues = input.SplitValues,
-                        SplitType = input.SplitType
+                        SplitType = input.SplitType,
+                        ColocationId = colocationId
                     }, transaction, expense);
 
                     _repository.Update(expense);
+
                     await _repository.SaveChangesAsync();
+
+                    await RecalculateBalanceAsync(colocationId);
 
                     transaction.Commit();
 

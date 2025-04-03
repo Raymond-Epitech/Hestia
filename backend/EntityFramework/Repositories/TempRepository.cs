@@ -183,8 +183,17 @@ namespace EntityFramework.Repositories
 
         public int UpdateBalanceRange(List<Balance> balances)
         {
-            
-            context.Balances.UpdateRange(balances);
+
+            foreach (var balance in balances)
+            {
+                var tracked = context.ChangeTracker.Entries<Balance>()
+                    .FirstOrDefault(e => e.Entity.UserId == balance.UserId);
+
+                if (tracked != null)
+                    tracked.State = EntityState.Detached;
+
+                context.Balances.Update(balance);
+            }
             return balances.Count;
         }
 
@@ -195,14 +204,20 @@ namespace EntityFramework.Repositories
 
         public async Task<int> DeleteRangeSplitBetweenExpenseId(Guid expenseId)
         {
-            var splitbetweens = await context.SplitBetweens.Where(x => x.ExpenseId == expenseId).ToListAsync();
+            var splitbetweens = await context.SplitBetweens
+                .Where(x => x.ExpenseId == expenseId)
+                .AsNoTracking()
+                .ToListAsync();
             context.SplitBetweens.RemoveRange(splitbetweens);
             return splitbetweens.Count;
         }
 
         public async Task<int> DeleteRangeEntriesByExpenseId(Guid expenseId)
         {
-            var entries = await context.Entries.Where(x => x.ExpenseId == expenseId).ToListAsync();
+            var entries = await context.Entries
+                .Where(x => x.ExpenseId == expenseId)
+                .AsNoTracking()
+                .ToListAsync();
             context.Entries.RemoveRange(entries);
             return entries.Count();
         }

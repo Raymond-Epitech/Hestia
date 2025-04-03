@@ -66,8 +66,7 @@ namespace Api.Controllers
             if (input.Id == Guid.Empty)
                 throw new InvalidEntityException("Id is required");
 
-            await expenseService.UpdateExpenseAsync(input);
-            await expenseService.RecalculateBalanceAsync(colocationId);
+            await expenseService.UpdateExpenseAsync(colocationId, input);
 
             return Ok();
         }
