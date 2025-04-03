@@ -11,5 +11,12 @@
     "Accessibility": "Accessibility",
     "Rules": "Rules of life",
     "Confidentiality": "Confidentiality",
-    "Informations": "Informations"
+    "Informations": "Informations",
+    "regularize": "balance",
+    "global": "overall\nexpenditure",
+    "food_expenses": "food\nexpenses",
+    "Health_expenses": "health\nexpenses",
+    "partie_expenses": "party\nexpenses",
+    "header_add_expense": "Add an expense",
+    "expense_name": "Expense name"
 }
