@@ -1,0 +1,229 @@
+<template>
+  <div class="background">
+    <div>
+      <h1>
+        <Texte_language source="header_add_expense" />
+      </h1>
+    </div>
+    <form method="post" action="">
+      <div>
+        <h3>
+          <Texte_language source="expense_name" />
+        </h3>
+        <input class="body-input" rows="3" v-model="expense.name" required />
+        <h3>
+          <Texte_language source="expense_amount" />
+        </h3>
+        <input class="body-input" type="number" v-model="expense.amount" placeholder="0.00" @input="filterNumericInput"
+          min="0" required />
+        <h3>
+          <Texte_language source="expense_paid_by" />
+        </h3>
+        <select v-model="expense.paidBy" class="body-input">
+          <option v-for="coloc in list_coloc" :key="coloc.id" :value="coloc.id">
+            {{ coloc.username }}
+          </option>
+        </select>
+        <h3>
+          <Texte_language source="split_type" />
+        </h3>
+        <select v-model="expense.splitType" class="body-input">
+          <option v-for="type in splitTypes" :key="type.value" :value="type.value">
+            {{ type.label }}
+          </option>
+        </select>
+        <div v-if="expense.splitType == 0">
+          <div class="checkbox-list">
+            <label v-for="coloc in list_coloc" :key="coloc.id" class="checkbox-item">
+              <input type="checkbox" :value="coloc.id" v-model="expense.splitBetween" />
+              {{ coloc.username }}
+              <input type="number" class="split-value-input"
+                :value="expense.splitBetween.includes(coloc.id) ? calculatedSplitValue : 0" readonly />
+            </label>
+          </div>
+        </div>
+        <div v-if="expense.splitType == 1">
+          <div class="checkbox-list">
+            <label v-for="coloc in list_coloc" :key="coloc.id" class="checkbox-item">
+              <input type="checkbox" :value="coloc.id" />
+              {{ coloc.username }}
+              <input type="number" class="split-value-input" v-model.number="expense.splitValues[coloc.id]"
+                placeholder="0.00" min="0" />
+            </label>
+          </div>
+        </div>
+        <div v-if="expense.splitType == 2">
+          <div class="checkbox-list">
+            <label v-for="coloc in list_coloc" :key="coloc.id" class="checkbox-item">
+              <input type="checkbox" :value="coloc.id" />
+              {{ coloc.username }}
+              <input type="number" class="split-value-input" v-model.number="expense.splitPercentages[coloc.id]"
+                placeholder="0" min="0" max="100" />
+              <input type="number" class="split-value-input" :value="calculateValueFromPercentage(coloc.id)" readonly />
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-buttons">
+        <button class="button button-proceed" @click.prevent="handleProceed">Poster</button>
+      </div>
+    </form>
+  </div>
+</template>
+
+<script setup lang="ts">
+import type { Expense } from '~/composables/service/type';
+
+const route = useRoute();
+const name = route.query.name as string;
+const { $bridge } = useNuxtApp()
+const api = $bridge;
+const date = new Date();
+api.setjwt(useCookie('token').value ?? '');
+
+const list_coloc = ref([
+  { id: 'd6c34b10-e6dc-472e-8047-da3a89d44eae', username: 'Coloc 1' },
+  { id: 'd6c34b10-e6dc-472e-8048-da3a89d44eae', username: 'Coloc 2' },
+  { id: 'd6c34b10-e6dc-472e-8049-da3a89d44eae', username: 'Coloc 3' },
+])
+const splitTypes = [
+  { value: 0, label: 'split_type0' },
+  { value: 1, label: 'split_type1' },
+  { value: 2, label: 'split_type2' },
+];
+
+const expense = ref<Expense>({
+  colocationId: "d6c34b10-e6dc-472e-8047-da3a89d44eae",
+  createdBy: '',
+  description: '',
+  category: name,
+  name: '',
+  amount: 0,
+  paidBy: list_coloc.value[0]?.id || '',
+  splitType: 0,
+  splitBetween: [],
+  splitValues: {},
+  splitPercentages: {},
+  dateOfPayment: date.toISOString(),
+})
+
+const calculateValueFromPercentage = (colocId: string) => {
+  const percentage = expense.value.splitPercentages[colocId] || 0;
+  return ((percentage / 100) * expense.value.amount).toFixed(2);
+};
+
+const calculatedSplitValue = computed(() => {
+  const numPeople = expense.value.splitBetween.length;
+  return numPeople > 0 ? (expense.value.amount / numPeople).toFixed(2) : 0;
+});
+
+const handleClose = () => {
+  Object.assign(expense.value, {
+    colocationId: "d6c34b10-e6dc-472e-8047-da3a89d44eae",
+    createdBy: '',
+    name: '',
+    amount: 0,
+    paidBy: '',
+    splitType: 0,
+    splitBetween: [],
+    splitValues: {},
+    splitPercentages: {},
+    dateOfPayment: new Date(),
+  });
+  close()
+}
+
+const handleProceed = async () => {
+  console.log(expense.value);
+}
+
+const filterNumericInput = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const value = target.value;
+  const filteredValue = value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');
+
+  if (filteredValue !== value) {
+    target.value = filteredValue;
+  }
+  if (!isNaN(parseFloat(filteredValue))) {
+    expense.value.amount = parseFloat(filteredValue);
+  } else {
+    expense.value.amount = 0;
+  }
+};
+</script>
+
+<style>
+.background {
+  height: 100vh;
+  background-color: #1E1E1E;
+  color: white;
+  padding: 20px;
+}
+
+.body-input {
+  width: 50%;
+  background-color: #1e1e1e00;
+  outline: none;
+  border: none;
+  line-height: 3ch;
+  background-image: linear-gradient(transparent, transparent calc(3ch - 1px), #E7EFF8 0px);
+  background-size: 100% 3ch;
+  color: #fff;
+  font-size: 18px;
+}
+
+.split-value-input {
+  width: 25%;
+  background-color: #1e1e1e00;
+  outline: none;
+  border: none;
+  line-height: 3ch;
+  background-image: linear-gradient(transparent, transparent calc(3ch - 1px), #E7EFF8 0px);
+  background-size: 100% 3ch;
+  color: #fff;
+  font-size: 18px;
+}
+
+/** Fallback Buttons */
+.button {
+  padding: 10px 20px;
+  border-radius: 15px;
+  border: 0;
+  cursor: pointer;
+}
+
+.button-proceed {
+  background: #00000088;
+  color: #fff;
+}
+
+.button-proceed:hover {
+  opacity: 0.7;
+}
+
+/* Masquer les boutons de type "spinner" pour les navigateurs Webkit (Chrome, Safari, Edge) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Masquer les boutons de type "spinner" pour Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%
+}
+</style>
