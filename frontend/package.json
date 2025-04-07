@@ -7,7 +7,8 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "sync:translations": "node scripts/syncTranslations.js"
   },
   "dependencies": {
     "@nuxtjs/i18n": "^9.1.0",
@@ -18,7 +19,8 @@
     "node": "^20.18.1",
     "nuxt": "^3.12.2",
     "nuxt-vue3-google-signin": "^0.0.11",
-    "pinia": "^2.1.7"
+    "pinia": "^2.1.7",
+    "translatte": "^3.0.1"
   },
   "overrides": {
     "vue": "latest"
