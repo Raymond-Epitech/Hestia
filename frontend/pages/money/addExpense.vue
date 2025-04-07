@@ -29,7 +29,7 @@
         </h3>
         <select v-model="expense.splitType" class="body-input">
           <option v-for="type in splitTypes" :key="type.value" :value="type.value">
-            {{ type.label }}
+            <Texte_language :source=type.label />
           </option>
         </select>
         <div v-if="expense.splitType == 0">
