@@ -79,8 +79,8 @@ const route = useRoute();
 const name = route.query.name as string;
 const { $bridge } = useNuxtApp()
 const api = $bridge;
-const date = new Date();
 api.setjwt(useCookie('token').value ?? '');
+const date = new Date();
 //a changer par la vrai colocid
 const collocid = "164cb6e7-b8dd-4391-828d-e5ba7be45039"
 

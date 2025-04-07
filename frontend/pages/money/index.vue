@@ -33,6 +33,9 @@
 <script setup>
 import { useI18n } from 'vue-i18n';
 
+const { $bridge } = useNuxtApp()
+const api = $bridge;
+api.setjwt(useCookie('token').value ?? '');
 const { t } = useI18n();
 const router = useRouter();
 const global = ref(0);
@@ -43,6 +46,9 @@ const redirectto = (name) => {
     console.log(name);
     router.push({ path: '/money/historical', query: { name } });
 }
+onMounted(() => {
+api.getex
+})
 </script>
 
 <style scoped>
