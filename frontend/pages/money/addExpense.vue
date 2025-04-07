@@ -2,6 +2,7 @@
   <div class="background">
     <div>
       <h1>
+        <img src="/return.png" alt="Return" width="30" height="30" @click="$router.back()"/>
         <Texte_language source="header_add_expense" />
       </h1>
     </div>
@@ -72,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Expense } from '~/composables/service/type';
+import type { Expense, Coloc } from '~/composables/service/type';
 
 const route = useRoute();
 const name = route.query.name as string;
@@ -80,12 +81,10 @@ const { $bridge } = useNuxtApp()
 const api = $bridge;
 const date = new Date();
 api.setjwt(useCookie('token').value ?? '');
+//a changer par la vrai colocid
+const collocid = "164cb6e7-b8dd-4391-828d-e5ba7be45039"
 
-const list_coloc = ref([
-  { id: 'd6c34b10-e6dc-472e-8047-da3a89d44eae', username: 'Coloc 1' },
-  { id: 'd6c34b10-e6dc-472e-8048-da3a89d44eae', username: 'Coloc 2' },
-  { id: 'd6c34b10-e6dc-472e-8049-da3a89d44eae', username: 'Coloc 3' },
-])
+const list_coloc = ref<Coloc[]>([]);
 const splitTypes = [
   { value: 0, label: 'split_type0' },
   { value: 1, label: 'split_type1' },
@@ -93,7 +92,7 @@ const splitTypes = [
 ];
 
 const expense = ref<Expense>({
-  colocationId: "d6c34b10-e6dc-472e-8047-da3a89d44eae",
+  colocationId: collocid,
   createdBy: '',
   description: '',
   category: name,
@@ -107,6 +106,30 @@ const expense = ref<Expense>({
   dateOfPayment: date.toISOString(),
 })
 
+onMounted(async () => {
+  console.log('Page affichée pour la première fois');
+  // Appelez votre fonction ici
+  await fetchData();
+  Object.assign(expense.value, {
+    colocationId: collocid,
+    createdBy: '',
+    description: '',
+    category: name,
+    name: '',
+    amount: 0,
+    paidBy: list_coloc.value[0]?.id || '',
+    splitType: 0,
+    splitBetween: [],
+    splitValues: {},
+    splitPercentages: {},
+    dateOfPayment: date.toISOString(),
+  });
+});
+
+const fetchData = async () => {
+  list_coloc.value = await api.getUserbyCollocId(collocid)
+};
+
 const calculateValueFromPercentage = (colocId: string) => {
   const percentage = expense.value.splitPercentages[colocId] || 0;
   return ((percentage / 100) * expense.value.amount).toFixed(2);
@@ -119,7 +142,7 @@ const calculatedSplitValue = computed(() => {
 
 const handleClose = () => {
   Object.assign(expense.value, {
-    colocationId: "d6c34b10-e6dc-472e-8047-da3a89d44eae",
+    colocationId: "164cb6e7-b8dd-4391-828d-e5ba7be45039",
     createdBy: '',
     name: '',
     amount: 0,

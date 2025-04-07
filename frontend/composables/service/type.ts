@@ -8,6 +8,13 @@ export type Reminder = {
     coordZ: number
 };
 
+export type Coloc = {
+    id: string,
+    username: string,
+    email: string,
+    colocationId: string
+}
+
 export type Expense = {
     colocationId: string,
     createdBy: string,
@@ -48,6 +55,6 @@ export type Chore = {
     createdBy: string;
     createdAt: string;
     dueDate: string;
-    isDone: boolean;    
+    isDone: boolean;
 }
 export type Locale = 'fr' | 'en' | 'es' | 'de' | 'zh' | 'ja';

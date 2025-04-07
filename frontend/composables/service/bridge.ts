@@ -1,5 +1,5 @@
 import { json } from "stream/consumers";
-import type { Reminder, User, Colocation, Chore } from "./type";
+import type { Reminder, User, Colocation, Chore, Coloc } from "./type";
 
 export class bridge {
     constructor() {
@@ -182,9 +182,12 @@ export class bridge {
         });
     }
 
-    async getUserbyCollocId(collocid: string) {
+    async getUserbyCollocId(collocid: string): Promise<Coloc[]> {
         return await fetch(this.url + "/api/User/GetByColocationId/" + collocid, {
-            method: 'GET'
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
         }).then(response => {
             if (response.status == 200) {
                 return response.json();
