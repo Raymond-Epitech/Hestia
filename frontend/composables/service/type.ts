@@ -34,6 +34,27 @@ export type Expense = {
     dateOfPayment: string,
 }
 
+export type Expenseget = {
+    id:string,
+    createdAt: string,
+    createdBy: string,
+    colocationId: string,
+    name: string,
+    description: string,
+    amount: number,
+    paidBy: string
+    splitBetween: string[],
+    splitType: number,
+    dateOfPayment: string,
+    category: string,
+}
+
+export type UserBalance = {
+    userId: string,
+    personalBalance: number,
+    lastUpdate: string,
+}
+
 export type User = {
     username: string;
     email: string;
