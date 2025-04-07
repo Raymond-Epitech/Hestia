@@ -49,6 +49,12 @@ export type Expenseget = {
     category: string,
 }
 
+export type ExpenseList = {
+    category: string,
+    totalAmount: number,
+    expenses: Expenseget[]
+} 
+
 export type UserBalance = {
     userId: string,
     personalBalance: number,

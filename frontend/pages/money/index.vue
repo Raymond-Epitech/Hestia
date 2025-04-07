@@ -30,7 +30,8 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type  { ExpenseList } from '~/composables/service/type';
 import { useI18n } from 'vue-i18n';
 
 const { $bridge } = useNuxtApp()
@@ -42,13 +43,21 @@ const global = ref(0);
 const food = ref(0);
 const health = ref(0);
 const partie = ref(0);
-const redirectto = (name) => {
+const expenses_list = ref<ExpenseList[]>([]);
+//a changer par la vrai colocid
+const collocid = "164cb6e7-b8dd-4391-828d-e5ba7be45039"
+const redirectto = (name: string) => {
     console.log(name);
     router.push({ path: '/money/historical', query: { name } });
 }
 onMounted(() => {
-api.getex
+api.getExpenseByColocationId(collocid).then((response) => {
+    expenses_list.value = response;
+    global.value = expenses_list.value.reduce((acc, expense) => acc + expense.totalAmount, 0);
+}).catch((error) => {
+    console.error('Error fetching data:', error);
 })
+});
 </script>
 
 <style scoped>

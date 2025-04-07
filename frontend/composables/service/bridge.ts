@@ -1,5 +1,5 @@
 import { json } from "stream/consumers";
-import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance } from "./type";
+import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList } from "./type";
 
 export class bridge {
     constructor() {
@@ -419,7 +419,7 @@ export class bridge {
 
     // Expense section:
 
-    async getExpenseByColocationId(colocationId:string) {
+    async getExpenseByColocationId(colocationId:string): Promise<ExpenseList[]> {
         return await fetch(`${this.url}/api/Expense/GetByColocationId/${colocationId}`, {
             method: 'GET',
             headers: {
