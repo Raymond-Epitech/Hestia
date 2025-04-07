@@ -21,6 +21,7 @@ const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 const posts = ref([]);
+api.setjwt(useCookie('token').value ?? '');
 
 const getall = async () => {
   const data = await api.getAllReminders(userStore.user.colocationId);

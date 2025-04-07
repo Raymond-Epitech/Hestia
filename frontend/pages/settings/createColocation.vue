@@ -8,7 +8,7 @@
             <h1>
                 <Texte_language source="ColocationAdress" />:
             </h1>
-            <input type="text" class="input" v-model="colocation.adress" required />
+            <input type="text" class="input" v-model="colocation.address" required />
             <button class="button" @click.prevent="handleProceed()">
                 <Texte_language source="CreateColocation" />
             </button>
@@ -19,14 +19,15 @@
 <script setup>
 import { useUserStore } from '~/store/user';
 
-const { $bridge } = useNuxtApp()
-const api = $bridge;
 const userStore = useUserStore();
 const user = userStore.user;
+const { $bridge } = useNuxtApp()
+const api = $bridge;
+api.setjwt(useCookie('token').value ?? '');
 
 const colocation = ref({
     name: '',
-    adress: '',
+    address: '',
     createdBy: user.id,
 })
 const handleProceed = async () => {

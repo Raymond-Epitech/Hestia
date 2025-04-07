@@ -149,6 +149,7 @@ export class bridge {
         return await fetch(this.url + "/api/User", {
             method: 'PUT',
             headers: {
+                'Authorization': 'Bearer ' + this.jwt,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(user)
@@ -205,7 +206,7 @@ export class bridge {
             body: JSON.stringify(colocation)
         }).then(response => {
             if (response.status == 200) {
-                return true;
+                return response.json();
             }
             return false;
         })

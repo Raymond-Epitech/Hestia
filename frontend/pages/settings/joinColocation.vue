@@ -14,21 +14,25 @@
 
 <script setup>
 import { useUserStore } from '~/store/user';
-const { $bridge } = useNuxtApp()
-const api = $bridge;
 
 const userStore = useUserStore();
 const user = userStore.user;
+const { $bridge } = useNuxtApp()
+const api = $bridge;
+api.setjwt(useCookie('token').value ?? '');
 
 const new_data = ref({
     username: user.username,
     email: user.email,
     colocationId: '',
+    pathToProfilePicture: 'exempledetest',
     id: user.id,
 })
 const handleProceed = async () => {
-    await api.updateUser(new_data.value)
-    emit('proceed')
+    const data = await api.updateUser(new_data.value)
+    if (data) {
+        userStore.setColocation(new_data.colocationId);
+    }
 }
 </script>
 
