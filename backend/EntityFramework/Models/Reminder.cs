@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EntityFramework.Models;
 
-public class Reminder : IColocationEntity
+public class Reminder
 {
     [Key]
     public Guid Id { get; set; }

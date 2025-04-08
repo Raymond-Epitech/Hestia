@@ -2,6 +2,7 @@
 using Business.Mappers;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Enums;
 using Shared.Exceptions;
@@ -13,11 +14,10 @@ using Shared.Models.Update;
 namespace Business.Services
 {
     public class ExpenseService(ILogger<ColocationService> _logger,
-        IRepository<Expense> _repository,
+        IRepository<Expense> _expenseRepository,
         IRepository<Entry> _entryRepository,
-        ITempRepository _tempRepository,
-        IColocationRepository<Expense> _colocationIdRepository,
-        IColocationRepository<Entry> _colocationIdEntryRepository) : IExpenseService
+        IRepository<SplitBetween> _splitbetweenRepository,
+        IRepository<Balance> _balanceRepository) : IExpenseService
     {
         /// <summary>
         /// Get all expenses
@@ -27,7 +27,7 @@ namespace Business.Services
         /// <exception cref="ContextException">An error happened during the retriving of expenses</exception>
         public async Task<List<OutputFormatForExpenses>> GetAllExpensesAsync(Guid colocationId)
         {
-            var expenses = await _colocationIdRepository.GetAllByColocationIdAsTypeAsync(colocationId, e => new ExpenseOutput
+            var expenses = await _expenseRepository.Query().Where(e => e.ColocationId == colocationId).Select(e => new ExpenseOutput
             {
                 Id = e.Id,
                 ColocationId = e.ColocationId,
@@ -37,10 +37,10 @@ namespace Business.Services
                 Amount = e.Amount,
                 PaidBy = e.PaidBy,
                 SplitType = Enum.Parse<SplitTypeEnum>(e.SplitType),
-                SplitBetween = e.SplitBetweens.Select(e => e.UserId).ToList(),
+                SplitBetween = e.SplitBetweens.AsEnumerable().ToDictionary(k => k.UserId, v => v.Amount),
                 DateOfPayment = e.DateOfPayment,
                 Category = e.Category
-            });
+            }).ToListAsync();
 
             _logger.LogInformation("Succes : All expenses were retrived from db");
 
@@ -55,7 +55,7 @@ namespace Business.Services
         /// <exception cref="ContextException">An error occured during the retrival of the expense</exception>
         public async Task<ExpenseOutput> GetExpenseAsync(Guid id)
         {
-            var expense = await _repository.GetByIdAsTypeAsync(id, e => new ExpenseOutput
+            var expense = await _expenseRepository.Query().Where(e => e.Id == id).Select(e => new ExpenseOutput
             {
                 Id = e.Id,
                 ColocationId = e.ColocationId,
@@ -65,10 +65,10 @@ namespace Business.Services
                 Amount = e.Amount,
                 PaidBy = e.PaidBy,
                 SplitType = Enum.Parse<SplitTypeEnum>(e.SplitType),
-                SplitBetween = e.SplitBetweens.Select(e => e.UserId).ToList(),
+                SplitBetween = e.SplitBetweens.AsEnumerable().ToDictionary(k => k.UserId, v => v.Amount),
                 DateOfPayment = e.DateOfPayment,
                 Category = e.Category
-            });
+            }).FirstOrDefaultAsync();
                 
             if (expense == null)
             {
@@ -167,14 +167,31 @@ namespace Business.Services
             return result;
         }
 
+        public async Task CreateSplitBetween(InputExpenseDTO input, Dictionary<Guid, decimal> splitedAmounts)
+        {
+            List<SplitBetween> splitBetween = null!;
+
+            splitBetween = input.SplitBetween!.Select(x => new SplitBetween
+            {
+                ExpenseId = input.Id,
+                UserId = x,
+                Amount = splitedAmounts[x]
+            }).ToList();
+
+            await _splitbetweenRepository.AddRangeAsync(splitBetween);
+        }
+
         /// <summary>
         /// Add the entries to the database and update the balance with the amount splited evenly
         /// </summary>
         /// <param name="input">The input of AddExpense</param>
-        private async Task AddEntriesAndUpdateBalance(InputExpenseDTO input, Guid expenseId, Dictionary<Guid, decimal> splitedAmounts)
+        private async Task AddEntriesAndUpdateBalance(InputExpenseDTO input, Dictionary<Guid, decimal> splitedAmounts)
         {
             var entryList = new List<Entry>();
-            var balances = await _tempRepository.GetBalanceFromUserIdListAsync(input.SplitBetween!);
+            var balances = await _balanceRepository.Query()
+                .Where(b => input.SplitBetween!.Contains(b.UserId))
+                .AsNoTracking()
+                .ToListAsync();
 
             if (balances.Count() != input.SplitBetween!.Count())
             {
@@ -189,7 +206,7 @@ namespace Business.Services
                 {
                     UserId = input.SplitBetween[i],
                     ColocationId = input.ColocationId,
-                    ExpenseId = expenseId,
+                    ExpenseId = input.Id,
                     Amount = -splitedAmounts[input.SplitBetween[i]]
                 };
                 entryList.Add(newEntry);
@@ -202,7 +219,7 @@ namespace Business.Services
             var paiment = new Entry
             {
                 UserId = input.PaidBy,
-                ExpenseId = expenseId,
+                ExpenseId = input.Id,
                 Amount = input.Amount,
                 ColocationId = input.ColocationId,
             };
@@ -213,17 +230,18 @@ namespace Business.Services
 
             _logger.LogInformation($"Succes : Entry for user {paiment.UserId} added");
 
-            _tempRepository.UpdateBalanceRange(balances);
+            await CreateSplitBetween(input, splitedAmounts);
+
+            _balanceRepository.UpdateRange(balances);
+
             await _entryRepository.AddRangeAsync(entryList);
             
             _logger.LogInformation($"Succes : All entries added to the db");
             _logger.LogInformation($"Succes : All balances updated");
         }
         
-        private async Task CreateEntriesAndUpdateBalance(InputExpenseDTO input, Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction, Expense expense)
+        private async Task CreateEntriesAndUpdateBalance(InputExpenseDTO input)
         {
-            List<SplitBetween> splitBetween = null!;
-
             switch (input.SplitType)
             {
                 case SplitTypeEnum.ByValue:
@@ -236,13 +254,9 @@ namespace Business.Services
 
                     input.SplitBetween = input.SplitValues.Keys.ToList();
 
-                    await AddEntriesAndUpdateBalance(input, expense.Id, input.SplitValues);
+                    await AddEntriesAndUpdateBalance(input, input.SplitValues);
 
-                    splitBetween = input.SplitValues.Select(x => new SplitBetween
-                    {
-                        ExpenseId = expense.Id,
-                        UserId = x.Key
-                    }).ToList();
+                    
                     break;
 
                 case SplitTypeEnum.ByPercentage:
@@ -255,13 +269,8 @@ namespace Business.Services
 
                     input.SplitBetween = input.SplitPercentages.Keys.ToList();
 
-                    await AddEntriesAndUpdateBalance(input, expense.Id, SplitAmountByPercentage(input.Amount, input.SplitPercentages));
+                    await AddEntriesAndUpdateBalance(input, SplitAmountByPercentage(input.Amount, input.SplitPercentages));
 
-                    splitBetween = input.SplitPercentages.Select(x => new SplitBetween
-                    {
-                        ExpenseId = expense.Id,
-                        UserId = x.Key
-                    }).ToList();
                     break;
 
                 default:
@@ -272,17 +281,10 @@ namespace Business.Services
 
                     _logger.LogInformation("Succes : Expense is split evenly");
 
-                    await AddEntriesAndUpdateBalance(input, expense.Id, SplitAmountEvenly(input.Amount, input.SplitBetween));
+                    await AddEntriesAndUpdateBalance(input, SplitAmountEvenly(input.Amount, input.SplitBetween));
 
-                    splitBetween = input.SplitBetween.Select(x => new SplitBetween
-                    {
-                        ExpenseId = expense.Id,
-                        UserId = x
-                    }).ToList();
                     break;
             }
-
-            await _tempRepository.AddSplitBetweenRangeAsync(splitBetween);
 
             _logger.LogInformation("Succes : All data added to the db");
         }
@@ -312,12 +314,13 @@ namespace Business.Services
                 DateOfPayment = input.DateOfPayment
             };
 
-            using (var transaction = await _repository.BeginTransactionAsync())
+            using (var transaction = await _expenseRepository.BeginTransactionAsync())
             {
                 try
                 {
                     await CreateEntriesAndUpdateBalance(new InputExpenseDTO
                     {
+                        Id = expense.Id,
                         Amount = input.Amount,
                         ColocationId = input.ColocationId,
                         PaidBy = input.PaidBy,
@@ -325,10 +328,10 @@ namespace Business.Services
                         SplitPercentages = input.SplitPercentages,
                         SplitValues = input.SplitValues,
                         SplitType = input.SplitType
-                    }, transaction, expense);
+                    });
 
-                    await _repository.AddAsync(expense);
-                    await _repository.SaveChangesAsync();
+                    await _expenseRepository.AddAsync(expense);
+                    await _expenseRepository.SaveChangesAsync();
 
                     transaction.Commit();
 
@@ -357,12 +360,12 @@ namespace Business.Services
         /// <returns>The Guid of the updated expense</returns>
         public async Task<Guid> UpdateExpenseAsync(ExpenseUpdate input)
         {
-            var expense = await _repository.GetByIdAsync(input.Id);
+            var expense = await _expenseRepository.GetByIdAsync(input.Id);
 
             if (expense is null)
                 throw new NotFoundException($"The expense with id {input.Id} was not found");
 
-            using (var transaction = await _repository.BeginTransactionAsync())
+            using (var transaction = await _expenseRepository.BeginTransactionAsync())
             {
                 try
                 {
@@ -375,11 +378,20 @@ namespace Business.Services
                     expense.Category = input.Category;
                     expense.DateOfPayment = input.DateOfPayment;
 
-                    await _tempRepository.DeleteRangeEntriesByExpenseId(expense.Id);
-                    await _tempRepository.DeleteRangeSplitBetweenExpenseId(expense.Id);
+                    var entries = await _entryRepository.Query()
+                        .Where(e => e.ExpenseId == expense.Id)
+                        .ToListAsync();
+
+                    var splitbetween = await _splitbetweenRepository.Query()
+                        .Where(e => e.ExpenseId == expense.Id)
+                        .ToListAsync();
+
+                    _ = _entryRepository.DeleteRangeAsync(entries);
+                    _ = _splitbetweenRepository.DeleteRangeAsync(splitbetween);
 
                     await CreateEntriesAndUpdateBalance(new InputExpenseDTO
                     {
+                        Id = input.Id,
                         Amount = input.Amount,
                         PaidBy = input.PaidBy,
                         SplitBetween = input.SplitBetween,
@@ -387,11 +399,11 @@ namespace Business.Services
                         SplitValues = input.SplitValues,
                         SplitType = input.SplitType,
                         ColocationId = input.ColocationId
-                    }, transaction, expense);
+                    });
 
-                    _repository.Update(expense);
+                    _expenseRepository.Update(expense);
 
-                    await _repository.SaveChangesAsync();
+                    await _expenseRepository.SaveChangesAsync();
 
                     await RecalculateBalanceAsync(input.ColocationId);
 
@@ -422,8 +434,8 @@ namespace Business.Services
         /// <returns>The Guid of the deleted expense</returns>
         public async Task<Guid> DeleteExpenseAsync(Guid id)
         {
-            await _repository.DeleteFromIdAsync(id);
-            await _repository.SaveChangesAsync();
+            await _expenseRepository.DeleteFromIdAsync(id);
+            await _expenseRepository.SaveChangesAsync();
             _logger.LogInformation($"Succes : Expense with id {id} deleted");
             return id;
         }
@@ -436,7 +448,15 @@ namespace Business.Services
         /// <exception cref="ContextException">Error in db</exception>
         public async Task<List<BalanceOutput>> GetAllBalanceAsync(Guid ColocationId)
         {
-            var balances = await _tempRepository.GetAllBalancesOutputFromColocationIdAsync(ColocationId);
+            var balances = await _balanceRepository.Query()
+                .Where(e => e.User.ColocationId == ColocationId)
+                .Select(e => new BalanceOutput
+                {
+                    UserId = e.UserId,
+                    PersonalBalance = e.PersonalBalance,
+                    LastUpdate = e.LastUpdate,
+                })
+                .ToListAsync();
                 
             _logger.LogInformation($"Succes : All balances from the colocation {ColocationId} found");
                 
@@ -445,8 +465,12 @@ namespace Business.Services
 
         public async Task<List<BalanceOutput>> RecalculateBalanceAsync(Guid colocationId)
         {
-            var entries = await _colocationIdEntryRepository.GetAllByColocationIdAsync(colocationId);
-            var balances = await _tempRepository.GetAllBalancesFromColocationIdListAsync(colocationId);
+            var entries = await _entryRepository.Query()
+                .Where(e => e.ColocationId == colocationId)
+                .ToListAsync();
+            var balances = await _balanceRepository.Query()
+                .Where(b => b.User.ColocationId == colocationId)
+                .ToListAsync();
 
             if (entries.Count == 0 || balances.Count == 0)
             {
@@ -458,8 +482,8 @@ namespace Business.Services
 
             balances.Select(b => b.PersonalBalance = entries.Where(e => e.UserId == b.UserId).Select(x => x.Amount).Sum()).ToList();
 
-            _tempRepository.UpdateBalanceRange(balances);
-            await _repository.SaveChangesAsync();
+            _balanceRepository.UpdateRange(balances);
+            await _expenseRepository.SaveChangesAsync();
                 
             _logger.LogInformation($"Succes : All balances updated");
 

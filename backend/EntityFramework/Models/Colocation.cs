@@ -2,7 +2,7 @@
 
 namespace EntityFramework.Models
 {
-    public class Colocation : IEntity
+    public class Colocation
     {
         [Key]
         public Guid Id { get; set; }

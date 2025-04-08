@@ -16,5 +16,8 @@ namespace EntityFramework.Models
 
         [ForeignKey("UserId")]
         public User User { get; set; } = null!;
+
+        [Required]
+        public decimal Amount { get; set; }
     }
 }

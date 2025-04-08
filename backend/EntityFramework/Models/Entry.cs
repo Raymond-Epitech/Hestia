@@ -3,15 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EntityFramework.Models
 {
-    public class Entry : IColocationEntity
+    public class Entry
     {
         [Key]
         public Guid Id { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-        public Guid CreatedBy { get; set; } = Guid.Empty;
 
         [Required]
         public Guid ColocationId { get; set; }

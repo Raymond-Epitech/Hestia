@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EntityFramework.Models;
 
-public class Item : IEntity
+public class Item
 {
     [Key]
     public Guid Id { get; set; }

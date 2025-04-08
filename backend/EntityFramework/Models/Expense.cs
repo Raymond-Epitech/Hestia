@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EntityFramework.Models;
 
-public class Expense : IColocationEntity
+public class Expense
 {
     [Key]
     public Guid Id { get; set; }

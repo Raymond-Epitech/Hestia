@@ -1,18 +1,24 @@
 ﻿using EntityFramework.Context;
-using EntityFramework.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
-using System.Linq.Expressions;
 
 namespace EntityFramework.Repositories;
 
 public class Repository<T>(
     HestiaContext context,
     ILogger<Repository<T>> logger
-    ) : IRepository<T> where T : class, IEntity
+    ) : IRepository<T> where T : class
 {
+
+    public IQueryable<T> Query(bool asNoTracking = true)
+    {
+        logger.LogInformation($"Querying entities of type {typeof(T).Name}");
+        var query = context.Set<T>().AsQueryable();
+        return asNoTracking ? query.AsNoTracking() : query;
+    }
+
     public async Task<List<T>> GetAll(Guid colocationId)
     {
         logger.LogInformation($"Getting all entities of type {typeof(T).Name} for colocation {colocationId}");
@@ -21,36 +27,10 @@ public class Repository<T>(
                             .ToListAsync();
     }
 
-    public async Task<List<T>> GetAllByList(List<Guid> idList)
-    {
-        logger.LogInformation($"Getting all entities of type {typeof(T).Name} from list");
-        return await context.Set<T>()
-                            .AsNoTracking()
-                            .Where(x => idList.Contains(x.Id))
-                            .ToListAsync();
-    }
-
-    public async Task<List<TResult>> GetAllAsTypeAsync<TResult>(Expression<Func<T, TResult>> selector)
-    {
-        return await context.Set<T>()
-                            .AsNoTracking()
-                            .Select(selector)
-                            .ToListAsync();
-    }
-
     public async Task<T?> GetByIdAsync(Guid id)
     {
         logger.LogInformation($"Getting entity of type {typeof(T).Name} with id {id}");
         return await context.Set<T>().FindAsync(id);
-    }
-
-    public async Task<TResult?> GetByIdAsTypeAsync<TResult>(Guid id, Expression<Func<T, TResult>> selector)
-    {
-        return await context.Set<T>()
-                            .AsNoTracking()
-                            .Where(x => x.Id == id)
-                            .Select(selector)
-                            .FirstOrDefaultAsync();
     }
 
     public async Task<T> AddAsync(T entity)
@@ -148,6 +128,21 @@ public class Repository<T>(
             throw new ContextException("Error during the changing of information, see log for better details");
         }
     }
+
+    public int DeleteRangeAsync(IEnumerable<T> entities)
+    {
+        try
+        {
+            logger.LogInformation($"Deleting entities of type {typeof(T).Name}");
+            context.Set<T>().RemoveRange(entities);
+            return entities.Count();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, $"Error deleting entities of type {typeof(T).Name}");
+            throw new ContextException("Error during the changing of information, see log for better details");
+        }
+    }   
 
     public async Task SaveChangesAsync()
     {
