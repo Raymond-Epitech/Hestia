@@ -12,5 +12,11 @@
     "Accessibility": "Accessibility",
     "Rules": "Rules of life",
     "Confidentiality": "Confidentiality",
-    "Informations": "Informations"
+    "Informations": "Informations",
+    "ColocationMenu": "First of all, you need to be part of a flatshare:",
+    "CreateColocation": "Create",
+    "ColocationName": "Flatshare Name",
+    "ColocationAdress": "Flatshare Address",
+    "JoinColocation": "Join",
+    "ColocationID": "Flatshare ID"
 }

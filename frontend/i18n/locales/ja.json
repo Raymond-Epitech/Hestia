@@ -12,5 +12,11 @@
     "Accessibility": "アクセシビリティ",
     "Rules": "生活のルール",
     "Confidentiality": "機密保持",
-    "Informations": "情報"
+    "Informations": "情報",
+    "ColocationMenu": "まず最初に、コロケーションに参加する必要があります:",
+    "CreateColocation": "作成",
+    "ColocationName": "コロケーションの名前",
+    "ColocationAdress": "コロケーションの住所",
+    "JoinColocation": "参加する",
+    "ColocationID": "コロケーションID"
 }

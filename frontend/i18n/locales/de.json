@@ -12,5 +12,11 @@
     "Accessibility": "Barrierefreiheit",
     "Rules": "Lebensregeln",
     "Confidentiality": "Vertraulichkeit",
-    "Informations": "Informationen"
+    "Informations": "Informationen",
+    "ColocationMenu": "Zuallererst müssen Sie eine Wohngemeinschaft gründen:",
+    "CreateColocation": "Erstelle",
+    "ColocationName": "Name der Wohngemeinschaft",
+    "ColocationAdress": "Adresse der Wohngemeinschaft",
+    "JoinColocation": "Beitreten",
+    "ColocationID": "Mitbewohner-ID"
 }

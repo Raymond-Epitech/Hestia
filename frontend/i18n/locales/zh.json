@@ -12,5 +12,11 @@
     "Accessibility": "无障碍",
     "Rules": "生活规则",
     "Confidentiality": "保密性",
-    "Informations": "信息"
+    "Informations": "信息",
+    "ColocationMenu": "首先，您需要成为主机代管的一部分：",
+    "CreateColocation": "创建",
+    "ColocationName": "主机代管名称",
+    "ColocationAdress": "主机代管地址",
+    "JoinColocation": "加入",
+    "ColocationID": "主机代管 ID"
 }

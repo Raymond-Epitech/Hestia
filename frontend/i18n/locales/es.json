@@ -12,5 +12,11 @@
     "Accessibility": "Accesibilidad",
     "Rules": "Reglas de vida",
     "Confidentiality": "Confidencialidad",
-    "Informations": "Informaciones"
+    "Informations": "Informaciones",
+    "ColocationMenu": "En primer lugar, debe formar parte de una colocación:",
+    "CreateColocation": "Crear",
+    "ColocationName": "Nombre de la colocación",
+    "ColocationAdress": "Dirección de la colocación",
+    "JoinColocation": "Únase a",
+    "ColocationID": "ID de la colocación"
 }
