@@ -14,7 +14,7 @@
                 {{ global }} €
             </p>
         </Rectangle>
-        <Rectangle color="#FFF973" id="rec" class="center regularize-text mini_rec">
+        <Rectangle color="#FFF973" id="rec" class="center regularize-text mini_rec" :onClick="() => redirectto('balance')">
             <Texte_language source="regularize" />
         </Rectangle>
     </div>
@@ -39,6 +39,10 @@ const collocid = "164cb6e7-b8dd-4391-828d-e5ba7be45039"
 
 const redirectto = (name: string) => {
     console.log(name);
+    if (name === 'balance') {
+        router.push({ path: '/money/balance' });
+        return;
+    }
     router.push({ path: '/money/historical', query: { name } });
 }
 
