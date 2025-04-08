@@ -25,5 +25,6 @@
   "split_type": "Tipo de intercambio",
   "split_type0": "Compartir igual",
   "split_type1": "Compartir por cantidad",
-  "split_type2": "Porcentaje"
+  "split_type2": "Porcentaje",
+  "paidby": "Pagado por"
 }

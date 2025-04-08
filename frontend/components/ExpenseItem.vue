@@ -5,7 +5,7 @@
         <span class="expense-amount">{{ expense.amount }} €</span>
       </div>
       <div class="payer">
-        <span>Payé par {{ paidBy }}</span>
+        <span><TexteLanguage source="paidby" /> {{ paidBy }}</span>
       </div>
     </div>
   </template>

@@ -25,5 +25,6 @@
   "split_type": "Art der Freigabe",
   "split_type0": "Gleiches Teilen",
   "split_type1": "Teilen nach Betrag",
-  "split_type2": "Prozentsatz"
+  "split_type2": "Prozentsatz",
+  "paidby": "Bezahlt von"
 }

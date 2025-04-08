@@ -25,5 +25,6 @@
   "split_type": "Type of sharing",
   "split_type0": "Equal sharing",
   "split_type1": "Sharing by amount",
-  "split_type2": "Percentage"
+  "split_type2": "Percentage",
+  "paidby": "Paid by"
 }

@@ -1,9 +1,10 @@
 <template>
   <div class="background">
     <div>
-      <h1>
+      <h1 class="header">
         <img src="/return.png" alt="Return" width="30" height="30" @click="$router.back()"/>
         <Texte_language source="header_add_expense" />
+        <p></p>
       </h1>
     </div>
     <form method="post" action="">
@@ -240,5 +241,12 @@ input[type="number"] {
   align-items: center;
   justify-content: space-between;
   width: 100%
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 </style>

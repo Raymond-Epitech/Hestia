@@ -1,5 +1,5 @@
 <template>
-    <p class="text">{{ $t(source) }}</p> 
+    <span class="text">{{ $t(source) }}</span> 
 </template>
 
 <script setup>
