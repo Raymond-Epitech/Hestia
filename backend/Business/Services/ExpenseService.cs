@@ -27,7 +27,12 @@ namespace Business.Services
         /// <exception cref="ContextException">An error happened during the retriving of expenses</exception>
         public async Task<List<OutputFormatForExpenses>> GetAllExpensesAsync(Guid colocationId)
         {
-            var expenses = await _expenseRepository.Query().Where(e => e.ColocationId == colocationId).Select(e => new ExpenseOutput
+            var expensesRaw = await _expenseRepository.Query()
+                .Where(e => e.ColocationId == colocationId)
+                .Include(e => e.SplitBetweens)
+                .ToListAsync();
+
+            var expenses = expensesRaw.Select(e => new ExpenseOutput
             {
                 Id = e.Id,
                 ColocationId = e.ColocationId,
@@ -40,7 +45,7 @@ namespace Business.Services
                 SplitBetween = e.SplitBetweens.AsEnumerable().ToDictionary(k => k.UserId, v => v.Amount),
                 DateOfPayment = e.DateOfPayment,
                 Category = e.Category
-            }).ToListAsync();
+            }).ToList();
 
             _logger.LogInformation("Succes : All expenses were retrived from db");
 
@@ -55,25 +60,30 @@ namespace Business.Services
         /// <exception cref="ContextException">An error occured during the retrival of the expense</exception>
         public async Task<ExpenseOutput> GetExpenseAsync(Guid id)
         {
-            var expense = await _expenseRepository.Query().Where(e => e.Id == id).Select(e => new ExpenseOutput
-            {
-                Id = e.Id,
-                ColocationId = e.ColocationId,
-                CreatedBy = e.CreatedBy,
-                Name = e.Name,
-                Description = e.Description,
-                Amount = e.Amount,
-                PaidBy = e.PaidBy,
-                SplitType = Enum.Parse<SplitTypeEnum>(e.SplitType),
-                SplitBetween = e.SplitBetweens.AsEnumerable().ToDictionary(k => k.UserId, v => v.Amount),
-                DateOfPayment = e.DateOfPayment,
-                Category = e.Category
-            }).FirstOrDefaultAsync();
-                
-            if (expense == null)
+            var expenseRaw = await _expenseRepository.Query()
+                .Where(e => e.Id == id)
+                .Include(e => e.SplitBetweens)
+                .FirstOrDefaultAsync();
+
+            if (expenseRaw == null)
             {
                 throw new NotFoundException($"The expense with id {id} was not found");
             }
+
+            var expense = new ExpenseOutput
+            {
+                Id = expenseRaw.Id,
+                ColocationId = expenseRaw.ColocationId,
+                CreatedBy = expenseRaw.CreatedBy,
+                Name = expenseRaw.Name,
+                Description = expenseRaw.Description,
+                Amount = expenseRaw.Amount,
+                PaidBy = expenseRaw.PaidBy,
+                SplitType = Enum.Parse<SplitTypeEnum>(expenseRaw.SplitType),
+                SplitBetween = expenseRaw.SplitBetweens.AsEnumerable().ToDictionary(k => k.UserId, v => v.Amount),
+                DateOfPayment = expenseRaw.DateOfPayment,
+                Category = expenseRaw.Category
+            };
                 
             _logger.LogInformation($"Succes : Expense with id {id} was retrived from db");
                 

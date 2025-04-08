@@ -2,6 +2,7 @@
 using Business.Mappers;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
 using Shared.Models.Input;
@@ -11,8 +12,7 @@ using Shared.Models.Update;
 namespace Business.Services;
 
 public class ReminderService(ILogger<ReminderService> _logger,
-    IRepository<Reminder> _repository,
-    IColocationRepository<Reminder> _colocationIdRepository) : IReminderService
+    IRepository<Reminder> _reminderRepository) : IReminderService
 {
     /// <summary>
     /// Get all reminders
@@ -21,17 +21,20 @@ public class ReminderService(ILogger<ReminderService> _logger,
     /// <exception cref="ContextException">An error has occured while retriving the reminders from db</exception>
     public async Task<List<ReminderOutput>> GetAllRemindersAsync(Guid collocationId)
     {
-        var reminders = await _colocationIdRepository.GetAllByColocationIdAsTypeAsync(collocationId, r => new ReminderOutput
-        {
-            Id = r.Id,
-            Content = r.Content,
-            Color = r.Color,
-            CreatedBy = r.CreatedBy,
-            CreatedAt = r.CreatedAt,
-            CoordX = r.CoordX,
-            CoordY = r.CoordY,
-            CoordZ = r.CoordZ
-        });
+        var reminders = await _reminderRepository.Query()
+            .Where(r => r.ColocationId == collocationId)
+            .Select(r => new ReminderOutput
+            {
+                Id = r.Id,
+                Content = r.Content,
+                Color = r.Color,
+                CreatedBy = r.CreatedBy,
+                CreatedAt = r.CreatedAt,
+                CoordX = r.CoordX,
+                CoordY = r.CoordY,
+                CoordZ = r.CoordZ
+            })
+            .ToListAsync();
             
         _logger.LogInformation("Succes : All reminders found");
             
@@ -47,17 +50,20 @@ public class ReminderService(ILogger<ReminderService> _logger,
     /// <exception cref="ContextException">An error has occured while retriving reminder from db</exception>
     public async Task<ReminderOutput> GetReminderAsync(Guid id)
     {
-        var reminder = await _repository.GetByIdAsTypeAsync(id, r => new ReminderOutput
-        {
-            Id = r.Id,
-            Content = r.Content,
-            Color = r.Color,
-            CreatedBy = r.CreatedBy,
-            CreatedAt = r.CreatedAt,
-            CoordX = r.CoordX,
-            CoordY = r.CoordY,
-            CoordZ = r.CoordZ
-        });
+        var reminder = await _reminderRepository.Query()
+            .Where(r => r.Id == id)
+            .Select(r => new ReminderOutput
+            {
+                Id = r.Id,
+                Content = r.Content,
+                Color = r.Color,
+                CreatedBy = r.CreatedBy,
+                CreatedAt = r.CreatedAt,
+                CoordX = r.CoordX,
+                CoordY = r.CoordY,
+                CoordZ = r.CoordZ
+            })
+            .FirstOrDefaultAsync();
 
         if (reminder == null)
         {
@@ -78,8 +84,8 @@ public class ReminderService(ILogger<ReminderService> _logger,
     {
         var reminder = input.ToDb();
             
-        await _repository.AddAsync(reminder);
-        await _repository.SaveChangesAsync();
+        await _reminderRepository.AddAsync(reminder);
+        await _reminderRepository.SaveChangesAsync();
 
         _logger.LogInformation("Succes : Reminder added");
             
@@ -95,7 +101,7 @@ public class ReminderService(ILogger<ReminderService> _logger,
     /// <exception cref="ContextException">An error has occured while adding reminder from db</exception>
     public async Task<Guid> UpdateReminderAsync(ReminderUpdate input)
     {
-        var reminder = await _repository.GetByIdAsync(input.Id);
+        var reminder = await _reminderRepository.GetByIdAsync(input.Id);
             
         if (reminder == null)
         {
@@ -103,8 +109,8 @@ public class ReminderService(ILogger<ReminderService> _logger,
         }
 
         reminder.UpdateFromInput(input);
-        _repository.Update(reminder);
-        await _repository.SaveChangesAsync();
+        _reminderRepository.Update(reminder);
+        await _reminderRepository.SaveChangesAsync();
 
         _logger.LogInformation("Succes : Reminder updated");
 
@@ -120,7 +126,9 @@ public class ReminderService(ILogger<ReminderService> _logger,
     public async Task<int> UpdateRangeReminderAsync(List<ReminderUpdate> inputs)
     {
         var idsToMatch = inputs.Select(x => x.Id).ToList();
-        var reminders = await _repository.GetAllByList(idsToMatch);
+        var reminders = await _reminderRepository.Query()
+            .Where(r => idsToMatch.Contains(r .Id))
+            .ToListAsync();
             
         if (reminders.Count == 0)
         {
@@ -134,7 +142,7 @@ public class ReminderService(ILogger<ReminderService> _logger,
             throw new NotFoundException($"Reminders {String.Join(", ", notfounds)} was/were not found");
         }
 
-        using (var transaction = await _repository.BeginTransactionAsync())
+        using (var transaction = await _reminderRepository.BeginTransactionAsync())
         {
             try
             {
@@ -152,7 +160,7 @@ public class ReminderService(ILogger<ReminderService> _logger,
                     reminder.UpdateFromInput(input);
                 }
                     
-                await _repository.SaveChangesAsync();
+                await _reminderRepository.SaveChangesAsync();
                 transaction.Commit();
 
                 _logger.LogInformation("Transaction commit");
@@ -185,8 +193,8 @@ public class ReminderService(ILogger<ReminderService> _logger,
     /// <exception cref="ContextException">An error has occured while adding reminder from db</exception>
     public async Task<Guid> DeleteReminderAsync(Guid id)
     {
-        _repository.DeleteFromIdAsync(id);
-        await _repository.SaveChangesAsync();
+        await _reminderRepository.DeleteFromIdAsync(id);
+        await _reminderRepository.SaveChangesAsync();
 
         _logger.LogInformation("Succes : Reminder deleted");
 

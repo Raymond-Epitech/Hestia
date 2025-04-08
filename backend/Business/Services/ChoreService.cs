@@ -14,7 +14,9 @@ namespace Business.Services;
 public class ChoreService(
     ILogger<ChoreService> _logger,
     IRepository<Chore> _choreRepository,
-    IRepository<ChoreMessage> _choreMessageRepository) : IChoreService
+    IRepository<ChoreMessage> _choreMessageRepository,
+    IRepository<User> _userRepository,
+    IRepository<ChoreEnrollment> _choreEnrollmentRepository) : IChoreService
 {
     /// <summary>
     /// Get all Chores
@@ -199,7 +201,16 @@ public class ChoreService(
     /// <exception cref="ContextException">An error occurred while adding the user to the db</exception>
     public async Task<List<UserOutput>> GetUserFromChore(Guid choreId)
     {
-        var users = await _tempRepository.GetEnrolledUserOutputFromChoreIdAsync(choreId);
+        var users = await _userRepository.Query()
+            .Where(u => u.ChoreEnrollments.Any(ce => ce.ChoreId == choreId))
+            .Select(u => new UserOutput
+            {
+                Id = u.Id,
+                Username = u.Username,
+                Email = u.Email,
+                ColocationId = u.ColocationId
+            })
+            .ToListAsync();
 
         _logger.LogInformation("Succes : Users found");
 
@@ -214,7 +225,19 @@ public class ChoreService(
     /// <exception cref="ContextException">An error occurred while adding the user to the db</exception>
     public async Task<List<ChoreOutput>> GetChoreFromUser(Guid userId)
     {
-        var chores = await _tempRepository.GetEnrolledChoreOutputFromUserIdAsync(userId);
+        var chores = await _choreRepository.Query()
+            .Where(c => c.ChoreEnrollments.Any(ce => ce.UserId == userId))
+            .Select(c => new ChoreOutput
+            {
+                Id = c.Id,
+                CreatedBy = c.CreatedBy,
+                CreatedAt = c.CreatedAt,
+                DueDate = c.DueDate,
+                Title = c.Title,
+                Description = c.Description,
+                IsDone = c.IsDone
+            })
+            .ToListAsync();
 
         _logger.LogInformation("Succes : Chores found");
 
@@ -235,8 +258,8 @@ public class ChoreService(
             ChoreId = ChoreId
         };
 
-        await _tempRepository.AddChoreEnrollmentAsync(enroll);
-        await _repository.SaveChangesAsync();
+        await _choreEnrollmentRepository.AddAsync(enroll);
+        await _choreRepository.SaveChangesAsync();
 
         _logger.LogInformation("Succes : User enrolled to the chore");
 
@@ -252,8 +275,10 @@ public class ChoreService(
     /// <exception cref="ContextException">An error occurred while adding the user to the db</exception>
     public async Task<Guid> UnenrollToChore(Guid userId, Guid choreId)
     {
-        await _tempRepository.RemoveChoreEnrollmentAsync(userId, choreId);
-        await _repository.SaveChangesAsync();
+        await _choreEnrollmentRepository.Query()
+            .Where(ce => ce.UserId == userId && ce.ChoreId == choreId)
+            .ExecuteDeleteAsync();
+        await _choreRepository.SaveChangesAsync();
 
         _logger.LogInformation("Succes : User unenrolled to the chore");
 
