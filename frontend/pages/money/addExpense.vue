@@ -76,13 +76,15 @@
 import type { Expense, Coloc } from '~/composables/service/type';
 
 const route = useRoute();
+const router = useRouter();
 const name = route.query.name as string;
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 const date = new Date();
-//a changer par la vrai colocid
+//a changer par les vrais valeur
 const collocid = "164cb6e7-b8dd-4391-828d-e5ba7be45039"
+const myid = "939da183-4c1e-4be6-8c64-fa4c012c7a02"
 
 const list_coloc = ref<Coloc[]>([]);
 const splitTypes = [
@@ -112,7 +114,7 @@ onMounted(async () => {
   await fetchData();
   Object.assign(expense.value, {
     colocationId: collocid,
-    createdBy: '',
+    createdBy: myid,
     description: '',
     category: name,
     name: '',
@@ -140,24 +142,14 @@ const calculatedSplitValue = computed(() => {
   return numPeople > 0 ? (expense.value.amount / numPeople).toFixed(2) : 0;
 });
 
-const handleClose = () => {
-  Object.assign(expense.value, {
-    colocationId: "164cb6e7-b8dd-4391-828d-e5ba7be45039",
-    createdBy: '',
-    name: '',
-    amount: 0,
-    paidBy: '',
-    splitType: 0,
-    splitBetween: [],
-    splitValues: {},
-    splitPercentages: {},
-    dateOfPayment: new Date(),
-  });
-  close()
-}
-
 const handleProceed = async () => {
   console.log(expense.value);
+  api.addExpense(expense.value).then(() => {
+    console.log('Expense added successfully');
+    router.back()
+  }).catch((error) => {
+    console.error('Error adding expense:', error);
+  });
 }
 
 const filterNumericInput = (event: Event) => {

@@ -5,15 +5,18 @@
         <span class="expense-amount">{{ expense.amount }} €</span>
       </div>
       <div class="payer">
-        <span>Payé par {{ expense.paidBy }}</span>
+        <span>Payé par {{ paidBy }}</span>
       </div>
     </div>
   </template>
   
-  <script setup>
-  const props = defineProps({
-    expense: Object
-  });
+  <script setup lang="ts">
+  import type { Expenseget } from '~/composables/service/type';
+
+  const props = defineProps<{
+  expense: Expenseget;
+  paidBy: string;
+  }>();
   </script>
   
   <style scoped>

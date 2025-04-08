@@ -2,6 +2,7 @@
     <div class="background">
         <div class="header">
             <img src="/return.png" alt="Return" width="30" height="30" @click="$router.back()"/>
+            <h1>{{ name }}</h1>
             <div class="square">
                 <Rectangle color="#FFF973" id="add" :onClick="() => redirectto()">
                     <img src="/plus.png" alt="Return" width="30" height="30" />
@@ -9,28 +10,44 @@
             </div>
         </div>
         <div>
-            <ExpenseItem v-for="expense in expenses_list" :key="expense.id" :expense="expense" />
+            <ExpenseItem v-for="expense in expenses_list" :key="expense.id" :expense="expense" :paidBy="getUsername(expense.paidBy)" />
         </div>
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type { Expenseget, Coloc } from '~/composables/service/type';
+
 const route = useRoute();
 const router = useRouter();
 const name = route.query.name; 
-const expenses_list = ref([]);
+const expenses_list = ref<Expenseget[]>([]);
+const list_coloc = ref<Coloc[]>([]);
 const { $bridge } = useNuxtApp()
 const api = $bridge;
-
 api.setjwt(useCookie('token').value ?? '');
-//en attendant de pouvoir récupérer les données
-expenses_list.value = [
-    {"name": "food", "amount": 100, "paidBy": "Tibo"},
-    {"name": "sucrerie", "amount": 200, "paidBy": "sugarDaddy"},
-    {"name": "miamiam", "amount": 300, "paidBy": "Benji"},
-    {"name": "viande", "amount": 600, "paidBy": "Adé"},
-    {"name": "bon shit sa mere", "amount": 420.50, "paidBy": "Raimon"}
-];
+//a changer par la vrai colocid
+const collocid = "164cb6e7-b8dd-4391-828d-e5ba7be45039"
+
+onMounted(() => {
+    api.getExpenseByColocationId(collocid).then((response) => {
+        const matchingCategory = response.find(expenseList => expenseList.category === name);
+        expenses_list.value = matchingCategory ? matchingCategory.expenses : [];
+    }).catch((error) => {
+        console.error('Error fetching data:', error);
+    })
+    api.getUserbyCollocId(collocid).then((response) => {
+        list_coloc.value = response;
+    }).catch((error) => {
+        console.error('Error fetching data:', error);
+    })
+});
+
+const getUsername = (id: string): string => {
+  const user = list_coloc.value.find(coloc => coloc.id === id);
+  return user ? user.username : 'Unknown';
+};
+
 const redirectto = () => {
     console.log(name);
     router.push({ path: '/money/addExpense', query: { name } });
