@@ -4,6 +4,7 @@ namespace Shared.Models.DTO
 {
     public class InputExpenseDTO
     {
+        public Guid Id { get; set; }
         public SplitTypeEnum SplitType { get; set; } = SplitTypeEnum.Evenly;
         public List<Guid>? SplitBetween { get; set; } = null;
         public Dictionary<Guid, decimal>? SplitValues { get; set; } = null;

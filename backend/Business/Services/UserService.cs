@@ -3,6 +3,7 @@ using Business.Jwt;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
 using Google.Apis.Auth;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
 using Shared.Models.Input;
@@ -14,8 +15,8 @@ using System.Security.Claims;
 namespace Business.Services;
 
 public class UserService(ILogger<UserService> _logger,
-    IRepository<User> _repository,
-    ITempRepository _tempRepository,
+    IRepository<User> _userRepository,
+    IRepository<Balance> _balanceRepository,
     IJwtService jwtService) : IUserService
 {
     /// <summary>
@@ -26,7 +27,16 @@ public class UserService(ILogger<UserService> _logger,
     /// <exception cref="ContextException">An error occurred while getting all chores from the db</exception>
     public async Task<List<UserOutput>> GetAllUserAsync(Guid collocationId)
     {
-        var users = await _tempRepository.GetAllByColocationIdAsTypeAsync(collocationId);
+        var users = await _userRepository.Query()
+            .Where(u => u.ColocationId == collocationId)
+            .Select(u => new UserOutput
+            {
+                Id = u.Id,
+                Username = u.Username,
+                Email = u.Email,
+                ColocationId = u.ColocationId
+            })
+            .ToListAsync();
 
         _logger.LogInformation($"Succes : All users from the collocation {collocationId} found");
 
@@ -42,13 +52,16 @@ public class UserService(ILogger<UserService> _logger,
     /// <exception cref="NotFoundException">The user was not found</exception>
     public async Task<UserOutput> GetUserAsync(Guid id)
     {
-        var user = await _repository.GetByIdAsTypeAsync(id, u => new UserOutput
-        {
-            Id = u.Id,
-            Username = u.Username,
-            Email = u.Email,
-            ColocationId = u.ColocationId
-        });
+        var user = await _userRepository.Query()
+            .Where(u => u.Id == id)
+            .Select(u => new UserOutput
+            {
+                Id = u.Id,
+                Username = u.Username,
+                Email = u.Email,
+                ColocationId = u.ColocationId
+            })
+            .FirstOrDefaultAsync();
 
         if (user == null)
             throw new NotFoundException("User not found");
@@ -66,7 +79,7 @@ public class UserService(ILogger<UserService> _logger,
     /// <exception cref="ContextException">An error occurred while getting all chores from the db</exception>
     public async Task<Guid> UpdateUserAsync(UserUpdate user)
     {
-        var userToUpdate = await _repository.GetByIdAsync(user.Id);
+        var userToUpdate = await _userRepository.GetByIdAsync(user.Id);
 
         if (userToUpdate == null)
             throw new NotFoundException($"User {user.Id} not found");
@@ -75,7 +88,7 @@ public class UserService(ILogger<UserService> _logger,
         userToUpdate.ColocationId = user.ColocationId;
         userToUpdate.PathToProfilePicture = user.PathToProfilePicture;
 
-        await _repository.SaveChangesAsync();
+        await _userRepository.SaveChangesAsync();
 
         _logger.LogInformation($"Succes : User {user.Id} updated");
         
@@ -90,9 +103,9 @@ public class UserService(ILogger<UserService> _logger,
     /// <exception cref="ContextException">An error occurred while getting all chores from the db</exception>
     public async Task<Guid> DeleteUserAsync(Guid id)
     {
-        await _repository.DeleteFromIdAsync(id);
+        await _userRepository.DeleteFromIdAsync(id);
 
-        await _repository.SaveChangesAsync();
+        await _userRepository.SaveChangesAsync();
 
         _logger.LogInformation("Succes : User deleted");
 
@@ -135,7 +148,7 @@ public class UserService(ILogger<UserService> _logger,
             new Claim("picture", validPayload.Picture ?? ""),
         };
 
-        if (await _tempRepository.AnyExistingUserByEmail(validPayload.Email))
+        if (_userRepository.Query().Any(u => u.Email == validPayload.Email))
         {
             throw new AlreadyExistException("This user already exist with this email");
         }
@@ -158,10 +171,10 @@ public class UserService(ILogger<UserService> _logger,
             LastUpdate = DateTime.Now.ToUniversalTime()
         };
 
-        await _tempRepository.AddBalanceAsync(newBalance);
-        await _repository.AddAsync(newUser);
+        await _balanceRepository.AddAsync(newBalance);
+        await _userRepository.AddAsync(newUser);
 
-        await _repository.SaveChangesAsync();
+        await _userRepository.SaveChangesAsync();
 
         _logger.LogInformation($"Succes : User {newUser.Id} added");
 
@@ -216,7 +229,9 @@ public class UserService(ILogger<UserService> _logger,
             new Claim("picture", validPayload.Picture ?? ""),
         };
 
-        var user = await _tempRepository.GetUserByEmailAsync(validPayload.Email);
+        var user = await _userRepository.Query()
+            .Where(u => u.Email == validPayload.Email)
+            .FirstOrDefaultAsync();
 
         if (user is null)
         {
@@ -225,8 +240,8 @@ public class UserService(ILogger<UserService> _logger,
 
         user.LastConnection = DateTime.UtcNow;
 
-        _repository.Update(user);
-        await _repository.SaveChangesAsync();
+        _userRepository.Update(user);
+        await _userRepository.SaveChangesAsync();
 
         _logger.LogInformation($"Succes : User {user.Id}'s last connexion updated");
 

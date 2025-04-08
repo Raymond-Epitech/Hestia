@@ -9,6 +9,9 @@ namespace Shared.Models.Update
         public Guid Id { get; set; }
 
         [Required]
+        public Guid ColocationId { get; set; }
+
+        [Required]
         public string Name { get; set; } = null!;
 
         public string? Description { get; set; } = null;

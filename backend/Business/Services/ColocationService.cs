@@ -1,6 +1,7 @@
 ﻿using Business.Interfaces;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
 using Shared.Models.Input;
@@ -10,7 +11,7 @@ using Shared.Models.Update;
 namespace Business.Services
 {
     public class ColocationService(ILogger<ColocationService> _logger,
-        IRepository<Colocation> _repository,
+        IRepository<Colocation> _colocationRepository,
         IRepository<User> _userRepository
         ) : IColocationService
     {
@@ -21,13 +22,15 @@ namespace Business.Services
         /// <exception cref="ContextException">An error has occured while retriving the collocation from db</exception>
         public async Task<List<ColocationOutput>> GetAllColocations()
         {
-            var colocations = await _repository.GetAllAsTypeAsync(c => new ColocationOutput
-            {
-                Id = c.Id,
-                Name = c.Name,
-                Address = c.Address,
-                Colocataires = c.Users.Select(u => u.Id).ToList()
-            });
+            var colocations = await _colocationRepository.Query()
+                .Select(c => new ColocationOutput
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Address = c.Address,
+                    Colocataires = c.Users.Select(u => u.Id).ToList()
+                })
+                .ToListAsync();
 
             _logger.LogInformation("Succes : All collocation were retrived from db");
                 
@@ -43,13 +46,16 @@ namespace Business.Services
         /// <exception cref="ContextException">An error has occured while retriving the colocation from db</exception>
         public async Task<ColocationOutput> GetColocation(Guid id)
         {
-            var colocation = await _repository.GetByIdAsTypeAsync(id, c => new ColocationOutput
-            {
-                Id = c.Id,
-                Name = c.Name,
-                Address = c.Address,
-                Colocataires = c.Users.Select(u => u.Id).ToList()
-            });
+            var colocation = await _colocationRepository.Query()
+                .Where(c => c.Id == id)
+                .Select(c => new ColocationOutput
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Address = c.Address,
+                    Colocataires = c.Users.Select(u => u.Id).ToList()
+                })
+                .FirstOrDefaultAsync();
 
             if (colocation == null)
             {
@@ -93,8 +99,8 @@ namespace Business.Services
                 _logger.LogInformation($"Succes : User {user.Id} added to colocation {newColocation.Id}");
             }
 
-            await _repository.AddAsync(newColocation);
-            await _repository.SaveChangesAsync();
+            await _colocationRepository.AddAsync(newColocation);
+            await _colocationRepository.SaveChangesAsync();
 
             _logger.LogInformation($"Succes : Colocation {newColocation.Id} added");
 
@@ -110,7 +116,7 @@ namespace Business.Services
         /// <exception cref="ContextException">An error has occured while retriving the collocation from db</exception>
         public async Task<Guid> UpdateColocation(ColocationUpdate colocation)
         {
-            var colocationToUpdate = await _repository.GetByIdAsync(colocation.Id);
+            var colocationToUpdate = await _colocationRepository.GetByIdAsync(colocation.Id);
                 
             if (colocationToUpdate == null)
             {
@@ -120,8 +126,8 @@ namespace Business.Services
             colocationToUpdate.Name = colocation.Name;
             colocationToUpdate.Address = colocation.Address;
 
-            _repository.Update(colocationToUpdate);
-            await _repository.SaveChangesAsync();
+            _colocationRepository.Update(colocationToUpdate);
+            await _colocationRepository.SaveChangesAsync();
 
             _logger.LogInformation($"Succes : Colocation {colocation.Id} updated");
 
@@ -137,8 +143,8 @@ namespace Business.Services
         /// <exception cref="ContextException">An error has occured while retriving the colocation from db</exception>
         public async Task<Guid> DeleteColocation(Guid colocationId)
         {
-            await _repository.DeleteFromIdAsync(colocationId);
-            await _repository.SaveChangesAsync();
+            await _colocationRepository.DeleteFromIdAsync(colocationId);
+            await _colocationRepository.SaveChangesAsync();
                 
             _logger.LogInformation($"Succes : Colocation {colocationId} deleted");
 

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EntityFramework.Models
 {
-    public class Chore : IColocationEntity
+    public class Chore
     {
         [Key]
         public Guid Id { get; set; }

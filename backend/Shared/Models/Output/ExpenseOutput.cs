@@ -12,7 +12,7 @@ namespace Shared.Models.Output
         public string? Description { get; set; }
         public decimal Amount { get; set; }
         public Guid PaidBy { get; set; }
-        public List<Guid> SplitBetween { get; set; } = new List<Guid>();
+        public Dictionary<Guid, decimal> SplitBetween { get; set; } = new Dictionary<Guid, decimal>();
         public SplitTypeEnum SplitType { get; set; }
         public DateTime DateOfPayment { get; set; }
         public string Category { get; set; } = null!;

@@ -28,9 +28,6 @@ namespace WebApi.Configuration
 
             // Repositories
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped(typeof(IColocationRepository<>), typeof(ColocationRepository<>));
-            services.AddScoped<ITempRepository, TempRepository>();
-
 
             // Others
             services.AddHttpContextAccessor();

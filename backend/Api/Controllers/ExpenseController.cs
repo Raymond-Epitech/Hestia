@@ -61,12 +61,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType (StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Guid>> UpdateExpense(Guid colocationId, ExpenseUpdate input)
+        public async Task<ActionResult<Guid>> UpdateExpense(ExpenseUpdate input)
         {
             if (input.Id == Guid.Empty)
                 throw new InvalidEntityException("Id is required");
 
-            await expenseService.UpdateExpenseAsync(colocationId, input);
+            await expenseService.UpdateExpenseAsync(input);
 
             return Ok();
         }

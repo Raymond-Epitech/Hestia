@@ -9,7 +9,7 @@ namespace Business.Interfaces
         Task<List<OutputFormatForExpenses>> GetAllExpensesAsync(Guid ColocationId);
         Task<ExpenseOutput> GetExpenseAsync(Guid id);
         Task<Guid> AddExpenseAsync(ExpenseInput input);
-        Task<Guid> UpdateExpenseAsync(Guid colocationId, ExpenseUpdate input);
+        Task<Guid> UpdateExpenseAsync(ExpenseUpdate input);
         Task<Guid> DeleteExpenseAsync(Guid id);
         Task<List<BalanceOutput>> GetAllBalanceAsync(Guid colocationId);
         Task<List<BalanceOutput>> RecalculateBalanceAsync(Guid colocationId);
