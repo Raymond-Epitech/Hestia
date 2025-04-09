@@ -495,7 +495,7 @@ export class bridge {
         });
     }
 
-    async getBalance(colocationId:string): Promise<UserBalance[]> {
+    async getBalance(colocationId:string): Promise<UserBalance> {
         return await fetch(`${this.url}/api/Expense/GetBalance/${colocationId}`, {
             method: 'GET',
             headers: {

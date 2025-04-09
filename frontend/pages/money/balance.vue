@@ -25,7 +25,7 @@ import { useUserStore } from '~/store/user';
 
 const userStore = useUserStore();
 const user = userStore.user;
-const list_balance = ref<UserBalance[]>([]);
+const list_balance = ref<UserBalance>();
 const list_coloc = ref<Coloc[]>([]);
 const { $bridge } = useNuxtApp()
 const api = $bridge;
@@ -45,8 +45,7 @@ api.getUserbyCollocId(collocid).then((response) => {
 })
 
 const getBalance = (id: string): number => {
-    const balance = list_balance.value.find(userBalance => userBalance.userId === id);
-    return balance ? balance.personalBalance : 0;
+    return list_balance.value?.[id] ?? 0;
 };
 </script>
 

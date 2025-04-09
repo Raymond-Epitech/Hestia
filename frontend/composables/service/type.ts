@@ -58,9 +58,7 @@ export type ExpenseList = {
 } 
 
 export type UserBalance = {
-    userId: string,
-    personalBalance: number,
-    lastUpdate: string,
+    [key: string]: number
 }
 
 export type User = {
