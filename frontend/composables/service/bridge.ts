@@ -1,5 +1,5 @@
 import { json } from "stream/consumers";
-import type { Reminder, User, Colocation, Chore } from "./type";
+import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList } from "./type";
 
 export class bridge {
     constructor() {
@@ -183,9 +183,12 @@ export class bridge {
         });
     }
 
-    async getUserbyCollocId(collocid: string) {
+    async getUserbyCollocId(collocid: string): Promise<Coloc[]> {
         return await fetch(this.url + "/api/User/GetByColocationId/" + collocid, {
-            method: 'GET'
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
         }).then(response => {
             if (response.status == 200) {
                 return response.json();
@@ -408,6 +411,110 @@ export class bridge {
     async getUserEnrollChore(choreId: string) {
         return await fetch(`${this.url}/api/Chore/Enroll/ByChore?ChoreId=${choreId}`, {
             method: 'GET',
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        })
+    }
+
+    // Expense section:
+
+    async getExpenseByColocationId(colocationId:string): Promise<ExpenseList[]> {
+        return await fetch(`${this.url}/api/Expense/GetByColocationId/${colocationId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        })
+    }
+
+    async getExpenseById(id:string): Promise<Expenseget> {
+        return await fetch(`${this.url}/api/Expense/GetById/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return {} as Expenseget;
+        })
+    }
+
+    async addExpense(data: Expense) {
+        return await fetch(`${this.url}/api/Expense`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async updateExpense(data:Expense) {
+        return await fetch(`${this.url}/api/Expense/${data.colocationId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async deleteExpense(id:string) {
+        return await fetch(`${this.url}/api/Expense/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async getBalance(colocationId:string): Promise<UserBalance[]> {
+        return await fetch(`${this.url}/api/Expense/GetBalance/${colocationId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        })
+    }
+
+    async updateBalance(colocationId:string): Promise<UserBalance[]> {
+        return await fetch(`${this.url}/api/Expense/CalculBalance/${colocationId}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
         }).then(response => {
             if (response.status == 200) {
                 return response.json();

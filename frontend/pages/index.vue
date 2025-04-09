@@ -1,7 +1,6 @@
 <template>
   <div>
-    <AddPostModal v-model="isModalOpen" @proceed="getall()">
-    </AddPostModal>
+    <AddPostModal v-model="isModalOpen" @proceed="getall()"/>
     <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
       <img src="~/public/plus.png" class="plus">
     </button>
@@ -20,6 +19,8 @@ const openModal = () => (isModalOpen.value = true)
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+api.setjwt(useCookie('token').value ?? '');
+
 const posts = ref([]);
 api.setjwt(useCookie('token').value ?? '');
 
