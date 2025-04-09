@@ -1,7 +1,7 @@
 <template>
     <div class="background">
         <div class="header">
-            <img src="/return.png" alt="Return" width="30" height="30" @click="$router.back()"/>
+            <img src="/return.png" alt="Return" width="30" height="30" @click="$router.back()" />
             <h1>{{ name }}</h1>
             <div class="square">
                 <Rectangle color="#FFF973" id="add" :onClick="() => redirectto()">
@@ -10,24 +10,27 @@
             </div>
         </div>
         <div>
-            <ExpenseItem v-for="expense in expenses_list" :key="expense.id" :expense="expense" :paidBy="getUsername(expense.paidBy)" />
+            <ExpenseItem v-for="expense in expenses_list" :key="expense.id" :expense="expense"
+                :paidBy="getUsername(expense.paidBy)" />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import type { Expenseget, Coloc } from '~/composables/service/type';
+import { useUserStore } from '~/store/user';
 
+const userStore = useUserStore();
+const user = userStore.user;
 const route = useRoute();
 const router = useRouter();
-const name = route.query.name; 
+const name = route.query.name;
 const expenses_list = ref<Expenseget[]>([]);
 const list_coloc = ref<Coloc[]>([]);
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
-//a changer par la vrai colocid
-const collocid = "164cb6e7-b8dd-4391-828d-e5ba7be45039"
+const collocid = user.colocationId;
 
 api.getExpenseByColocationId(collocid).then((response) => {
     const matchingCategory = response.find(expenseList => expenseList.category === name);
@@ -42,8 +45,8 @@ api.getUserbyCollocId(collocid).then((response) => {
 })
 
 const getUsername = (id: string): string => {
-  const user = list_coloc.value.find(coloc => coloc.id === id);
-  return user ? user.username : 'Unknown';
+    const user = list_coloc.value.find(coloc => coloc.id === id);
+    return user ? user.username : 'Unknown';
 };
 
 const redirectto = () => {

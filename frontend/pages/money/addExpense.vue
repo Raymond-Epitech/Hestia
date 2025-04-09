@@ -67,7 +67,9 @@
         </div>
       </div>
       <div class="modal-buttons">
-        <button class="button button-proceed" @click.prevent="handleProceed"><Texte_language source="poster" /></button>
+        <button class="button button-proceed" @click.prevent="handleProceed">
+          <Texte_language source="poster" />
+        </button>
       </div>
     </form>
   </div>
@@ -75,7 +77,10 @@
 
 <script setup lang="ts">
 import type { Expense, Coloc } from '~/composables/service/type';
+import { useUserStore } from '~/store/user';
 
+const userStore = useUserStore();
+const user = userStore.user;
 const route = useRoute();
 const router = useRouter();
 const name = route.query.name as string;
@@ -83,9 +88,8 @@ const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 const date = new Date();
-//a changer par les vrais valeur
-const collocid = "164cb6e7-b8dd-4391-828d-e5ba7be45039"
-const myid = "939da183-4c1e-4be6-8c64-fa4c012c7a02"
+const collocid = user.colocationId
+const myid = user.id;
 
 const list_coloc = ref<Coloc[]>([]);
 const splitTypes = [

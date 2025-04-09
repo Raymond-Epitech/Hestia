@@ -1,9 +1,8 @@
 <template>
     <div class="center-container">
-        <Rectangle v-for="expense in expenses_list"
-            :key="expense.category"
-        color="#85AD7B" id="rec" class="center mini_rec" :onClick="() => redirectto(expense.category)">
-            <p>{{expense.category}}</p>
+        <Rectangle v-for="expense in expenses_list" :key="expense.category" color="#85AD7B" id="rec"
+            class="center mini_rec" :onClick="() => redirectto(expense.category)">
+            <p>{{ expense.category }}</p>
             <p class="regularize-text">
                 {{ expense.totalAmount }} €
             </p>
@@ -14,7 +13,8 @@
                 {{ global }} €
             </p>
         </Rectangle>
-        <Rectangle color="#FFF973" id="rec" class="center regularize-text mini_rec" :onClick="() => redirectto('balance')">
+        <Rectangle color="#FFF973" id="rec" class="center regularize-text mini_rec"
+            :onClick="() => redirectto('balance')">
             <Texte_language source="regularize" />
         </Rectangle>
     </div>
@@ -23,7 +23,10 @@
 <script setup lang="ts">
 import type { ExpenseList } from '~/composables/service/type';
 import { useI18n } from 'vue-i18n';
+import { useUserStore } from '~/store/user';
 
+const userStore = useUserStore();
+const user = userStore.user;
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
@@ -34,8 +37,7 @@ const food = ref(0);
 const health = ref(0);
 const partie = ref(0);
 const expenses_list = ref<ExpenseList[]>([]);
-//a changer par la vrai colocid
-const collocid = "164cb6e7-b8dd-4391-828d-e5ba7be45039"
+const collocid = user.colocationId
 
 const redirectto = (name: string) => {
     console.log(name);

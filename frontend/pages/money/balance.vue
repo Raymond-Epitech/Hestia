@@ -2,11 +2,14 @@
     <div class="background">
         <div class="header">
             <img src="/return.png" alt="Return" width="30" height="30" @click="$router.back()" />
-            <h1><Texte_language source="regularize" /></h1>
+            <h1>
+                <Texte_language source="regularize" />
+            </h1>
             <p></p>
         </div>
         <div class="center-container">
-            <Rectangle v-for="coloc in list_coloc" :key="coloc.id" :color="getBalance(coloc.id) < 0 ? '#FF6A61' : '#85AD7B'" class="center">
+            <Rectangle v-for="coloc in list_coloc" :key="coloc.id"
+                :color="getBalance(coloc.id) < 0 ? '#FF6A61' : '#85AD7B'" class="center">
                 <h3>{{ coloc.username }}</h3>
                 <h4>
                     {{ getBalance(coloc.id) }} €
@@ -18,15 +21,17 @@
 
 <script setup lang="ts">
 import type { Coloc, UserBalance } from '~/composables/service/type';
+import { useUserStore } from '~/store/user';
 
+const userStore = useUserStore();
+const user = userStore.user;
 const list_balance = ref<UserBalance[]>([]);
 const list_coloc = ref<Coloc[]>([]);
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
-//a changer par la vrai colocid
-const collocid = "164cb6e7-b8dd-4391-828d-e5ba7be45039"
-const myid = "939da183-4c1e-4be6-8c64-fa4c012c7a02"
+const collocid = user.colocationId
+const myid = user.id
 
 api.getBalance(collocid).then((response) => {
     list_balance.value = response;
@@ -79,5 +84,4 @@ const getBalance = (id: string): number => {
     align-items: center;
     text-align: center;
 }
-
 </style>
