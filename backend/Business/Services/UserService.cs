@@ -16,7 +16,6 @@ namespace Business.Services;
 
 public class UserService(ILogger<UserService> _logger,
     IRepository<User> _userRepository,
-    IRepository<Balance> _balanceRepository,
     IJwtService jwtService) : IUserService
 {
     /// <summary>
@@ -164,14 +163,6 @@ public class UserService(ILogger<UserService> _logger,
             PathToProfilePicture = "default.jpg"
         };
 
-        var newBalance = new Balance
-        {
-            UserId = newUser.Id,
-            PersonalBalance = 0,
-            LastUpdate = DateTime.Now.ToUniversalTime()
-        };
-
-        await _balanceRepository.AddAsync(newBalance);
         await _userRepository.AddAsync(newUser);
 
         await _userRepository.SaveChangesAsync();

@@ -55,7 +55,7 @@ namespace Api.Controllers
             return Ok(await expenseService.AddExpenseAsync(input));
         }
 
-        [HttpPut("{colocationId}")]
+        [HttpPut]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
@@ -89,25 +89,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<BalanceOutput>>> GetBalance(Guid colocationId)
+        public async Task<ActionResult<Dictionary<Guid, decimal>>> GetBalance(Guid colocationId)
         {
             if (colocationId == Guid.Empty)
                 throw new InvalidEntityException("ColocationId is required");
 
             return await expenseService.GetAllBalanceAsync(colocationId);
-        }
-
-        [HttpPut("CalculBalance/{colocationId}")]
-        [Authorize]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<BalanceOutput>>> RecalculBalance(Guid colocationId)
-        {
-            if (colocationId == Guid.Empty)
-                throw new InvalidEntityException("ColocationId is required");
-
-            return await expenseService.RecalculateBalanceAsync(colocationId);
         }
     }
 }

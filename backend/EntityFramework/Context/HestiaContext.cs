@@ -13,7 +13,6 @@ namespace EntityFramework.Context
         public virtual DbSet<ChoreEnrollment> ChoreEnrollments { get; set; } = null!;
         public virtual DbSet<Expense> Expenses { get; set; } = null!;
         public virtual DbSet<Entry> Entries { get; set; } = null!;
-        public virtual DbSet<Balance> Balances { get; set; } = null!;
         public virtual DbSet<SplitBetween> SplitBetweens { get; set; } = null!;
 
         public HestiaContext(DbContextOptions<HestiaContext> options) : base(options) { }
@@ -62,11 +61,6 @@ namespace EntityFramework.Context
             modelBuilder.Entity<User>(c =>
             {
                 c.HasMany(x => x.ChoreEnrollments)
-                    .WithOne(x => x.User)
-                    .HasForeignKey(x => x.UserId)
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                c.HasMany(x => x.Balances)
                     .WithOne(x => x.User)
                     .HasForeignKey(x => x.UserId)
                     .OnDelete(DeleteBehavior.Cascade);

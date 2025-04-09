@@ -5,16 +5,6 @@ namespace Business.Mappers
 {
     public static class ExpenseMapper
     {
-        public static BalanceOutput ToOutput(this Balance balance)
-        {
-            return new BalanceOutput
-            {
-                UserId = balance.UserId,
-                PersonalBalance = balance.PersonalBalance,
-                LastUpdate = balance.LastUpdate
-            };
-        }
-
         public static List<OutputFormatForExpenses> ToOutputFormat(this List<ExpenseOutput> expenses)
         {
             return expenses.GroupBy(e => e.Category)

@@ -5,9 +5,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shared.Exceptions;
-using Shared.Models.Input;
 using Shared.Models.Output;
-using Shared.Models.Update;
 
 namespace Tests.Hestia.Service;
 
@@ -15,25 +13,25 @@ public class ChoreServiceTests
 {
     private readonly ChoreService _choreService;
     private readonly Mock<ILogger<ChoreService>> _loggerMock;
-    private readonly Mock<IColocationRepository<Chore>> _colocationIdRepositoryMock;
-    private readonly Mock<IRepository<Chore>> _repositoryMock;
+    private readonly Mock<IRepository<Chore>> _choreRepositoryMock;
     private readonly Mock<IRepository<ChoreMessage>> _choreMessageRepositoryMock;
-    private readonly Mock<ITempRepository> _tempRepositoryMock;
+    private readonly Mock<IRepository<User>> _userRepositoryMock;
+    private readonly Mock<IRepository<ChoreEnrollment>> _choreEnrollmentRepositoryMock;
 
     public ChoreServiceTests()
     {
         _loggerMock = new Mock<ILogger<ChoreService>>();
-        _colocationIdRepositoryMock = new Mock<IColocationRepository<Chore>>();
-        _repositoryMock = new Mock<IRepository<Chore>>();
+        _choreRepositoryMock = new Mock<IRepository<Chore>>();
         _choreMessageRepositoryMock = new Mock<IRepository<ChoreMessage>>();
-        _tempRepositoryMock = new Mock<ITempRepository>();
+        _userRepositoryMock = new Mock<IRepository<User>>();
+        _choreEnrollmentRepositoryMock = new Mock<IRepository<ChoreEnrollment>>();
 
         _choreService = new ChoreService(
             _loggerMock.Object,
-            _colocationIdRepositoryMock.Object,
-            _repositoryMock.Object,
+            _choreRepositoryMock.Object,
             _choreMessageRepositoryMock.Object,
-            _tempRepositoryMock.Object
+            _userRepositoryMock.Object,
+            _choreEnrollmentRepositoryMock.Object
         );
     }
 
@@ -48,6 +46,7 @@ public class ChoreServiceTests
             new ChoreOutput {
                 Id = Guid.NewGuid(),
                 Title = "Test Chore",
+                Description = "Test Description",
                 CreatedBy = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow,
                 DueDate = DateTime.UtcNow.AddDays(2),
@@ -55,16 +54,22 @@ public class ChoreServiceTests
             }
         };
 
-        _colocationIdRepositoryMock.Setup(repo => repo.GetAllByColocationIdAsTypeAsync(colocationId, c => new ChoreOutput
+        var mockData = new List<Chore>
         {
-            Id = c.Id,
-            CreatedBy = c.CreatedBy,
-            CreatedAt = c.CreatedAt,
-            DueDate = c.DueDate,
-            Title = c.Title,
-            Description = c.Description,
-            IsDone = c.IsDone
-        })).ReturnsAsync(expectedChores);
+            new Chore
+            {
+                Id = expectedChores.First().Id,
+                CreatedBy = expectedChores.First().CreatedBy,
+                CreatedAt = expectedChores.First().CreatedAt,
+                Title = expectedChores.First().Title,
+                Description = expectedChores.First().Description,
+                DueDate = expectedChores.First().DueDate,
+                IsDone = expectedChores.First().IsDone,
+                ColocationId = colocationId
+            }}
+        .AsQueryable();
+
+        //_choreRepositoryMock.SetupGet(repo => repo.Query).Returns(mockData);
 
         var result = await _choreService.GetAllChoresAsync(colocationId);
 
@@ -88,7 +93,7 @@ public class ChoreServiceTests
             IsDone = false
         };
 
-        _repositoryMock.Setup(repo => repo.GetByIdAsTypeAsync(choreId, user => new ChoreOutput
+        /*_repositoryMock.Setup(repo => repo.GetByIdAsTypeAsync(choreId, user => new ChoreOutput
         {
             Id = user.Id,
             CreatedBy = user.CreatedBy,
@@ -97,7 +102,7 @@ public class ChoreServiceTests
             Title = user.Title,
             Description = user.Description,
             IsDone = user.IsDone
-        })).ReturnsAsync(expectedChore);
+        })).ReturnsAsync(expectedChore);*/
 
         var result = await _choreService.GetChoreAsync(choreId);
 
@@ -109,7 +114,7 @@ public class ChoreServiceTests
     public async Task GetChoreAsync_ShouldThrowNotFound_WhenChoreDoesNotExist()
     {
         var choreId = Guid.NewGuid();
-        _repositoryMock.Setup(repo => repo.GetByIdAsTypeAsync(choreId, u => null as ChoreOutput)).ReturnsAsync(null as ChoreOutput);
+        //_repositoryMock.Setup(repo => repo.GetByIdAsTypeAsync(choreId, u => null as ChoreOutput)).ReturnsAsync(null as ChoreOutput);
 
         await Assert.ThrowsAsync<NotFoundException>(() => _choreService.GetChoreAsync(choreId));
     }

@@ -46,7 +46,7 @@ public class ExpenseControllerTests
                         Description = "TestDescription1",
                         Amount = 10,
                         PaidBy = Guid.NewGuid(),
-                        SplitBetween = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
+                        SplitBetween = new Dictionary<Guid, decimal> { { Guid.NewGuid(), 50 }, { Guid.NewGuid(), 30 } },
                         DateOfPayment = DateTime.Now,
                     },
                     new ExpenseOutput
@@ -59,7 +59,7 @@ public class ExpenseControllerTests
                         Description = "TestDescription2",
                         Amount = 10,
                         PaidBy = Guid.NewGuid(),
-                        SplitBetween = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
+                        SplitBetween = new Dictionary<Guid, decimal> { { Guid.NewGuid(), 50 }, { Guid.NewGuid(), 30 } },
                         DateOfPayment = DateTime.Now,
                     }
                 }
@@ -111,7 +111,7 @@ public class ExpenseControllerTests
             Description = "TestDescription1",
             Amount = 10,
             PaidBy = Guid.NewGuid(),
-            SplitBetween = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
+            SplitBetween = new Dictionary<Guid, decimal> { { Guid.NewGuid(), 50 }, { Guid.NewGuid(), 30 } },
             DateOfPayment = DateTime.Now,
         };
 
