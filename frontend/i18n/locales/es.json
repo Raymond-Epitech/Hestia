@@ -26,5 +26,9 @@
   "split_type0": "Compartir igual",
   "split_type1": "Compartir por cantidad",
   "split_type2": "Porcentaje",
-  "paidby": "Pagado por"
+  "paidby": "Pagado por",
+  "header_modify_expense": "Editar el gasto",
+  "poster": "Póster",
+  "modify": "Modificador",
+  "delete": "BORRAR"
 }

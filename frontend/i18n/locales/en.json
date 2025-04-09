@@ -26,5 +26,9 @@
   "split_type0": "Equal sharing",
   "split_type1": "Sharing by amount",
   "split_type2": "Percentage",
-  "paidby": "Paid by"
+  "paidby": "Paid by",
+  "header_modify_expense": "Edit the expense",
+  "poster": "Poster",
+  "modify": "Modify",
+  "delete": "DELETE"
 }

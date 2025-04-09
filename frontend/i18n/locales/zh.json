@@ -26,5 +26,9 @@
   "split_type0": "平等分享",
   "split_type1": "按金额分享",
   "split_type2": "百分比",
-  "paidby": "支付"
+  "paidby": "支付",
+  "header_modify_expense": "编辑费用",
+  "poster": "海报",
+  "modify": "修饰符",
+  "delete": "删除"
 }

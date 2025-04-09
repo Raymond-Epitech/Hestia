@@ -3,7 +3,7 @@
     <div>
       <h1 class="header">
         <img src="/return.png" alt="Return" width="30" height="30" @click="$router.back()" />
-        <Texte_language source="header_add_expense" />
+        <Texte_language source="header_modify_expense" />
         <p></p>
       </h1>
     </div>
@@ -67,7 +67,8 @@
         </div>
       </div>
       <div class="modal-buttons">
-        <button class="button button-proceed" @click.prevent="handleProceed"><Texte_language source="poster" /></button>
+        <button class="button button-proceed" @click.prevent="handleProceed"><Texte_language source="modify" /></button>
+        <button class="button button-proceed" @click.prevent="handleProceed"><Texte_language source="delete" /></button>
       </div>
     </form>
   </div>
@@ -78,7 +79,7 @@ import type { Expense, Coloc } from '~/composables/service/type';
 
 const route = useRoute();
 const router = useRouter();
-const name = route.query.name as string;
+const id = route.query.id as string;
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
@@ -98,7 +99,7 @@ const expense = ref<Expense>({
   colocationId: collocid,
   createdBy: '',
   description: '',
-  category: name,
+  category: '',
   name: '',
   amount: 0,
   paidBy: list_coloc.value[0]?.id || '',

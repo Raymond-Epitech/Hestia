@@ -26,5 +26,9 @@
   "split_type0": "平等な共有",
   "split_type1": "金額で共有",
   "split_type2": "パーセンテージ",
-  "paidby": "によって支払われます"
+  "paidby": "によって支払われます",
+  "header_modify_expense": "費用を編集します",
+  "poster": "ポスター",
+  "modify": "修飾子",
+  "delete": "消去"
 }

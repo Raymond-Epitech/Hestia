@@ -26,5 +26,9 @@
   "split_type0": "Gleiches Teilen",
   "split_type1": "Teilen nach Betrag",
   "split_type2": "Prozentsatz",
-  "paidby": "Bezahlt von"
+  "paidby": "Bezahlt von",
+  "header_modify_expense": "Bearbeiten Sie die Kosten",
+  "poster": "Poster",
+  "modify": "Modifikator",
+  "delete": "LÖSCHEN"
 }
