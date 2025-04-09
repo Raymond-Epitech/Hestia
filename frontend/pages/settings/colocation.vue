@@ -57,7 +57,7 @@ const new_data = ref({
 const joinColocation = async () => {
     const data = await api.updateUser(new_data.value)
     if (data) {
-        userStore.setColocation(new_data.colocationId);
+        userStore.setColocation(new_data.value.colocationId);
     }
 }
 const createColocation = async () => {

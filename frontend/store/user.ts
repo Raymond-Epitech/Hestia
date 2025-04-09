@@ -13,7 +13,6 @@ export const useUserStore = defineStore('user', {
     actions: {
         setUser(data: User) {
             this.user = data;
-            console.log(this.user)
         },
         setColocation(data: string) {
             this.user.colocationId = data;
