@@ -1,4 +1,4 @@
-package com.volume.hestia;
+package io.ionic.starter;
 
 import com.getcapacitor.BridgeActivity;
 
