@@ -7,7 +7,8 @@ export default defineNuxtConfig({
   modules: [
     '@pinia/nuxt',
     'nuxt-vue3-google-signin',
-    '@nuxtjs/i18n'
+    '@nuxtjs/i18n',
+    'pinia-plugin-persistedstate/nuxt',
   ],
 
   css: [

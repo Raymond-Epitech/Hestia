@@ -1,3 +1,10 @@
 <template>
-    <h1>Hello user, you can manage your money here</h1>
+    <div>
+        <NuxtPage />
+    </div>
 </template>
+
+<script setup>
+</script>
+
+<style scoped></style>

@@ -1,12 +1,14 @@
 <template>
+  <div>
     <div>
     </div>
     <div>
-        <slot />
+      <slot />
     </div>
-    <div>
-      <Navbar/>
-    </div>
+    <footer>
+      <Navbar />
+    </footer>
+  </div>
 
 </template>
 
