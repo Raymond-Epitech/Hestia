@@ -46,14 +46,12 @@ const redirectto = (name: string) => {
     router.push({ path: '/money/historical', query: { name } });
 }
 
-onMounted(() => {
-    api.getExpenseByColocationId(collocid).then((response) => {
-        expenses_list.value = response;
-        global.value = expenses_list.value.reduce((acc, expense) => acc + expense.totalAmount, 0);
-    }).catch((error) => {
-        console.error('Error fetching data:', error);
-    })
-});
+api.getExpenseByColocationId(collocid).then((response) => {
+    expenses_list.value = response;
+    global.value = expenses_list.value.reduce((acc, expense) => acc + expense.totalAmount, 0);
+}).catch((error) => {
+    console.error('Error fetching data:', error);
+})
 </script>
 
 <style scoped>

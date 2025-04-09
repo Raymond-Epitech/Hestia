@@ -28,20 +28,16 @@ api.setjwt(useCookie('token').value ?? '');
 const collocid = "164cb6e7-b8dd-4391-828d-e5ba7be45039"
 const myid = "939da183-4c1e-4be6-8c64-fa4c012c7a02"
 
-onMounted(() => {
-    api.getBalance(collocid).then((response) => {
-        list_balance.value = response;
-    }).catch((error) => {
-        console.error('Error fetching data:', error);
-    })
-    api.getUserbyCollocId(collocid).then((response) => {
-        list_coloc.value = response;
-    }).catch((error) => {
-        console.error('Error fetching data:', error);
-    })
-    console.log(list_balance.value);
-    console.log(list_coloc.value);
-});
+api.getBalance(collocid).then((response) => {
+    list_balance.value = response;
+}).catch((error) => {
+    console.error('Error fetching data:', error);
+})
+api.getUserbyCollocId(collocid).then((response) => {
+    list_coloc.value = response;
+}).catch((error) => {
+    console.error('Error fetching data:', error);
+})
 
 const getBalance = (id: string): number => {
     const balance = list_balance.value.find(userBalance => userBalance.userId === id);

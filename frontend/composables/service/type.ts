@@ -43,7 +43,9 @@ export type Expenseget = {
     description: string,
     amount: number,
     paidBy: string
-    splitBetween: string[],
+    splitBetween: {
+        [key: string]: number
+    },
     splitType: number,
     dateOfPayment: string,
     category: string,

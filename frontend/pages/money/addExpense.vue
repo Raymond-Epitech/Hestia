@@ -2,7 +2,7 @@
   <div class="background">
     <div>
       <h1 class="header">
-        <img src="/return.png" alt="Return" width="30" height="30" @click="$router.back()"/>
+        <img src="/return.png" alt="Return" width="30" height="30" @click="$router.back()" />
         <Texte_language source="header_add_expense" />
         <p></p>
       </h1>
@@ -109,10 +109,8 @@ const expense = ref<Expense>({
   dateOfPayment: date.toISOString(),
 })
 
-onMounted(async () => {
-  console.log('Page affichée pour la première fois');
-  // Appelez votre fonction ici
-  await fetchData();
+api.getUserbyCollocId(collocid).then((response) => {
+  list_coloc.value = response;
   Object.assign(expense.value, {
     colocationId: collocid,
     createdBy: myid,
@@ -127,11 +125,9 @@ onMounted(async () => {
     splitPercentages: {},
     dateOfPayment: date.toISOString(),
   });
+}).catch((error) => {
+  console.error('Error fetching data:', error);
 });
-
-const fetchData = async () => {
-  list_coloc.value = await api.getUserbyCollocId(collocid)
-};
 
 const calculateValueFromPercentage = (colocId: string) => {
   const percentage = expense.value.splitPercentages[colocId] || 0;
@@ -244,9 +240,9 @@ input[type="number"] {
 }
 
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 </style>

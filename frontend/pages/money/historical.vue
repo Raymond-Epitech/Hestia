@@ -29,19 +29,17 @@ api.setjwt(useCookie('token').value ?? '');
 //a changer par la vrai colocid
 const collocid = "164cb6e7-b8dd-4391-828d-e5ba7be45039"
 
-onMounted(() => {
-    api.getExpenseByColocationId(collocid).then((response) => {
-        const matchingCategory = response.find(expenseList => expenseList.category === name);
-        expenses_list.value = matchingCategory ? matchingCategory.expenses : [];
-    }).catch((error) => {
-        console.error('Error fetching data:', error);
-    })
-    api.getUserbyCollocId(collocid).then((response) => {
-        list_coloc.value = response;
-    }).catch((error) => {
-        console.error('Error fetching data:', error);
-    })
-});
+api.getExpenseByColocationId(collocid).then((response) => {
+    const matchingCategory = response.find(expenseList => expenseList.category === name);
+    expenses_list.value = matchingCategory ? matchingCategory.expenses : [];
+}).catch((error) => {
+    console.error('Error fetching data:', error);
+})
+api.getUserbyCollocId(collocid).then((response) => {
+    list_coloc.value = response;
+}).catch((error) => {
+    console.error('Error fetching data:', error);
+})
 
 const getUsername = (id: string): string => {
   const user = list_coloc.value.find(coloc => coloc.id === id);
