@@ -27,7 +27,6 @@ namespace EntityFramework.Models
         public string PathToProfilePicture { get; set; } = null!;
 
         public ICollection<ChoreEnrollment> ChoreEnrollments { get; set; } = null!;
-        public ICollection<Balance> Balances { get; set; } = null!;
         public ICollection<Entry> Entries { get; set; } = null!;
         public ICollection<Expense> Expenses { get; set; } = null!;
         public ICollection<SplitBetween> SplitBetweens { get; set; } = null!;

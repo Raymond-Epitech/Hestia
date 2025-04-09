@@ -19,14 +19,12 @@ public class UserServiceTests
     private readonly UserService _userService;
     private readonly Mock<ILogger<UserService>> _loggerMock;
     private readonly Mock<IRepository<User>> _repositoryMock;
-    private readonly Mock<IRepository<Balance>> _balanceRepositoryMock;
     private readonly Mock<IJwtService> _jwtServiceMock;
 
     public UserServiceTests()
     {
         _loggerMock = new Mock<ILogger<UserService>>();
         _repositoryMock = new Mock<IRepository<User>>();
-        _balanceRepositoryMock = new Mock<IRepository<Balance>>();
         _jwtServiceMock = new Mock<IJwtService>();
 
         /*_userService = new UserService(

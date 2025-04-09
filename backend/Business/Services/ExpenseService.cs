@@ -16,8 +16,7 @@ namespace Business.Services
     public class ExpenseService(ILogger<ColocationService> _logger,
         IRepository<Expense> _expenseRepository,
         IRepository<Entry> _entryRepository,
-        IRepository<SplitBetween> _splitbetweenRepository,
-        IRepository<Balance> _balanceRepository) : IExpenseService
+        IRepository<SplitBetween> _splitbetweenRepository) : IExpenseService
     {
         /// <summary>
         /// Get all expenses
@@ -195,20 +194,9 @@ namespace Business.Services
         /// Add the entries to the database and update the balance with the amount splited evenly
         /// </summary>
         /// <param name="input">The input of AddExpense</param>
-        private async Task AddEntriesAndUpdateBalance(InputExpenseDTO input, Dictionary<Guid, decimal> splitedAmounts)
+        private async Task AddEntries(InputExpenseDTO input, Dictionary<Guid, decimal> splitedAmounts)
         {
             var entryList = new List<Entry>();
-            var balances = await _balanceRepository.Query()
-                .Where(b => input.SplitBetween!.Contains(b.UserId))
-                .AsNoTracking()
-                .ToListAsync();
-
-            if (balances.Count() != input.SplitBetween!.Count())
-            {
-                throw new InvalidEntityException("Some users in the split between list are not in the colocation");
-            }
-
-            _logger.LogInformation($"Succes : All balances from the users found");
 
             for (int i = 0; i < input.SplitBetween!.Count; i++)
             {
@@ -220,9 +208,6 @@ namespace Business.Services
                     Amount = -splitedAmounts[input.SplitBetween[i]]
                 };
                 entryList.Add(newEntry);
-                var balance = balances.First(x => x.UserId == newEntry.UserId);
-                balance.PersonalBalance += newEntry.Amount;
-                balance.LastUpdate = DateTime.UtcNow;
                 _logger.LogInformation($"Succes : Entry for user {newEntry.UserId} added");
             }
 
@@ -234,20 +219,13 @@ namespace Business.Services
                 ColocationId = input.ColocationId,
             };
             entryList.Add(paiment);
-            var paimentBalance = balances.First(x => x.UserId == input.PaidBy);
-            paimentBalance.PersonalBalance += input.Amount;
-            paimentBalance.LastUpdate = DateTime.UtcNow;
-
             _logger.LogInformation($"Succes : Entry for user {paiment.UserId} added");
 
             await CreateSplitBetween(input, splitedAmounts);
 
-            _balanceRepository.UpdateRange(balances);
-
             await _entryRepository.AddRangeAsync(entryList);
             
             _logger.LogInformation($"Succes : All entries added to the db");
-            _logger.LogInformation($"Succes : All balances updated");
         }
         
         private async Task CreateEntriesAndUpdateBalance(InputExpenseDTO input)
@@ -264,7 +242,7 @@ namespace Business.Services
 
                     input.SplitBetween = input.SplitValues.Keys.ToList();
 
-                    await AddEntriesAndUpdateBalance(input, input.SplitValues);
+                    await AddEntries(input, input.SplitValues);
 
                     
                     break;
@@ -279,7 +257,7 @@ namespace Business.Services
 
                     input.SplitBetween = input.SplitPercentages.Keys.ToList();
 
-                    await AddEntriesAndUpdateBalance(input, SplitAmountByPercentage(input.Amount, input.SplitPercentages));
+                    await AddEntries(input, SplitAmountByPercentage(input.Amount, input.SplitPercentages));
 
                     break;
 
@@ -291,7 +269,7 @@ namespace Business.Services
 
                     _logger.LogInformation("Succes : Expense is split evenly");
 
-                    await AddEntriesAndUpdateBalance(input, SplitAmountEvenly(input.Amount, input.SplitBetween));
+                    await AddEntries(input, SplitAmountEvenly(input.Amount, input.SplitBetween));
 
                     break;
             }
@@ -390,14 +368,11 @@ namespace Business.Services
 
                     var entries = await _entryRepository.Query()
                         .Where(e => e.ExpenseId == expense.Id)
-                        .ToListAsync();
+                        .ExecuteDeleteAsync();
 
                     var splitbetween = await _splitbetweenRepository.Query()
                         .Where(e => e.ExpenseId == expense.Id)
-                        .ToListAsync();
-
-                    _ = _entryRepository.DeleteRangeAsync(entries);
-                    _ = _splitbetweenRepository.DeleteRangeAsync(splitbetween);
+                        .ExecuteDeleteAsync();
 
                     await CreateEntriesAndUpdateBalance(new InputExpenseDTO
                     {
@@ -414,8 +389,6 @@ namespace Business.Services
                     _expenseRepository.Update(expense);
 
                     await _expenseRepository.SaveChangesAsync();
-
-                    await RecalculateBalanceAsync(input.ColocationId);
 
                     transaction.Commit();
 
@@ -456,48 +429,19 @@ namespace Business.Services
         /// <param name="ColocationId">The colocation id of the balance you want</param>
         /// <returns>The list of all balances</returns>
         /// <exception cref="ContextException">Error in db</exception>
-        public async Task<List<BalanceOutput>> GetAllBalanceAsync(Guid ColocationId)
-        {
-            var balances = await _balanceRepository.Query()
-                .Where(e => e.User.ColocationId == ColocationId)
-                .Select(e => new BalanceOutput
-                {
-                    UserId = e.UserId,
-                    PersonalBalance = e.PersonalBalance,
-                    LastUpdate = e.LastUpdate,
-                })
-                .ToListAsync();
-                
-            _logger.LogInformation($"Succes : All balances from the colocation {ColocationId} found");
-                
-            return balances;
-        }
-
-        public async Task<List<BalanceOutput>> RecalculateBalanceAsync(Guid colocationId)
+        public async Task<Dictionary<Guid, decimal>> GetAllBalanceAsync(Guid colocationId)
         {
             var entries = await _entryRepository.Query()
                 .Where(e => e.ColocationId == colocationId)
                 .ToListAsync();
-            var balances = await _balanceRepository.Query()
-                .Where(b => b.User.ColocationId == colocationId)
-                .ToListAsync();
 
-            if (entries.Count == 0 || balances.Count == 0)
-            {
-                _logger.LogInformation($"Succes : No entries or balance found for the colocation {colocationId}");
-                return balances.Select(x => x.ToOutput()).ToList();
-            }
+            var balances = entries.GroupBy(k => k.UserId)
+                .ToDictionary(k => k.Key,
+                v => v.Sum(e => e.Amount));
 
-            _logger.LogInformation($"Succes : All entries and balances from the colocation {colocationId} found");
-
-            balances.Select(b => b.PersonalBalance = entries.Where(e => e.UserId == b.UserId).Select(x => x.Amount).Sum()).ToList();
-
-            _balanceRepository.UpdateRange(balances);
-            await _expenseRepository.SaveChangesAsync();
+            _logger.LogInformation($"Succes : All balances from the colocation {colocationId} calculated");
                 
-            _logger.LogInformation($"Succes : All balances updated");
-
-            return balances.Select(x => x.ToOutput()).OrderBy(x => x.PersonalBalance).ToList();
+            return balances;
         }
     }
 }
