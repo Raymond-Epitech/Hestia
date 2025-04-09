@@ -11,18 +11,21 @@
 </template>
 
 <script setup>
+import { useUserStore } from '~/store/user';
 
 const isModalOpen = ref(false)
 const openModal = () => (isModalOpen.value = true)
 
+const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 
 const posts = ref([]);
+api.setjwt(useCookie('token').value ?? '');
 
 const getall = async () => {
-  const data = await api.getAllReminders("d6c34b10-e6dc-472e-8047-da3a89d44eae");
+  const data = await api.getAllReminders(userStore.user.colocationId);
   posts.value = data;
 };
 
