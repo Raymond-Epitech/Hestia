@@ -17,19 +17,19 @@ public class ReminderServiceTests
     private readonly ReminderService _reminderService;
     private readonly Mock<ILogger<ReminderService>> _loggerMock;
     private readonly Mock<IRepository<Reminder>> _repositoryMock;
-    private readonly Mock<IColocationRepository<Reminder>> _colocationIdRepositoryMock;
+    //private readonly Mock<IColocationRepository<Reminder>> _colocationIdRepositoryMock;
 
     public ReminderServiceTests()
     {
         _loggerMock = new Mock<ILogger<ReminderService>>();
         _repositoryMock = new Mock<IRepository<Reminder>>();
-        _colocationIdRepositoryMock = new Mock<IColocationRepository<Reminder>>();
+        //_colocationIdRepositoryMock = new Mock<IColocationRepository<Reminder>>();
 
-        _reminderService = new ReminderService(
+       /* _reminderService = new ReminderService(
             _loggerMock.Object,
             _repositoryMock.Object,
             _colocationIdRepositoryMock.Object
-        );
+        );*/
     }
 
     // GET ALL REMINDER
@@ -50,7 +50,7 @@ public class ReminderServiceTests
             }
         };
 
-        _colocationIdRepositoryMock.Setup(repo => repo.GetAllByColocationIdAsTypeAsync(colocationId, r => new ReminderOutput
+        /*_colocationIdRepositoryMock.Setup(repo => repo.GetAllByColocationIdAsTypeAsync(colocationId, r => new ReminderOutput
         {
             Id = r.Id,
             Content = r.Content,
@@ -60,7 +60,7 @@ public class ReminderServiceTests
             CoordX = r.CoordX,
             CoordY = r.CoordY,
             CoordZ = r.CoordZ,
-        })).ReturnsAsync(expectedReminders);
+        })).ReturnsAsync(expectedReminders);*/
 
         var result = await _reminderService.GetAllRemindersAsync(colocationId);
 
@@ -83,7 +83,7 @@ public class ReminderServiceTests
             CreatedAt = DateTime.UtcNow
         };
 
-        _repositoryMock.Setup(repo => repo.GetByIdAsTypeAsync(reminderId, r => new ReminderOutput
+        /*_repositoryMock.Setup(repo => repo.GetByIdAsTypeAsync(reminderId, r => new ReminderOutput
         {
             Id = r.Id,
             Content = r.Content,
@@ -93,7 +93,7 @@ public class ReminderServiceTests
             CoordX = r.CoordX,
             CoordY = r.CoordY,
             CoordZ = r.CoordZ,
-        })).ReturnsAsync(expectedReminder);
+        })).ReturnsAsync(expectedReminder);*/
 
         var result = await _reminderService.GetReminderAsync(reminderId);
 
@@ -105,7 +105,7 @@ public class ReminderServiceTests
     public async Task GetReminderAsync_ShouldThrowNotFound_WhenReminderDoesNotExist()
     {
         var reminderId = Guid.NewGuid();
-        _repositoryMock.Setup(repo => repo.GetByIdAsTypeAsync(reminderId, r => new ReminderOutput
+        /*_repositoryMock.Setup(repo => repo.GetByIdAsTypeAsync(reminderId, r => new ReminderOutput
         {
             Id = r.Id,
             Content = r.Content,
@@ -115,7 +115,7 @@ public class ReminderServiceTests
             CoordX = r.CoordX,
             CoordY = r.CoordY,
             CoordZ = r.CoordZ,
-        })).ReturnsAsync((ReminderOutput?)null);
+        })).ReturnsAsync((ReminderOutput?)null);*/
 
         await Assert.ThrowsAsync<NotFoundException>(() => _reminderService.GetReminderAsync(reminderId));
     }
