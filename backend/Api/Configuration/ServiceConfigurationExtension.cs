@@ -1,7 +1,8 @@
 ﻿using Business.Interfaces;
-using Business.Models.Jwt;
 using Business.Services;
 using EntityFramework.Context;
+using EntityFramework.Models;
+using EntityFramework.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebApi.Configuration
@@ -13,17 +14,22 @@ namespace WebApi.Configuration
             services.AddDbContext(configuration, isDevelopment)
                 .AddBusinessServices()
                 .EnableCors();
-            //AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-            AppContext.SetSwitch("System.Globalization.Invariant", false);
         }
 
         private static IServiceCollection AddBusinessServices(this IServiceCollection services)
         {
+            // Services
             services.AddScoped<IReminderService, ReminderService>();
             services.AddScoped<IChoreService, ChoreService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<ICollocationService, CollocationService>();
+            services.AddScoped<IColocationService, ColocationService>();
             services.AddScoped<IJwtService, JwtService>();
+            services.AddScoped<IExpenseService, ExpenseService>();
+
+            // Repositories
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+            // Others
             services.AddHttpContextAccessor();
             return services;
         }
@@ -43,23 +49,14 @@ namespace WebApi.Configuration
 
         private static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
         {
-            /*services.AddDbContext<HestiaContext>(opt =>
+            services.AddDbContext<HestiaContext>(opt =>
             {
                 opt.UseNpgsql(configuration.GetConnectionString("HestiaDb"));
                 opt.EnableDetailedErrors(isDevelopment);
                 opt.EnableSensitiveDataLogging(isDevelopment);
-            });*/
-
-            services.AddDbContext<HestiaContext>(opt =>
-            {
-                opt.UseSqlServer(configuration.GetConnectionString("HestiaDb"));
-
-                if (isDevelopment) // Vérifie si on est en mode développement
-                {
-                    opt.EnableDetailedErrors(); // Active les erreurs détaillées en développement
-                    opt.EnableSensitiveDataLogging(); // Active les logs de données sensibles en développement
-                }
             });
+
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
             return services;
         }

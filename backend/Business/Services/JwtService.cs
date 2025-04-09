@@ -1,5 +1,6 @@
 ﻿using Business.Interfaces;
-using Business.Models.Jwt;
+using Business.Jwt;
+using Google.Apis.Auth;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -15,6 +16,11 @@ namespace Business.Services
         public JwtService(IOptions<JwtOptions> jwtOptions)
         {
             _jwtOptions = jwtOptions.Value;
+        }
+
+        public async Task<GoogleJsonWebSignature.Payload> ValidateGoogleTokenAsync(string googleToken)
+        {
+            return await GoogleJsonWebSignature.ValidateAsync(googleToken);
         }
 
         public string GenerateToken(IEnumerable<Claim> claims)

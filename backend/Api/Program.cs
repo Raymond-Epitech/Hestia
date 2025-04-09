@@ -1,5 +1,7 @@
-using Business.Models.Jwt;
+using Api.ErrorHandler;
+using Business.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -15,14 +17,37 @@ try
         o.ValidateScopes = true;
     });
 
+    // Controllers
+
+    builder.Services.AddMvcCore();
     builder.Services.AddControllers().AddNewtonsoftJson();
+
+
+    // Error handling
+    builder.Services.AddProblemDetails();
+    builder.Services.AddExceptionHandler<ExceptionHandler>();
 
     builder.Services.AddEndpointsApiExplorer();
 
+    // Services and DI
+    builder.Services.Configure<ApiBehaviorOptions>(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var problemDetails = new ValidationProblemDetails(context.ModelState)
+            {
+                Status = StatusCodes.Status422UnprocessableEntity,
+                Title = "Validation error",
+                Instance = context.HttpContext.Request.Path
+            };
+
+            return new UnprocessableEntityObjectResult(problemDetails);
+        };
+    });
     builder.Services.ConfigureServices(builder.Configuration, builder.Environment.IsDevelopment());
     builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 
-
+    // Authentication
     builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = "Bearer"; // Schéma par défaut pour l'API
@@ -66,7 +91,10 @@ try
         };
     });
 
+    // Authorization
     builder.Services.AddAuthorization();
+
+    // Swagger
     builder.Services.AddSwaggerGen(options =>
     {
         options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -105,29 +133,11 @@ try
         app.UseSwaggerUI();
     }
 
+    app.UseExceptionHandler();
+    app.UseStatusCodePages(); 
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
-
-    if (app.Environment.IsDevelopment())
-    {
-        using (var connection = new Microsoft.Data.SqlClient.SqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(builder.Configuration.GetConnectionString("HestiaDb")))
-                {
-                    Console.Error.WriteLine("Connection string is not set in Docker.");
-                }
-                connection.Open();
-                Console.Error.WriteLine("Connection successful!");
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"Connection failed: {ex.Message}");
-            }
-        }
-    }
 
     app.Run();
 }

@@ -1,45 +1,44 @@
-﻿using Business.Exceptions;
-using Business.Interfaces;
+﻿using Business.Interfaces;
 using Business.Mappers;
-using Business.Models.Input;
-using Business.Models.Output;
-using Business.Models.Update;
-using EntityFramework.Context;
 using EntityFramework.Models;
+using EntityFramework.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Shared.Exceptions;
+using Shared.Models.Input;
+using Shared.Models.Output;
+using Shared.Models.Update;
 
 namespace Business.Services;
 
-public class ReminderService(
-    ILogger<ReminderService> logger,
-    HestiaContext _context) : IReminderService
+public class ReminderService(ILogger<ReminderService> _logger,
+    IRepository<Reminder> _reminderRepository) : IReminderService
 {
     /// <summary>
     /// Get all reminders
     /// </summary>
     /// <returns>All the reminders available</returns>
     /// <exception cref="ContextException">An error has occured while retriving the reminders from db</exception>
-    public async Task<List<ReminderOutput>> GetAllRemindersAsync(Guid CollocationId)
+    public async Task<List<ReminderOutput>> GetAllRemindersAsync(Guid collocationId)
     {
-        try
-        {
-            var reminders = await _context.Reminder.Where(x => x.CollocationId == CollocationId).Select(x => new ReminderOutput
+        var reminders = await _reminderRepository.Query()
+            .Where(r => r.ColocationId == collocationId)
+            .Select(r => new ReminderOutput
             {
-                Id = x.Id,
-                Content = x.Content,
-                Color = x.Color,
-                CoordX = x.CoordX,
-                CoordY = x.CoordY,
-                CoordZ = x.CoordZ
-            }).ToListAsync();
-            logger.LogInformation("Succes : All reminders found");
-            return reminders;
-        }
-        catch (Exception ex)
-        {
-            throw new ContextException("An error occurred while getting all reminders from the db", ex);
-        }
+                Id = r.Id,
+                Content = r.Content,
+                Color = r.Color,
+                CreatedBy = r.CreatedBy,
+                CreatedAt = r.CreatedAt,
+                CoordX = r.CoordX,
+                CoordY = r.CoordY,
+                CoordZ = r.CoordZ
+            })
+            .ToListAsync();
+            
+        _logger.LogInformation("Succes : All reminders found");
+            
+        return reminders;
     }
 
     /// <summary>
@@ -51,32 +50,29 @@ public class ReminderService(
     /// <exception cref="ContextException">An error has occured while retriving reminder from db</exception>
     public async Task<ReminderOutput> GetReminderAsync(Guid id)
     {
-        try
-        {
-            var reminder = await _context.Reminder.Select(x => new ReminderOutput
+        var reminder = await _reminderRepository.Query()
+            .Where(r => r.Id == id)
+            .Select(r => new ReminderOutput
             {
-                Id = x.Id,
-                Content = x.Content,
-                Color = x.Color,
-                CreatedBy = x.CreatedBy,
-                CreatedAt = x.CreatedAt,
-                CoordX = x.CoordX,
-                CoordY = x.CoordY,
-                CoordZ = x.CoordZ
-            }).FirstOrDefaultAsync(x => x.Id == id);
+                Id = r.Id,
+                Content = r.Content,
+                Color = r.Color,
+                CreatedBy = r.CreatedBy,
+                CreatedAt = r.CreatedAt,
+                CoordX = r.CoordX,
+                CoordY = r.CoordY,
+                CoordZ = r.CoordZ
+            })
+            .FirstOrDefaultAsync();
 
-            if (reminder == null)
-            {
-                throw new NotFoundException($"Reminder {id} not found");
-            }
-
-            logger.LogInformation("Succes : Reminder found");
-            return reminder;
-        }
-        catch (Exception ex)
+        if (reminder == null)
         {
-            throw new ContextException("An error occurred while getting the reminder from the db", ex);
+            throw new NotFoundException($"Reminder {id} not found");
         }
+
+        _logger.LogInformation("Succes : Reminder found");
+            
+        return reminder;
     }
 
     /// <summary>
@@ -86,18 +82,14 @@ public class ReminderService(
     /// <exception cref="ContextException">An error has occured while adding reminder from db</exception>
     public async Task<Guid> AddReminderAsync(ReminderInput input)
     {
-        try
-        {
-            var reminder = input.ToDb();
-            await _context.Reminder.AddAsync(reminder);
-            await _context.SaveChangesAsync();
-            logger.LogInformation("Succes : Reminder added");
-            return reminder.Id;
-        }
-        catch (Exception ex)
-        {
-            throw new ContextException("An error occurred while adding the reminder from the db", ex);
-        }
+        var reminder = input.ToDb();
+            
+        await _reminderRepository.AddAsync(reminder);
+        await _reminderRepository.SaveChangesAsync();
+
+        _logger.LogInformation("Succes : Reminder added");
+            
+        return reminder.Id;
     }
 
     /// <summary>
@@ -107,25 +99,22 @@ public class ReminderService(
     /// <exception cref="MissingArgumentException">The Id of the reminder is missing</exception>
     /// <exception cref="NotFoundException">No reminder where found with this id</exception>
     /// <exception cref="ContextException">An error has occured while adding reminder from db</exception>
-    public async Task UpdateReminderAsync(ReminderUpdate input)
+    public async Task<Guid> UpdateReminderAsync(ReminderUpdate input)
     {
-        try
+        var reminder = await _reminderRepository.GetByIdAsync(input.Id);
+            
+        if (reminder == null)
         {
-            var reminder = _context.Reminder.Where(x => x.Id == input.Id).FirstOrDefault();
-            if (reminder == null)
-            {
-                throw new NotFoundException($"Reminder {input.Id} not found");
-            }
-
-            var updatedReminder = reminder.UpdateFromInput(input);
-            await _context.SaveChangesAsync();
-
-            logger.LogInformation("Succes : Reminder updated");
+            throw new NotFoundException($"Reminder {input.Id} not found");
         }
-        catch (Exception ex)
-        {
-            throw new ContextException("An error occurred while updating the reminder from the db", ex);
-        }
+
+        reminder.UpdateFromInput(input);
+        _reminderRepository.Update(reminder);
+        await _reminderRepository.SaveChangesAsync();
+
+        _logger.LogInformation("Succes : Reminder updated");
+
+        return reminder.Id;
     }
 
     /// <summary>
@@ -134,47 +123,65 @@ public class ReminderService(
     /// <param name="inputs">a dictionary with the id, and the value of the reminders</param>
     /// <exception cref="NotFoundException">One or more reminder where not found with those id</exception>
     /// <exception cref="ContextException">An error has occured while adding one or more reminder from db</exception>
-    public async Task UpdateRangeReminderAsync(List<ReminderUpdate> inputs)
+    public async Task<int> UpdateRangeReminderAsync(List<ReminderUpdate> inputs)
     {
-        try
+        var idsToMatch = inputs.Select(x => x.Id).ToList();
+        var reminders = await _reminderRepository.Query()
+            .Where(r => idsToMatch.Contains(r .Id))
+            .ToListAsync();
+            
+        if (reminders.Count == 0)
         {
-            var idsToMatch = inputs.Select(x => x.Id).ToList();
-            var reminders = await _context.Reminder.Where(x => idsToMatch.Contains(x.Id)).ToListAsync();
-            if (reminders == null)
-            {
-                throw new NotFoundException($"No reminders found");
-            }
-            var notfounds = inputs.Select(x => x.Id).Except(reminders.Select(x => x.Id)).ToList();
-            if (notfounds.Any())
-            {
-                throw new NotFoundException($"Reminders {String.Join(", ", notfounds)} was/were not found");
-            }
+            throw new NotFoundException($"No reminders found");
+        }
+        
+        var notfounds = inputs.Select(x => x.Id).Except(reminders.Select(x => x.Id)).ToList();
+            
+        if (notfounds.Any())
+        {
+            throw new NotFoundException($"Reminders {String.Join(", ", notfounds)} was/were not found");
+        }
 
-            using (var transaction = await _context.Database.BeginTransactionAsync())
+        using (var transaction = await _reminderRepository.BeginTransactionAsync())
+        {
+            try
             {
-                try
+                _logger.LogInformation("Transaction begin");
+                    
+                foreach (var reminder in reminders)
                 {
-                    foreach (var reminder in reminders)
+                    var input = inputs.FirstOrDefault(x => x.Id == reminder.Id);
+                        
+                    if (input is null)
                     {
-                        var input = inputs.FirstOrDefault(x => x.Id == reminder.Id);
-                        reminder.UpdateFromInput(input);
+                        throw new NotFoundException($"input {reminder.Id} not found");
                     }
-                    await _context.SaveChangesAsync();
-                    transaction.Commit();
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    throw new ContextException("An error occurred while updating the reminder from the db", ex);
-                }
-            }
 
-            logger.LogInformation("Succes : Reminders all updated");
+                    reminder.UpdateFromInput(input);
+                }
+                    
+                await _reminderRepository.SaveChangesAsync();
+                transaction.Commit();
+
+                _logger.LogInformation("Transaction commit");
+            }
+            catch (NotFoundException)
+            {
+                _logger.LogError("Reminder not found, Transaction rollbacked");
+                transaction.Rollback();
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while updating the reminder from the db, Transaction rollbacked");
+                transaction.Rollback();
+                throw new ContextException("An error occurred while updating the reminder from the db", ex);
+            }
         }
-        catch (Exception ex)
-        {
-            throw new ContextException("An error occurred while updating the reminder from the db", ex);
-        }
+
+        _logger.LogInformation("Succes : Reminders all updated");
+
+        return reminders.Count;
     }
 
 
@@ -184,23 +191,13 @@ public class ReminderService(
     /// <param name="id"></param>
     /// <exception cref="NotFoundException">No reminder where found with this id</exception>
     /// <exception cref="ContextException">An error has occured while adding reminder from db</exception>
-    public async Task DeleteReminderAsync(Guid id)
+    public async Task<Guid> DeleteReminderAsync(Guid id)
     {
-        try
-        {
-            var reminder = _context.Reminder.Where(x => x.Id == id).FirstOrDefault();
-            if (reminder == null)
-            {
-                throw new NotFoundException($"Reminder {id} not found");
-            }
-            _context.Reminder.Remove(reminder);
-            await _context.SaveChangesAsync();
+        await _reminderRepository.DeleteFromIdAsync(id);
+        await _reminderRepository.SaveChangesAsync();
 
-            logger.LogInformation("Succes : Reminder deleted");
-        }
-        catch (Exception ex)
-        {
-            throw new ContextException("An error occurred while deleting the reminder from the db", ex);
-        }
+        _logger.LogInformation("Succes : Reminder deleted");
+
+        return id;
     }
 }
