@@ -2,6 +2,7 @@
 using Business.Mappers;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
+using LazyCache;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Enums;
@@ -14,27 +15,51 @@ using Shared.Models.Update;
 namespace Business.Services
 {
     public class ExpenseService(ILogger<ColocationService> _logger,
+        IRepository<ExpenseCategory> _expenseCategoryRepository,
         IRepository<Expense> _expenseRepository,
         IRepository<Entry> _entryRepository,
-        IRepository<SplitBetween> _splitbetweenRepository) : IExpenseService
+        IRepository<SplitBetween> _splitbetweenRepository,
+        IAppCache _cache) : IExpenseService
     {
+        public async Task<List<ExpenseCategoryOutput>> GetAllExpenseCategoriesAsync(Guid colocationId)
+        {
+            var cacheKey = $"expenseCategories:{colocationId}";
+
+            return await _cache.GetOrAddAsync(cacheKey, async entry =>
+            {
+                var expenseCategories = await _expenseCategoryRepository.Query()
+                    .Where(e => e.ColocationId == colocationId)
+                    .Include(e => e.Expenses)
+                    .Select(e => new ExpenseCategoryOutput
+                    {
+                        Id = e.Id,
+                        Name = e.Name,
+                        TotalAmount = e.Expenses.Sum(e => e.Amount)
+                    })
+                    .ToListAsync();
+
+                _logger.LogInformation("Succes : All expense categories were retrived from db");
+
+                return expenseCategories;
+            });
+        }
+
         /// <summary>
         /// Get all expenses
         /// </summary>
         /// <param name="ColocationId">The colocation of the returned expenses</param>
         /// <returns>All the expense of the colocation</returns>
         /// <exception cref="ContextException">An error happened during the retriving of expenses</exception>
-        public async Task<List<OutputFormatForExpenses>> GetAllExpensesAsync(Guid colocationId)
+        public async Task<List<ExpenseOutput>> GetAllExpensesAsync(Guid expenseCategoryId)
         {
             var expensesRaw = await _expenseRepository.Query()
-                .Where(e => e.ColocationId == colocationId)
+                .Where(e => e.ExpenseCategoryId == expenseCategoryId)
                 .Include(e => e.SplitBetweens)
                 .ToListAsync();
 
             var expenses = expensesRaw.Select(e => new ExpenseOutput
             {
                 Id = e.Id,
-                ColocationId = e.ColocationId,
                 CreatedBy = e.CreatedBy,
                 Name = e.Name,
                 Description = e.Description,
@@ -43,7 +68,7 @@ namespace Business.Services
                 SplitType = Enum.Parse<SplitTypeEnum>(e.SplitType),
                 SplitBetween = e.SplitBetweens.AsEnumerable().ToDictionary(k => k.UserId, v => v.Amount),
                 DateOfPayment = e.DateOfPayment,
-                Category = e.Category
+                ExpenseCategoryId = e.ExpenseCategoryId
             }).ToList();
 
             _logger.LogInformation("Succes : All expenses were retrived from db");
@@ -72,7 +97,6 @@ namespace Business.Services
             var expense = new ExpenseOutput
             {
                 Id = expenseRaw.Id,
-                ColocationId = expenseRaw.ColocationId,
                 CreatedBy = expenseRaw.CreatedBy,
                 Name = expenseRaw.Name,
                 Description = expenseRaw.Description,
@@ -81,7 +105,7 @@ namespace Business.Services
                 SplitType = Enum.Parse<SplitTypeEnum>(expenseRaw.SplitType),
                 SplitBetween = expenseRaw.SplitBetweens.AsEnumerable().ToDictionary(k => k.UserId, v => v.Amount),
                 DateOfPayment = expenseRaw.DateOfPayment,
-                Category = expenseRaw.Category
+                ExpenseCategoryId = expenseRaw.ExpenseCategoryId
             };
                 
             _logger.LogInformation($"Succes : Expense with id {id} was retrived from db");
@@ -321,6 +345,8 @@ namespace Business.Services
                     await _expenseRepository.AddAsync(expense);
                     await _expenseRepository.SaveChangesAsync();
 
+                    _cache.Remove($"balances:{input.ColocationId}");
+
                     transaction.Commit();
 
                     _logger.LogInformation("Succes : Transaction commited");
@@ -390,6 +416,8 @@ namespace Business.Services
 
                     await _expenseRepository.SaveChangesAsync();
 
+                    _cache.Remove($"balances:{input.ColocationId}");
+
                     transaction.Commit();
 
                     _logger.LogInformation("Succes : Transaction commited");
@@ -431,17 +459,23 @@ namespace Business.Services
         /// <exception cref="ContextException">Error in db</exception>
         public async Task<Dictionary<Guid, decimal>> GetAllBalanceAsync(Guid colocationId)
         {
-            var entries = await _entryRepository.Query()
+            string cacheKey = $"balances:{colocationId}";
+
+            return await _cache.GetOrAddAsync(cacheKey, async entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
+                var entries = await _entryRepository.Query()
                 .Where(e => e.ColocationId == colocationId)
                 .ToListAsync();
 
-            var balances = entries.GroupBy(k => k.UserId)
-                .ToDictionary(k => k.Key,
-                v => v.Sum(e => e.Amount));
+                var balances = entries.GroupBy(k => k.UserId)
+                    .ToDictionary(k => k.Key,
+                    v => v.Sum(e => e.Amount));
 
-            _logger.LogInformation($"Succes : All balances from the colocation {colocationId} calculated");
-                
-            return balances;
+                _logger.LogInformation($"Succes : All balances from the colocation {colocationId} calculated");
+
+                return balances;
+            });
         }
     }
 }
