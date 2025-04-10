@@ -67,10 +67,10 @@
         </div>
       </div>
       <div class="modal-buttons">
-        <button class="button button-proceed" @click.prevent="handleProceed">
+        <button class="button button-proceed" @click.prevent="handleProceed('modify')">
           <Texte_language source="modify" />
         </button>
-        <button class="button button-proceed" @click.prevent="handleProceed">
+        <button class="button button-proceed" @click.prevent="handleProceed('delete')">
           <Texte_language source="delete" />
         </button>
       </div>
@@ -79,9 +79,11 @@
 </template>
 
 <script setup lang="ts">
-import type { Expense, Coloc } from '~/composables/service/type';
+import type { Expense_Modif, Coloc } from '~/composables/service/type';
 import { useUserStore } from '~/store/user';
+import { useI18n } from '#imports';
 
+const { t } = useI18n();
 const userStore = useUserStore();
 const user = userStore.user;
 const route = useRoute();
@@ -102,9 +104,9 @@ const splitTypes = [
   { value: 2, label: 'split_type2' },
 ];
 
-const expense = ref<Expense>({
+const expense = ref<Expense_Modif>({
+  id: id,
   colocationId: collocid,
-  createdBy: '',
   description: '',
   category: '',
   name: '',
@@ -123,7 +125,7 @@ api.getUserbyCollocId(collocid).then((response) => {
     colocationId: collocid,
     createdBy: myid,
     description: '',
-    category: name,
+    category: '',
     name: '',
     amount: 0,
     paidBy: list_coloc.value[0]?.id || '',
@@ -133,6 +135,31 @@ api.getUserbyCollocId(collocid).then((response) => {
     splitPercentages: {},
     dateOfPayment: date.toISOString(),
   });
+}).catch((error) => {
+  console.error('Error fetching data:', error);
+});
+
+api.getExpenseById(id).then((response) => {
+  const expenseData = response;
+  Object.assign(expense.value, {
+    id: expenseData.id,
+    colocationId: expenseData.colocationId,
+    createdBy: expenseData.createdBy,
+    description: expenseData.description,
+    category: expenseData.category,
+    name: expenseData.name,
+    amount: expenseData.amount,
+    paidBy: expenseData.paidBy,
+    splitType: expenseData.splitType,
+    dateOfPayment: date.toISOString(),
+  });
+  if (expenseData.splitType === 0) {
+    expense.value.splitBetween = Object.keys(expenseData.splitBetween);;
+  } else if (expenseData.splitType === 1) {
+    expense.value.splitValues = expenseData.splitBetween;
+  } else if (expenseData.splitType === 2) {
+    expense.value.splitPercentages = expenseData.splitBetween;
+  }
 }).catch((error) => {
   console.error('Error fetching data:', error);
 });
@@ -147,14 +174,17 @@ const calculatedSplitValue = computed(() => {
   return numPeople > 0 ? (expense.value.amount / numPeople).toFixed(2) : 0;
 });
 
-const handleProceed = async () => {
-  console.log(expense.value);
-  api.addExpense(expense.value).then(() => {
-    console.log('Expense added successfully');
+const handleProceed = async (action: string) => {
+  if (action === 'modify') {
+    await api.updateExpense(expense.value);
     router.back()
-  }).catch((error) => {
-    console.error('Error adding expense:', error);
-  });
+  } else if (action === 'delete') {
+    const confirmed = window.confirm(t('confirm_delete_expense'));
+    if (confirmed) {
+      await api.deleteExpense(id);
+      router.back();
+    }
+  }
 }
 
 const filterNumericInput = (event: Event) => {

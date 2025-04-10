@@ -10,7 +10,7 @@
             </div>
         </div>
         <div>
-            <ExpenseItem v-for="expense in expenses_list" :key="expense.id" :expense="expense"
+            <ExpenseItem v-for="expense in expenses_list" :key="expense.id" :expense="expense" :onclick="() => redirecttomodify(expense.id)"
                 :paidBy="getUsername(expense.paidBy)" />
         </div>
     </div>
@@ -52,6 +52,10 @@ const getUsername = (id: string): string => {
 const redirectto = () => {
     console.log(name);
     router.push({ path: '/money/addExpense', query: { name } });
+}
+
+const redirecttomodify = (id: string) => {
+    router.push({ path: '/money/ModifyExpense', query: { id } });
 }
 </script>
 

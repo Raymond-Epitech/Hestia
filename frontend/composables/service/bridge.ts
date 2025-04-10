@@ -1,5 +1,5 @@
 import { json } from "stream/consumers";
-import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList } from "./type";
+import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif } from "./type";
 
 export class bridge {
     constructor() {
@@ -465,8 +465,8 @@ export class bridge {
         });
     }
 
-    async updateExpense(data:Expense) {
-        return await fetch(`${this.url}/api/Expense/${data.colocationId}`, {
+    async updateExpense(data:Expense_Modif) {
+        return await fetch(`${this.url}/api/Expense`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
