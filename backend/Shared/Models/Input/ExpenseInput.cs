@@ -6,7 +6,10 @@ namespace Shared.Models.Input
     public class ExpenseInput()
     {
         [Required]
-        public Guid ColocationId { get; set; }
+        public Guid ColocationId { get; set; } = Guid.NewGuid();
+
+        [Required]
+        public Guid ExpenseCategoryId { get; set; }
 
         [Required]
         public Guid CreatedBy { get; set; }
