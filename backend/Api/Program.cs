@@ -18,16 +18,17 @@ try
     });
 
     // Controllers
-
     builder.Services.AddMvcCore();
     builder.Services.AddControllers().AddNewtonsoftJson();
-
 
     // Error handling
     builder.Services.AddProblemDetails();
     builder.Services.AddExceptionHandler<ExceptionHandler>();
 
     builder.Services.AddEndpointsApiExplorer();
+
+    // Ajout de LazyCache
+    builder.Services.AddLazyCache();
 
     // Services and DI
     builder.Services.Configure<ApiBehaviorOptions>(options =>
