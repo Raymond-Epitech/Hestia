@@ -111,6 +111,20 @@ public class UserService(ILogger<UserService> logger,
         return id;
     }
 
+    public async Task<Guid> QuitColocationAsync(Guid id)
+    {
+        var user = await userRepository.GetByIdAsync(id);
+
+        if (user == null)
+            throw new NotFoundException($"User {id} not found");
+
+        user.ColocationId = Guid.Empty;
+        userRepository.Update(user);
+        await userRepository.SaveChangesAsync();
+        logger.LogInformation($"Succes : User {user.Id} quit colocation {user.ColocationId}");
+        return user.Id;
+    }
+
     /// <summary>
     /// Register a new user
     /// </summary>

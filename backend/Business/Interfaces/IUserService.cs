@@ -11,6 +11,7 @@ namespace Business.Interfaces
         Task<UserOutput> GetUserAsync(Guid id);
         Task<Guid> UpdateUserAsync(UserUpdate user);
         Task<Guid> DeleteUserAsync(Guid id);
+        Task<Guid> QuitColocationAsync(Guid id);
         Task<UserInfo> RegisterUserAsync(string googleToken, UserInput userInput);
         Task<UserInfo> LoginUserAsync(string googleToken);
     }

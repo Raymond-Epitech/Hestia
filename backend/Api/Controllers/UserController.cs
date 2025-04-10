@@ -68,6 +68,15 @@ namespace Api.Controllers
             return Ok(await userService.DeleteUserAsync(id));
         }
 
+        [HttpPut("QuitColocation/{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> QuitColocation(Guid id)
+        {
+            return Ok(await userService.QuitColocationAsync(id));
+        }
+
         [HttpPost("/Register")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
