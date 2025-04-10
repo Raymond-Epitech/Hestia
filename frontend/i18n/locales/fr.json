@@ -34,5 +34,6 @@
   "paidby": "Payé par",
   "poster": "Poster",
   "modify": "Modifier",
-  "delete": "Supprimer"
+  "delete": "Supprimer",
+  "confirm_delete_expense": "Etes-vous sûr de vouloir supprimer cette dépense ?"
 }
