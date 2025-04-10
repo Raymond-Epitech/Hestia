@@ -34,6 +34,25 @@ export type Expense = {
     dateOfPayment: string,
 }
 
+export type Expense_Modif = {
+    id: string,
+    colocationId: string,
+    name: string,
+    description: string,
+    amount: number,
+    category: string,
+    paidBy: string
+    splitType: number,
+    splitBetween: string[],
+    splitValues: {
+        [key: string]: number
+    }
+    splitPercentages: {
+        [key: string]: number
+    }
+    dateOfPayment: string,
+}
+
 export type Expenseget = {
     id:string,
     createdAt: string,
