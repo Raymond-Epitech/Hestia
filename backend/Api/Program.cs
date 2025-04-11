@@ -1,6 +1,9 @@
+using Api.ErrorHandler;
+using Business.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using WebApi.Configuration;
 
@@ -14,31 +17,111 @@ try
         o.ValidateScopes = true;
     });
 
+    // Controllers
+
+    builder.Services.AddMvcCore();
     builder.Services.AddControllers().AddNewtonsoftJson();
+
+
+    // Error handling
+    builder.Services.AddProblemDetails();
+    builder.Services.AddExceptionHandler<ExceptionHandler>();
 
     builder.Services.AddEndpointsApiExplorer();
 
-    builder.Services.ConfigureServices(builder.Configuration, builder.Environment.IsDevelopment());
+    // Services and DI
+    builder.Services.Configure<ApiBehaviorOptions>(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var problemDetails = new ValidationProblemDetails(context.ModelState)
+            {
+                Status = StatusCodes.Status422UnprocessableEntity,
+                Title = "Validation error",
+                Instance = context.HttpContext.Request.Path
+            };
 
+            return new UnprocessableEntityObjectResult(problemDetails);
+        };
+    });
+    builder.Services.ConfigureServices(builder.Configuration, builder.Environment.IsDevelopment());
+    builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+
+    // Authentication
     builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = "Bearer"; // Schéma par défaut pour l'API
-        options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme; // Google pour le challenge
-    })
-    .AddGoogle(googleOptions =>
-    {
-        googleOptions.ClientId = builder.Configuration["GoogleToken:Id"]; // ID Client Google
-        googleOptions.ClientSecret = builder.Configuration["GoogleToken:Secret"]; // Secret Client Google
-        googleOptions.CallbackPath = "/signin-google"; // URI de redirection
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     })
     .AddJwtBearer(options =>
     {
-        options.Authority = "https://accounts.google.com"; // Autorité de Google
-        options.Audience = "VOTRE_CLIENT_ID"; // ID Client Google pour valider le token
+        var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>();
+        
+        if (jwtOptions is null || jwtOptions.Issuer is null || jwtOptions.Audience is null)
+        {
+            throw new Exception("Missing jwt options");
+        }
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = false, //Set to true to check expire
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtOptions.Issuer,
+            ValidAudience = jwtOptions.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret))
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                return Task.CompletedTask;
+            },
+            OnChallenge = context =>
+            {
+                context.HandleResponse();
+                context.Response.StatusCode = 401;
+                context.Response.ContentType = "application/json";
+                return context.Response.WriteAsync("{\"error\": \"Token JWT manquant ou invalide.\"}");
+            }
+        };
     });
 
+    // Authorization
     builder.Services.AddAuthorization();
-    builder.Services.AddSwaggerGen();
+
+    // Swagger
+    builder.Services.AddSwaggerGen(options =>
+    {
+        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "Saisissez votre token JWT.\n\nExemple : 'abc123def456ghi'"
+        });
+
+        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] {}
+            }
+        });
+    });
 
     var app = builder.Build();
 
@@ -50,29 +133,11 @@ try
         app.UseSwaggerUI();
     }
 
+    app.UseExceptionHandler();
+    app.UseStatusCodePages(); 
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
-
-    if (app.Environment.IsDevelopment())
-    {
-        using (var connection = new Npgsql.NpgsqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(builder.Configuration.GetConnectionString("HestiaDb")))
-                {
-                    Console.Error.WriteLine("Connection string is not set in Docker.");
-                }
-                connection.Open();
-                Console.Error.WriteLine("Connection successful!");
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"Connection failed: {ex.Message}");
-            }
-        }
-    }
 
     app.Run();
 }

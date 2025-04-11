@@ -17,7 +17,7 @@ namespace EntityFramework.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -28,21 +28,20 @@ namespace EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("CollocationId")
+                    b.Property<Guid>("ColocationId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("DueDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<bool>("IsDone")
                         .HasColumnType("boolean");
@@ -53,9 +52,9 @@ namespace EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CollocationId");
+                    b.HasIndex("ColocationId");
 
-                    b.ToTable("Chore");
+                    b.ToTable("Chores");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.ChoreEnrollment", b =>
@@ -67,7 +66,7 @@ namespace EntityFramework.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("UserId", "ChoreId");
 
@@ -90,20 +89,19 @@ namespace EntityFramework.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ChoreId");
 
-                    b.ToTable("ChoreMessage");
+                    b.ToTable("ChoreMessages");
                 });
 
-            modelBuilder.Entity("EntityFramework.Models.Collocation", b =>
+            modelBuilder.Entity("EntityFramework.Models.Colocation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -114,11 +112,10 @@ namespace EntityFramework.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -126,7 +123,87 @@ namespace EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Collocation");
+                    b.ToTable("Colocations");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Entry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(19,2)");
+
+                    b.Property<Guid>("ColocationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("ExpenseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ColocationId");
+
+                    b.HasIndex("ExpenseId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Entries");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Expense", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(19,2)");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ColocationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("DateOfPayment")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("PaidBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SplitType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ColocationId");
+
+                    b.HasIndex("PaidBy");
+
+                    b.ToTable("Expenses");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.Reminder", b =>
@@ -135,7 +212,7 @@ namespace EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("CollocationId")
+                    b.Property<Guid>("ColocationId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Color")
@@ -156,17 +233,60 @@ namespace EntityFramework.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("CreatedBy")
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ColocationId");
+
+                    b.ToTable("Reminders");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.ShoppingList", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ColocationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CollocationId");
+                    b.HasIndex("ColocationId");
 
-                    b.ToTable("Reminder");
+                    b.ToTable("ShoppingList");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.SplitBetween", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ExpenseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("UserId", "ExpenseId");
+
+                    b.HasIndex("ExpenseId");
+
+                    b.ToTable("SplitBetweens");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.User", b =>
@@ -175,18 +295,18 @@ namespace EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("CollocationId")
+                    b.Property<Guid?>("ColocationId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("LastConnection")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("PathToProfilePicture")
                         .IsRequired()
@@ -198,20 +318,20 @@ namespace EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CollocationId");
+                    b.HasIndex("ColocationId");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.Chore", b =>
                 {
-                    b.HasOne("EntityFramework.Models.Collocation", "Collocation")
+                    b.HasOne("EntityFramework.Models.Colocation", "Colocation")
                         .WithMany("Chores")
-                        .HasForeignKey("CollocationId")
+                        .HasForeignKey("ColocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Collocation");
+                    b.Navigation("Colocation");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.ChoreEnrollment", b =>
@@ -244,25 +364,101 @@ namespace EntityFramework.Migrations
                     b.Navigation("Chore");
                 });
 
-            modelBuilder.Entity("EntityFramework.Models.Reminder", b =>
+            modelBuilder.Entity("EntityFramework.Models.Entry", b =>
                 {
-                    b.HasOne("EntityFramework.Models.Collocation", "Collocation")
-                        .WithMany("Reminders")
-                        .HasForeignKey("CollocationId")
+                    b.HasOne("EntityFramework.Models.Colocation", "Colocation")
+                        .WithMany()
+                        .HasForeignKey("ColocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Collocation");
+                    b.HasOne("EntityFramework.Models.Expense", "Expense")
+                        .WithMany("Entries")
+                        .HasForeignKey("ExpenseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EntityFramework.Models.User", "User")
+                        .WithMany("Entries")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Colocation");
+
+                    b.Navigation("Expense");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Expense", b =>
+                {
+                    b.HasOne("EntityFramework.Models.Colocation", "Colocation")
+                        .WithMany("Expenses")
+                        .HasForeignKey("ColocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EntityFramework.Models.User", "User")
+                        .WithMany("Expenses")
+                        .HasForeignKey("PaidBy")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Colocation");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Reminder", b =>
+                {
+                    b.HasOne("EntityFramework.Models.Colocation", "Colocation")
+                        .WithMany("Reminders")
+                        .HasForeignKey("ColocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Colocation");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.ShoppingList", b =>
+                {
+                    b.HasOne("EntityFramework.Models.Colocation", "Colocation")
+                        .WithMany("ShoppingList")
+                        .HasForeignKey("ColocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Colocation");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.SplitBetween", b =>
+                {
+                    b.HasOne("EntityFramework.Models.Expense", "Expense")
+                        .WithMany("SplitBetweens")
+                        .HasForeignKey("ExpenseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EntityFramework.Models.User", "User")
+                        .WithMany("SplitBetweens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+
+                    b.Navigation("Expense");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.User", b =>
                 {
-                    b.HasOne("EntityFramework.Models.Collocation", "Collocation")
+                    b.HasOne("EntityFramework.Models.Colocation", "Colocation")
                         .WithMany("Users")
-                        .HasForeignKey("CollocationId")
+                        .HasForeignKey("ColocationId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.Navigation("Collocation");
+                    b.Navigation("Colocation");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.Chore", b =>
@@ -272,18 +468,35 @@ namespace EntityFramework.Migrations
                     b.Navigation("ChoreMessages");
                 });
 
-            modelBuilder.Entity("EntityFramework.Models.Collocation", b =>
+            modelBuilder.Entity("EntityFramework.Models.Colocation", b =>
                 {
                     b.Navigation("Chores");
 
+                    b.Navigation("Expenses");
+
                     b.Navigation("Reminders");
 
+                    b.Navigation("ShoppingList");
+
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Expense", b =>
+                {
+                    b.Navigation("Entries");
+
+                    b.Navigation("SplitBetweens");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.User", b =>
                 {
                     b.Navigation("ChoreEnrollments");
+
+                    b.Navigation("Entries");
+
+                    b.Navigation("Expenses");
+
+                    b.Navigation("SplitBetweens");
                 });
 #pragma warning restore 612, 618
         }

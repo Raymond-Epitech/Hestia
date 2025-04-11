@@ -33,6 +33,7 @@
 <script setup lang="ts">
 import useModal from '~/composables/useModal';
 import { bridge } from '~/service/bridge';
+import { useUserStore } from '~/store/user';
 
 const props = withDefaults(
   defineProps<{
@@ -49,15 +50,19 @@ const props = withDefaults(
   }
 )
 
-const api = new bridge();
+const userStore = useUserStore();
+const { $bridge } = useNuxtApp()
+const api = $bridge;
+api.setjwt(useCookie('token').value ?? '');
 
 const post = ref({
-  createdBy: '',
+  createdBy: userStore.user.id,
   content: '',
   color: '',
   coordX: 0,
   coordY: 0,
-  coordZ: 0
+  coordZ: 0,
+  colocationId: userStore.user.colocationId,
 })
 
 const { modelValue } = toRefs(props)

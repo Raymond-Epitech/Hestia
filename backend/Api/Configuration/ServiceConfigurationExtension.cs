@@ -1,6 +1,8 @@
 ﻿using Business.Interfaces;
 using Business.Services;
 using EntityFramework.Context;
+using EntityFramework.Models;
+using EntityFramework.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebApi.Configuration
@@ -12,15 +14,22 @@ namespace WebApi.Configuration
             services.AddDbContext(configuration, isDevelopment)
                 .AddBusinessServices()
                 .EnableCors();
-            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         }
 
         private static IServiceCollection AddBusinessServices(this IServiceCollection services)
         {
+            // Services
             services.AddScoped<IReminderService, ReminderService>();
             services.AddScoped<IChoreService, ChoreService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<ICollocationService, CollocationService>();
+            services.AddScoped<IColocationService, ColocationService>();
+            services.AddScoped<IJwtService, JwtService>();
+            services.AddScoped<IExpenseService, ExpenseService>();
+
+            // Repositories
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+            // Others
             services.AddHttpContextAccessor();
             return services;
         }
@@ -46,6 +55,8 @@ namespace WebApi.Configuration
                 opt.EnableDetailedErrors(isDevelopment);
                 opt.EnableSensitiveDataLogging(isDevelopment);
             });
+
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
             return services;
         }

@@ -1,9 +1,11 @@
-﻿using Business.Exceptions;
-using Business.Interfaces;
-using Business.Models.Input;
-using Business.Models.Output;
-using Business.Models.Update;
+﻿using Business.Interfaces;
+using Business.Jwt;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Exceptions;
+using Shared.Models.Input;
+using Shared.Models.Output;
+using Shared.Models.Update;
 
 namespace Api.Controllers
 {
@@ -11,127 +13,85 @@ namespace Api.Controllers
     [ApiController]
     public class UserController(IUserService userService) : ControllerBase
     {
-        [HttpGet("GetByCollocationId/{CollocationId}")]
-        public async Task<ActionResult<List<UserOutput>>> GetAllUser(Guid CollocationId)
+        [HttpGet("GetByColocationId/{colocationId}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<UserOutput>>> GetAllUser(Guid colocationId)
         {
-            try
-            {
-                var users = await userService.GetAllUser(CollocationId);
-                return Ok(users);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (colocationId == Guid.Empty)
+                throw new InvalidEntityException("ColocationId is empty");
+
+            return Ok(await userService.GetAllUserAsync(colocationId));
         }
 
         [HttpGet("GetById/{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<UserOutput>> GetUser(Guid id)
         {
-            try
-            {
-                var user = await userService.GetUser(id);
-                return Ok(user);
-            }
-            catch(NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
-        }
+            if (id == Guid.Empty)
+                throw new InvalidEntityException("ColocationId is empty");
 
-        [HttpPost]
-        public async Task<ActionResult> AddUser(UserInput user)
-        {
-            try
-            {
-                await userService.AddUser(user);
-                return Ok();
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            return Ok(await userService.GetUserAsync(id));
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateUser(UserUpdate user)
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> UpdateUser(UserUpdate user)
         {
-            try
-            {
-                await userService.UpdateUser(user);
-                return Ok();
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (user.Id == Guid.Empty)
+                throw new InvalidEntityException("User Id is empty");
+
+            return Ok(await userService.UpdateUserAsync(user));
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteUser(Guid id)
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> DeleteUser(Guid id)
         {
-            try
-            {
-                userService.DeleteUser(id);
-                return Ok();
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex);
-            }
-            catch (ContextException ex)
-            {
-                return UnprocessableEntity(ex);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (id == Guid.Empty)
+                throw new InvalidEntityException("User Id is empty");
+
+            return Ok(await userService.DeleteUserAsync(id));
+        }
+
+        [HttpPost("/Register")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<UserInfo>> Register(string googleToken, UserInput userInput)
+        {
+            if (googleToken is "")
+                throw new InvalidEntityException("Google token is empty");
+
+            return Ok(await userService.RegisterUserAsync(googleToken, userInput));
         }
 
         [HttpPost("/Login")]
-        public ActionResult Login(string googleToken, string clientId)
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<UserInfo>> Login(string googleToken)
         {
-            try
-            {
-                /*if (userService.LoginUser(googleToken, clientId))
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return Unauthorized();
-                }*/
-                throw new NotImplementedException();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+            if (googleToken is "")
+                throw new InvalidEntityException("Google token is empty");
+
+            return Ok(await userService.LoginUserAsync(googleToken));
         }
     }
 }

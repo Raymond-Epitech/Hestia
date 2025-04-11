@@ -1,16 +1,17 @@
-﻿using Business.Models.Input;
-using Business.Models.Output;
-using Business.Models.Update;
+﻿using Business.Jwt;
+using Shared.Models.Input;
+using Shared.Models.Output;
+using Shared.Models.Update;
 
 namespace Business.Interfaces
 {
     public interface IUserService
     {
-        Task<List<UserOutput>> GetAllUser(Guid CollocationId);
-        Task<UserOutput> GetUser(Guid id);
-        Task AddUser(UserInput user);
-        Task UpdateUser(UserUpdate user);
-        Task DeleteUser(Guid id);
-        bool LoginUser(string googleToken, string clientId);
+        Task<List<UserOutput>> GetAllUserAsync(Guid CollocationId);
+        Task<UserOutput> GetUserAsync(Guid id);
+        Task<Guid> UpdateUserAsync(UserUpdate user);
+        Task<Guid> DeleteUserAsync(Guid id);
+        Task<UserInfo> RegisterUserAsync(string googleToken, UserInput userInput);
+        Task<UserInfo> LoginUserAsync(string googleToken);
     }
 }

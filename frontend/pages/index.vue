@@ -1,29 +1,32 @@
 <template>
   <div>
-    <AddPostModal v-model="isModalOpen" @proceed="getall()">
-    </AddPostModal>
+    <AddPostModal v-model="isModalOpen" @proceed="getall()" />
     <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
       <img src="~/public/plus.png" class="plus">
     </button>
     <div v-for="(post, index) in posts" :key="index">
-      <Post :id="post.id" :text="post.content" :color="post.color" />
+      <Post :id="post.id" :text="post.content" :color="post.color" @delete="getall()" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { bridge } from '~/service/bridge.ts';
+import { useUserStore } from '~/store/user';
 
 const isModalOpen = ref(false)
 const openModal = () => (isModalOpen.value = true)
 
-const api = new bridge();
+const userStore = useUserStore();
+const { $bridge } = useNuxtApp()
+const api = $bridge;
+api.setjwt(useCookie('token').value ?? '');
+
 const posts = ref([]);
+api.setjwt(useCookie('token').value ?? '');
 
 const getall = async () => {
-  const data = await api.getAllReminders();
+  const data = await api.getAllReminders(userStore.user.colocationId);
   posts.value = data;
-  console.log(posts.value);
 };
 
 onMounted(async () => {
