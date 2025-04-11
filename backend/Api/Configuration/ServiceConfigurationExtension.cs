@@ -25,6 +25,7 @@ namespace WebApi.Configuration
             services.AddScoped<IColocationService, ColocationService>();
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IExpenseService, ExpenseService>();
+            services.AddScoped<IShoppingListService, ShoppingListService>();
 
             // Repositories
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

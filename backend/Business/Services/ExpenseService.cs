@@ -20,6 +20,11 @@ namespace Business.Services
         IRepository<SplitBetween> splitbetweenRepository,
         IAppCache cache) : IExpenseService
     {
+        /// <summary>
+        /// Get all expense categories
+        /// </summary>
+        /// <param name="colocationId">The colocation you want the expense categories from</param>
+        /// <returns>The list of the expense categories</returns>
         public async Task<List<ExpenseCategoryOutput>> GetAllExpenseCategoriesAsync(Guid colocationId)
         {
             var cacheKey = $"expenseCategories:{colocationId}";
@@ -200,6 +205,11 @@ namespace Business.Services
             return result;
         }
 
+        /// <summary>
+        /// Create the split between the users
+        /// </summary>
+        /// <param name="input">The input user from the DTO in main service function</param>
+        /// <param name="splitedAmounts">The expense splited between the users</param>
         public async Task CreateSplitBetween(InputExpenseDTO input, Dictionary<Guid, decimal> splitedAmounts)
         {
             List<SplitBetween> splitBetween = null!;
@@ -251,7 +261,12 @@ namespace Business.Services
             
             logger.LogInformation($"Succes : All entries added to the db");
         }
-        
+
+        /// <summary>
+        /// Create the entries based on the split type
+        /// </summary>
+        /// <param name="input">The input user from the DTO in main service function</param>
+        /// <exception cref="InvalidEntityException">The expense input in invalid</exception>
         private async Task CreateEntriesBySplitType(InputExpenseDTO input)
         {
             switch (input.SplitType)
@@ -487,6 +502,71 @@ namespace Business.Services
                 logger.LogInformation($"Succes : All balances from the colocation {colocationId} calculated");
 
                 return balances;
+            });
+        }
+
+        /// <summary>
+        /// Calculate the best refund method for a list of debts. Used greedy algorithm to minimize the number of transactions.
+        /// </summary>
+        /// <param name="debts">The list of debts {UserId, Balance}</param>
+        /// <returns>The list of the refund you need to make in order to cancel the debts</returns>
+        private List<RefundOutput> CalculateBestRefundMethod(Dictionary<Guid, decimal> debts)
+        {
+            var debtorList = debts
+                .Where(x => x.Value < 0)
+                .Select(x => new { UserId = x.Key, Amount = -x.Value })
+                .OrderByDescending(x => x.Amount)
+                .ToList();
+
+            var creditorList = debts
+                .Where(x => x.Value > 0)
+                .Select(x => new { UserId = x.Key, Amount = x.Value })
+                .OrderByDescending(x => x.Amount)
+                .ToList();
+
+            var refunds = new List<RefundOutput>();
+
+            int i = 0, j = 0;
+
+            while (i < debtorList.Count && j < creditorList.Count)
+            {
+                var debtor = debtorList[i];
+                var creditor = creditorList[j];
+
+                var transferAmount = Math.Min(debtor.Amount, creditor.Amount);
+
+                refunds.Add(new RefundOutput
+                {
+                    From = debtor.UserId,
+                    To = creditor.UserId,
+                    Amount = Math.Round(transferAmount, 2)
+                });
+
+                debtorList[i] = new { debtor.UserId, Amount = debtor.Amount - transferAmount };
+                creditorList[j] = new { creditor.UserId, Amount = creditor.Amount - transferAmount };
+
+                if (debtorList[i].Amount == 0)
+                    i++;
+
+                if (creditorList[j].Amount == 0)
+                    j++;
+            }
+            return refunds;
+        }
+
+        /// <summary>
+        /// Get the best refund method for a colocation
+        /// </summary>
+        /// <param name="colocationId">The colocation you want the refund method from</param>
+        /// <returns>The best ways to cancel the debts</returns>
+        public async Task<List<RefundOutput>> GetRefundMethodsAsync(Guid colocationId)
+        {
+            var cacheKey = $"refundMethods:{colocationId}";
+            return await cache.GetOrAddAsync(cacheKey, async entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+                var balances = await GetAllBalanceAsync(colocationId);
+                return CalculateBestRefundMethod(balances);
             });
         }
     }

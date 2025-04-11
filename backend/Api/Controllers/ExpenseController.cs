@@ -108,5 +108,18 @@ namespace Api.Controllers
 
             return await expenseService.GetAllBalanceAsync(colocationId);
         }
+
+        [HttpGet("GetRefundMethods/{colocationId}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<List<RefundOutput>> GetRefundMethods(Guid colocationId)
+        {
+            if (colocationId == Guid.Empty)
+                throw new InvalidEntityException("ColocationId is required");
+
+            return await expenseService.GetRefundMethodsAsync(colocationId);
+        }
     }
 }

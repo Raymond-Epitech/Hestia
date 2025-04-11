@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EntityFramework.Models;
 
-public class ShoppingList
+public class ShoppingItem
 {
     [Key]
     public Guid Id { get; set; }
@@ -14,13 +14,15 @@ public class ShoppingList
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     [Required]
-    public Guid ColocationId { get; set; }
+    public Guid ShoppingListId { get; set; }
 
-    [ForeignKey("ColocationId")]
-    public Colocation Colocation { get; set; } = null!;
+    [ForeignKey("ShoppingListId")]
+    public ShoppingList ShoppingList { get; set; } = null!;
 
     [Required]
     public string Name { get; set; } = null!;
 
-    public ICollection<ShoppingItem> ShoppingItems { get; set; } = null!;
+    [Required]
+    public bool IsChecked { get; set; } = false;
 }
+

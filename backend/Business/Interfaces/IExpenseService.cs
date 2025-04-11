@@ -13,5 +13,6 @@ namespace Business.Interfaces
         Task<Guid> UpdateExpenseAsync(ExpenseUpdate input);
         Task<Guid> DeleteExpenseAsync(Guid id);
         Task<Dictionary<Guid, decimal>> GetAllBalanceAsync(Guid colocationId);
+        Task<List<RefundOutput>> GetRefundMethodsAsync(Guid colocationId);
     }
 }

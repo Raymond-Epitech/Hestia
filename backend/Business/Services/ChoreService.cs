@@ -84,6 +84,12 @@ public class ChoreService(
         return chore;
     }
 
+    /// <summary>
+    /// Get all chore messages from a chore
+    /// </summary>
+    /// <param name="choreId">The chore you want the message from</param>
+    /// <returns>The list of the chore messages attaches to the chore</returns>
+    /// <exception cref="NotFoundException">The chore was not found</exception>
     public async Task<List<ChoreMessageOutput>> GetChoreMessageFromChoreAsync(Guid choreId)
     {
         var choreMessages = await choreMessageRepository.Query()
