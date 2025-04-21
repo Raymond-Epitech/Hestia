@@ -3,15 +3,31 @@
         <button class="add-post">
             <img src="~/public/plus.png" class="plus">
         </button>
-        <div class="task-list">
-            <Task></Task>
-            <Task></Task>
+        <div v-for="(task, index) in task_list" :key="index" class="task-list">
+            <Task :id="task.id" :title="task.title" :description="task.description" :createdBy="task.createdBy"
+                :createdAt="task.createdAt" :dueDate="task.dueDate" :isDone="task.isDone"></Task>
         </div>
     </div>
 </template>
 
 <script setup>
+import { useUserStore } from '~/store/user';
 
+const userStore = useUserStore();
+const { $bridge } = useNuxtApp()
+const api = $bridge;
+api.setjwt(useCookie('token').value ?? '');
+
+const task_list = ref([]);
+
+const getall = async () => {
+    const data = await api.getAllChore(userStore.user.colocationId);
+    task_list.value = data;
+};
+
+onMounted(async () => {
+    await getall();
+});
 </script>
 
 <style scoped>

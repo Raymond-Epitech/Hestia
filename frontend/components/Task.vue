@@ -2,28 +2,59 @@
     <div class="task-container">
         <TaskModal v-model="isModalOpen"></TaskModal>
         <div class="task" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
-            <h1>Serpillère</h1>
+            <h1>{{ title }}</h1>
             <div class="due-date">
-                <h1 class="number">24</h1>
-                <h1 class="month">DEC</h1>
+                <div class="number">{{ getDayNumber() }}</div>
+                <div class="month">{{ getMonthAbbreviation() }}</div>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
+const props = defineProps({
+    id: {
+        type: String,
+        required: true,
+    },
+    title: {
+        type: String,
+        required: false,
+    },
+    description: {
+        type: String,
+        required: false,
+    },
+    createdBy: {
+        type: String,
+        required: true,
+    },
+    createdAt: {
+        type: String,
+        required: true,
+    },
+    dueDate: {
+        type: String,
+        required: true,
+    },
+    isDone: {
+        type: Boolean,
+        required: true,
+    }
+})
 const isModalOpen = ref(false)
 const openModal = () => (isModalOpen.value = true)
 
-const task = ref({
-    id: '',
-    createdBy: '',
-    createdAt: '',
-    dueDate: "2024-12-18T06:50:22.796Z",
-    title: 'Serpillère',
-    description: '',
-    isDone: false
-})
+function getDayNumber() {
+    const date = new Date(props.dueDate);
+    return date.getDate();
+}
+
+function getMonthAbbreviation() {
+    const date = new Date(props.dueDate);
+    return date.toLocaleString('en-US', { month: 'short' });
+}
+
 </script>
 
 <style scoped>
@@ -33,11 +64,14 @@ const task = ref({
 }
 
 .task {
-    display: flex;
+    display: grid;
+    grid-template-columns: 4fr 1fr;
     align-items: center;
     justify-content: space-between;
-    width: 380px;
-    height: 100px;
+    width: 90%;
+    height: 80px;
+    padding-left: 5%;
+    padding-right: 5%;
     background-color: #FF6A61;
     margin-bottom: 15px;
     border-radius: 20px;
@@ -45,13 +79,35 @@ const task = ref({
 }
 
 h1 {
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 24px;
 }
 
 .due-date {
-    position: absolute;
-    right: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 6px;
     width: 62px;
     height: 62px;
+}
+
+.number {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+    height: 40px;
+    font-size: 38px;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.month {
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
 }
 </style>

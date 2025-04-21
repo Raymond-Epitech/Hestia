@@ -7,7 +7,6 @@
 </template>
 
 <script setup>
-import { bridge } from '~/service/bridge';
 const props = defineProps({
     id: {
         type: String,
