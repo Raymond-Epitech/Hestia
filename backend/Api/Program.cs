@@ -30,6 +30,9 @@ try
     // Ajout de LazyCache
     builder.Services.AddLazyCache();
 
+    // Add HttpClient
+    builder.Services.AddHttpClient();
+
     // Services and DI
     builder.Services.Configure<ApiBehaviorOptions>(options =>
     {
