@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Shared.Models.Input;
 
 namespace Api.Controllers;
 
@@ -14,6 +15,13 @@ public class GoogleAuthController(
         var clientId = configuration["Google:ClientId"];
         var clientSecret = configuration["Google:ClientSecret"];
         var redirectUri = configuration["Google:RedirectUri"];
+
+        if (string.IsNullOrEmpty(clientId) ||
+            string.IsNullOrEmpty(clientSecret) ||
+            string.IsNullOrEmpty(redirectUri))
+        {
+            return BadRequest(new { error = "Missing configuration values" });
+        }
 
         var parameters = new Dictionary<string, string>
         {
