@@ -1,7 +1,7 @@
 ﻿using Business.Interfaces;
-using Business.Mappers;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
+using LazyCache;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Enums;
@@ -13,28 +13,58 @@ using Shared.Models.Update;
 
 namespace Business.Services
 {
-    public class ExpenseService(ILogger<ColocationService> _logger,
-        IRepository<Expense> _expenseRepository,
-        IRepository<Entry> _entryRepository,
-        IRepository<SplitBetween> _splitbetweenRepository) : IExpenseService
+    public class ExpenseService(ILogger<ColocationService> logger,
+        IRepository<ExpenseCategory> expenseCategoryRepository,
+        IRepository<Expense> expenseRepository,
+        IRepository<Entry> entryRepository,
+        IRepository<SplitBetween> splitbetweenRepository,
+        IAppCache cache) : IExpenseService
     {
+        /// <summary>
+        /// Get all expense categories
+        /// </summary>
+        /// <param name="colocationId">The colocation you want the expense categories from</param>
+        /// <returns>The list of the expense categories</returns>
+        public async Task<List<ExpenseCategoryOutput>> GetAllExpenseCategoriesAsync(Guid colocationId)
+        {
+            var cacheKey = $"expenseCategories:{colocationId}";
+
+            return await cache.GetOrAddAsync(cacheKey, async entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+                var expenseCategories = await expenseCategoryRepository.Query()
+                    .Where(e => e.ColocationId == colocationId)
+                    .Include(e => e.Expenses)
+                    .Select(e => new ExpenseCategoryOutput
+                    {
+                        Id = e.Id,
+                        Name = e.Name,
+                        TotalAmount = e.Expenses.Sum(e => e.Amount)
+                    })
+                    .ToListAsync();
+
+                logger.LogInformation("Succes : All expense categories were retrived from db");
+
+                return expenseCategories;
+            });
+        }
+
         /// <summary>
         /// Get all expenses
         /// </summary>
         /// <param name="ColocationId">The colocation of the returned expenses</param>
         /// <returns>All the expense of the colocation</returns>
         /// <exception cref="ContextException">An error happened during the retriving of expenses</exception>
-        public async Task<List<OutputFormatForExpenses>> GetAllExpensesAsync(Guid colocationId)
+        public async Task<List<ExpenseOutput>> GetAllExpensesAsync(Guid expenseCategoryId)
         {
-            var expensesRaw = await _expenseRepository.Query()
-                .Where(e => e.ColocationId == colocationId)
+            var expensesRaw = await expenseRepository.Query()
+                .Where(e => e.ExpenseCategoryId == expenseCategoryId)
                 .Include(e => e.SplitBetweens)
                 .ToListAsync();
 
             var expenses = expensesRaw.Select(e => new ExpenseOutput
             {
                 Id = e.Id,
-                ColocationId = e.ColocationId,
                 CreatedBy = e.CreatedBy,
                 Name = e.Name,
                 Description = e.Description,
@@ -43,12 +73,12 @@ namespace Business.Services
                 SplitType = Enum.Parse<SplitTypeEnum>(e.SplitType),
                 SplitBetween = e.SplitBetweens.AsEnumerable().ToDictionary(k => k.UserId, v => v.Amount),
                 DateOfPayment = e.DateOfPayment,
-                Category = e.Category
+                ExpenseCategoryId = e.ExpenseCategoryId
             }).ToList();
 
-            _logger.LogInformation("Succes : All expenses were retrived from db");
+            logger.LogInformation("Succes : All expenses were retrived from db");
 
-            return expenses.ToOutputFormat();
+            return expenses;
         }
 
         /// <summary>
@@ -59,7 +89,7 @@ namespace Business.Services
         /// <exception cref="ContextException">An error occured during the retrival of the expense</exception>
         public async Task<ExpenseOutput> GetExpenseAsync(Guid id)
         {
-            var expenseRaw = await _expenseRepository.Query()
+            var expenseRaw = await expenseRepository.Query()
                 .Where(e => e.Id == id)
                 .Include(e => e.SplitBetweens)
                 .FirstOrDefaultAsync();
@@ -72,7 +102,6 @@ namespace Business.Services
             var expense = new ExpenseOutput
             {
                 Id = expenseRaw.Id,
-                ColocationId = expenseRaw.ColocationId,
                 CreatedBy = expenseRaw.CreatedBy,
                 Name = expenseRaw.Name,
                 Description = expenseRaw.Description,
@@ -81,10 +110,10 @@ namespace Business.Services
                 SplitType = Enum.Parse<SplitTypeEnum>(expenseRaw.SplitType),
                 SplitBetween = expenseRaw.SplitBetweens.AsEnumerable().ToDictionary(k => k.UserId, v => v.Amount),
                 DateOfPayment = expenseRaw.DateOfPayment,
-                Category = expenseRaw.Category
+                ExpenseCategoryId = expenseRaw.ExpenseCategoryId
             };
                 
-            _logger.LogInformation($"Succes : Expense with id {id} was retrived from db");
+            logger.LogInformation($"Succes : Expense with id {id} was retrived from db");
                 
             return expense;
         }
@@ -176,6 +205,11 @@ namespace Business.Services
             return result;
         }
 
+        /// <summary>
+        /// Create the split between the users
+        /// </summary>
+        /// <param name="input">The input user from the DTO in main service function</param>
+        /// <param name="splitedAmounts">The expense splited between the users</param>
         public async Task CreateSplitBetween(InputExpenseDTO input, Dictionary<Guid, decimal> splitedAmounts)
         {
             List<SplitBetween> splitBetween = null!;
@@ -187,7 +221,7 @@ namespace Business.Services
                 Amount = splitedAmounts[x]
             }).ToList();
 
-            await _splitbetweenRepository.AddRangeAsync(splitBetween);
+            await splitbetweenRepository.AddRangeAsync(splitBetween);
         }
 
         /// <summary>
@@ -208,7 +242,7 @@ namespace Business.Services
                     Amount = -splitedAmounts[input.SplitBetween[i]]
                 };
                 entryList.Add(newEntry);
-                _logger.LogInformation($"Succes : Entry for user {newEntry.UserId} added");
+                logger.LogInformation($"Succes : Entry for user {newEntry.UserId} added");
             }
 
             var paiment = new Entry
@@ -219,16 +253,21 @@ namespace Business.Services
                 ColocationId = input.ColocationId,
             };
             entryList.Add(paiment);
-            _logger.LogInformation($"Succes : Entry for user {paiment.UserId} added");
+            logger.LogInformation($"Succes : Entry for user {paiment.UserId} added");
 
             await CreateSplitBetween(input, splitedAmounts);
 
-            await _entryRepository.AddRangeAsync(entryList);
+            await entryRepository.AddRangeAsync(entryList);
             
-            _logger.LogInformation($"Succes : All entries added to the db");
+            logger.LogInformation($"Succes : All entries added to the db");
         }
-        
-        private async Task CreateEntriesAndUpdateBalance(InputExpenseDTO input)
+
+        /// <summary>
+        /// Create the entries based on the split type
+        /// </summary>
+        /// <param name="input">The input user from the DTO in main service function</param>
+        /// <exception cref="InvalidEntityException">The expense input in invalid</exception>
+        private async Task CreateEntriesBySplitType(InputExpenseDTO input)
         {
             switch (input.SplitType)
             {
@@ -238,7 +277,7 @@ namespace Business.Services
                         throw new InvalidEntityException("The expense must have a value for each person and the total must be equal to the sum of the expenses");
                     }
 
-                    _logger.LogInformation("Succes : Expense is split by value");
+                    logger.LogInformation("Succes : Expense is split by value");
 
                     input.SplitBetween = input.SplitValues.Keys.ToList();
 
@@ -253,7 +292,7 @@ namespace Business.Services
                         throw new InvalidEntityException("The expense must have a percentage for each person and the percentage must be equal to 100%");
                     }
 
-                    _logger.LogInformation("Succes : Expense is split by percentage");
+                    logger.LogInformation("Succes : Expense is split by percentage");
 
                     input.SplitBetween = input.SplitPercentages.Keys.ToList();
 
@@ -267,14 +306,14 @@ namespace Business.Services
                         throw new InvalidEntityException("The expense must be not null and split between number must at least be 1 people");
                     }
 
-                    _logger.LogInformation("Succes : Expense is split evenly");
+                    logger.LogInformation("Succes : Expense is split evenly");
 
                     await AddEntries(input, SplitAmountEvenly(input.Amount, input.SplitBetween));
 
                     break;
             }
 
-            _logger.LogInformation("Succes : All data added to the db");
+            logger.LogInformation("Succes : All data added to the db");
         }
 
         /// <summary>
@@ -286,31 +325,30 @@ namespace Business.Services
         /// <exception cref="ContextException">An error when the expense is created in the DB</exception>
         public async Task<Guid> AddExpenseAsync(ExpenseInput input)
         {
-            _logger.LogInformation("Succes : Transaction started");
+            logger.LogInformation("Succes : Transaction started");
 
             var expense = new Expense
             {
                 Id = Guid.NewGuid(),
-                ColocationId = input.ColocationId,
                 CreatedBy = input.CreatedBy,
                 Name = input.Name,
                 Description = input.Description,
                 Amount = input.Amount,
-                Category = input.Category,
+                ExpenseCategoryId = input.ExpenseCategoryId,
                 PaidBy = input.PaidBy,
                 SplitType = input.SplitType.ToString(),
                 DateOfPayment = input.DateOfPayment
             };
 
-            using (var transaction = await _expenseRepository.BeginTransactionAsync())
+            using (var transaction = await expenseRepository.BeginTransactionAsync())
             {
                 try
                 {
-                    await CreateEntriesAndUpdateBalance(new InputExpenseDTO
+                    await CreateEntriesBySplitType(new InputExpenseDTO
                     {
                         Id = expense.Id,
                         Amount = input.Amount,
-                        ColocationId = input.ColocationId,
+                        ExpenseCategoryId = input.ExpenseCategoryId,
                         PaidBy = input.PaidBy,
                         SplitBetween = input.SplitBetween,
                         SplitPercentages = input.SplitPercentages,
@@ -318,18 +356,22 @@ namespace Business.Services
                         SplitType = input.SplitType
                     });
 
-                    await _expenseRepository.AddAsync(expense);
-                    await _expenseRepository.SaveChangesAsync();
+                    await expenseRepository.AddAsync(expense);
+                    await expenseRepository.SaveChangesAsync();
+
+                    // Invalidate outated cache
+                    cache.Remove($"balances:{input.ColocationId}");
+                    cache.Remove($"expenseCategories:{input.ColocationId}");
 
                     transaction.Commit();
 
-                    _logger.LogInformation("Succes : Transaction commited");
+                    logger.LogInformation("Succes : Transaction commited");
 
                     return expense.Id;
                 }
                 catch (InvalidEntityException)
                 {
-                    _logger.LogError("The input is invalid, transaction rollbacked");
+                    logger.LogError("The input is invalid, transaction rollbacked");
                     await transaction.RollbackAsync();
                     throw;
                 }
@@ -348,12 +390,12 @@ namespace Business.Services
         /// <returns>The Guid of the updated expense</returns>
         public async Task<Guid> UpdateExpenseAsync(ExpenseUpdate input)
         {
-            var expense = await _expenseRepository.GetByIdAsync(input.Id);
+            var expense = await expenseRepository.GetByIdAsync(input.Id);
 
             if (expense is null)
                 throw new NotFoundException($"The expense with id {input.Id} was not found");
 
-            using (var transaction = await _expenseRepository.BeginTransactionAsync())
+            using (var transaction = await expenseRepository.BeginTransactionAsync())
             {
                 try
                 {
@@ -363,18 +405,18 @@ namespace Business.Services
                     expense.Amount = input.Amount;
                     expense.PaidBy = input.PaidBy;
                     expense.SplitType = input.SplitType.ToString();
-                    expense.Category = input.Category;
+                    expense.ExpenseCategoryId = input.ExpenseCategoryId;
                     expense.DateOfPayment = input.DateOfPayment;
 
-                    var entries = await _entryRepository.Query()
+                    var entries = await entryRepository.Query()
                         .Where(e => e.ExpenseId == expense.Id)
                         .ExecuteDeleteAsync();
 
-                    var splitbetween = await _splitbetweenRepository.Query()
+                    var splitbetween = await splitbetweenRepository.Query()
                         .Where(e => e.ExpenseId == expense.Id)
                         .ExecuteDeleteAsync();
 
-                    await CreateEntriesAndUpdateBalance(new InputExpenseDTO
+                    await CreateEntriesBySplitType(new InputExpenseDTO
                     {
                         Id = input.Id,
                         Amount = input.Amount,
@@ -383,22 +425,27 @@ namespace Business.Services
                         SplitPercentages = input.SplitPercentages,
                         SplitValues = input.SplitValues,
                         SplitType = input.SplitType,
-                        ColocationId = input.ColocationId
+                        ColocationId = input.ColocationId,
+                        ExpenseCategoryId = input.ExpenseCategoryId
                     });
 
-                    _expenseRepository.Update(expense);
+                    expenseRepository.Update(expense);
 
-                    await _expenseRepository.SaveChangesAsync();
+                    await expenseRepository.SaveChangesAsync();
+
+                    // Invalidate outated cache
+                    cache.Remove($"balances:{input.ColocationId}");
+                    cache.Remove($"expenseCategories:{input.ColocationId}");
 
                     transaction.Commit();
 
-                    _logger.LogInformation("Succes : Transaction commited");
+                    logger.LogInformation("Succes : Transaction commited");
 
                     return expense.Id;
                 }
                 catch (InvalidEntityException)
                 {
-                    _logger.LogError("The input object is invalid, transaction rollbacked");
+                    logger.LogError("The input object is invalid, transaction rollbacked");
                     await transaction.RollbackAsync();
                     throw;
                 }
@@ -417,9 +464,17 @@ namespace Business.Services
         /// <returns>The Guid of the deleted expense</returns>
         public async Task<Guid> DeleteExpenseAsync(Guid id)
         {
-            await _expenseRepository.DeleteFromIdAsync(id);
-            await _expenseRepository.SaveChangesAsync();
-            _logger.LogInformation($"Succes : Expense with id {id} deleted");
+            var expense = await expenseRepository.GetByIdAsync(id);
+
+            if (expense is null)
+                throw new InvalidDataException($"No expense found with this id : {id}");
+
+            expenseRepository.Delete(expense);
+            await expenseRepository.SaveChangesAsync();
+
+            cache.Remove($"balances:{expense.ExpenseCategory.ColocationId}");
+
+            logger.LogInformation($"Succes : Expense with id {id} deleted");
             return id;
         }
 
@@ -431,17 +486,88 @@ namespace Business.Services
         /// <exception cref="ContextException">Error in db</exception>
         public async Task<Dictionary<Guid, decimal>> GetAllBalanceAsync(Guid colocationId)
         {
-            var entries = await _entryRepository.Query()
+            string cacheKey = $"balances:{colocationId}";
+
+            return await cache.GetOrAddAsync(cacheKey, async entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+                var entries = await entryRepository.Query()
                 .Where(e => e.ColocationId == colocationId)
                 .ToListAsync();
 
-            var balances = entries.GroupBy(k => k.UserId)
-                .ToDictionary(k => k.Key,
-                v => v.Sum(e => e.Amount));
+                var balances = entries.GroupBy(k => k.UserId)
+                    .ToDictionary(k => k.Key,
+                    v => v.Sum(e => e.Amount));
 
-            _logger.LogInformation($"Succes : All balances from the colocation {colocationId} calculated");
-                
-            return balances;
+                logger.LogInformation($"Succes : All balances from the colocation {colocationId} calculated");
+
+                return balances;
+            });
+        }
+
+        /// <summary>
+        /// Calculate the best refund method for a list of debts. Used greedy algorithm to minimize the number of transactions.
+        /// </summary>
+        /// <param name="debts">The list of debts {UserId, Balance}</param>
+        /// <returns>The list of the refund you need to make in order to cancel the debts</returns>
+        private List<RefundOutput> CalculateBestRefundMethod(Dictionary<Guid, decimal> debts)
+        {
+            var debtorList = debts
+                .Where(x => x.Value < 0)
+                .Select(x => new { UserId = x.Key, Amount = -x.Value })
+                .OrderByDescending(x => x.Amount)
+                .ToList();
+
+            var creditorList = debts
+                .Where(x => x.Value > 0)
+                .Select(x => new { UserId = x.Key, Amount = x.Value })
+                .OrderByDescending(x => x.Amount)
+                .ToList();
+
+            var refunds = new List<RefundOutput>();
+
+            int i = 0, j = 0;
+
+            while (i < debtorList.Count && j < creditorList.Count)
+            {
+                var debtor = debtorList[i];
+                var creditor = creditorList[j];
+
+                var transferAmount = Math.Min(debtor.Amount, creditor.Amount);
+
+                refunds.Add(new RefundOutput
+                {
+                    From = debtor.UserId,
+                    To = creditor.UserId,
+                    Amount = Math.Round(transferAmount, 2)
+                });
+
+                debtorList[i] = new { debtor.UserId, Amount = debtor.Amount - transferAmount };
+                creditorList[j] = new { creditor.UserId, Amount = creditor.Amount - transferAmount };
+
+                if (debtorList[i].Amount == 0)
+                    i++;
+
+                if (creditorList[j].Amount == 0)
+                    j++;
+            }
+            return refunds;
+        }
+
+        /// <summary>
+        /// Get the best refund method for a colocation
+        /// </summary>
+        /// <param name="colocationId">The colocation you want the refund method from</param>
+        /// <returns>The best ways to cancel the debts</returns>
+        public async Task<List<RefundOutput>> GetRefundMethodsAsync(Guid colocationId)
+        {
+            var cacheKey = $"refundMethods:{colocationId}";
+            return await cache.GetOrAddAsync(cacheKey, async entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+                var balances = await GetAllBalanceAsync(colocationId);
+                return CalculateBestRefundMethod(balances);
+            });
         }
     }
 }

@@ -16,12 +16,6 @@ public class Expense
     public Guid CreatedBy { get; set; }
 
     [Required]
-    public Guid ColocationId { get; set; }
-
-    [ForeignKey("ColocationId")]
-    public Colocation Colocation { get; set; } = null!;
-
-    [Required]
     public string Name { get; set; } = null!;
 
     public string? Description { get; set; }
@@ -42,7 +36,10 @@ public class Expense
     public DateTime DateOfPayment { get; set; }
 
     [Required]
-    public string Category { get; set; } = null!;
+    public Guid ExpenseCategoryId { get; set; }
+
+    [ForeignKey("ExpenseCategoryId")]
+    public ExpenseCategory ExpenseCategory { get; set; } = null!;
 
     public ICollection<SplitBetween> SplitBetweens { get; set; } = null!;
     public ICollection<Entry> Entries { get; set; } = null!;

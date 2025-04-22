@@ -3,15 +3,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EntityFramework.Models;
 
-public class ShoppingList
+public class ExpenseCategory
 {
     [Key]
     public Guid Id { get; set; }
-
-    [Required]
-    public Guid CreatedBy { get; set; }
-
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     [Required]
     public Guid ColocationId { get; set; }
@@ -22,5 +17,6 @@ public class ShoppingList
     [Required]
     public string Name { get; set; } = null!;
 
-    public ICollection<ShoppingItem> ShoppingItems { get; set; } = null!;
+    public ICollection<Expense> Expenses { get; set; } = null!;
 }
+
