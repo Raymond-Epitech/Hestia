@@ -2,17 +2,22 @@
     <transition name="modal">
         <div v-if="visible">
             <div class="modal-background" @click="handleClose">
-                <div class="modal" @click.stop>
-                    <div class="modal-header left" v-if="header" :class="{ 'modal-no-border': !borders }">
-                        <slot name="header"></slot>
+                <div class="modal" :class="props.color" @click.stop>
+                    <div class="modal-header left" :class="{ 'modal-no-border': !borders }">
+                        <h1>{{ title }}</h1>
+                        <div class="due-date">
+                            <div class="number">{{ getDayNumber() }}</div>
+                            <div class="month">{{ getMonthAbbreviation() }}</div>
+                        </div>
                     </div>
 
                     <div class="modal-body left">
                         <slot name="content"></slot>
+                        <h1>{{ description }}</h1>
                     </div>
 
                     <!-- Buttons -->
-                    <div class="modal-buttons" v-if="buttons" :class="{ 'modal-no-border': !borders }">
+                    <div class="modal-buttons" :class="{ 'modal-no-border': !borders }">
                         <slot name="buttons">
                             <button class="button button-cancel" @click="handleClose">Cancel</button>
                             <button class="button button-proceed" @click="handleProceed">Yes, Proceed</button>
@@ -25,22 +30,14 @@
 </template>
 
 <script setup lang="ts">
-import useModal from '~/composables/useModal';
 
-const props = withDefaults(
-    defineProps<{
-        name?: string
-        modelValue?: boolean
-        header?: boolean
-        buttons?: boolean
-        borders?: boolean
-    }>(),
-    {
-        header: true,
-        buttons: true,
-        borders: true,
-    }
-)
+const props = defineProps<{
+    title: string
+    modelValue?: boolean
+    description: string
+    color: string
+    dueDate: string
+}>();
 
 const { modelValue } = toRefs(props)
 const { open, close, toggle, visible } = useModal(props.name)
@@ -68,6 +65,16 @@ const handleProceed = async () => {
     emit('proceed')
 }
 
+function getDayNumber() {
+    const date = new Date(props.dueDate);
+    return date.getDate();
+}
+
+function getMonthAbbreviation() {
+    const date = new Date(props.dueDate);
+    return date.toLocaleString('en-US', { month: 'short' });
+}
+
 watch(
     modelValue,
     (value, oldValue) => {
@@ -84,6 +91,18 @@ watch(visible, (value) => {
 </script>
 
 <style>
+.red {
+    background-color: #FF6A61;
+}
+
+.orange {
+    background-color: #FFC93D;
+}
+
+.green {
+    background-color: #85AD7B;
+}
+
 .modal {
     width: 100%;
     height: 300px;
@@ -94,7 +113,6 @@ watch(visible, (value) => {
     border-bottom-left-radius: 50px;
     border-bottom-right-radius: 50px;
     animation: slideIn 0.2s;
-    background-color: #FF6A61;
     backdrop-filter: blur(8px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
     display: flex;

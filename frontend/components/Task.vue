@@ -1,7 +1,9 @@
 <template>
     <div class="task-container">
-        <TaskModal v-model="isModalOpen"></TaskModal>
-        <div class="task" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
+        <TaskModal v-model="isModalOpen" :title="title" :description="description" :color="getColor()"
+            :dueDate="dueDate"></TaskModal>
+        <div class="task" :class="[getColor()]" data-toggle="modal" data-target=".bd-example-modal-sm"
+            @click="openModal">
             <h1>{{ title }}</h1>
             <div class="due-date">
                 <div class="number">{{ getDayNumber() }}</div>
@@ -55,12 +57,39 @@ function getMonthAbbreviation() {
     return date.toLocaleString('en-US', { month: 'short' });
 }
 
+function getColor() {
+    const date = new Date(props.dueDate);
+    const today = new Date();
+    const daysDifference = Math.ceil((date - today) / (1000 * 3600 * 24));
+    if (daysDifference < 1) {
+        return "red"
+    } else if (daysDifference < 3) {
+        return "orange"
+    } else if (daysDifference > 3) {
+        return "green"
+    } else {
+        return "red"
+    }
+}
+
 </script>
 
 <style scoped>
 .task-container {
     display: flex;
     justify-content: center;
+}
+
+.red {
+    background-color: #FF6A61;
+}
+
+.orange {
+    background-color: #FFC93D;
+}
+
+.green {
+    background-color: #85AD7B;
 }
 
 .task {
@@ -72,7 +101,6 @@ function getMonthAbbreviation() {
     height: 80px;
     padding-left: 5%;
     padding-right: 5%;
-    background-color: #FF6A61;
     margin-bottom: 15px;
     border-radius: 20px;
     box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
