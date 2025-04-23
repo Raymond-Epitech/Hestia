@@ -3,20 +3,24 @@ using Business.Jwt;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
 using Google.Apis.Auth;
+using Google.Apis.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
+using Shared.Models.DTO;
 using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace Business.Services;
 
 public class UserService(ILogger<UserService> logger,
     IRepository<User> userRepository,
-    IJwtService jwtService) : IUserService
+    IJwtService jwtService,
+    System.Net.Http.IHttpClientFactory httpClientFactory) : IUserService
 {
     /// <summary>
     /// Get all users from a collocation
@@ -125,6 +129,46 @@ public class UserService(ILogger<UserService> logger,
         return user.Id;
     }
 
+    private async Task<string> GetGoogleJwt(GoogleCredentials googleCredentials, string code)
+    {
+
+        if (string.IsNullOrEmpty(googleCredentials.ClientId) ||
+            string.IsNullOrEmpty(googleCredentials.ClientSecret) ||
+            string.IsNullOrEmpty(googleCredentials.RedirectUri))
+        {
+            throw new InvalidEntityException("Google credentials are not set");
+        }
+
+        var parameters = new Dictionary<string, string>
+        {
+            { "code", code },
+            { "client_id", googleCredentials.ClientId },
+            { "client_secret", googleCredentials.ClientSecret },
+            { "redirect_uri", googleCredentials.RedirectUri },
+            { "grant_type", "authorization_code" }
+        };
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "https://oauth2.googleapis.com/token")
+        {
+            Content = new FormUrlEncodedContent(parameters)
+        };
+
+        var client = httpClientFactory.CreateClient();
+        var response = await client.SendAsync(request);
+        var responseContent = await response.Content.ReadAsStringAsync();
+        var tokenResponse = JsonSerializer.Deserialize<GoogleTokenResponse>(responseContent, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+
+        if (!response.IsSuccessStatusCode || tokenResponse is null || tokenResponse.IdToken is null)
+        {
+            throw new InvalidEntityException($"Google token exchange failed: {responseContent}");
+        }
+        
+        return tokenResponse.IdToken;
+    }
+
     /// <summary>
     /// Register a new user
     /// </summary>
@@ -133,8 +177,10 @@ public class UserService(ILogger<UserService> logger,
     /// <returns>The JWT and the new user's info</returns>
     /// <exception cref="ContextException">Error in the DB or context</exception>
     /// <exception cref="AlreadyExistException">User already registered</exception>
-    public async Task<UserInfo> RegisterUserAsync(string googleToken, UserInput userInput)
+    public async Task<UserInfo> RegisterUserAsync(string code, UserInput userInput, GoogleCredentials googleCredentials)
     {
+        var googleToken = await GetGoogleJwt(googleCredentials, code);
+
         GoogleJsonWebSignature.Payload validPayload = null!;
 
         validPayload = new GoogleJsonWebSignature.Payload()
@@ -211,8 +257,10 @@ public class UserService(ILogger<UserService> logger,
     /// <exception cref="InvalidTokenException">Token is invalid</exception>
     /// <exception cref="NotFoundException">User is not found</exception>
     /// <returns>Info of user</returns>
-    public async Task<UserInfo> LoginUserAsync(string googleToken)
+    public async Task<UserInfo> LoginUserAsync(string code, GoogleCredentials googleCredentials)
     {
+        var googleToken = await GetGoogleJwt(googleCredentials, code);
+
         GoogleJsonWebSignature.Payload validPayload = null!;
 
         try
