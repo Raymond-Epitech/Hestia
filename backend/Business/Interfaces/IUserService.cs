@@ -1,4 +1,5 @@
 ﻿using Business.Jwt;
+using Shared.Models.DTO;
 using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
@@ -12,7 +13,7 @@ namespace Business.Interfaces
         Task<Guid> UpdateUserAsync(UserUpdate user);
         Task<Guid> DeleteUserAsync(Guid id);
         Task<Guid> QuitColocationAsync(Guid id);
-        Task<UserInfo> RegisterUserAsync(string googleToken, UserInput userInput);
-        Task<UserInfo> LoginUserAsync(string googleToken);
+        Task<UserInfo> RegisterUserAsync(string code, UserInput userInput, GoogleCredentials googleCredentials);
+        Task<UserInfo> LoginUserAsync(string code, GoogleCredentials googleCredentials);
     }
 }
