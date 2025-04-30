@@ -17,28 +17,40 @@ const { authenticateUser } = useAuthStore();
 const { authenticated } = storeToRefs(useAuthStore());
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
-const registretion = ref(false);
 const router = useRouter();
 const route = useRoute()
 
 onMounted(async () => {
     const code = route.query.code
     console.log(code)
+    const register_token = useCookie('register_token');
 
     if (code) {
-        const data = await $bridge.login(code);
-        if (data.error) {
-            console.error(data.error);
-            registretion.value = true;
-            return;
-        }
-        if (data) {
-            $bridge.setjwt(data.jwt);
-            userStore.setUser(data.user);
-            await authenticateUser(data.jwt);
-        }
-        if (authenticated) {
-            router.push('/');
+        if (register_token.value) {
+            const newuser = {
+                username: register_token.value
+            };
+            const data = await $bridge.addUser(newuser, code);
+            console.log("user registerd")
+            if (data) {
+                $bridge.setjwt(data.jwt);
+                userStore.setUser(data.user);
+                await authenticateUser(data.jwt);
+            }
+            if (authenticated) {
+                router.push('/');
+            }
+        } else {
+            const data = await $bridge.login(code);
+            console.log("user logged in")
+            if (data) {
+                $bridge.setjwt(data.jwt);
+                userStore.setUser(data.user);
+                await authenticateUser(data.jwt);
+            }
+            if (authenticated) {
+                router.push('/');
+            }
         }
     }
 
