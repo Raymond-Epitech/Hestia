@@ -6,20 +6,22 @@
             <h2 class="register-font">Nom d'utilisateur :</h2>
             <input class="input" type="text" placeholder="Nom d'utilisateur" v-model="username" />
             <h2 class="register-font">Créer un compte :</h2>
-            <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton>
+            <a
+                href="https://accounts.google.com/o/oauth2/v2/auth?client_id=80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google-callback&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent">
+                Register with Google</a>
 
         </div>
         <div v-else class="login">
             <h2 class="login-font">Login : </h2>
-            <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton>
-            <GoogleSignInButton @success="loginWithGoogle" @error="handleLoginError"></GoogleSignInButton>
-            <button @success="loginWithGoogle">button de login</button>
+            <a
+                href="https://accounts.google.com/o/oauth2/v2/auth?client_id=80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google-callback&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent">
+                Login with Google</a>
+            <button class="register-button" @click="register()">Register</button>
         </div>
     </div>
 </template>
 
 <script setup>
-import { SocialLogin } from '@capgo/capacitor-social-login'
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/store/auth';
 import { useUserStore } from '~/store/user';
@@ -53,15 +55,6 @@ const handleregistration = async (response) => {
     }
 };
 
-const loginWithGoogle = async () => {
-    try {
-        const response = await SocialLogin.signIn({ provider: 'google' })
-        console.log('Logged in user:', response)
-    } catch (err) {
-        console.error('Login failed:', err)
-    }
-}
-
 const handleLoginSuccess = async (response) => {
     if (registretion.value) {
         handleregistration(response);
@@ -89,6 +82,10 @@ const handleLoginSuccess = async (response) => {
 const handleLoginError = () => {
     console.error("Login failed");
 };
+
+function register() {
+    registretion.value = true;
+}
 
 </script>
 
@@ -155,5 +152,15 @@ h2 {
 .login-font {
     padding-bottom: 25px;
     font-size: 50px;
+}
+
+.register-button {
+    width: 68px;
+    height: 28px;
+    margin-top: 16px;
+    border-radius: 8px;
+    color: #E7FEED;
+    background-color: #074338;
+    font-weight: 600;
 }
 </style>

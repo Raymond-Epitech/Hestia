@@ -114,7 +114,7 @@ export class bridge {
     // User section:
 
     async login(google_token: string) {
-        return await fetch(this.url + "/Login?googleToken=" + google_token, {
+        return await fetch(this.url + "/Login?code=" + google_token, {
             method: 'POST'
         }).then(async response => {
             if (response.status == 200) {
@@ -421,7 +421,7 @@ export class bridge {
 
     // Expense section:
 
-    async getExpenseByColocationId(colocationId:string): Promise<ExpenseList[]> {
+    async getExpenseByColocationId(colocationId: string): Promise<ExpenseList[]> {
         return await fetch(`${this.url}/api/Expense/GetByColocationId/${colocationId}`, {
             method: 'GET',
             headers: {
@@ -435,7 +435,7 @@ export class bridge {
         })
     }
 
-    async getExpenseById(id:string): Promise<Expenseget> {
+    async getExpenseById(id: string): Promise<Expenseget> {
         return await fetch(`${this.url}/api/Expense/GetById/${id}`, {
             method: 'GET',
             headers: {
@@ -465,7 +465,7 @@ export class bridge {
         });
     }
 
-    async updateExpense(data:Expense) {
+    async updateExpense(data: Expense) {
         return await fetch(`${this.url}/api/Expense/${data.colocationId}`, {
             method: 'PUT',
             headers: {
@@ -481,7 +481,7 @@ export class bridge {
         });
     }
 
-    async deleteExpense(id:string) {
+    async deleteExpense(id: string) {
         return await fetch(`${this.url}/api/Expense/${id}`, {
             method: 'DELETE',
             headers: {
@@ -495,7 +495,7 @@ export class bridge {
         });
     }
 
-    async getBalance(colocationId:string): Promise<UserBalance> {
+    async getBalance(colocationId: string): Promise<UserBalance> {
         return await fetch(`${this.url}/api/Expense/GetBalance/${colocationId}`, {
             method: 'GET',
             headers: {
@@ -509,7 +509,7 @@ export class bridge {
         })
     }
 
-    async updateBalance(colocationId:string): Promise<UserBalance[]> {
+    async updateBalance(colocationId: string): Promise<UserBalance[]> {
         return await fetch(`${this.url}/api/Expense/CalculBalance/${colocationId}`, {
             method: 'PUT',
             headers: {
