@@ -4,16 +4,18 @@
         <div v-if="registretion" class="register">
             <h2 class="login-font">Register : </h2>
             <h2 class="register-font">Nom d'utilisateur :</h2>
-            <input class="input" type="text" placeholder="Nom d'utilisateur" v-model="username" />
+            <input class="input" type="text" placeholder="Nom d'utilisateur" v-model="username" required />
+            <h2 class="register-font">Id de colocation :</h2>
+            <input class="input" type="text" placeholder="Optionel" v-model="colocationID" />
             <h2 class="register-font">Créer un compte :</h2>
-            <a
+            <a type="submit" @click="register()" class="google-button"
                 href="https://accounts.google.com/o/oauth2/v2/auth?client_id=80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google-callback&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent">
                 Register with Google</a>
-
+            <button class="register-button" @click="login()">Login</button>
         </div>
         <div v-else class="login">
             <h2 class="login-font">Login : </h2>
-            <a
+            <a @click="login()" class="google-button"
                 href="https://accounts.google.com/o/oauth2/v2/auth?client_id=80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google-callback&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent">
                 Login with Google</a>
             <button class="register-button" @click="register()">Register</button>
@@ -22,69 +24,25 @@
 </template>
 
 <script setup>
-import { storeToRefs } from 'pinia';
-import { useAuthStore } from '~/store/auth';
-import { useUserStore } from '~/store/user';
-
 definePageMeta({
     layout: false
 })
 
-const { authenticateUser } = useAuthStore();
-const { authenticated } = storeToRefs(useAuthStore());
-const userStore = useUserStore();
-const { $bridge } = useNuxtApp()
 const username = ref('');
+const colocationID = ref('');
 const registretion = ref(false);
-const router = useRouter();
-
-const handleregistration = async (response) => {
-    const { credential } = response;
-    console.log("Access Token", credential);
-    const newuser = {
-        username: username.value
-    };
-    const data = await $bridge.addUser(newuser, credential);
-    console.log("Data", data);
-    if (data) {
-        $bridge.setjwt(data.jwt);
-        await authenticateUser(data.jwt);
-    }
-    if (authenticated) {
-        router.push('/');
-    }
-};
-
-const handleLoginSuccess = async (response) => {
-    if (registretion.value) {
-        handleregistration(response);
-        return;
-    }
-    const { credential } = response;
-    console.log("Access Token", credential);
-    const data = await $bridge.login(credential);
-    console.log("Data", data);
-    if (data.error) {
-        console.error(data.error);
-        registretion.value = true;
-        return;
-    }
-    if (data) {
-        $bridge.setjwt(data.jwt);
-        await userStore.setUser(data.user);
-        await authenticateUser(data.jwt);
-    }
-    if (authenticated) {
-        router.push('/');
-    }
-};
-
-const handleLoginError = () => {
-    console.error("Login failed");
-};
 
 function register() {
     registretion.value = true;
+    const register_token = useCookie('register_token');
+    register_token.value = username.value;
+    console.log(`registe ${register_token.value}`)
+}
+
+function login() {
+    registretion.value = false;
+    const register_token = useCookie('register_token');
+    register_token.value = "";
 }
 
 </script>
@@ -150,17 +108,31 @@ h2 {
 }
 
 .login-font {
-    padding-bottom: 25px;
+    padding-bottom: 20px;
     font-size: 50px;
 }
 
 .register-button {
     width: 68px;
     height: 28px;
-    margin-top: 16px;
+    margin-top: 14px;
     border-radius: 8px;
     color: #E7FEED;
     background-color: #074338;
     font-weight: 600;
+}
+
+.google-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 50px;
+    background-color: #E7FEED;
+    border-radius: 14px;
+    color: #074338;
+    font-weight: 600;
+    font-size: 20px;
+    text-decoration: none;
 }
 </style>

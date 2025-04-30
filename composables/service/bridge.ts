@@ -131,7 +131,7 @@ export class bridge {
     }
 
     async addUser(user: User, google_token: string) {
-        return await fetch(this.url + "/Register?googleToken=" + google_token, {
+        return await fetch(this.url + "/Register?code=" + google_token, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
