@@ -9,15 +9,12 @@
             <h2 class="register-font">Id de colocation :</h2>
             <input class="input" type="text" placeholder="Optionel" v-model="colocationID" />
             <h2 class="register-font">Créer un compte :</h2>
-            <a type="submit" @click.prevent="register()" class="google-button"
-                href="https://accounts.google.com/o/oauth2/v2/auth?client_id=80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google-callback&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent">
-                Register with Google</a>
+            <a type="submit" @click.prevent="register()" class="google-button"> Register with Google</a>
             <button class="register-button" @click="login()">Login</button>
         </div>
         <div v-else class="login">
             <h2 class="login-font">Login : </h2>
-            <a @click="login()" class="google-button"
-                href="https://accounts.google.com/o/oauth2/v2/auth?client_id=80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google-callback&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent">
+            <a @click="login()" class="google-button">
                 Login with Google</a>
             <button class="register-button" @click="goRegister()">Register</button>
         </div>
@@ -25,6 +22,8 @@
 </template>
 
 <script setup>
+import { Browser } from '@capacitor/browser';
+
 definePageMeta({
     layout: false
 })
@@ -38,8 +37,8 @@ function goRegister() {
     registretion.value = true;
 }
 
-function register() {
-    if (!this.username) {
+const register = async () => {
+    if (!username) {
         alert.value = true;
         return;
     }
@@ -48,13 +47,15 @@ function register() {
     register_token.value = username.value;
     console.log(`registe ${register_token.value}`)
     const googleAuthURL = "https://accounts.google.com/o/oauth2/v2/auth?client_id=80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google-callback&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent";
-    window.location.href = googleAuthURL;
+    await Browser.open({ url: googleAuthURL });
 }
 
-function login() {
+const login = async () => {
     registretion.value = false;
     const register_token = useCookie('register_token');
     register_token.value = "";
+    const googleAuthURL = "https://accounts.google.com/o/oauth2/v2/auth?client_id=80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google-callback&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent";
+    await Browser.open({ url: googleAuthURL });
 }
 
 </script>
