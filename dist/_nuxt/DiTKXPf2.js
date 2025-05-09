@@ -1,1 +1,0 @@
-import{_ as s,a,b as r,F as o}from"./C_YoKuVe.js";const c={class:"text"},n={__name:"texte_language",props:{source:{type:String,required:!0}},setup(e){return(t,_)=>(r(),a("span",c,o(t.$t(e.source)),1))}},u=s(n,[["__scopeId","data-v-c90b929d"]]);export{u as T};
