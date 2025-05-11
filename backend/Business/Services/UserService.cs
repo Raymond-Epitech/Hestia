@@ -179,15 +179,8 @@ public class UserService(ILogger<UserService> logger,
     /// <exception cref="AlreadyExistException">User already registered</exception>
     public async Task<UserInfo> RegisterUserAsync(string googleToken, UserInput userInput)
     {
-        //var googleToken = await GetGoogleJwt(googleCredentials, code);
-
         GoogleJsonWebSignature.Payload validPayload = null!;
 
-        validPayload = new GoogleJsonWebSignature.Payload()
-        {
-            Email = "test@gmail.com"
-        };
-                
         try
         {
             validPayload = await jwtService.ValidateGoogleTokenAsync(googleToken);
@@ -218,8 +211,6 @@ public class UserService(ILogger<UserService> logger,
             Username = userInput.Username,
             Email = validPayload.Email,
             ColocationId = userInput.ColocationId,
-            CreatedAt = DateTime.Now.ToUniversalTime(),
-            LastConnection = DateTime.Now.ToUniversalTime(),
             PathToProfilePicture = "default.jpg"
         };
 
@@ -259,8 +250,6 @@ public class UserService(ILogger<UserService> logger,
     /// <returns>Info of user</returns>
     public async Task<UserInfo> LoginUserAsync(string googleToken)
     {
-        //var googleToken = await GetGoogleJwt(googleCredentials, code);
-
         GoogleJsonWebSignature.Payload validPayload = null!;
 
         try
