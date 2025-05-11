@@ -14,12 +14,12 @@ public class ShoppingListController(IShoppingListService shoppingListService) : 
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<ShoppingListName>>> GetAllShoppingList(Guid colocationId)
+    public async Task<ActionResult<List<ShoppingListName>>> GetAllShoppingListName(Guid colocationId)
     {
         if (colocationId == Guid.Empty)
             return BadRequest("ColocationId is empty");
 
-        return Ok(await shoppingListService.GetAllShoppingListName(colocationId));
+        return Ok(await shoppingListService.GetAllShoppingListNameAsync(colocationId));
     }
 }
 

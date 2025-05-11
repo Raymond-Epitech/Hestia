@@ -4,6 +4,6 @@ namespace Business.Interfaces;
 
 public interface IShoppingListService
 {
-    Task<List<ShoppingListName>> GetAllShoppingListName(Guid colocationId);
+    Task<List<ShoppingListName>> GetAllShoppingListNameAsync(Guid colocationId);
 }
 
