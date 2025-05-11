@@ -177,9 +177,9 @@ public class UserService(ILogger<UserService> logger,
     /// <returns>The JWT and the new user's info</returns>
     /// <exception cref="ContextException">Error in the DB or context</exception>
     /// <exception cref="AlreadyExistException">User already registered</exception>
-    public async Task<UserInfo> RegisterUserAsync(string code, UserInput userInput, GoogleCredentials googleCredentials)
+    public async Task<UserInfo> RegisterUserAsync(string googleToken, UserInput userInput)
     {
-        var googleToken = await GetGoogleJwt(googleCredentials, code);
+        //var googleToken = await GetGoogleJwt(googleCredentials, code);
 
         GoogleJsonWebSignature.Payload validPayload = null!;
 
@@ -257,9 +257,9 @@ public class UserService(ILogger<UserService> logger,
     /// <exception cref="InvalidTokenException">Token is invalid</exception>
     /// <exception cref="NotFoundException">User is not found</exception>
     /// <returns>Info of user</returns>
-    public async Task<UserInfo> LoginUserAsync(string code, GoogleCredentials googleCredentials)
+    public async Task<UserInfo> LoginUserAsync(string googleToken)
     {
-        var googleToken = await GetGoogleJwt(googleCredentials, code);
+        //var googleToken = await GetGoogleJwt(googleCredentials, code);
 
         GoogleJsonWebSignature.Payload validPayload = null!;
 

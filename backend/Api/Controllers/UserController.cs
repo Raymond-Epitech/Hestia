@@ -12,8 +12,7 @@ namespace Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController(IUserService userService,
-        IConfiguration configuration) : ControllerBase
+    public class UserController(IUserService userService) : ControllerBase
     {
         [HttpGet("GetByColocationId/{colocationId}")]
         [Authorize]
@@ -84,24 +83,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<UserInfo>> Register(string code, UserInput userInput)
+        public async Task<ActionResult<UserInfo>> Register(string googleToken, UserInput userInput)
         {
-            if (code is "")
+            if (googleToken is "")
                 throw new InvalidEntityException("Google token is empty");
 
-            var googleCredentials = new GoogleCredentials()
-            {
-                ClientId = configuration["Google:ClientId"],
-                ClientSecret = configuration["Google:ClientSecret"],
-                RedirectUri = configuration["Google:RedirectUri"],
-            };
-
-            if (googleCredentials.ClientId is null || googleCredentials.ClientSecret is null || googleCredentials.RedirectUri is null)
-            {
-                throw new InvalidEntityException("Google credentials are not set in the configuration");
-            }
-
-            return Ok(await userService.RegisterUserAsync(code, userInput, googleCredentials));
+            return Ok(await userService.RegisterUserAsync(googleToken, userInput));
         }
 
         [HttpPost("/Login")]
@@ -109,24 +96,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<UserInfo>> Login(string code)
+        public async Task<ActionResult<UserInfo>> Login(string googleToken)
         {
-            if (code is "")
+            if (googleToken is "")
                 throw new InvalidEntityException("Google token is empty");
 
-            var googleCredentials = new GoogleCredentials()
-            {
-                ClientId = configuration["Google:ClientId"],
-                ClientSecret = configuration["Google:ClientSecret"],
-                RedirectUri = configuration["Google:RedirectUri"],
-            };
-
-            if (googleCredentials.ClientId is null || googleCredentials.ClientSecret is null || googleCredentials.RedirectUri is null)
-            {
-                throw new InvalidEntityException("Google credentials are not set in the configuration");
-            }
-
-            return Ok(await userService.LoginUserAsync(code, googleCredentials));
+            return Ok(await userService.LoginUserAsync(googleToken));
         }
     }
 }
