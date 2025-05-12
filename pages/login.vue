@@ -82,11 +82,18 @@ const login = async () => {
         console.log("user logged in")
         if (data) {
             $bridge.setjwt(data.jwt);
+            console.log("bridge setjwt....");
+            console.log(data.jwt);
             userStore.setUser(data.user);
+            console.log("set user store....");
+            console.log(data.user);
             await authenticateUser(data.jwt);
+            console.log("authenticateUser")
         }
         if (authenticated) {
+            console.log("passed if authenticated check");
             router.push('/');
+            console.log("after router push :/")
         }
     }
     // registretion.value = false;
