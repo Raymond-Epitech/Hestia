@@ -114,7 +114,7 @@ export class bridge {
     // User section:
 
     async login(google_token: string) {
-        return await fetch(this.url + "/Login?code=" + google_token, {
+        return await fetch(this.url + "/Login?googleToken=" + google_token, {
             method: 'POST'
         }).then(async response => {
             if (response.status == 200) {
@@ -131,7 +131,7 @@ export class bridge {
     }
 
     async addUser(user: User, google_token: string) {
-        return await fetch(this.url + "/Register?code=" + google_token, {
+        return await fetch(this.url + "/Register?googleToken=" + google_token, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
