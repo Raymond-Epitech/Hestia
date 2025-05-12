@@ -81,6 +81,8 @@ const login = async () => {
         const data = await $bridge.login(res.result.idToken);
         console.log("user logged in")
         if (data) {
+            console.log("next is data");
+            console.log(data);
             $bridge.setjwt(data.jwt);
             console.log("bridge setjwt....");
             console.log(data.jwt);
