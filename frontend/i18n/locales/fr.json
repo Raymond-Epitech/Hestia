@@ -35,5 +35,6 @@
   "poster": "Poster",
   "modify": "Modifier",
   "delete": "Supprimer",
-  "confirm_delete_expense": "Etes-vous sûr de vouloir supprimer cette dépense ?"
+  "confirm_delete_expense": "Etes-vous sûr de vouloir supprimer cette dépense ?",
+  "refund": "Rembourser"
 }

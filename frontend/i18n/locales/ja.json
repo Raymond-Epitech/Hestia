@@ -38,5 +38,6 @@
   "poster": "ポスター",
   "modify": "修飾子",
   "delete": "消去",
-  "confirm_delete_expense": "この費用を削除したいですか？"
+  "confirm_delete_expense": "この費用を削除したいですか？",
+  "refund": "返済"
 }

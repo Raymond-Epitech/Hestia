@@ -38,5 +38,6 @@
   "poster": "海报",
   "modify": "修饰符",
   "delete": "删除",
-  "confirm_delete_expense": "您确定要删除这笔费用吗？"
+  "confirm_delete_expense": "您确定要删除这笔费用吗？",
+  "refund": "偿还"
 }

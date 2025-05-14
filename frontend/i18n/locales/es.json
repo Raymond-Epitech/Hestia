@@ -38,5 +38,6 @@
   "poster": "Póster",
   "modify": "Modificador",
   "delete": "BORRAR",
-  "confirm_delete_expense": "¿Estás seguro de que quieres eliminar este gasto?"
+  "confirm_delete_expense": "¿Estás seguro de que quieres eliminar este gasto?",
+  "refund": "Pagar"
 }

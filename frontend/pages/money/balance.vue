@@ -15,6 +15,10 @@
                     {{ getBalance(coloc.id) }} €
                 </h4>
             </Rectangle>
+            <rectangle color="#4FA3A6" id="rec" class="center regularize-text mini_rec"
+                :onClick="() => redirectto('balance')">
+                <Texte_language source="refund" />
+            </rectangle>
         </div>
     </div>
 </template>
