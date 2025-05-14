@@ -38,5 +38,6 @@
   "poster": "Poster",
   "modify": "Modifikator",
   "delete": "LÖSCHEN",
-  "confirm_delete_expense": "Sind Sie sicher, dass Sie diese Kosten löschen möchten?"
+  "confirm_delete_expense": "Sind Sie sicher, dass Sie diese Kosten löschen möchten?",
+  "refund": "Zurückzahlen"
 }
