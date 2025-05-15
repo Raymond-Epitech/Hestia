@@ -103,4 +103,11 @@ export type Chore = {
     dueDate: string;
     isDone: boolean;
 }
+
 export type Locale = 'fr' | 'en' | 'es' | 'de' | 'zh' | 'ja';
+
+export type refund = {
+    from: string,
+    to: string,
+    amount: number,
+}
