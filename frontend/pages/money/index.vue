@@ -40,7 +40,6 @@ const expenses_list = ref<ExpenseList[]>([]);
 const collocid = user.colocationId
 
 const redirectto = (name: string) => {
-    console.log(name);
     if (name === 'balance') {
         router.push({ path: '/money/balance' });
         return;
