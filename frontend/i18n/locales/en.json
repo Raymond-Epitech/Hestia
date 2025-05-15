@@ -39,5 +39,6 @@
   "modify": "Modify",
   "delete": "DELETE",
   "confirm_delete_expense": "Are you sure you want to delete this expense?",
-  "refund": "Repay"
+  "refund": "Repay",
+  "header_refund": "Reimbursement options"
 }

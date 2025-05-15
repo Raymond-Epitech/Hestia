@@ -39,5 +39,6 @@
   "modify": "Modifikator",
   "delete": "LÖSCHEN",
   "confirm_delete_expense": "Sind Sie sicher, dass Sie diese Kosten löschen möchten?",
-  "refund": "Zurückzahlen"
+  "refund": "Zurückzahlen",
+  "header_refund": "Erstattungsoptionen"
 }

@@ -39,5 +39,6 @@
   "modify": "Modificador",
   "delete": "BORRAR",
   "confirm_delete_expense": "¿Estás seguro de que quieres eliminar este gasto?",
-  "refund": "Pagar"
+  "refund": "Pagar",
+  "header_refund": "Opciones de reembolso"
 }
