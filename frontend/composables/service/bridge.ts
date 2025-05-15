@@ -1,5 +1,5 @@
 import { json } from "stream/consumers";
-import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif } from "./type";
+import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif, refund } from "./type";
 
 export class bridge {
     constructor() {
@@ -512,6 +512,20 @@ export class bridge {
     async updateBalance(colocationId:string): Promise<UserBalance[]> {
         return await fetch(`${this.url}/api/Expense/CalculBalance/${colocationId}`, {
             method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        })
+    }
+
+    async getRefund(colocationId:string): Promise<refund[]> {
+        return await fetch(`${this.url}/api/Expense/GetRefundMethods/${colocationId}`, {
+            method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + this.jwt
             }
