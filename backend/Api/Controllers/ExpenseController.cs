@@ -1,7 +1,5 @@
 ﻿using Business.Interfaces;
-using Business.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Exceptions;
 using Shared.Models.Input;
