@@ -67,7 +67,8 @@ try
         {
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidateLifetime = false, //Set to true to check expire
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromMinutes(30),
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtOptions.Issuer,
             ValidAudience = jwtOptions.Audience,
@@ -78,7 +79,6 @@ try
         {
             OnAuthenticationFailed = context =>
             {
-                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
                 return Task.CompletedTask;
             },
             OnChallenge = context =>
@@ -95,33 +95,36 @@ try
     builder.Services.AddAuthorization();
 
     // Swagger
-    builder.Services.AddSwaggerGen(options =>
+    if (builder.Environment.IsDevelopment())
     {
-        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        builder.Services.AddSwaggerGen(options =>
         {
-            Name = "Authorization",
-            Type = SecuritySchemeType.Http,
-            Scheme = "bearer",
-            BearerFormat = "JWT",
-            In = ParameterLocation.Header,
-            Description = "Saisissez votre token JWT.\n\nExemple : 'abc123def456ghi'"
-        });
-
-        options.AddSecurityRequirement(new OpenApiSecurityRequirement
-        {
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                new OpenApiSecurityScheme
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Saisissez votre token JWT.\n\nExemple : 'abc123def456ghi'"
+            });
+
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
                 {
-                    Reference = new OpenApiReference
+                    new OpenApiSecurityScheme
                     {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    }
-                },
-                new string[] {}
-            }
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] {}
+                }
+            });
         });
-    });
+    }
 
     var app = builder.Build();
 
@@ -131,10 +134,15 @@ try
     {
         app.UseSwagger();
         app.UseSwaggerUI();
+        app.UseStatusCodePages();
+    }
+
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseHttpsRedirection();
     }
 
     app.UseExceptionHandler();
-    app.UseStatusCodePages(); 
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
