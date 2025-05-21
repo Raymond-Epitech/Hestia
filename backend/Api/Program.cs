@@ -71,8 +71,8 @@ try
         {
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromMinutes(30),
+            ValidateLifetime = false,//true,
+            //ClockSkew = TimeSpan.FromMinutes(30),
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtOptions.Issuer,
             ValidAudience = jwtOptions.Audience,
