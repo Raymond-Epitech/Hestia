@@ -55,15 +55,23 @@ const new_data = ref({
     id: user.id,
 })
 const joinColocation = async () => {
-    const data = await api.updateUser(new_data.value)
+    const data = await api.updateUser(new_data.value);
     if (data) {
         userStore.setColocation(new_data.value.colocationId);
     }
 }
 const createColocation = async () => {
-    const data = await api.addColocation(colocation.value);
-    if (data) {
-        userStore.setColocation(data);
+    const colocationData = await api.addColocation(colocation.value);
+    const user_new_colocation = ref({
+        username: user.username,
+        email: user.email,
+        colocationId: colocationData,
+        pathToProfilePicture: 'exempledetest',
+        id: user.id,
+    })
+    const userData = await api.updateUser(user_new_colocation.value)
+    if (userData) {
+        userStore.setColocation(colocationData);
     }
 }
 
@@ -123,6 +131,7 @@ h2 {
     border-radius: 20px;
     outline: none;
     box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
+    background-color: #FFFFFF;
     font-weight: 500;
     font-size: 20px;
 }
