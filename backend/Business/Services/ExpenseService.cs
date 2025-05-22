@@ -119,6 +119,65 @@ namespace Business.Services
         }
 
         /// <summary>
+        /// Add an expense category to the database
+        /// </summary>
+        /// <param name="input">The data to add into the DB</param>
+        /// <returns>The Guid of the added category</returns>
+        public async Task<Guid> AddExpenseCategoryAsync(ExpenseCategoryInput input)
+        {
+            var expenseCategory = new ExpenseCategory
+            {
+                Id = Guid.NewGuid(),
+                Name = input.Name,
+                ColocationId = input.ColocationId
+            };
+            await expenseCategoryRepository.AddAsync(expenseCategory);
+            await expenseCategoryRepository.SaveChangesAsync();
+            logger.LogInformation($"Succes : Expense category with id {expenseCategory.Id} was added to db");
+            return expenseCategory.Id;
+        }
+
+        /// <summary>
+        /// Update an expense category
+        /// </summary>
+        /// <param name="input">The data to update</param>
+        /// <returns>the Guid of the updated data</returns>
+        /// <exception cref="NotFoundException">The data was not found</exception>
+        public async Task<Guid> UpdateExpenseCategoryAsync(ExpenseCategoryUpdate input)
+        {
+            var expenseCategory = await expenseCategoryRepository.GetByIdAsync(input.Id);
+            
+            if (expenseCategory is null)
+                throw new NotFoundException($"The expense category with id {input.Id} was not found");
+
+            expenseCategory.Name = input.Name;
+
+            expenseCategoryRepository.Update(expenseCategory);
+            await expenseCategoryRepository.SaveChangesAsync();
+
+            logger.LogInformation($"Succes : Expense category with id {expenseCategory.Id} was updated in db");
+
+            return expenseCategory.Id;
+        }
+
+        /// <summary>
+        /// Delete an expense category
+        /// </summary>
+        /// <param name="id">The id of the category to delete</param>
+        /// <returns>The id of the deleted data </returns>
+        /// <exception cref="NotFoundException">The data was not found</exception>
+        public async Task<Guid> DeleteExpenseCategoryAsync(Guid id)
+        {
+            var expenseCategory = await expenseCategoryRepository.GetByIdAsync(id);
+            if (expenseCategory is null)
+                throw new NotFoundException($"The expense category with id {id} was not found");
+            expenseCategoryRepository.Delete(expenseCategory);
+            await expenseCategoryRepository.SaveChangesAsync();
+            logger.LogInformation($"Succes : Expense category with id {id} was deleted from db");
+            return id;
+        }
+
+        /// <summary>
         /// Check if the percentage of the split is equal to 100%
         /// </summary>
         /// <param name="splitPercentages">The percentage</param>

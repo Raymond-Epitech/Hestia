@@ -44,6 +44,7 @@ namespace EntityFramework.Context
                     .WithOne(x => x.Colocation)
                     .HasForeignKey(x => x.ColocationId)
                     .OnDelete(DeleteBehavior.Cascade);
+
                 c.HasMany(x => x.ShoppingLists)
                     .WithOne(x => x.Colocation)
                     .HasForeignKey(x => x.ColocationId)
