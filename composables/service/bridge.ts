@@ -5,7 +5,7 @@ export class bridge {
     constructor() {
         console.log('Bridge instance created')
     }
-    url: string = "http://91.134.48.124:8080";
+    url: string = "http://91.134.93.112:8080";
     jwt: string = "";
 
     seturl(new_url: string) {
