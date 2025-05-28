@@ -9,6 +9,9 @@
                     <span v-else>De {{ getUsername(refund.from) }} à vous</span>
                     <span> Montant : </span>
                     {{ refund.amount }}€
+                    <button @click=refund_prosess(refund) class="button">
+                        <TexteLanguage source="refund_button"/>
+                    </button>
                 </li>
             </ul>
         </div>
@@ -27,7 +30,7 @@
 
 <script setup lang="ts">
 import { useUserStore } from '~/store/user';
-import type { Coloc, refund } from '~/composables/service/type';
+import type { Coloc, refund, Expense } from '~/composables/service/type';
 
 const route = useRoute();
 const listColoc = ref<Coloc[]>([]);
@@ -50,6 +53,28 @@ onMounted(() => {
         console.error('Error fetching data:', error);
     });
 });
+
+const refund_prosess = (refund: refund) => {
+    const data: Expense = {
+        colocationId: user.colocationId,
+        createdBy: user.id,
+        name: "refund",
+        description: "Remboursement de " + refund.amount + "€",
+        amount: refund.amount,
+        category: "refund",
+        paidBy: refund.from,
+        splitType: 0,
+        splitBetween: [refund.to],
+        splitValues: {},
+        splitPercentages: {},
+        dateOfPayment: new Date().toISOString(),
+    }
+    api.addExpense(data).then((response) => {
+        console.log(response);
+    }).catch((error) => {
+        console.error('Error adding expense:', error);
+    }); 
+}
 
 const userRefunds = computed(() => {
     return refund_list.value.filter(refund => refund.from === user.id || refund.to === user.id);

@@ -39,5 +39,6 @@
   "refund": "Rembourser",
   "header_refund": "Options de remboursement",
   "other_refund": "Autre remboursement",
-  "refund_with_me": "Remboursements liés à moi"
+  "refund_with_me": "Remboursements liés à moi",
+  "refund_button": "Rembourser"
 }
