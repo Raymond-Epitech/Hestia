@@ -111,3 +111,24 @@ export type refund = {
     to: string,
     amount: number,
 }
+
+export type shoppinglist = {
+    id?: string,
+    createdBy?: string,
+    colocationId?: string,
+    name: string
+}
+
+export type shoppinglist_item = {
+    id?: string,
+    createdBy: string,
+    shoppinglistId: string,
+    name: string,
+    isChecked: boolean
+}
+
+export type expenses_category = {
+    id?: string,
+    colocationId?: string,
+    name: string,
+}
