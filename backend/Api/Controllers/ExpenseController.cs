@@ -1,7 +1,5 @@
 ﻿using Business.Interfaces;
-using Business.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Exceptions;
 using Shared.Models.Input;
@@ -25,6 +23,43 @@ namespace Api.Controllers
                 throw new InvalidEntityException("ColocationId is required");
 
             return Ok(await expenseService.GetAllExpenseCategoriesAsync(colocationId));
+        }
+
+        [HttpPost("Category/")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> AddExpenseCategory(ExpenseCategoryInput input)
+        {
+            if (input.ColocationId == Guid.Empty)
+                throw new InvalidEntityException("ColocationId is required");
+            return Ok(await expenseService.AddExpenseCategoryAsync(input));
+        }
+
+        [HttpPut("Category/")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> UpdateExpenseCategory(ExpenseCategoryUpdate input)
+        {
+            if (input.Id == Guid.Empty)
+                throw new InvalidEntityException("Id is required");
+            await expenseService.UpdateExpenseCategoryAsync(input);
+            return Ok();
+        }
+
+        [HttpDelete("Category/{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> DeleteExpenseCategory(Guid id)
+        {
+            if (id == Guid.Empty)
+                throw new InvalidEntityException("Id is required");
+            return Ok(await expenseService.DeleteExpenseCategoryAsync(id));
         }
 
         [HttpGet("GetByExpenseCategoryId/{expenseCategoryId}")]

@@ -9,6 +9,9 @@ namespace Business.Interfaces
         Task<List<ExpenseCategoryOutput>> GetAllExpenseCategoriesAsync(Guid colocationId);
         Task<List<ExpenseOutput>> GetAllExpensesAsync(Guid expenseCategoryId);
         Task<ExpenseOutput> GetExpenseAsync(Guid id);
+        Task<Guid> AddExpenseCategoryAsync(ExpenseCategoryInput input);
+        Task<Guid> UpdateExpenseCategoryAsync(ExpenseCategoryUpdate input);
+        Task<Guid> DeleteExpenseCategoryAsync(Guid id);
         Task<Guid> AddExpenseAsync(ExpenseInput input);
         Task<Guid> UpdateExpenseAsync(ExpenseUpdate input);
         Task<Guid> DeleteExpenseAsync(Guid id);

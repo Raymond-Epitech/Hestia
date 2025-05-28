@@ -13,7 +13,7 @@ namespace Api.Controllers
     public class ReminderController(IReminderService reminderService) : ControllerBase
     {
         [Authorize]
-        [HttpGet("GetByColocation/{ColocationId}")]
+        [HttpGet("GetByColocation/{colocationId}")]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -25,18 +25,18 @@ namespace Api.Controllers
             return Ok(await reminderService.GetAllRemindersAsync(colocationId));
         }
 
-        [HttpGet("GetById/{Id}")]
+        [HttpGet("GetById/{id}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<ReminderOutput>> GetReminder(Guid Id)
+        public async Task<ActionResult<ReminderOutput>> GetReminder(Guid id)
         {
-            if (Id == Guid.Empty)
+            if (id == Guid.Empty)
                 throw new InvalidEntityException("Id is empty");
 
-            return Ok(await reminderService.GetReminderAsync(Id));
+            return Ok(await reminderService.GetReminderAsync(id));
         }
 
         [HttpPost]
@@ -87,12 +87,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Guid>> DeleteReminder(Guid Id)
+        public async Task<ActionResult<Guid>> DeleteReminder(Guid id)
         {
-            if (Id == Guid.Empty)
+            if (id == Guid.Empty)
                 throw new InvalidEntityException("Id is empty");
 
-            return Ok(await reminderService.DeleteReminderAsync(Id));
+            return Ok(await reminderService.DeleteReminderAsync(id));
         }
     }
 }

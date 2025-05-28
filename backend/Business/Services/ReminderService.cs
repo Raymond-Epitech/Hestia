@@ -21,15 +21,15 @@ public class ReminderService(ILogger<ReminderService> logger,
     /// </summary>
     /// <returns>All the reminders available</returns>
     /// <exception cref="ContextException">An error has occured while retriving the reminders from db</exception>
-    public async Task<List<ReminderOutput>> GetAllRemindersAsync(Guid collocationId)
+    public async Task<List<ReminderOutput>> GetAllRemindersAsync(Guid colocationId)
     {
-        var cacheKey = $"reminders:{collocationId}";
+        var cacheKey = $"reminders:{colocationId}";
 
         return await cache.GetOrAddAsync(cacheKey, async entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
             var reminders = await reminderRepository.Query()
-            .Where(r => r.ColocationId == collocationId)
+            .Where(r => r.ColocationId == colocationId)
             .Select(r => new ReminderOutput
             {
                 Id = r.Id,
