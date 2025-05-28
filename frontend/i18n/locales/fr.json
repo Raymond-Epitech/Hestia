@@ -40,5 +40,9 @@
   "header_refund": "Options de remboursement",
   "other_refund": "Autre remboursement",
   "refund_with_me": "Remboursements liés à moi",
-  "refund_button": "Rembourser"
+  "refund_button": "Rembourser",
+  "add_category": "Ajouter une catégorie",
+  "expense_category_name": "Nom de la catégorie",
+  "header_add_category": "Ajouter une catégorie",
+  "header_modify_category": "Modifier la catégorie"
 }

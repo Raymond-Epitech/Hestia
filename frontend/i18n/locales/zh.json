@@ -40,5 +40,12 @@
   "delete": "删除",
   "confirm_delete_expense": "您确定要删除这笔费用吗？",
   "refund": "偿还",
-  "header_refund": "报销选项"
+  "header_refund": "报销选项",
+  "other_refund": "其他退款",
+  "refund_with_me": "退款与我有关",
+  "refund_button": "偿还",
+  "add_category": "添加类别",
+  "expense_category_name": "类别名称",
+  "header_add_category": "添加类别",
+  "header_modify_category": "更改类别"
 }
