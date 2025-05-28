@@ -40,5 +40,12 @@
   "delete": "BORRAR",
   "confirm_delete_expense": "¿Estás seguro de que quieres eliminar este gasto?",
   "refund": "Pagar",
-  "header_refund": "Opciones de reembolso"
+  "header_refund": "Opciones de reembolso",
+  "other_refund": "Otro reembolso",
+  "refund_with_me": "Reembolsos relacionados conmigo",
+  "refund_button": "Pagar",
+  "add_category": "Agregar una categoría",
+  "expense_category_name": "Nombre de categoría",
+  "header_add_category": "Agregar una categoría",
+  "header_modify_category": "Cambiar la categoría"
 }

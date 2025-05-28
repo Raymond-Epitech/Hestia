@@ -13,6 +13,9 @@
                 {{ global }} €
             </p>
         </Rectangle>
+        <Rectangle color="#FFF973" id="rec" class="center regularize-text mini_rec" :onClick="() => redirectto('add_category')">
+            <Texte_language source="add_category" />
+        </Rectangle>
         <Rectangle color="#FFF973" id="rec" class="center regularize-text mini_rec"
             :onClick="() => redirectto('balance')">
             <Texte_language source="regularize" />
@@ -42,6 +45,10 @@ const collocid = user.colocationId
 const redirectto = (name: string) => {
     if (name === 'balance') {
         router.push({ path: '/money/balance' });
+        return;
+    }
+    if (name === 'add_category') {
+        router.push({ path: '/money/addCategory' });
         return;
     }
     router.push({ path: '/money/historical', query: { name } });

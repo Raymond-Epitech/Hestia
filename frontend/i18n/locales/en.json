@@ -40,5 +40,12 @@
   "delete": "DELETE",
   "confirm_delete_expense": "Are you sure you want to delete this expense?",
   "refund": "Repay",
-  "header_refund": "Reimbursement options"
+  "header_refund": "Reimbursement options",
+  "other_refund": "Other refund",
+  "refund_with_me": "Refunds related to me",
+  "refund_button": "Repay",
+  "add_category": "Add a category",
+  "expense_category_name": "Category name",
+  "header_add_category": "Add a category",
+  "header_modify_category": "Change the category"
 }
