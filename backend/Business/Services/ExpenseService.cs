@@ -528,7 +528,9 @@ namespace Business.Services
         /// <returns>The Guid of the deleted expense</returns>
         public async Task<Guid> DeleteExpenseAsync(Guid id)
         {
-            var expense = await expenseRepository.GetByIdAsync(id);
+            var expense = await expenseRepository.Query()
+                .Include(e => e.ExpenseCategory)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (expense is null)
                 throw new InvalidDataException($"No expense found with this id : {id}");
