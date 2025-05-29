@@ -40,6 +40,7 @@ const { $bridge } = useNuxtApp()
 const api = $bridge;
 const refund_list = ref<refund[]>([]);
 api.setjwt(useCookie('token').value ?? '');
+let rufendcategoryId = '';
 
 onMounted(() => {
     const queryListColoc = route.query.list_coloc as string;
@@ -52,6 +53,16 @@ onMounted(() => {
     }).catch((error) => {
         console.error('Error fetching data:', error);
     });
+    api.getExpenseByColocationId(user.colocationId).then((response) => {
+        response.forEach((expense) => {
+            if (expense.name === "refund") {
+                rufendcategoryId = expense.id;
+            }
+        });
+    }).catch((error) => {
+        console.error('Error fetching expenses:', error);
+    });
+                
 });
 
 const refund_prosess = (refund: refund) => {
@@ -68,9 +79,13 @@ const refund_prosess = (refund: refund) => {
         splitValues: {},
         splitPercentages: {},
         dateOfPayment: new Date().toISOString(),
+        expenseCategoryId: rufendcategoryId,
     }
     api.addExpense(data).then((response) => {
         console.log(response);
+        if (response === true) {
+            window.location.reload();
+        }
     }).catch((error) => {
         console.error('Error adding expense:', error);
     }); 

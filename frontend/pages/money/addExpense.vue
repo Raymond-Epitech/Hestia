@@ -100,11 +100,12 @@ const splitTypes = [
 
 const expense = ref<Expense>({
   colocationId: collocid,
+  expenseCategoryId: route.query.categoryId as string,
   createdBy: '',
-  description: '',
-  category: name,
   name: '',
+  description: '',
   amount: 0,
+  category: name,
   paidBy: list_coloc.value[0]?.id || '',
   splitType: 0,
   splitBetween: [],
@@ -117,6 +118,7 @@ api.getUserbyCollocId(collocid).then((response) => {
   list_coloc.value = response;
   Object.assign(expense.value, {
     colocationId: collocid,
+    expenseCategoryId: route.query.categoryId as string,
     createdBy: myid,
     description: '',
     category: name,
@@ -146,6 +148,7 @@ const calculatedSplitValue = computed(() => {
 const handleProceed = async () => {
   console.log(expense.value);
   api.addExpense(expense.value).then(() => {
+    
     console.log('Expense added successfully');
     router.back()
   }).catch((error) => {
