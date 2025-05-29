@@ -412,7 +412,8 @@ namespace Business.Services
                         SplitBetween = input.SplitBetween,
                         SplitPercentages = input.SplitPercentages,
                         SplitValues = input.SplitValues,
-                        SplitType = input.SplitType
+                        SplitType = input.SplitType,
+                        ColocationId = input.ColocationId
                     });
 
                     await expenseRepository.AddAsync(expense);
