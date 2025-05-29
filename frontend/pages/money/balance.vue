@@ -15,6 +15,10 @@
                     {{ getBalance(coloc.id) }} €
                 </h4>
             </Rectangle>
+            <rectangle color="#4FA3A6" id="rec" class="center regularize-text mini_rec"
+                :onClick="() => redirectto('refund')">
+                <Texte_language source="refund" />
+            </rectangle>
         </div>
     </div>
 </template>
@@ -32,6 +36,7 @@ const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 const collocid = user.colocationId
 const myid = user.id
+const router = useRouter();
 
 api.getBalance(collocid).then((response) => {
     list_balance.value = response;
@@ -47,6 +52,12 @@ api.getUserbyCollocId(collocid).then((response) => {
 const getBalance = (id: string): number => {
     return list_balance.value?.[id] ?? 0;
 };
+const redirectto = (name: string) => {
+    if (name === 'refund') {
+        router.push({ path: '/money/refund', query: { list_coloc: JSON.stringify(list_coloc.value) }  });
+        return;
+    }
+}
 </script>
 
 

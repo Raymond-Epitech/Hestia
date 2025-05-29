@@ -38,5 +38,14 @@
   "poster": "ポスター",
   "modify": "修飾子",
   "delete": "消去",
-  "confirm_delete_expense": "この費用を削除したいですか？"
+  "confirm_delete_expense": "この費用を削除したいですか？",
+  "refund": "返済",
+  "header_refund": "払い戻しオプション",
+  "other_refund": "その他の払い戻し",
+  "refund_with_me": "私に関連する払い戻し",
+  "refund_button": "返済",
+  "add_category": "カテゴリを追加します",
+  "expense_category_name": "カテゴリ名",
+  "header_add_category": "カテゴリを追加します",
+  "header_modify_category": "カテゴリを変更します"
 }

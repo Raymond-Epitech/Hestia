@@ -38,5 +38,14 @@
   "poster": "Poster",
   "modify": "Modifikator",
   "delete": "LÖSCHEN",
-  "confirm_delete_expense": "Sind Sie sicher, dass Sie diese Kosten löschen möchten?"
+  "confirm_delete_expense": "Sind Sie sicher, dass Sie diese Kosten löschen möchten?",
+  "refund": "Zurückzahlen",
+  "header_refund": "Erstattungsoptionen",
+  "other_refund": "Andere Rückerstattung",
+  "refund_with_me": "Mit mir verwandte Rückerstattungen",
+  "refund_button": "Zurückzahlen",
+  "add_category": "Fügen Sie eine Kategorie hinzu",
+  "expense_category_name": "Kategorienname",
+  "header_add_category": "Fügen Sie eine Kategorie hinzu",
+  "header_modify_category": "Ändern Sie die Kategorie"
 }
