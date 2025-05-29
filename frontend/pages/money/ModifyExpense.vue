@@ -107,6 +107,7 @@ const splitTypes = [
 const expense = ref<Expense_Modif>({
   id: id,
   colocationId: collocid,
+  expenseCategoryId:  '',
   description: '',
   category: '',
   name: '',
@@ -123,6 +124,7 @@ api.getUserbyCollocId(collocid).then((response) => {
   list_coloc.value = response;
   Object.assign(expense.value, {
     colocationId: collocid,
+    expenseCategoryId: '',
     createdBy: myid,
     description: '',
     category: '',
@@ -143,10 +145,10 @@ api.getExpenseById(id).then((response) => {
   const expenseData = response;
   Object.assign(expense.value, {
     id: expenseData.id,
-    colocationId: expenseData.colocationId,
+    expenseCategoryId: expenseData.expenseCategoryId,
     createdBy: expenseData.createdBy,
     description: expenseData.description,
-    category: expenseData.category,
+    category: expenseData.expenseCategoryName,
     name: expenseData.name,
     amount: expenseData.amount,
     paidBy: expenseData.paidBy,
@@ -176,8 +178,14 @@ const calculatedSplitValue = computed(() => {
 
 const handleProceed = async (action: string) => {
   if (action === 'modify') {
-    await api.updateExpense(expense.value);
-    router.back()
+    console.log(expense.value);
+    const response = await api.updateExpense(expense.value);
+    if (response) {
+      console.log('Expense modified successfully');
+      router.back()
+    } else {
+      console.error('Error modifying expense');
+    }
   } else if (action === 'delete') {
     const confirmed = window.confirm(t('confirm_delete_expense'));
     if (confirmed) {

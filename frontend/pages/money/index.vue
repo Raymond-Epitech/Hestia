@@ -1,8 +1,8 @@
 <template>
     <div class="center-container">
-        <Rectangle v-for="expense in expenses_list" :key="expense.category" color="#85AD7B" id="rec"
-            class="center mini_rec" :onClick="() => redirectto(expense.category)">
-            <p>{{ expense.category }}</p>
+        <Rectangle v-for="expense in expenses_list" :key="expense.id" color="#85AD7B" id="rec"
+            class="center mini_rec" :onClick="() => redirectto(expense.name, expense.id)">
+            <p>{{ expense.name }}</p>
             <p class="regularize-text">
                 {{ expense.totalAmount }} €
             </p>
@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ExpenseList } from '~/composables/service/type';
+import type { expenses_category_get } from '~/composables/service/type';
 import { useI18n } from 'vue-i18n';
 import { useUserStore } from '~/store/user';
 
@@ -39,10 +39,10 @@ const global = ref(0);
 const food = ref(0);
 const health = ref(0);
 const partie = ref(0);
-const expenses_list = ref<ExpenseList[]>([]);
+const expenses_list = ref<expenses_category_get[]>([]);
 const collocid = user.colocationId
 
-const redirectto = (name: string) => {
+const redirectto = (name: string, id?:string) => {
     if (name === 'balance') {
         router.push({ path: '/money/balance' });
         return;
@@ -51,7 +51,7 @@ const redirectto = (name: string) => {
         router.push({ path: '/money/addCategory' });
         return;
     }
-    router.push({ path: '/money/historical', query: { name } });
+    router.push({ path: '/money/historical', query: { name, id } });
 }
 
 api.getExpenseByColocationId(collocid).then((response) => {
