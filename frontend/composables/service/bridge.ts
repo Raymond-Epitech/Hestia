@@ -1,5 +1,5 @@
 import { json } from "stream/consumers";
-import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif, refund, shoppinglist, shoppinglist_item, expenses_category } from "./type";
+import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif, refund, shoppinglist, shoppinglist_item, expenses_category, expenses_category_get } from "./type";
 
 export class bridge {
     constructor() {
@@ -421,7 +421,7 @@ export class bridge {
 
     // Expense section:
 
-    async getExpenseByColocationId(colocationId: string): Promise<ExpenseList[]> {
+    async getExpenseByColocationId(colocationId:string): Promise<expenses_category_get[]> {
         return await fetch(`${this.url}/api/Expense/GetByColocationId/${colocationId}`, {
             method: 'GET',
             headers: {
@@ -435,7 +435,21 @@ export class bridge {
         })
     }
 
-    async getExpenseById(id: string): Promise<Expenseget> {
+    async getExpensebycategoryId(categoryId:string): Promise<Expenseget[]> {
+        return await fetch(`${this.url}/api/Expense/GetByExpenseCategoryId/${categoryId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        });
+    }
+
+    async getExpenseById(id:string): Promise<Expenseget> {
         return await fetch(`${this.url}/api/Expense/GetById/${id}`, {
             method: 'GET',
             headers: {

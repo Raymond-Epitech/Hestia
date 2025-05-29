@@ -17,6 +17,7 @@ export type Coloc = {
 
 export type Expense = {
     colocationId: string,
+    expenseCategoryId: string,
     createdBy: string,
     name: string,
     description: string,
@@ -37,6 +38,7 @@ export type Expense = {
 export type Expense_Modif = {
     id: string,
     colocationId: string,
+    expenseCategoryId: string,
     name: string,
     description: string,
     amount: number,
@@ -67,7 +69,8 @@ export type Expenseget = {
     },
     splitType: number,
     dateOfPayment: string,
-    category: string,
+    expenseCategoryName: string,
+    expenseCategoryId: string,
 }
 
 export type ExpenseList = {
@@ -131,4 +134,10 @@ export type expenses_category = {
     id?: string,
     colocationId?: string,
     name: string,
+}
+
+export type expenses_category_get = {
+    id: string,
+    name: string,
+    totalAmount: number,
 }
