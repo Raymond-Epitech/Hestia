@@ -60,6 +60,7 @@ namespace Business.Services
             var expensesRaw = await expenseRepository.Query()
                 .Where(e => e.ExpenseCategoryId == expenseCategoryId)
                 .Include(e => e.SplitBetweens)
+                .Include(e => e.ExpenseCategory)
                 .ToListAsync();
 
             var expenses = expensesRaw.Select(e => new ExpenseOutput
@@ -92,6 +93,7 @@ namespace Business.Services
             var expenseRaw = await expenseRepository.Query()
                 .Where(e => e.Id == id)
                 .Include(e => e.SplitBetweens)
+                .Include(e => e.ExpenseCategory)
                 .FirstOrDefaultAsync();
 
             if (expenseRaw == null)
