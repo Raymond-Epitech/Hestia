@@ -15,5 +15,6 @@ namespace Shared.Models.Output
         public SplitTypeEnum SplitType { get; set; }
         public DateTime DateOfPayment { get; set; }
         public Guid ExpenseCategoryId { get; set; }
+        public string ExpenseCategoryName { get; set; } = null!;
     }
 }

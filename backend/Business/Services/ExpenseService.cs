@@ -74,7 +74,8 @@ namespace Business.Services
                 SplitType = Enum.Parse<SplitTypeEnum>(e.SplitType),
                 SplitBetween = e.SplitBetweens.AsEnumerable().ToDictionary(k => k.UserId, v => v.Amount),
                 DateOfPayment = e.DateOfPayment,
-                ExpenseCategoryId = e.ExpenseCategoryId
+                ExpenseCategoryId = e.ExpenseCategoryId,
+                ExpenseCategoryName = e.ExpenseCategory.Name
             }).ToList();
 
             logger.LogInformation("Succes : All expenses were retrived from db");
@@ -112,7 +113,8 @@ namespace Business.Services
                 SplitType = Enum.Parse<SplitTypeEnum>(expenseRaw.SplitType),
                 SplitBetween = expenseRaw.SplitBetweens.AsEnumerable().ToDictionary(k => k.UserId, v => v.Amount),
                 DateOfPayment = expenseRaw.DateOfPayment,
-                ExpenseCategoryId = expenseRaw.ExpenseCategoryId
+                ExpenseCategoryId = expenseRaw.ExpenseCategoryId,
+                ExpenseCategoryName = expenseRaw.ExpenseCategory.Name
             };
                 
             logger.LogInformation($"Succes : Expense with id {id} was retrived from db");

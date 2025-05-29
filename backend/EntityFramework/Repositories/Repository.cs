@@ -44,7 +44,7 @@ public class Repository<T>(
         catch (Exception e)
         {
             logger.LogError(e, $"Error adding entity of type {typeof(T).Name}");
-            throw new ContextException("Error during the changing of information, see log for better details");
+            throw new ContextException($"Could not Add {typeof(T).Name} changes. Check inner exception for details.");
         }
     }
 
@@ -59,7 +59,8 @@ public class Repository<T>(
         catch (Exception e)
         {
             logger.LogError(e, $"Error adding entities of type {typeof(T).Name}");
-            throw new ContextException("Error during the changing of information, see log for better details");
+            throw new ContextException($"Could not Add range {typeof(T).Name} changes. Check inner exception for details.");
+
         }
     }
 
@@ -74,7 +75,7 @@ public class Repository<T>(
         catch (Exception e)
         {
             logger.LogError(e, $"Error updating entity of type {typeof(T).Name}");
-            throw new ContextException("Error during the changing of information, see log for better details");
+            throw new ContextException($"Could not Update {typeof(T).Name} changes. Check inner exception for details.");
         }
     }
 
@@ -89,7 +90,7 @@ public class Repository<T>(
         catch (Exception e)
         {
             logger.LogError(e, $"Error updating entities of type {typeof(T).Name}");
-            throw new ContextException("Error during the changing of information, see log for better details");
+            throw new ContextException($"Could not Update range {typeof(T).Name} changes. Check inner exception for details.");
         }
     }
 
@@ -104,7 +105,7 @@ public class Repository<T>(
         catch (Exception e)
         {
             logger.LogError(e, $"Error deleting entity of type {typeof(T).Name}");
-            throw new ContextException("Error during the changing of information, see log for better details");
+            throw new ContextException($"Could not Delete {typeof(T).Name} changes. Check inner exception for details.");
         }
     }
 
@@ -125,7 +126,7 @@ public class Repository<T>(
         catch (Exception e)
         {
             logger.LogError(e, $"Error deleting entity of type {typeof(T).Name} with id {id}");
-            throw new ContextException("Error during the changing of information, see log for better details");
+            throw new ContextException($"Could not Delete by Id {typeof(T).Name} changes. Check inner exception for details.");
         }
     }
 
@@ -140,21 +141,34 @@ public class Repository<T>(
         catch (Exception e)
         {
             logger.LogError(e, $"Error deleting entities of type {typeof(T).Name}");
-            throw new ContextException("Error during the changing of information, see log for better details");
+            throw new ContextException($"Could not Delete range {typeof(T).Name} changes. Check inner exception for details.");
         }
-    }   
+    }
 
     public async Task SaveChangesAsync()
     {
         try
         {
-            logger.LogInformation("Saving changes");
+            logger.LogInformation("Saving changes...");
             await context.SaveChangesAsync();
         }
-        catch (Exception e)
+        catch (DbUpdateException dbEx)
         {
-            logger.LogError(e, "Error saving changes");
-            throw new ContextException("Error during the changing of information, see log for better details");
+            logger.LogError(dbEx, "Database update failed during SaveChanges");
+
+            throw new ContextException(
+                "A database error occurred while saving changes. Check the inner exception and logs for more details.",
+                dbEx
+            );
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error during SaveChanges");
+
+            throw new ContextException(
+                "An unexpected error occurred while saving changes. Please contact support or check logs.",
+                ex
+            );
         }
     }
 
