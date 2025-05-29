@@ -426,6 +426,7 @@ namespace Business.Services
                     // Invalidate outated cache
                     cache.Remove($"balances:{input.ColocationId}");
                     cache.Remove($"expenseCategories:{input.ColocationId}");
+                    cache.Remove($"refundMethods:{input.ColocationId}");
 
                     transaction.Commit();
 
@@ -500,6 +501,7 @@ namespace Business.Services
                     // Invalidate outated cache
                     cache.Remove($"balances:{input.ColocationId}");
                     cache.Remove($"expenseCategories:{input.ColocationId}");
+                    cache.Remove($"refundMethods:{input.ColocationId}");
 
                     transaction.Commit();
 
