@@ -182,6 +182,7 @@ h2 {
     color: #E7FEED;
     background-color: #074338;
     font-weight: 600;
+    border: none;
 }
 
 .google-button {
