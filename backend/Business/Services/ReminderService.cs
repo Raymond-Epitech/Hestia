@@ -95,6 +95,8 @@ public class ReminderService(ILogger<ReminderService> logger,
         await reminderRepository.AddAsync(reminder);
         await reminderRepository.SaveChangesAsync();
 
+        cache.Remove($"reminders:{reminder.ColocationId}");
+
         logger.LogInformation("Succes : Reminder added");
             
         return reminder.Id;
@@ -192,6 +194,8 @@ public class ReminderService(ILogger<ReminderService> logger,
             }
         }
 
+        cache.Remove($"reminders:{reminders.FirstOrDefault()!.ColocationId}");
+
         logger.LogInformation("Succes : Reminders all updated");
 
         return reminders.Count;
@@ -206,8 +210,15 @@ public class ReminderService(ILogger<ReminderService> logger,
     /// <exception cref="ContextException">An error has occured while adding reminder from db</exception>
     public async Task<Guid> DeleteReminderAsync(Guid id)
     {
-        await reminderRepository.DeleteFromIdAsync(id);
+        var reminder = await reminderRepository.GetByIdAsync(id);
+        if (reminder == null)
+        {
+            throw new NotFoundException($"Reminder {id} not found");
+        }
+        reminderRepository.Delete(reminder);
         await reminderRepository.SaveChangesAsync();
+
+        cache.Remove($"reminders:{reminder.ColocationId}");
 
         logger.LogInformation("Succes : Reminder deleted");
 
