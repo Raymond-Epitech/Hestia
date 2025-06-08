@@ -1,6 +1,7 @@
 <template>
     <div>
-        <button class="add-post">
+        <AddTaskModal v-model="isModalOpen" @proceed="getall()" />
+        <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
             <img src="~/public/plus.png" class="plus">
         </button>
         <div v-for="(task, index) in task_list" :key="index" class="task-list">
@@ -12,6 +13,9 @@
 
 <script setup>
 import { useUserStore } from '~/store/user';
+
+const isModalOpen = ref(false)
+const openModal = () => (isModalOpen.value = true)
 
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp()

@@ -32,7 +32,6 @@
 
 <script setup lang="ts">
 import useModal from '~/composables/useModal';
-import { bridge } from '~/service/bridge';
 import { useUserStore } from '~/store/user';
 
 const props = withDefaults(
@@ -108,7 +107,7 @@ watch(visible, (value) => {
 })
 </script>
 
-<style>
+<style scoped>
 .modal {
   width: 100%;
   height: 300px;
