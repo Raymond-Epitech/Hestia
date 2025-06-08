@@ -14,12 +14,15 @@
                         </div>
                         <div class="task-assignee">
                             <text class="text-task-assignee">Assignee:</text>
-                            <select v-model="task.enroll" class="input-task-assignee">
+                            <select v-model="task.enrolled" class="input-task-assignee">
                                 <option v-for="coloc in list_coloc" :key="coloc.id" :value="coloc.id">
                                     {{ coloc.username }}
                                 </option>
                             </select>
                         </div>
+                        <client-only>
+                            <vue-date-picker placeholder="MM/DD/YYYY" format="MM/dd/yyyy" v-model="task.dueDate" />
+                        </client-only>
                         <div class="modal-buttons">
                             <button class="button-proceed" @click.prevent="handleProceed">
                                 <img src="../public/submit.png" class="submit">
@@ -65,7 +68,7 @@ const task = ref({
     dueDate: '',
     title: '',
     description: '',
-    enroll: '',
+    enrolled: null,
     isDone: false,
 })
 
@@ -98,7 +101,11 @@ const handleClose = () => {
 }
 
 const handleProceed = async () => {
-    await api.addReminder(task.value)
+    const new_task = {
+        ...task.value,
+        enrolled: task.value.enrolled ? [task.value.enrolled] : []
+    }
+    await api.addChore(new_task)
     close()
     emit('proceed')
 }

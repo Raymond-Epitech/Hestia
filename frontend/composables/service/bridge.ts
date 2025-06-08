@@ -265,11 +265,12 @@ export class bridge {
 
     // Chore section:
 
-    async addChore(chore: Chore) {
+    async addChore(chore: any) {
         return await fetch(this.url + "/api/Chore", {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
             },
             body: JSON.stringify(chore)
         }).then(response => {

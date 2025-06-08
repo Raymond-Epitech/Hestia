@@ -25,10 +25,6 @@ definePageMeta({
     layout: false
 })
 
-definePageMeta({
-    layout: false
-})
-
 const { authenticateUser } = useAuthStore();
 const { authenticated } = storeToRefs(useAuthStore());
 const userStore = useUserStore();
