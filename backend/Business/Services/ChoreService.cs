@@ -5,6 +5,7 @@ using EntityFramework.Repositories;
 using LazyCache;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Shared.Exceptions;
 using Shared.Models.Input;
 using Shared.Models.Output;
@@ -123,6 +124,15 @@ public class ChoreService(
         var chore = input.ToDb();
         
         await choreRepository.AddAsync(chore);
+        if (input.Enrolled.Count != 0)
+        {
+            await choreEnrollmentRepository.AddRangeAsync(
+                input.Enrolled.Select(x => new ChoreEnrollment
+                {
+                    UserId = x,
+                    ChoreId = chore.Id
+                }).ToList());
+        }
         await choreRepository.SaveChangesAsync();
 
         cache.Remove($"chores:{input.ColocationId}");
@@ -166,6 +176,19 @@ public class ChoreService(
         }
 
         chore.UpdateFromInput(input);
+
+        if (input.Enrolled.Count != 0)
+        {
+            await choreEnrollmentRepository.Query()
+                .Where(ce => ce.ChoreId == chore.Id)
+                .ExecuteDeleteAsync();
+            await choreEnrollmentRepository.AddRangeAsync(
+                input.Enrolled.Select(x => new ChoreEnrollment
+                {
+                    UserId = x,
+                    ChoreId = chore.Id
+                }).ToList());
+        }
 
         _ = choreRepository.Update(chore);
         await choreRepository.SaveChangesAsync();
