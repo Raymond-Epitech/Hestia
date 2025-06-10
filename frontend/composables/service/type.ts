@@ -120,6 +120,7 @@ export type shoppinglist = {
     createdBy?: string,
     colocationId?: string,
     name: string
+    shoppingItems?: shoppinglist_item[],
 }
 
 export type shoppinglist_item = {
