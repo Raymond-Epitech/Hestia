@@ -14,7 +14,7 @@
         <a class="money-button" :onClick="() => redirect('/money')">
             <img src="../public/money-button.png" class="money">
         </a>
-        <a class="shopping-button" href="/shopping">
+        <a class="shopping-button" :onClick="() => redirect('/shopping')">
             <img src="../public/shopping.png" class="shopping">
         </a>
     </div>
