@@ -1,84 +1,145 @@
-# Nuxt 3 Minimal Starter
+<img src="/frontend/public/logo-hestia.png" width="128"/>
+Hestia is a Nuxt mobile web-app that helps you organise and manage your collocation.
+The backend is coded in C#.
+Hestia can help with organising chores, budget and alot more by giving you better ways to communicate with your room-mates!
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## Build
+To build and deploy the Hestia app localy, you can use the docker compose provided with the repository. Simply use `docker compose up` in the docker folder and everything should start up.
+The database of the project is hosted so you will need credentials to connect to it.
 
-## Setup
+# Backend
 
-Make sure to install the dependencies:
+## Overview
 
-```bash
-# npm
-npm install
+The backend of Hestia is a RESTful API built with ASP.NET Core 8.0. It serves as the primary interface between the mobile application and the underlying PostgreSQL database, providing secure and performant endpoints for data access and manipulation.
 
-# pnpm
-pnpm install
+## Technical stack
 
-# yarn
-yarn install
+**Framework** : ASP.NET Core 8.0 (C#)
+**Authentication** : JWT (JSON Web Tokens) with OAuth 2.0 (Google Sign-In)
+**Database** : Postgresql (with Entity Framework core)
+**Caching** : LazyCache (in-memory caching)
+**API Documentation** : Swagger (Open API)
+**Testing** : xUnit, Moq
+**Containerization** : Docker, Docker Compose
+**Hosting** : Ubuntu virtual machine (Epitech VM)
+**CI/CD** : Github Action
 
-# bun
-bun install
+## Key Features
+
+- Dependency Injection using .NET built-in DI container
+- Global Error Handling using Problem Details (RFC 7807)
+- Secure Authentication using JWT and Google OAuth 2.0
+- Optimized performance using caching (LazyCache in memory)
+- Modular and Layered Architecture (API, Business, Data Access, Shared)
+- Entity Framework Core for ORM and migrations
+- Swagger (OpenAPI 3.0) for automatic API documentation
+- Docker & Docker Compose support for local development
+- Environment-based configuration loading (Development / Production)
+- Unit testing with xUnit and mocking with Moq
+- Clear separation of concerns with Clean Architecture principles
+- Centralized Logging System
+
+## Project Artchitecture
+
+backend/
+├── Api/
+│   ├── Configuration/
+│   ├── Controllers/
+│   ├── ErrorHandler/
+│   ├── appsettings.json
+│   └── Program.cs
+│
+├── Business/
+│   ├── Interfaces/
+│   ├── Jwt/
+│   ├── Mappers/
+│   └── Services/
+│
+├── EntityFramework/
+│   ├── Context/
+│   ├── Migrations/
+│   ├── Models/
+│   └── Repositories/
+│
+├── Shared/
+│   ├── Enums/
+│   ├── Exceptions/
+│   └── Models/
+│       ├── DTO/
+│       ├── Input/
+│       ├── Output/
+│       └── Update/
+│
+├── Dockerfile
+│
+└── Tests/
+
+# Getting Started with the Backend
+
+## Configuration File
+
+Complete the file named `appsettings.json` with the info of the DB, google id etc...
+
+The file is here :
+```
+Hestia/backend/Api/
 ```
 
-## Development Server
+## Running with Docker
 
-Start the development server on `http://localhost:3000`:
+If everything is properly configured, you can run the backend using Docker. Open a terminal and execute the following commands:
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
+cd Hestia/docker
+docker compose up
 ```
 
-## Production
+If the setup is successful, you should see the log message:
 
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+```
+Connection successful!
 ```
 
-Locally preview production build:
+The API will be available at:
 
-```bash
-# npm
-npm run preview
+- Base URL: `http://localhost:8080/api/`
+- Swagger UI: `http://localhost:8080/swagger`
 
-# pnpm
-pnpm run preview
+## Running Locally with Visual Studio
 
-# yarn
-yarn preview
+1. Open the solution file located at:
 
-# bun
-bun run preview
+```
+Hestia/backend/backend.sln
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+2. In Visual Studio, set the **Api** project as the startup project.
+3. Start the application by pressing **F5** or clicking the green "Run" button.
 
-# Build APK
+## Running from the Terminal
 
-Build the apk for release:
-### **In /android/gradle.properties, the last line specifies a custom path for aapt2 the apk builder. This is to enable build on arm64 system. If you are not building on arm64, comment that line. If you are, download [this](https://objects.githubusercontent.com/github-production-release-asset-2e65be/122611158/b1d62f57-94cb-4921-97e5-8e9bcb7d1990?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=releaseassetproduction%2F20241217%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20241217T204939Z&X-Amz-Expires=300&X-Amz-Signature=958c6fd9a6296bacb0a34eba964961a71d724cebfe325116c38dc5197baf6eb9&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3Dandroid-sdk-tools-static-aarch64.zip&response-content-type=application%2Foctet-stream) android SDK build and move the aapt2 binary to the `/usr/bin` dir and give execution rights with `chmod +x /usr/bin/aapt2`. This should let you build hestia on an arm64 system.**
+To run the project manually via the .NET CLI:
 
 ```bash
-./build-app.sh
+cd Hestia/backend/Api
+dotnet run
+```
+
+The API will be available at the default Kestrel endpoint
+
+## Available environments
+
+- `Development` (`appsettings.Development.json`)
+- `Production` (`appsettings.Production.json`)
+
+## Switching Environments
+
+Go to Hestia/docker/compose/yml
+
+You can change this line to either development or production :
+
+```
+environment:
+    - ASPNETCORE_ENVIRONMENT=Development
 ```
