@@ -1,6 +1,12 @@
 <template>
     <div class="background">
-        <TexteLanguage source="header_refund" />
+        <div class="header">
+            <img src="/return.png" alt="Return" width="30" height="30" @click="$router.back()" />
+            <h1>
+                <TexteLanguage source="header_refund" />
+            </h1>
+            <p></p>
+        </div>
         <div>
             <h2><TexteLanguage source="refund_with_me"/></h2>
             <ul>

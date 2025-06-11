@@ -69,4 +69,16 @@ const handleProceed = async () => {
     align-items: center;
     margin-bottom: 20px;
 }
+
+.button {
+  padding: 10px 20px;
+  border-radius: 15px;
+  border: 0;
+  cursor: pointer;
+}
+
+.button-proceed {
+  background: #00000088;
+  color: #fff;
+}
 </style>
