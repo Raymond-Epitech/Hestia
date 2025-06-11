@@ -12,7 +12,7 @@ export default defineNuxtRouteMiddleware((to) => {
   if (token.value && to?.name === 'login') {
     return navigateTo('/');
   }
-  if (!token.value && to.path !== '/login' && to.path !== '/auth/google-callback') {
+  if (!token.value && to?.name !== 'login') {
     abortNavigation();
     return navigateTo('/login');
   }

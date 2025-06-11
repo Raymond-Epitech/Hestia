@@ -7,6 +7,7 @@ export const useAuthStore = defineStore('auth', {
   }),
   actions: {
     async authenticateUser(credential) {
+
       if (credential) {
         const token = useCookie('token');
         token.value = credential;

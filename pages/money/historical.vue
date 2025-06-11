@@ -10,7 +10,7 @@
             </div>
         </div>
         <div>
-            <ExpenseItem v-for="expense in expenses_list" :key="expense.id" :expense="expense"
+            <ExpenseItem v-for="expense in expenses_list" :key="expense.id" :expense="expense" :onclick="() => redirecttomodify(expense.id)"
                 :paidBy="getUsername(expense.paidBy)" />
         </div>
     </div>
@@ -25,6 +25,7 @@ const user = userStore.user;
 const route = useRoute();
 const router = useRouter();
 const name = route.query.name;
+const categoryId = route.query.id as string;
 const expenses_list = ref<Expenseget[]>([]);
 const list_coloc = ref<Coloc[]>([]);
 const { $bridge } = useNuxtApp()
@@ -32,9 +33,8 @@ const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 const collocid = user.colocationId;
 
-api.getExpenseByColocationId(collocid).then((response) => {
-    const matchingCategory = response.find(expenseList => expenseList.category === name);
-    expenses_list.value = matchingCategory ? matchingCategory.expenses : [];
+api.getExpensebycategoryId(categoryId).then((response) => {
+    expenses_list.value =  response;
 }).catch((error) => {
     console.error('Error fetching data:', error);
 })
@@ -51,7 +51,11 @@ const getUsername = (id: string): string => {
 
 const redirectto = () => {
     console.log(name);
-    router.push({ path: '/money/addExpense', query: { name } });
+    router.push({ path: '/money/addExpense', query: { name, categoryId } });
+}
+
+const redirecttomodify = (id: string) => {
+    router.push({ path: '/money/ModifyExpense', query: { id } });
 }
 </script>
 

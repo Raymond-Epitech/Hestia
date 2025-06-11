@@ -37,5 +37,21 @@
   "header_modify_expense": "費用を編集します",
   "poster": "ポスター",
   "modify": "修飾子",
-  "delete": "消去"
+  "delete": "消去",
+  "confirm_delete_expense": "この費用を削除したいですか？",
+  "refund": "返済",
+  "header_refund": "払い戻しオプション",
+  "other_refund": "その他の払い戻し",
+  "refund_with_me": "私に関連する払い戻し",
+  "refund_button": "返済",
+  "add_category": "カテゴリを追加します",
+  "expense_category_name": "カテゴリ名",
+  "header_add_category": "カテゴリを追加します",
+  "header_modify_category": "カテゴリを変更します",
+  "confirm": "確認する",
+  "add_shopping": "買い物のリストを追加します",
+  "header_add_shopping": "買い物のリストを追加します",
+  "shopping_list_name": "買い物リストの名前",
+  "header_add_shoppingitem": "買い物リストにアイテムを追加します",
+  "shoppingitem_name": "記事名"
 }

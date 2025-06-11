@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AddPostModal v-model="isModalOpen" @proceed="getall()" />
+    <AddPostModal v-model="isModalOpen" @proceed="getall()"/>
     <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
       <img src="~/public/plus.png" class="plus">
     </button>

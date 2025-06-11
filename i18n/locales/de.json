@@ -37,5 +37,21 @@
   "header_modify_expense": "Bearbeiten Sie die Kosten",
   "poster": "Poster",
   "modify": "Modifikator",
-  "delete": "LÖSCHEN"
+  "delete": "LÖSCHEN",
+  "confirm_delete_expense": "Sind Sie sicher, dass Sie diese Kosten löschen möchten?",
+  "refund": "Zurückzahlen",
+  "header_refund": "Erstattungsoptionen",
+  "other_refund": "Andere Rückerstattung",
+  "refund_with_me": "Mit mir verwandte Rückerstattungen",
+  "refund_button": "Zurückzahlen",
+  "add_category": "Fügen Sie eine Kategorie hinzu",
+  "expense_category_name": "Kategorienname",
+  "header_add_category": "Fügen Sie eine Kategorie hinzu",
+  "header_modify_category": "Ändern Sie die Kategorie",
+  "confirm": "Bestätigen",
+  "add_shopping": "Fügen Sie eine Liste des Einkaufs hinzu",
+  "header_add_shopping": "Fügen Sie eine Liste des Einkaufs hinzu",
+  "shopping_list_name": "Name der Einkaufsliste",
+  "header_add_shoppingitem": "Fügen Sie der Einkaufsliste einen Artikel hinzu",
+  "shoppingitem_name": "Artikelname"
 }

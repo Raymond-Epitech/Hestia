@@ -1,5 +1,5 @@
 <template>
-    <div class="expense">
+    <div class="expense" @click="props.onclick && props.onclick()">
       <div class="expense-header">
         <span class="expense-name">{{ expense.name }}</span>
         <span class="expense-amount">{{ expense.amount }} €</span>
@@ -16,6 +16,7 @@
   const props = defineProps<{
   expense: Expenseget;
   paidBy: string;
+  onclick?: () => void;
   }>();
   </script>
   
