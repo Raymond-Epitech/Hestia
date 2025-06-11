@@ -42,6 +42,7 @@ The backend of Hestia is a RESTful API built with ASP.NET Core 8.0. It serves as
 
 ## Project Artchitecture
 
+```
 backend/
 ├── Api/
 │   ├── Configuration/
@@ -74,6 +75,7 @@ backend/
 ├── Dockerfile
 │
 └── Tests/
+```
 
 # Getting Started with the Backend
 
