@@ -137,6 +137,9 @@ namespace Business.Services
             };
             await expenseCategoryRepository.AddAsync(expenseCategory);
             await expenseCategoryRepository.SaveChangesAsync();
+
+            cache.Remove($"expenseCategories:{input.ColocationId}");
+
             logger.LogInformation($"Succes : Expense category with id {expenseCategory.Id} was added to db");
             return expenseCategory.Id;
         }
@@ -159,6 +162,8 @@ namespace Business.Services
             expenseCategoryRepository.Update(expenseCategory);
             await expenseCategoryRepository.SaveChangesAsync();
 
+            cache.Remove($"expenseCategories:{expenseCategory.ColocationId}");
+
             logger.LogInformation($"Succes : Expense category with id {expenseCategory.Id} was updated in db");
 
             return expenseCategory.Id;
@@ -177,6 +182,9 @@ namespace Business.Services
                 throw new NotFoundException($"The expense category with id {id} was not found");
             expenseCategoryRepository.Delete(expenseCategory);
             await expenseCategoryRepository.SaveChangesAsync();
+
+            cache.Remove($"expenseCategories:{expenseCategory.ColocationId}");
+
             logger.LogInformation($"Succes : Expense category with id {id} was deleted from db");
             return id;
         }

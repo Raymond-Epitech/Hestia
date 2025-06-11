@@ -93,6 +93,8 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
         await shoppingListRepository.AddAsync(shoppingList);
         await shoppingListRepository.SaveChangesAsync();
 
+        cache.Remove($"shoppingList:{shoppingListInput.ColocationId}");
+
         logger.LogInformation($"Succesfully add shopping list {shoppingList.Id}");
 
         return shoppingList.Id;
@@ -139,6 +141,8 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
         shoppingListRepository.Update(shoppingList);
         await shoppingListRepository.SaveChangesAsync();
 
+        cache.Remove($"shoppingList:{shoppingList.ColocationId}");
+
         logger.LogInformation($"Succesfully update {shoppingListUpdate.Id}");
 
         return shoppingList.Id;
@@ -176,8 +180,15 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
     /// <returns>The if of the deleted shopping list</returns>
     public async Task<Guid> DeleteShoppingList(Guid shoppingListId)
     {
-        await shoppingListRepository.DeleteFromIdAsync(shoppingListId);
+        var shoppingList = await shoppingListRepository.GetByIdAsync(shoppingListId);
+        if (shoppingList == null)
+            throw new NotFoundException($"Shopping list {shoppingListId} was not found");
+
+        shoppingListRepository.Delete(shoppingList);
         logger.LogInformation($"shopping list {shoppingListId} deleted");
+
+        cache.Remove($"shoppingList:{shoppingList.ColocationId}");
+
         return shoppingListId;
     }
 
