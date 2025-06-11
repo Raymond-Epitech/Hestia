@@ -378,7 +378,8 @@ export class bridge {
         return await fetch(`${this.url}/api/Chore/Enroll?ChoreId=${choreId}&UserId=${userId}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
             }
         }).then(response => {
             if (response.status == 200) {
@@ -389,10 +390,11 @@ export class bridge {
     }
 
     async deleteChoreUser(choreId: string, userId: string) {
-        return await fetch(`${this.url}/api/Chore/Unenroll?ChoreId=${choreId}&UserId=${userId}`, {
+        return await fetch(`${this.url}/api/Chore/Enroll?ChoreId=${choreId}&UserId=${userId}`, {
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
             }
         }).then(response => {
             if (response.status == 200) {
@@ -413,9 +415,12 @@ export class bridge {
         })
     }
 
-    async getUserEnrollChore(choreId: string) {
+    async getUserEnrollChore(choreId: string): Promise<User[]> {
         return await fetch(`${this.url}/api/Chore/Enroll/ByChore?ChoreId=${choreId}`, {
             method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
         }).then(response => {
             if (response.status == 200) {
                 return response.json();

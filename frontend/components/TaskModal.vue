@@ -22,8 +22,12 @@
                     <!-- Buttons -->
                     <div class="modal-buttons">
                         <slot name="buttons">
-
-                            <button class="button button-proceed" @click="handleProceed">Yes, Proceed</button>
+                            <div v-if="enrolled">
+                                <button class="button button-proceed" @click="handleQuit">Quit :c</button>
+                            </div>
+                            <div v-else>
+                                <button class="button button-proceed" @click="handleEnroll">Enroll !</button>
+                            </div>
                         </slot>
                     </div>
                 </div>
@@ -33,15 +37,23 @@
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from '../store/user';
 import useModal from '../composables/useModal';
 
 const props = defineProps<{
+    id: string
     title: string
     modelValue?: boolean
     description: string
     color: string
     dueDate: string
 }>();
+
+const userStore = useUserStore();
+const { $bridge } = useNuxtApp()
+const api = $bridge;
+api.setjwt(useCookie('token').value ?? '');
+const enrolled = ref(false)
 
 const { modelValue } = toRefs(props)
 const { open, close, toggle, visible } = useModal(props.title)
@@ -59,12 +71,32 @@ defineExpose({
     visible,
 })
 
+onMounted(async () => {
+    const enrollees = await api.getUserEnrollChore(props.id);
+    enrolled.value = enrollees.some(obj => obj.id === userStore.user.id);
+});
+
 const handleClose = () => {
     close()
     emit('closed')
 }
 
-const handleProceed = async () => {
+const handleQuit = async () => {
+    api.deleteChoreUser(props.id, userStore.user.id).then(() => {
+        enrolled.value = false;
+    }).catch((error) => {
+        console.error('Error delete chore user:', error);
+    });
+    close()
+    emit('proceed')
+}
+
+const handleEnroll = async () => {
+    api.addChoreUser(props.id, userStore.user.id).then(() => {
+        enrolled.value = true;
+    }).catch((error) => {
+        console.error('Error add chore user:', error);
+    });
     close()
     emit('proceed')
 }
