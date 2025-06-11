@@ -47,5 +47,11 @@
   "add_category": "カテゴリを追加します",
   "expense_category_name": "カテゴリ名",
   "header_add_category": "カテゴリを追加します",
-  "header_modify_category": "カテゴリを変更します"
+  "header_modify_category": "カテゴリを変更します",
+  "confirm": "確認する",
+  "add_shopping": "買い物のリストを追加します",
+  "header_add_shopping": "買い物のリストを追加します",
+  "shopping_list_name": "買い物リストの名前",
+  "header_add_shoppingitem": "買い物リストにアイテムを追加します",
+  "shoppingitem_name": "記事名"
 }
