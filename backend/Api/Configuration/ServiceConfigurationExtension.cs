@@ -25,6 +25,7 @@ namespace WebApi.Configuration
             services.AddScoped<IColocationService, ColocationService>();
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IExpenseService, ExpenseService>();
+            services.AddScoped<IShoppingListService, ShoppingListService>();
 
             // Repositories
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -36,14 +37,10 @@ namespace WebApi.Configuration
 
         public static IServiceCollection EnableCors(this IServiceCollection services)
         {
-            var allowedHost = new[]{
-                "http://localhost:3000"
-            };
             services.AddCors(opt => opt.AddDefaultPolicy(policy => policy
                 .AllowAnyHeader()
                 .AllowAnyMethod()
-                .AllowCredentials()
-                .SetIsOriginAllowed(host => allowedHost.Contains(host))));
+                .AllowAnyOrigin()));
             return services;
         }
 

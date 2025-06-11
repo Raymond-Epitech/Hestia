@@ -35,5 +35,20 @@
   "poster": "Poster",
   "modify": "Modifier",
   "delete": "Supprimer",
-  "confirm_delete_expense": "Etes-vous sûr de vouloir supprimer cette dépense ?"
+  "confirm_delete_expense": "Etes-vous sûr de vouloir supprimer cette dépense ?",
+  "refund": "Rembourser",
+  "header_refund": "Options de remboursement",
+  "other_refund": "Autre remboursement",
+  "refund_with_me": "Remboursements liés à moi",
+  "refund_button": "Rembourser",
+  "add_category": "Ajouter une catégorie",
+  "expense_category_name": "Nom de la catégorie",
+  "header_add_category": "Ajouter une catégorie",
+  "header_modify_category": "Modifier la catégorie",
+  "confirm": "Confirmer",
+  "add_shopping": "Ajouter une liste de courses",
+  "header_add_shopping": "Ajouter une liste de courses",
+  "shopping_list_name": "Nom de la liste de courses",
+  "header_add_shoppingitem": "Ajouter un article à la liste de courses",
+  "shoppingitem_name": "Nom de l'article"
 }

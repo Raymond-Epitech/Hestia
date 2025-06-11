@@ -21,4 +21,6 @@ public class ShoppingList
 
     [Required]
     public string Name { get; set; } = null!;
+
+    public ICollection<ShoppingItem> ShoppingItems { get; set; } = null!;
 }

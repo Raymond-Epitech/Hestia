@@ -1,25 +1,30 @@
 <template>
     <div class="navbar">
-        <a class="settings-button" href="/settings">
+        <a class="settings-button" :onClick="() => redirect('/settings')">
             <img src="../public/settings.png" class="settings">
         </a>
-        <a class="task-button" href="/tasks">
+        <a class="task-button" :onClick="() => redirect('/tasks')">
             <div class="task-button-top-bar"></div>
             <div class="task-button-middle-bar"></div>
             <div class="task-button-bottom-bar"></div>
         </a>
-        <a class="wall-button" href="/">
+        <a class="wall-button" :onClick="() => redirect('/')">
             <img src="../public/frigo.png" class="fridge">
         </a>
-        <a class="money-button" href="/money">
+        <a class="money-button" :onClick="() => redirect('/money')">
             <img src="../public/money-button.png" class="money">
         </a>
-
+        <a class="shopping-button" :onClick="() => redirect('/shopping')">
+            <img src="../public/shopping.png" class="shopping">
+        </a>
     </div>
 </template>
 
 <script setup>
-
+const router = useRouter();
+const redirect = (page) => {
+    router.push(page);
+}
 </script>
 
 <style>
@@ -89,5 +94,17 @@
 .money {
     height: 58px;
     width: 68px;
+}
+
+.shopping-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30px;
+    width: 30px;
+}
+.shopping {
+    height: 38px;
+    width: 48px;
 }
 </style>

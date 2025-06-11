@@ -1,7 +1,5 @@
 ﻿using Business.Interfaces;
-using Business.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Exceptions;
 using Shared.Models.Input;
@@ -14,18 +12,67 @@ namespace Api.Controllers
     [ApiController]
     public class ExpenseController(IExpenseService expenseService) : Controller
     {
-
         [HttpGet("GetByColocationId/{colocationId}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<ExpenseOutput>>> GetAllExpense(Guid colocationId)
+        public async Task<ActionResult<List<ExpenseCategoryOutput>>> GetAllCategoryExpense(Guid colocationId)
         {
             if (colocationId == Guid.Empty)
                 throw new InvalidEntityException("ColocationId is required");
 
-            return Ok(await expenseService.GetAllExpensesAsync(colocationId));
+            return Ok(await expenseService.GetAllExpenseCategoriesAsync(colocationId));
+        }
+
+        [HttpPost("Category/")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> AddExpenseCategory(ExpenseCategoryInput input)
+        {
+            if (input.ColocationId == Guid.Empty)
+                throw new InvalidEntityException("ColocationId is required");
+            return Ok(await expenseService.AddExpenseCategoryAsync(input));
+        }
+
+        [HttpPut("Category/")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> UpdateExpenseCategory(ExpenseCategoryUpdate input)
+        {
+            if (input.Id == Guid.Empty)
+                throw new InvalidEntityException("Id is required");
+            await expenseService.UpdateExpenseCategoryAsync(input);
+            return Ok();
+        }
+
+        [HttpDelete("Category/{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> DeleteExpenseCategory(Guid id)
+        {
+            if (id == Guid.Empty)
+                throw new InvalidEntityException("Id is required");
+            return Ok(await expenseService.DeleteExpenseCategoryAsync(id));
+        }
+
+        [HttpGet("GetByExpenseCategoryId/{expenseCategoryId}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<ExpenseOutput>>> GetAllExpense(Guid expenseCategoryId)
+        {
+            if (expenseCategoryId == Guid.Empty)
+                throw new InvalidEntityException("ColocationId is required");
+
+            return Ok(await expenseService.GetAllExpensesAsync(expenseCategoryId));
         }
 
         [HttpGet("GetById/{id}")]
@@ -95,6 +142,19 @@ namespace Api.Controllers
                 throw new InvalidEntityException("ColocationId is required");
 
             return await expenseService.GetAllBalanceAsync(colocationId);
+        }
+
+        [HttpGet("GetRefundMethods/{colocationId}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<List<RefundOutput>> GetRefundMethods(Guid colocationId)
+        {
+            if (colocationId == Guid.Empty)
+                throw new InvalidEntityException("ColocationId is required");
+
+            return await expenseService.GetRefundMethodsAsync(colocationId);
         }
     }
 }

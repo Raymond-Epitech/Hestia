@@ -17,5 +17,6 @@ namespace Shared.Models.Output
         public string? Description { get; set; }
 
         public bool IsDone { get; set; } = false;
+        public List<Guid> Enrolled { get; set; } = null!;
     }
 }

@@ -167,13 +167,6 @@ namespace EntityFramework.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(19,2)");
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("ColocationId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
@@ -185,6 +178,9 @@ namespace EntityFramework.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
+
+                    b.Property<Guid>("ExpenseCategoryId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -199,11 +195,31 @@ namespace EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ColocationId");
+                    b.HasIndex("ExpenseCategoryId");
 
                     b.HasIndex("PaidBy");
 
                     b.ToTable("Expenses");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.ExpenseCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ColocationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ColocationId");
+
+                    b.ToTable("ExpenseCategories");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.Reminder", b =>
@@ -243,6 +259,35 @@ namespace EntityFramework.Migrations
                     b.HasIndex("ColocationId");
 
                     b.ToTable("Reminders");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.ShoppingItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsChecked")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ShoppingListId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShoppingListId");
+
+                    b.ToTable("ShoppingItems");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.ShoppingList", b =>
@@ -393,9 +438,9 @@ namespace EntityFramework.Migrations
 
             modelBuilder.Entity("EntityFramework.Models.Expense", b =>
                 {
-                    b.HasOne("EntityFramework.Models.Colocation", "Colocation")
+                    b.HasOne("EntityFramework.Models.ExpenseCategory", "ExpenseCategory")
                         .WithMany("Expenses")
-                        .HasForeignKey("ColocationId")
+                        .HasForeignKey("ExpenseCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -405,9 +450,20 @@ namespace EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Colocation");
+                    b.Navigation("ExpenseCategory");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.ExpenseCategory", b =>
+                {
+                    b.HasOne("EntityFramework.Models.Colocation", "Colocation")
+                        .WithMany("ExpenseCategories")
+                        .HasForeignKey("ColocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Colocation");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.Reminder", b =>
@@ -421,10 +477,21 @@ namespace EntityFramework.Migrations
                     b.Navigation("Colocation");
                 });
 
+            modelBuilder.Entity("EntityFramework.Models.ShoppingItem", b =>
+                {
+                    b.HasOne("EntityFramework.Models.ShoppingList", "ShoppingList")
+                        .WithMany("ShoppingItems")
+                        .HasForeignKey("ShoppingListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ShoppingList");
+                });
+
             modelBuilder.Entity("EntityFramework.Models.ShoppingList", b =>
                 {
                     b.HasOne("EntityFramework.Models.Colocation", "Colocation")
-                        .WithMany("ShoppingList")
+                        .WithMany("ShoppingLists")
                         .HasForeignKey("ColocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -472,11 +539,11 @@ namespace EntityFramework.Migrations
                 {
                     b.Navigation("Chores");
 
-                    b.Navigation("Expenses");
+                    b.Navigation("ExpenseCategories");
 
                     b.Navigation("Reminders");
 
-                    b.Navigation("ShoppingList");
+                    b.Navigation("ShoppingLists");
 
                     b.Navigation("Users");
                 });
@@ -486,6 +553,16 @@ namespace EntityFramework.Migrations
                     b.Navigation("Entries");
 
                     b.Navigation("SplitBetweens");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.ExpenseCategory", b =>
+                {
+                    b.Navigation("Expenses");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.ShoppingList", b =>
+                {
+                    b.Navigation("ShoppingItems");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.User", b =>
