@@ -3,8 +3,9 @@
         <div class="expense-header">
             <span v-if="!modif" class="expense-name">{{ item.name }} <span><img src="../public/edit.png" width="20"
                         height="20" @click="modif = !modif" /> </span></span>
-            <span v-if="modif" class="expense-name"><input v-model="item.name" required /> <button
-                    @click="modifname">confirm</button></span>
+            <span v-if="modif" class="expense-name"><input v-model="item.name" required /><button @click="modifname">
+                    <Texte_language source="confirm" />
+                </button></span>
             <div class="check-zone" :class="{ checked: item.isChecked }" @click.stop="toggleCheck"></div>
         </div>
     </div>
