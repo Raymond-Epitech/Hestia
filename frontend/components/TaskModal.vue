@@ -3,23 +3,26 @@
         <div v-if="visible">
             <div class="modal-background" @click="handleClose">
                 <div class="modal" :class="props.color" @click.stop>
-                    <div class="modal-header left" :class="{ 'modal-no-border': !borders }">
-                        <h1>{{ title }}</h1>
-                        <div class="due-date">
+                    <div class="modal-header">
+                        <div class="modal-header-text">
+                            <text class="title">{{ title }}</text>
+                            <text class="description">{{ description }}</text>
+                        </div>
+                        <div class=" due-date">
                             <div class="number">{{ getDayNumber() }}</div>
                             <div class="month">{{ getMonthAbbreviation() }}</div>
                         </div>
                     </div>
 
-                    <div class="modal-body left">
+                    <div class="modal-body">
+                        <task-message-box></task-message-box>
                         <slot name="content"></slot>
-                        <h1>{{ description }}</h1>
                     </div>
 
                     <!-- Buttons -->
-                    <div class="modal-buttons" :class="{ 'modal-no-border': !borders }">
+                    <div class="modal-buttons">
                         <slot name="buttons">
-                            <button class="button button-cancel" @click="handleClose">Cancel</button>
+
                             <button class="button button-proceed" @click="handleProceed">Yes, Proceed</button>
                         </slot>
                     </div>
@@ -30,6 +33,7 @@
 </template>
 
 <script setup lang="ts">
+import useModal from '../composables/useModal';
 
 const props = defineProps<{
     title: string
@@ -40,7 +44,7 @@ const props = defineProps<{
 }>();
 
 const { modelValue } = toRefs(props)
-const { open, close, toggle, visible } = useModal(props.name)
+const { open, close, toggle, visible } = useModal(props.title)
 
 const emit = defineEmits<{
     closed: [],
@@ -90,7 +94,7 @@ watch(visible, (value) => {
 })
 </script>
 
-<style>
+<style scoped>
 .red {
     background-color: #FF6A61;
 }
@@ -105,36 +109,85 @@ watch(visible, (value) => {
 
 .modal {
     width: 100%;
-    height: 300px;
+    height: 360px;
     overflow-y: auto;
     margin-top: 0px;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
-    border-bottom-left-radius: 50px;
-    border-bottom-right-radius: 50px;
-    animation: slideIn 0.2s;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    animation: slideIn 0.4s;
     backdrop-filter: blur(8px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     position: relative;
 }
 
 .modal-header {
-    padding: 12px 16px;
-    font-weight: 600;
-    border-bottom: 1px dotted lightgrey;
-    color: #fff;
+    color: #000000;
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+    align-items: center;
+    justify-content: space-between;
+    width: 90%;
+    height: 80px;
+    padding-left: 5%;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border-bottom: none;
 }
 
 .modal-header-text {
-    font-size: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.description {
+    font-weight: 500;
+}
+
+.due-date {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 6px;
+    width: 62px;
+    height: 62px;
+}
+
+.number {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+    height: 40px;
+    font-size: 38px;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.month {
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
 }
 
 .modal-body {
+    width: 95%;
     padding: 12px;
     display: flex;
+    align-items: center;
+    justify-content: center;
     flex-direction: column;
     overflow: auto;
     gap: 16px;
@@ -156,12 +209,6 @@ watch(visible, (value) => {
     background-size: 100% 3ch;
     color: #fff;
     font-size: 18px;
-}
-
-.post-colors-buttons {
-    padding: 8px;
-    display: flex;
-    justify-content: space-evenly;
 }
 
 .modal-background {
@@ -236,7 +283,7 @@ watch(visible, (value) => {
 
 @keyframes slideIn {
     0% {
-        transform: translateY(100px);
+        transform: translateY(-400px);
     }
 
     100% {
@@ -250,7 +297,7 @@ watch(visible, (value) => {
     }
 
     100% {
-        transform: translateY(100px);
+        transform: translateY(-400px);
     }
 }
 
@@ -259,7 +306,7 @@ watch(visible, (value) => {
     /** Slide Out Transition (mobile only) */
     .modal-enter-from:deep(.modal),
     .modal-leave-to:deep(.modal) {
-        animation: slideOut 0.2s linear;
+        animation: slideOut 0.4s linear;
     }
 }
 
