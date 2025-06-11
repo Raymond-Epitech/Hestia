@@ -48,3 +48,43 @@ const handleProceed = async () => {
   });
 }
 </script>
+
+<style scoped>
+.background {
+  height: 100vh;
+  background-color: #1E1E1E;
+  color: white;
+  padding: 20px;
+}
+
+.body-input {
+  width: 50%;
+  background-color: #1e1e1e00;
+  outline: none;
+  border: none;
+  line-height: 3ch;
+  background-image: linear-gradient(transparent, transparent calc(3ch - 1px), #E7EFF8 0px);
+  background-size: 100% 3ch;
+  color: #fff;
+  font-size: 18px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.button {
+  padding: 10px 20px;
+  border-radius: 15px;
+  border: 0;
+  cursor: pointer;
+}
+
+.button-proceed {
+  background: #00000088;
+  color: #fff;
+}
+</style>
