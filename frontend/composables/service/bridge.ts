@@ -598,7 +598,7 @@ export class bridge {
     }
 
     // shoppinglist section:
-    async getShoppingListByColocationId(colocationId: string) {
+    async getShoppingListByColocationId(colocationId: string): Promise<shoppinglist[]> {
         return await fetch(`${this.url}/api/ShoppingList/GetByColocationId/${colocationId}`, {
             method: 'GET',
             headers: {
@@ -612,7 +612,7 @@ export class bridge {
         });
     }
 
-    async getShoppingListItemById(id: string) {
+    async getShoppingListById(id: string): Promise<shoppinglist> {
         return await fetch(`${this.url}/api/ShoppingList/GetById/${id}`, {
             method: 'GET',
             headers: {
@@ -622,7 +622,7 @@ export class bridge {
             if (response.status == 200) {
                 return response.json();
             }
-            return {};
+            return {} as shoppinglist;
         });
     }
 

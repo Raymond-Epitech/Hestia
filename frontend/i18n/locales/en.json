@@ -47,5 +47,11 @@
   "add_category": "Add a category",
   "expense_category_name": "Category name",
   "header_add_category": "Add a category",
-  "header_modify_category": "Change the category"
+  "header_modify_category": "Change the category",
+  "confirm": "Confirm",
+  "add_shopping": "Add a list of shopping",
+  "header_add_shopping": "Add a list of shopping",
+  "shopping_list_name": "Name of the shopping list",
+  "header_add_shoppingitem": "Add an item to the shopping list",
+  "shoppingitem_name": "Article name"
 }

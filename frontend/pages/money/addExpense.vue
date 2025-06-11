@@ -172,7 +172,7 @@ const filterNumericInput = (event: Event) => {
 };
 </script>
 
-<style>
+<style scoped>
 .background {
   height: 100vh;
   background-color: #1E1E1E;
