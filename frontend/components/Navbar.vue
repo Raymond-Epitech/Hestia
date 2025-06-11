@@ -14,7 +14,9 @@
         <a class="money-button" href="/money">
             <img src="../public/money-button.png" class="money">
         </a>
-
+        <a class="shopping-button" href="/shopping">
+            <img src="../public/shopping.png" class="shopping">
+        </a>
     </div>
 </template>
 
@@ -89,5 +91,17 @@
 .money {
     height: 58px;
     width: 68px;
+}
+
+.shopping-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30px;
+    width: 30px;
+}
+.shopping {
+    height: 38px;
+    width: 48px;
 }
 </style>
