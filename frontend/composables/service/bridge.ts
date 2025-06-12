@@ -286,7 +286,8 @@ export class bridge {
         return await fetch(this.url + "/api/Chore", {
             method: 'PUT',
             headers: {
-                'Content-type': 'application/json'
+                'Content-type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
             },
             body: JSON.stringify(chore)
         }).then(response => {

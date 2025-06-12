@@ -22,11 +22,17 @@
                     <!-- Buttons -->
                     <div class="modal-buttons">
                         <slot name="buttons">
-                            <div v-if="enrolled">
+                            <div v-if="isEnrolled">
                                 <button class="button button-proceed" @click="handleQuit">Quit :c</button>
                             </div>
                             <div v-else>
                                 <button class="button button-proceed" @click="handleEnroll">Enroll !</button>
+                            </div>
+                            <div v-if="done">
+                                <text>This task has been done</text>
+                            </div>
+                            <div v-else>
+                                <button class="button button-proceed" @click="handleDone">Done !</button>
                             </div>
                         </slot>
                     </div>
@@ -37,8 +43,10 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import { useUserStore } from '../store/user';
 import useModal from '../composables/useModal';
+import type { User } from '../composables/service/type'
 
 const props = defineProps<{
     id: string
@@ -47,13 +55,16 @@ const props = defineProps<{
     description: string
     color: string
     dueDate: string
+    isDone: boolean
 }>();
 
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
-const enrolled = ref(false)
+const isEnrolled = ref(false);
+const enrollees = ref<User[]>([]);
+var done = props.isDone;
 
 const { modelValue } = toRefs(props)
 const { open, close, toggle, visible } = useModal(props.title)
@@ -72,8 +83,9 @@ defineExpose({
 })
 
 onMounted(async () => {
-    const enrollees = await api.getUserEnrollChore(props.id);
-    enrolled.value = enrollees.some(obj => obj.id === userStore.user.id);
+    const data = await api.getUserEnrollChore(props.id);
+    enrollees.value = data;
+    isEnrolled.value = data.some(obj => obj.id === userStore.user.id);
 });
 
 const handleClose = () => {
@@ -83,7 +95,7 @@ const handleClose = () => {
 
 const handleQuit = async () => {
     api.deleteChoreUser(props.id, userStore.user.id).then(() => {
-        enrolled.value = false;
+        isEnrolled.value = false;
     }).catch((error) => {
         console.error('Error delete chore user:', error);
     });
@@ -93,9 +105,27 @@ const handleQuit = async () => {
 
 const handleEnroll = async () => {
     api.addChoreUser(props.id, userStore.user.id).then(() => {
-        enrolled.value = true;
+        isEnrolled.value = true;
     }).catch((error) => {
         console.error('Error add chore user:', error);
+    });
+    close()
+    emit('proceed')
+}
+const handleDone = async () => {
+    const updateChore = {
+        id: props.id,
+        colocationId: userStore.user.colocationId,
+        dueDate: props.dueDate,
+        title: props.title,
+        description: props.description,
+        isDone: true,
+        enrolled: enrollees.value.map(user => user.id),
+    }
+    api.updateChore(updateChore).then(() => {
+        done = true;
+    }).catch((error) => {
+        console.error('Error update chore:', error);
     });
     close()
     emit('proceed')
