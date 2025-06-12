@@ -10,6 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="EntityFramework.Tests\**" />
+    <EmbeddedResource Remove="EntityFramework.Tests\**" />
+    <None Remove="EntityFramework.Tests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
     <PackageReference Include="FluentAssertions" Version="8.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.13" />
@@ -32,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="EntityFramework.Tests\" />
+    <Folder Include="Business.Tests\" />
   </ItemGroup>
 
 </Project>
