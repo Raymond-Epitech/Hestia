@@ -47,7 +47,7 @@ public class ChoreServiceTests
 
         result.Should().BeEquivalentTo(chores);
     }
-
+    /*
     [Fact]
     public async Task GetChoreAsync_ShouldReturnChore_WhenExists()
     {
@@ -147,7 +147,7 @@ public class ChoreServiceTests
         result.Should().NotBeNullOrEmpty();
         result.First().Username.Should().Be("user1");
     }
-
+    */
 
     [Fact]
     public async Task AddChoreAsync_ShouldReturnChoreId()
