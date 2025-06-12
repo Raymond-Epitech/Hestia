@@ -103,6 +103,7 @@ public class ChoreService(
                 CreatedAt = c.CreatedAt,
                 Content = c.Content
             })
+            .OrderBy(c => c.CreatedAt)
             .ToListAsync();
 
         if (choreMessages == null)
