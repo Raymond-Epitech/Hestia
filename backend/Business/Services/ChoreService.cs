@@ -325,10 +325,16 @@ public class ChoreService(
     /// <exception cref="ContextException">An error occurred while adding the user to the db</exception>
     public async Task<Guid> UnenrollToChore(Guid userId, Guid choreId)
     {
-        await choreEnrollmentRepository.Query()
+        var enrollement = await choreEnrollmentRepository.Query()
             .Where(ce => ce.UserId == userId && ce.ChoreId == choreId)
-            .ExecuteDeleteAsync();
-        await choreRepository.SaveChangesAsync();
+            .FirstOrDefaultAsync();
+        if (enrollement == null)
+        {
+            throw new NotFoundException("Enrollement not found");
+        }
+
+        choreEnrollmentRepository.Delete(enrollement);
+        await choreEnrollmentRepository.SaveChangesAsync();
 
         logger.LogInformation("Succes : User unenrolled to the chore");
 
