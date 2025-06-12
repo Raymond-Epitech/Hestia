@@ -46,8 +46,8 @@ namespace Api.Controllers
         {
             if (input.Id == Guid.Empty)
                 throw new InvalidEntityException("Id is required");
-            await expenseService.UpdateExpenseCategoryAsync(input);
-            return Ok();
+            
+            return Ok(await expenseService.UpdateExpenseCategoryAsync(input));
         }
 
         [HttpDelete("Category/{id}")]
@@ -55,7 +55,7 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> DeleteExpenseCategory(Guid id)
+        public async Task<ActionResult<Guid>> DeleteExpenseCategory(Guid id)
         {
             if (id == Guid.Empty)
                 throw new InvalidEntityException("Id is required");
@@ -113,9 +113,7 @@ namespace Api.Controllers
             if (input.Id == Guid.Empty)
                 throw new InvalidEntityException("Id is required");
 
-            await expenseService.UpdateExpenseAsync(input);
-
-            return Ok();
+            return Ok(await expenseService.UpdateExpenseAsync(input));
         }
 
         [HttpDelete("{id}")]
@@ -123,7 +121,7 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> DeleteExpense(Guid id)
+        public async Task<ActionResult<Guid>> DeleteExpense(Guid id)
         {
             if (id == Guid.Empty)
                 throw new InvalidEntityException("Id is required");
@@ -141,7 +139,7 @@ namespace Api.Controllers
             if (colocationId == Guid.Empty)
                 throw new InvalidEntityException("ColocationId is required");
 
-            return await expenseService.GetAllBalanceAsync(colocationId);
+            return Ok(await expenseService.GetAllBalanceAsync(colocationId));
         }
 
         [HttpGet("GetRefundMethods/{colocationId}")]
@@ -149,12 +147,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<RefundOutput>> GetRefundMethods(Guid colocationId)
+        public async Task<ActionResult<List<RefundOutput>>> GetRefundMethods(Guid colocationId)
         {
             if (colocationId == Guid.Empty)
                 throw new InvalidEntityException("ColocationId is required");
 
-            return await expenseService.GetRefundMethodsAsync(colocationId);
+            return Ok(await expenseService.GetRefundMethodsAsync(colocationId));
         }
     }
 }

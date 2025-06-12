@@ -1,6 +1,5 @@
 ﻿using Api.Controllers;
 using Business.Interfaces;
-using EntityFramework.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;

@@ -7,6 +7,7 @@ using Shared.Enums;
 using Shared.Exceptions;
 using Shared.Models.Input;
 using Shared.Models.Output;
+using Shared.Models.Update;
 
 namespace Tests.Hestia.Controller;
 
@@ -21,194 +22,110 @@ public class ExpenseControllerTests
         _controller = new ExpenseController(_expenseServiceMock.Object);
     }
 
-    // Get all expenses
-
     [Fact]
-    public async Task GetAllExpense_ReturnsOk_WhenExpenseListIsNotEmpty()
+    public async Task GetAllCategoryExpense_ReturnsOk_WhenValid()
     {
-        // Arange
         var colocationId = Guid.NewGuid();
-        var expenseResult = new List<OutputFormatForExpenses>()
-        {
-            new OutputFormatForExpenses
-            {
-                Category = "test",
-                TotalAmount = 100,
-                Expenses = new List<ExpenseOutput>()
-                {
-                    new ExpenseOutput
-                    {
-                        Id = Guid.NewGuid(),
-                        CreatedAt = DateTime.Now,
-                        CreatedBy = Guid.NewGuid(),
-                        ColocationId = colocationId,
-                        Name = "TestExpense1",
-                        Description = "TestDescription1",
-                        Amount = 10,
-                        PaidBy = Guid.NewGuid(),
-                        SplitBetween = new Dictionary<Guid, decimal> { { Guid.NewGuid(), 50 }, { Guid.NewGuid(), 30 } },
-                        DateOfPayment = DateTime.Now,
-                    },
-                    new ExpenseOutput
-                    {
-                        Id = Guid.NewGuid(),
-                        CreatedAt = DateTime.Now,
-                        CreatedBy = Guid.NewGuid(),
-                        ColocationId = colocationId,
-                        Name = "TestExpense2",
-                        Description = "TestDescription2",
-                        Amount = 10,
-                        PaidBy = Guid.NewGuid(),
-                        SplitBetween = new Dictionary<Guid, decimal> { { Guid.NewGuid(), 50 }, { Guid.NewGuid(), 30 } },
-                        DateOfPayment = DateTime.Now,
-                    }
-                }
-            }
-        };
+        var expected = new List<ExpenseCategoryOutput> { new() { Id = Guid.NewGuid(), Name = "Food" } };
 
-        _expenseServiceMock.Setup(service => service.GetAllExpensesAsync(colocationId)).ReturnsAsync(expenseResult);
+        _expenseServiceMock.Setup(s => s.GetAllExpenseCategoriesAsync(colocationId)).ReturnsAsync(expected);
 
-        // Act
-        var actionResult = await _controller.GetAllExpense(colocationId);
+        var result = await _controller.GetAllCategoryExpense(colocationId);
 
-        // Assert
-        actionResult.Result.Should().BeOfType<OkObjectResult>();
-
-        var okResult = actionResult.Result as OkObjectResult;
-        okResult.Should().NotBeNull();
-        okResult!.Value.Should().BeEquivalentTo(expenseResult);
-        _expenseServiceMock.Verify(service => service.GetAllExpensesAsync(colocationId), Times.Once);
+        result.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().BeEquivalentTo(expected);
+        _expenseServiceMock.Verify(s => s.GetAllExpenseCategoriesAsync(colocationId), Times.Once);
     }
 
     [Fact]
-    public async Task GetAllExpense_ShouldReturnContextError_WhenExpenseListIsInvalid()
+    public async Task AddExpenseCategory_ReturnsOk_WhenSuccessful()
     {
-        // Arange
+        var input = new ExpenseCategoryInput { ColocationId = Guid.NewGuid(), Name = "Transport" };
+        var expectedId = Guid.NewGuid();
+
+        _expenseServiceMock.Setup(s => s.AddExpenseCategoryAsync(input)).ReturnsAsync(expectedId);
+
+        var result = await _controller.AddExpenseCategory(input);
+
+        result.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(expectedId);
+        _expenseServiceMock.Verify(s => s.AddExpenseCategoryAsync(input), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateExpenseCategory_ReturnsOk_WhenSuccessful()
+    {
+        var input = new ExpenseCategoryUpdate { Id = Guid.NewGuid(), Name = "Updated" };
+
+        _expenseServiceMock.Setup(s => s.UpdateExpenseCategoryAsync(input)).ReturnsAsync(input.Id);
+
+        var result = await _controller.UpdateExpenseCategory(input);
+
+        result.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(input.Id);
+        _expenseServiceMock.Verify(s => s.UpdateExpenseCategoryAsync(input), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteExpenseCategory_ReturnsOk_WhenSuccessful()
+    {
+        var id = Guid.NewGuid();
+        _expenseServiceMock.Setup(s => s.DeleteExpenseCategoryAsync(id)).ReturnsAsync(id);
+
+        var result = await _controller.DeleteExpenseCategory(id);
+
+        result.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(id);
+        _expenseServiceMock.Verify(s => s.DeleteExpenseCategoryAsync(id), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateExpense_ReturnsOk_WhenSuccessful()
+    {
+        var input = new ExpenseUpdate { Id = Guid.NewGuid(), Name = "Updated", Amount = 42 };
+
+        _expenseServiceMock.Setup(s => s.UpdateExpenseAsync(input)).ReturnsAsync(input.Id);
+
+        var result = await _controller.UpdateExpense(input);
+
+        result.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(input.Id);
+        _expenseServiceMock.Verify(s => s.UpdateExpenseAsync(input), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteExpense_ReturnsOk_WhenSuccessful()
+    {
+        var id = Guid.NewGuid();
+
+        _expenseServiceMock.Setup(s => s.DeleteExpenseAsync(id)).ReturnsAsync(id);
+
+        var result = await _controller.DeleteExpense(id);
+
+        result.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(id);
+        _expenseServiceMock.Verify(s => s.DeleteExpenseAsync(id), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetBalance_ReturnsOk_WhenSuccessful()
+    {
         var colocationId = Guid.NewGuid();
+        var expected = new Dictionary<Guid, decimal> { { Guid.NewGuid(), 50 } };
 
-        _expenseServiceMock.Setup(service => service.GetAllExpensesAsync(colocationId))
-            .ThrowsAsync(new ContextException("Context error"));
+        _expenseServiceMock.Setup(s => s.GetAllBalanceAsync(colocationId)).ReturnsAsync(expected);
 
-        // Act
-        await Assert.ThrowsAsync<ContextException>(() => _controller.GetAllExpense(colocationId));
+        var result = await _controller.GetBalance(colocationId);
 
-        // Assert
-        _expenseServiceMock.Verify(service => service.GetAllExpensesAsync(colocationId), Times.Once);
+        result.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().BeEquivalentTo(expected);
+        _expenseServiceMock.Verify(s => s.GetAllBalanceAsync(colocationId), Times.Once);
     }
 
     [Fact]
-    public async Task GetExpense_ReturnsOk_WhenExpenseExists()
+    public async Task GetRefundMethods_ReturnsOk_WhenSuccessful()
     {
-        // Arrange
-        var expenseId = Guid.NewGuid();
-        var expectedExpense = new ExpenseOutput
-        {
-            Id = Guid.NewGuid(),
-            CreatedAt = DateTime.Now,
-            CreatedBy = Guid.NewGuid(),
-            ColocationId = Guid.NewGuid(),
-            Name = "TestExpense1",
-            Description = "TestDescription1",
-            Amount = 10,
-            PaidBy = Guid.NewGuid(),
-            SplitBetween = new Dictionary<Guid, decimal> { { Guid.NewGuid(), 50 }, { Guid.NewGuid(), 30 } },
-            DateOfPayment = DateTime.Now,
-        };
+        var colocationId = Guid.NewGuid();
+        var expected = new List<RefundOutput> { new() { From = Guid.NewGuid(), To = Guid.NewGuid(), Amount = 20 } };
 
-        _expenseServiceMock.Setup(service => service.GetExpenseAsync(expenseId)).ReturnsAsync(expectedExpense);
+        _expenseServiceMock.Setup(s => s.GetRefundMethodsAsync(colocationId)).ReturnsAsync(expected);
 
-        // Act
-        var actionResult = await _controller.GetExpense(expenseId);
+        var result = await _controller.GetRefundMethods(colocationId);
 
-        // Assert
-        actionResult.Result.Should().BeOfType<OkObjectResult>();
-
-        var okResult = actionResult.Result as OkObjectResult;
-        okResult.Should().NotBeNull();
-        okResult!.Value.Should().BeEquivalentTo(expectedExpense);
-        _expenseServiceMock.Verify(service => service.GetExpenseAsync(expenseId), Times.Once);
-    }
-
-    [Fact]
-    public async Task GetExpense_ShouldReturnNotFound_WhenExpenseDoNotExist()
-    {
-        // Arrange
-        var expenseId = Guid.NewGuid();
-        _expenseServiceMock.Setup(service => service.GetExpenseAsync(expenseId))
-            .ThrowsAsync(new NotFoundException("Expense not found"));
-
-        // Act
-        await Assert.ThrowsAsync<NotFoundException>(() => _controller.GetExpense(expenseId));
-
-        // Assert
-        _expenseServiceMock.Verify(service => service.GetExpenseAsync(expenseId), Times.Once);
-    }
-
-    [Fact]
-    public async Task GetExpense_ShouldReturnContextError_WhenExpenseIdIsInvalid()
-    {
-        // Arrange
-        var expenseId = Guid.NewGuid();
-        _expenseServiceMock.Setup(service => service.GetExpenseAsync(expenseId))
-            .ThrowsAsync(new ContextException("Error in db"));
-
-        // Act
-        await Assert.ThrowsAsync<ContextException>(() => _controller.GetExpense(expenseId));
-
-        // Assert
-        _expenseServiceMock.Verify(service => service.GetExpenseAsync(expenseId), Times.Once);
-    }
-
-    [Fact]
-    public async Task AddExpense_ReturnsOk_WhenSuccessful()
-    {
-        var expenseInput = new ExpenseInput
-        {
-            ColocationId = Guid.NewGuid(),
-            CreatedBy = Guid.NewGuid(),
-            Name = "TestExpense",
-            Description = "TestDescription",
-            Amount = 10,
-            PaidBy = Guid.NewGuid(),
-            SplitType = SplitTypeEnum.Evenly,
-            SplitBetween = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
-            SplitPercentages = null,
-            SplitValues = null,
-            DateOfPayment = DateTime.Now
-        };
-
-        var reminderId = Guid.NewGuid();
-
-        _expenseServiceMock.Setup(service => service.AddExpenseAsync(expenseInput)).ReturnsAsync(reminderId);
-
-        var actionResult = await _controller.AddExpense(expenseInput);
-
-        actionResult.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(reminderId);
-        _expenseServiceMock.Verify(service => service.AddExpenseAsync(expenseInput), Times.Once);
-    }
-
-    [Fact]
-    public async Task AddExpense_ShouldReturnInvalidEntity_WhenExpenseInputIsInvalid()
-    {
-        var expenseInput = new ExpenseInput
-        {
-            ColocationId = Guid.NewGuid(),
-            CreatedBy = Guid.NewGuid(),
-            Name = "TestExpense",
-            Description = "TestDescription",
-            Amount = 10,
-            PaidBy = Guid.NewGuid(),
-            SplitType = SplitTypeEnum.Evenly,
-            SplitBetween = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
-            SplitPercentages = null,
-            SplitValues = null,
-            DateOfPayment = DateTime.Now
-        };
-        _expenseServiceMock.Setup(service => service.AddExpenseAsync(expenseInput))
-            .ThrowsAsync(new ContextException("Error in db"));
-
-        await Assert.ThrowsAsync<ContextException>(() => _controller.AddExpense(expenseInput));
-
-        _expenseServiceMock.Verify(service => service.AddExpenseAsync(expenseInput), Times.Once);
+        result.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().BeEquivalentTo(expected);
+        _expenseServiceMock.Verify(s => s.GetRefundMethodsAsync(colocationId), Times.Once);
     }
 }
