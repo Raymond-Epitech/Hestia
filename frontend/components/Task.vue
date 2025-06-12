@@ -1,7 +1,7 @@
 <template>
     <div class="task-container">
         <TaskModal v-model="isModalOpen" :id="id" :title="title" :description="description" :color="getColor()"
-            :dueDate="dueDate" :isDone="isDone"></TaskModal>
+            :dueDate="dueDate" :isDone="isDone" @proceed="emitProceed()"></TaskModal>
         <div class="task" :class="[getColor()]" data-toggle="modal" data-target=".bd-example-modal-sm"
             @click="openModal">
             <h1>{{ title }}</h1>
@@ -46,6 +46,12 @@ const props = defineProps({
 })
 const isModalOpen = ref(false)
 const openModal = () => (isModalOpen.value = true)
+
+const emit = defineEmits(['proceed', 'get'])
+
+function emitProceed() {
+    emit('proceed')
+}
 
 function getDayNumber() {
     const date = new Date(props.dueDate);

@@ -21,6 +21,11 @@
 
                     <!-- Buttons -->
                     <div class="modal-buttons">
+                        <div class="enrollees-icon-container">
+                            <div v-for="enroll in enrollees" :key="enroll.id" :value="enroll.id" class="enrollees-icon">
+                                <profile-icon :height="33" :width="33"></profile-icon>
+                            </div>
+                        </div>
                         <slot name="buttons">
                             <div v-if="isEnrolled">
                                 <button class="button button-proceed" @click="handleQuit">Quit :c</button>
@@ -82,11 +87,11 @@ defineExpose({
     visible,
 })
 
-onMounted(async () => {
+const getEnroll = async () => {
     const data = await api.getUserEnrollChore(props.id);
     enrollees.value = data;
     isEnrolled.value = data.some(obj => obj.id === userStore.user.id);
-});
+};
 
 const handleClose = () => {
     close()
@@ -146,6 +151,9 @@ watch(
     (value, oldValue) => {
         if (value !== oldValue) {
             toggle(value)
+            if (value === true) {
+                getEnroll();
+            }
         }
     },
     { immediate: true }
@@ -287,15 +295,18 @@ watch(visible, (value) => {
 }
 
 .modal-buttons {
+    width: 85%;
     padding: 14px;
     border-top: 0px;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
     margin-top: auto;
-    display: flex;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: 1fr 3fr 3fr;
+    align-items: center;
     gap: 1em;
 }
+
 
 .modal-buttons:deep(button) {
     border-radius: 7px;
@@ -305,8 +316,17 @@ watch(visible, (value) => {
     border: 0;
 }
 
+.enrollees-icon-container {
+    display: flex;
+}
+
+.enrollees-icon {
+    margin-right: -14px;
+}
+
 /** Fallback Buttons */
 .button {
+    margin-left: 20px;
     padding: 10px 20px;
     border-radius: 15px;
     border: 0;

@@ -6,7 +6,7 @@
         </button>
         <div v-for="(task, index) in task_list" :key="index" class="task-list">
             <Task :id="task.id" :title="task.title" :description="task.description" :createdBy="task.createdBy"
-                :createdAt="task.createdAt" :dueDate="task.dueDate" :isDone="task.isDone"></Task>
+                :createdAt="task.createdAt" :dueDate="task.dueDate" :isDone="task.isDone" @proceed="getall()"></Task>
         </div>
     </div>
 </template>
