@@ -53,5 +53,11 @@
   "header_add_shopping": "Fügen Sie eine Liste des Einkaufs hinzu",
   "shopping_list_name": "Name der Einkaufsliste",
   "header_add_shoppingitem": "Fügen Sie der Einkaufsliste einen Artikel hinzu",
-  "shoppingitem_name": "Artikelname"
+  "shoppingitem_name": "Artikelname",
+  "Assignee": "Zessionar",
+  "newTask": "Neue Aufgabe hinzufügen",
+  "quit": "Aufhören",
+  "Enroll": "Registrieren",
+  "isDone": "Diese Aufgabe wurde erledigt",
+  "Done": "Erledigt"
 }

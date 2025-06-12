@@ -53,5 +53,11 @@
   "header_add_shopping": "買い物のリストを追加します",
   "shopping_list_name": "買い物リストの名前",
   "header_add_shoppingitem": "買い物リストにアイテムを追加します",
-  "shoppingitem_name": "記事名"
+  "shoppingitem_name": "記事名",
+  "Assignee": "譲受人",
+  "newTask": "新しいタスクを追加する",
+  "quit": "やめる",
+  "Enroll": "登録する",
+  "isDone": "このタスクは完了しました",
+  "Done": "終わり"
 }

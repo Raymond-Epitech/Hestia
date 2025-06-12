@@ -28,16 +28,24 @@
                         </div>
                         <slot name="buttons">
                             <div v-if="isEnrolled">
-                                <button class="button button-proceed" @click="handleQuit">Quit :c</button>
+                                <button class="button button-proceed" @click="handleQuit">
+                                    <Texte_language source="quit" /> :c
+                                </button>
                             </div>
                             <div v-else>
-                                <button class="button button-proceed" @click="handleEnroll">Enroll !</button>
+                                <button class="button button-proceed" @click="handleEnroll">
+                                    <Texte_language source="Enroll" /> !
+                                </button>
                             </div>
                             <div v-if="done">
-                                <text>This task has been done</text>
+                                <text>
+                                    <Texte_language source="isDone" />
+                                </text>
                             </div>
                             <div v-else>
-                                <button class="button button-proceed" @click="handleDone">Done !</button>
+                                <button class="button button-proceed" @click="handleDone">
+                                    <Texte_language source="Done" /> !
+                                </button>
                             </div>
                         </slot>
                     </div>
@@ -326,8 +334,9 @@ watch(visible, (value) => {
 
 /** Fallback Buttons */
 .button {
+    width: 110px;
     margin-left: 20px;
-    padding: 10px 20px;
+    padding: 10px 10px;
     border-radius: 15px;
     border: 0;
     cursor: pointer;

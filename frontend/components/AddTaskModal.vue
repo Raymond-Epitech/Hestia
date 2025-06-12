@@ -4,7 +4,9 @@
             <div class="modal-background" @click="handleClose">
                 <div class="modal" @click.stop>
                     <div class="modal-header left">
-                        <h1 class="modal-header-text">Add a new task: </h1>
+                        <h1 class="modal-header-text">
+                            <Texte_language source="newTask" />:
+                        </h1>
                     </div>
                     <form method="post" action="">
                         <div class="modal-body left">
@@ -13,7 +15,9 @@
                                 placeholder="Set task description (optional)" />
                         </div>
                         <div class="task-assignee">
-                            <text class="text-task-assignee">Assignee:</text>
+                            <text class="text-task-assignee">
+                                <Texte_language source="Assignee" />:
+                            </text>
                             <select v-model="task.enrolled" class="input-task-assignee">
                                 <option v-for="coloc in list_coloc" :key="coloc.id" :value="coloc.id">
                                     {{ coloc.username }}
