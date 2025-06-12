@@ -128,14 +128,14 @@ watch(visible, (value) => {
 <style scoped>
 .modal {
     width: 100%;
-    height: 300px;
+    height: 340px;
     overflow-y: auto;
     margin-top: 0px;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-    animation: slideIn 0.2s;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    animation: slideIn 0.4s;
     background-color: #1e1e1eda;
     backdrop-filter: blur(8px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
@@ -218,7 +218,7 @@ watch(visible, (value) => {
 }
 
 .modal-buttons {
-    height: 30px;
+    height: 40px;
     padding: 12px 24px;
     border-top: 0px;
     border-bottom-left-radius: 20px;
@@ -276,7 +276,7 @@ watch(visible, (value) => {
 
 @keyframes slideIn {
     0% {
-        transform: translateY(100px);
+        transform: translateY(-400px);
     }
 
     100% {
@@ -290,7 +290,7 @@ watch(visible, (value) => {
     }
 
     100% {
-        transform: translateY(100px);
+        transform: translateY(-400px);
     }
 }
 
@@ -299,7 +299,7 @@ watch(visible, (value) => {
     /** Slide Out Transition (mobile only) */
     .modal-enter-from:deep(.modal),
     .modal-leave-to:deep(.modal) {
-        animation: slideOut 0.2s linear;
+        animation: slideOut 0.4s linear;
     }
 }
 
@@ -312,8 +312,8 @@ watch(visible, (value) => {
         width: 100%;
         margin: 0 0 0 0;
         max-height: calc(100dvh - 120px);
-        border-bottom-left-radius: 20px;
-        border-bottom-right-radius: 20px;
+        border-bottom-left-radius: 50px;
+        border-bottom-right-radius: 50px;
     }
 }
 </style>
