@@ -5,7 +5,6 @@ using FluentAssertions;
 using LazyCache;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Any;
 using Moq;
 using Shared.Models.Input;
 using Shared.Models.Output;
@@ -48,6 +47,107 @@ public class ChoreServiceTests
 
         result.Should().BeEquivalentTo(chores);
     }
+
+    [Fact]
+    public async Task GetChoreAsync_ShouldReturnChore_WhenExists()
+    {
+        var choreId = Guid.NewGuid();
+        var choreList = new List<Chore>
+    {
+        new Chore
+        {
+            Id = choreId,
+            CreatedBy = Guid.NewGuid(),
+            CreatedAt = DateTime.UtcNow,
+            DueDate = DateTime.UtcNow.AddDays(1),
+            Title = "Test",
+            Description = "Desc",
+            IsDone = false
+        }
+    }.AsQueryable();
+
+        _choreRepositoryMock.Setup(r => r.Query(true)).Returns(choreList);
+
+        var result = await _service.GetChoreAsync(choreId);
+
+        result.Should().NotBeNull();
+        result.Id.Should().Be(choreId);
+    }
+
+    [Fact]
+    public async Task GetChoreMessageFromChoreAsync_ShouldReturnMessages_WhenExist()
+    {
+        var choreId = Guid.NewGuid();
+        var messages = new List<ChoreMessage>
+    {
+        new ChoreMessage
+        {
+            Id = Guid.NewGuid(),
+            ChoreId = choreId,
+            CreatedBy = Guid.NewGuid(),
+            CreatedAt = DateTime.UtcNow,
+            Content = "message"
+        }
+    }.AsQueryable();
+
+        _choreMessageRepositoryMock.Setup(r => r.Query(true)).Returns(messages);
+
+        var result = await _service.GetChoreMessageFromChoreAsync(choreId);
+
+        result.Should().NotBeNullOrEmpty();
+        result.First().Content.Should().Be("message");
+    }
+
+    [Fact]
+    public async Task GetChoreFromUser_ShouldReturnChores_WhenExist()
+    {
+        var userId = Guid.NewGuid();
+        var chores = new List<Chore>
+    {
+        new Chore
+        {
+            Id = Guid.NewGuid(),
+            CreatedBy = userId,
+            CreatedAt = DateTime.UtcNow,
+            DueDate = DateTime.UtcNow.AddDays(1),
+            Title = "Title",
+            IsDone = false,
+            ChoreEnrollments = new List<ChoreEnrollment> { new() { UserId = userId } }
+        }
+    }.AsQueryable();
+
+        _choreRepositoryMock.Setup(r => r.Query(true)).Returns(chores);
+
+        var result = await _service.GetChoreFromUser(userId);
+
+        result.Should().NotBeNullOrEmpty();
+        result.First().Title.Should().Be("Title");
+    }
+
+    [Fact]
+    public async Task GetUserFromChore_ShouldReturnUsers_WhenExist()
+    {
+        var choreId = Guid.NewGuid();
+        var users = new List<User>
+    {
+        new User
+        {
+            Id = Guid.NewGuid(),
+            Username = "user1",
+            Email = "user@example.com",
+            ColocationId = Guid.NewGuid(),
+            ChoreEnrollments = new List<ChoreEnrollment> { new() { ChoreId = choreId } }
+        }
+    }.AsQueryable();
+
+        _userRepositoryMock.Setup(r => r.Query(true)).Returns(users);
+
+        var result = await _service.GetUserFromChore(choreId);
+
+        result.Should().NotBeNullOrEmpty();
+        result.First().Username.Should().Be("user1");
+    }
+
 
     [Fact]
     public async Task AddChoreAsync_ShouldReturnChoreId()

@@ -45,6 +45,7 @@ public class ChoreService(
                     Description = c.Description,
                     IsDone = c.IsDone
                 })
+                .OrderBy(c => c.DueDate)
                 .ToListAsync();
 
             logger.LogInformation($"Succes : All chores from the colocation {colocationId} found");
