@@ -47,6 +47,7 @@ onMounted(() => {
     SocialLogin.initialize({
         google: {
             webClientId: '80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com', // the web client id for Android and Web
+            iOSClientId: '80772791160-5702m4m8g8hfgrq7na3rnk7acd4mfh0a.apps.googleusercontent.com ', // the id for IOS
         }
     })
 })
