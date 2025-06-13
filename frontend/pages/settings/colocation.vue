@@ -73,7 +73,7 @@ const createColocation = async () => {
 .conteneur {
     display: grid;
     gap: 40px;
-    width: 80%;
+    width: 100%;
     margin: 40px auto;
 }
 
@@ -88,7 +88,7 @@ const createColocation = async () => {
 }
 
 h1 {
-    margin-top: -20px;
+    margin-top: -12px;
     align-items: center;
     text-align: center;
     font-size: 32px;
@@ -109,14 +109,17 @@ h2 {
 }
 
 .create-colocation {
+    width: 100%;
     margin-top: 40px;
     display: flex;
+    justify-content: center;
+    align-items: center;
     flex-direction: column;
     text-align: center;
 }
 
 .input {
-    width: 316px;
+    width: 80%;
     height: 46px;
     margin-top: 12px;
     border: none;
@@ -128,7 +131,7 @@ h2 {
 }
 
 .button {
-    width: 316px;
+    width: 80%;
     height: 70px;
     margin-top: 12px;
     padding: 10px 20px;
