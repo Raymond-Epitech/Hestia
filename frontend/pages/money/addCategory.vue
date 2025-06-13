@@ -12,7 +12,7 @@
         <h3>
           <Texte_language source="expense_category_name" />
         </h3>
-        <input class="body-input" rows="3" v-model="newcategory.name" required />
+        <input class="body-input" maxlength="35" v-model="newcategory.name" required />
       </div>
       <div class="modal-buttons">
         <button class="button button-proceed" @click.prevent="handleProceed">
@@ -58,7 +58,7 @@ const handleProceed = async () => {
 }
 
 .body-input {
-  width: 50%;
+  width: 100%;
   background-color: #1e1e1e00;
   outline: none;
   border: none;
