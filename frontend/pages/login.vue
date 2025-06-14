@@ -136,6 +136,7 @@ body {
     align-items: center;
     background-color: #a3d397;
     border-radius: 20px;
+    box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
 }
 
 .register {
@@ -147,6 +148,7 @@ body {
     align-items: center;
     background-color: #a3d397;
     border-radius: 20px;
+    box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
 }
 
 h2 {
