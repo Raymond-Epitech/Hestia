@@ -4,14 +4,14 @@
             <img src="/return.png" alt="Return" width="30" height="30" @click="$router.back()" />
             <h1>{{ name }}</h1>
             <div class="square">
-                <Rectangle color="#FFF973" id="add" :onClick="() => redirectto()">
+                <div id="add" :onClick="() => redirectto()">
                     <img src="/plus.png" alt="Return" width="30" height="30" />
-                </Rectangle>
+                </div>
             </div>
         </div>
         <div>
-            <ExpenseItem v-for="expense in expenses_list" :key="expense.id" :expense="expense" :onclick="() => redirecttomodify(expense.id)"
-                :paidBy="getUsername(expense.paidBy)" />
+            <ExpenseItem v-for="expense in expenses_list" :key="expense.id" :expense="expense"
+                :onclick="() => redirecttomodify(expense.id)" :paidBy="getUsername(expense.paidBy)" />
         </div>
     </div>
 </template>
@@ -34,7 +34,7 @@ api.setjwt(useCookie('token').value ?? '');
 const collocid = user.colocationId;
 
 api.getExpensebycategoryId(categoryId).then((response) => {
-    expenses_list.value =  response;
+    expenses_list.value = response;
 }).catch((error) => {
     console.error('Error fetching data:', error);
 })
@@ -68,8 +68,13 @@ const redirecttomodify = (id: string) => {
 }
 
 .square {
-    width: 50px;
-    height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #FFF973;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
 }
 
 .header {
