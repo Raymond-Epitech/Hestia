@@ -77,6 +77,7 @@ try
         app.UseSwagger();
         app.UseSwaggerUI();
         app.UseStatusCodePages();
+        app.UseHangfireDashboard("/hangfire");
     }
 
     if (!app.Environment.IsDevelopment())
@@ -89,8 +90,7 @@ try
     app.UseAuthorization();
     app.MapControllers();
 
-
-    app.UseHangfireDashboard("/hangfire");
+    // Configure Hangfire recurring jobs
     using (var scope = app.Services.CreateScope())
     {
         var jobConfigurator = scope.ServiceProvider.GetRequiredService<RecurringJobsConfigurator>();
