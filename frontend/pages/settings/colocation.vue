@@ -2,20 +2,27 @@
     <div class="page-container">
         <div class="colocation-preview-container">
             <div class="colocation-preview">
-                <text class="header">Votre colocation actuelle :</text>
+                <text class="header">
+                    <Texte_language source="flatInfo" /> :
+                </text>
                 <text class="subtext">{{ colocationData.name }}</text>
                 <text class="subtext">{{ colocationData.address }}</text>
-                <text class="subtext">ID de la colocation :</text>
+                <text class="subtext">
+                    <Texte_language source="ColocationID" /> :
+                </text>
                 <text class="colocation-id">{{ colocationData.id }}</text>
-                <text class="subtext">Membres :</text>
+                <text class="subtext">
+                    <Texte_language source="roomates" /> :
+                </text>
                 <div class="roommates-list">
                     <div v-for="coloc in list_coloc" :key="coloc.id" :index="coloc.id">
                         {{ coloc.username }}
                     </div>
                 </div>
             </div>
-            <button class="button" :onClick="() => redirect('/settings/change-colocation')">Changer de
-                colocation</button>
+            <button class="button" :onClick="() => redirect('/settings/change-colocation')">
+                <Texte_language source="changeFlat" />
+            </button>
         </div>
     </div>
 </template>
