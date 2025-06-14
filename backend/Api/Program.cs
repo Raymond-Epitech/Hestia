@@ -1,11 +1,9 @@
+using Api.Configuration;
 using Api.ErrorHandler;
 using Business.Jwt;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using System.Text;
-using WebApi.Configuration;
 
 try
 {
@@ -52,83 +50,23 @@ try
     builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 
     // Authentication
-    builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = "Bearer"; // Schéma par défaut pour l'API
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        var jwtOptions = builder.Configuration.GetSection("Jwt").Get<JwtOptions>();
-        
-        if (jwtOptions is null || jwtOptions.Issuer is null || jwtOptions.Audience is null)
-        {
-            throw new Exception("Missing jwt options");
-        }
-
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = false,//true,
-            //ClockSkew = TimeSpan.FromMinutes(30),
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtOptions.Issuer,
-            ValidAudience = jwtOptions.Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret))
-        };
-
-        options.Events = new JwtBearerEvents
-        {
-            OnAuthenticationFailed = context =>
-            {
-                return Task.CompletedTask;
-            },
-            OnChallenge = context =>
-            {
-                context.HandleResponse();
-                context.Response.StatusCode = 401;
-                context.Response.ContentType = "application/json";
-                return context.Response.WriteAsync("{\"error\": \"Token JWT manquant ou invalide.\"}");
-            }
-        };
-    });
+    builder.Services.ConfigureJWT(builder.Configuration, builder.Environment.IsDevelopment());
 
     // Authorization
     builder.Services.AddAuthorization();
 
     // Swagger
-    if (builder.Environment.IsDevelopment())
-    {
-        builder.Services.AddSwaggerGen(options =>
-        {
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                Name = "Authorization",
-                Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
-                BearerFormat = "JWT",
-                In = ParameterLocation.Header,
-                Description = "Saisissez votre token JWT.\n\nExemple : 'abc123def456ghi'"
-            });
+    builder.Services.ConfigureSwagger(builder.Configuration, builder.Environment.IsDevelopment());
 
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    new string[] {}
-                }
-            });
-        });
-    }
+    // Hangfire
+    builder.Services.AddHangfire(config => config
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UsePostgreSqlStorage(options =>
+        options.UseNpgsqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
+    );
+    builder.Services.AddHangfireServer();
 
     var app = builder.Build();
 
@@ -150,6 +88,14 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
+
+
+    app.UseHangfireDashboard("/hangfire");
+    using (var scope = app.Services.CreateScope())
+    {
+        var jobConfigurator = scope.ServiceProvider.GetRequiredService<RecurringJobsConfigurator>();
+        jobConfigurator.Configure();
+    }
 
     app.Run();
 }
