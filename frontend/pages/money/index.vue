@@ -2,16 +2,16 @@
     <div class="center-container">
         <Rectangle v-for="expense in expenses_list" :key="expense.id" color="#85AD7B" id="rec" class="expense mini_rec"
             :onClick="() => redirectto(expense.name, expense.id)">
-            <Text class="category">{{ expense.name }}</Text>
-            <Text class="regularize-text number">
+            <text class="category">{{ expense.name }}</text>
+            <text class="regularize-text number">
                 {{ expense.totalAmount }} €
-            </Text>
+            </text>
         </Rectangle>
         <Rectangle color="#4FA3A6" id="rec" class="expense mini_rec">
             <Texte_language class="category" source="global" />
-            <Text class="regularize-text number">
+            <text class="regularize-text number">
                 {{ global }} €
-            </Text>
+            </text>
         </Rectangle>
         <Rectangle color="#FFF973" id="rec" class="regularize-text mini_rec"
             :onClick="() => redirectto('add_category')">
