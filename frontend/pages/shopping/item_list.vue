@@ -4,19 +4,15 @@
             <img src="/return.png" alt="Return" width="30" height="30" @click="$router.back()" />
             <h1>{{ name }}</h1>
             <div class="square">
-                <Rectangle color="#FFF973" id="add" :onClick="() => redirectto()">
+                <div id="add" :onClick="() => redirectto()">
                     <img src="/plus.png" alt="Return" width="30" height="30" />
-                </Rectangle>
+                </div>
             </div>
         </div>
         <div>
-            <ShoppingItem
-                v-for="item in shopping_list.shoppingItems"
-                :key="item.id ?? item.name"
-                :item="item"
+            <ShoppingItem v-for="item in shopping_list.shoppingItems" :key="item.id ?? item.name" :item="item"
                 @update:isChecked="updateIsChecked(item.id ?? '', $event)"
-                @update:name="updateName(item.id ?? '', $event)"
-            />
+                @update:name="updateName(item.id ?? '', $event)" />
         </div>
     </div>
 </template>
@@ -95,8 +91,13 @@ const updateName = (id: string, value: string) => {
 }
 
 .square {
-    width: 50px;
-    height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #8D90D6;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
 }
 
 .header {
