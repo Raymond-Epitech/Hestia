@@ -185,6 +185,7 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
             throw new NotFoundException($"Shopping list {shoppingListId} was not found");
 
         shoppingListRepository.Delete(shoppingList);
+        await shoppingListRepository.SaveChangesAsync();
         logger.LogInformation($"shopping list {shoppingListId} deleted");
 
         cache.Remove($"shoppingList:{shoppingList.ColocationId}");
@@ -200,6 +201,7 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
     public async Task<Guid> DeleteShoppingItem(Guid shoppingItemId)
     {
         await itemRepository.DeleteFromIdAsync(shoppingItemId);
+        await itemRepository.SaveChangesAsync();
         logger.LogInformation($"shopping item {shoppingItemId} deleted");
         return shoppingItemId;
     }
