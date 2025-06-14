@@ -2,7 +2,7 @@
     <div class="center-container">
         <Rectangle v-for="shopping in shopping_list" :key="shopping.id" color="#85AD7B" id="rec" class="mini_rec"
             :onClick="() => redirectto(shopping.name, shopping.id)">
-            <Text>{{ shopping.name }}</Text>
+            <text>{{ shopping.name }}</text>
         </Rectangle>
         <Rectangle color="#FFF973" id="rec" class="regularize-text mini_rec"
             :onClick="() => redirectto('add_shopping')">
