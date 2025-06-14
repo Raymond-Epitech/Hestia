@@ -74,6 +74,7 @@ const modifname = () => {
     align-items: center;
     flex-grow: 1;
     margin-right: 10px;
+    padding-left: 2px;
 }
 
 .edit {
