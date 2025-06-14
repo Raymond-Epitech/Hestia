@@ -19,6 +19,7 @@ The backend of Hestia is a RESTful API built with ASP.NET Core 8.0. It serves as
 **Authentication** : JWT (JSON Web Tokens) with OAuth 2.0 (Google Sign-In)
 **Database** : Postgresql (with Entity Framework core)
 **Caching** : LazyCache (in-memory caching)
+**Background Jobs** : HangFire
 **API Documentation** : Swagger (Open API)
 **Testing** : xUnit, Moq
 **Containerization** : Docker, Docker Compose
@@ -33,6 +34,7 @@ The backend of Hestia is a RESTful API built with ASP.NET Core 8.0. It serves as
 - Optimized performance using caching (LazyCache in memory)
 - Modular and Layered Architecture (API, Business, Data Access, Shared)
 - Entity Framework Core for ORM and migrations
+- HangFire for background tasks and recurring jobs
 - Swagger (OpenAPI 3.0) for automatic API documentation
 - Docker & Docker Compose support for local development
 - Environment-based configuration loading (Development / Production)
