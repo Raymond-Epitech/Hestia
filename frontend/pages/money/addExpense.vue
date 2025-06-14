@@ -7,7 +7,7 @@
         <p></p>
       </h1>
     </div>
-    <form method="post" action="">
+    <form class="form-container" method="post" action="">
       <div>
         <h3>
           <Texte_language source="expense_name" /> :
@@ -23,18 +23,18 @@
             <text>€</text>
           </div>
         </div>
-        <h3>
-          <Texte_language source="expense_paid_by" />
+        <h3 class="subtext">
+          <Texte_language source="expense_paid_by" /> :
         </h3>
-        <select v-model="expense.paidBy" class="body-input">
+        <select v-model="expense.paidBy" class="drop-down-input">
           <option v-for="coloc in list_coloc" :key="coloc.id" :value="coloc.id">
             {{ coloc.username }}
           </option>
         </select>
-        <h3>
+        <h3 class="subtext">
           <Texte_language source="split_type" />
         </h3>
-        <select v-model="expense.splitType" class="body-input">
+        <select v-model="expense.splitType" class="drop-down-input">
           <option v-for="type in splitTypes" :key="type.value" :value="type.value">
             <Texte_language :source=type.label />
           </option>
@@ -61,8 +61,8 @@
         </div>
         <div v-if="expense.splitType == 2">
           <div class="checkbox-list">
-            <label v-for="coloc in list_coloc" :key="coloc.id" class="checkbox-item">
-              <input type="checkbox" :value="coloc.id" />
+            <label v-for="coloc in list_coloc" :key="coloc.id" class="checkbox-item-pourcentage">
+              <input class="check-zone" type="checkbox" :value="coloc.id" />
               {{ coloc.username }}
               <input type="number" class="split-value-input" v-model.number="expense.splitPercentages[coloc.id]"
                 placeholder="0" min="0" max="100" />
@@ -185,6 +185,16 @@ const filterNumericInput = (event: Event) => {
   padding: 20px;
 }
 
+h3 {
+  margin-left: 2px;
+}
+
+.form-container {
+  width: 90%;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
 .body-input {
   width: 50%;
   background-color: #1e1e1e00;
@@ -199,7 +209,7 @@ const filterNumericInput = (event: Event) => {
 
 .name-expense-container {
   display: grid;
-  grid-template-columns: 4fr 1fr;
+  grid-template-columns: 7fr 2fr;
   justify-content: center;
   align-content: center;
 }
@@ -218,6 +228,7 @@ const filterNumericInput = (event: Event) => {
 
 .expense-container {
   height: 62px;
+  margin-left: 10px;
   width: 100%;
   display: grid;
   grid-template-columns: 3fr 1fr;
@@ -240,16 +251,32 @@ const filterNumericInput = (event: Event) => {
   text-align: center;
 }
 
+.subtext {
+  margin-bottom: 15px;
+}
+
+.drop-down-input {
+  width: 100%;
+  height: 34px;
+  margin-bottom: 15px;
+  padding-left: 10px;
+  border-radius: 9px;
+  background-color: #393a40;
+  color: #FFFFFF;
+  border: none;
+}
+
 .split-value-input {
-  width: 25%;
+  width: 90%;
   background-color: #1e1e1e00;
   outline: none;
   border: none;
   line-height: 3ch;
-  background-image: linear-gradient(transparent, transparent calc(3ch - 1px), #E7EFF8 0px);
+  /* background-image: linear-gradient(transparent, transparent calc(3ch - 1px), #E7EFF8 0px); */
   background-size: 100% 3ch;
   color: #fff;
   font-size: 18px;
+  text-align: end;
 }
 
 /** Fallback Buttons */
@@ -288,10 +315,48 @@ input[type="number"] {
 }
 
 .checkbox-item {
-  display: flex;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 7fr 2fr;
   align-items: center;
   justify-content: space-between;
-  width: 100%
+  padding-left: 4px;
+  border-radius: 9px;
+  background-color: #393a40;
+}
+
+.checkbox-item-pourcentage {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 3fr 18fr 4fr 6fr;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 4px;
+  border-radius: 9px;
+  background-color: #393a40;
+}
+
+input[type="checkbox"] {
+  /* Add if not using autoprefixer */
+  -webkit-appearance: none;
+  appearance: none;
+  /* For iOS < 15 to remove gradient background */
+  background-color: #fff;
+  /* Not removed via appearance */
+  margin: 0;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ddd;
+  border-color: #8D90D6;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  background-color: #1E1E1E;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #85AD7B;
+  border-color: #85AD7B;
 }
 
 .header {
@@ -299,5 +364,12 @@ input[type="number"] {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+}
+
+.modal-buttons {
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
