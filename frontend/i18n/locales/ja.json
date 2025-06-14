@@ -53,5 +53,8 @@
   "header_add_shopping": "買い物のリストを追加します",
   "shopping_list_name": "買い物リストの名前",
   "header_add_shoppingitem": "買い物リストにアイテムを追加します",
-  "shoppingitem_name": "記事名"
+  "shoppingitem_name": "記事名",
+  "flatInfo": "現在のルームメイト",
+  "roomates": "同居人",
+  "changeFlat": "フラットシェアの変更"
 }
