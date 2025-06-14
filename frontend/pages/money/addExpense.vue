@@ -183,9 +183,11 @@ const filterNumericInput = (event: Event) => {
   background-color: #1E1E1E;
   color: white;
   padding: 20px;
+  font-weight: 600;
 }
 
 h3 {
+  font-weight: 600;
   margin-left: 2px;
 }
 
@@ -224,6 +226,7 @@ h3 {
   border-bottom: 2px dotted #dddddd94;
   outline: none;
   color: #FFFFFF;
+  font-weight: 600;
 }
 
 .expense-container {
@@ -249,6 +252,7 @@ h3 {
   border: none;
   border-radius: 9px;
   text-align: center;
+  font-weight: 600;
 }
 
 .subtext {
@@ -264,6 +268,7 @@ h3 {
   background-color: #393a40;
   color: #FFFFFF;
   border: none;
+  font-weight: 600;
 }
 
 .split-value-input {
@@ -285,6 +290,7 @@ h3 {
   border-radius: 15px;
   border: 0;
   cursor: pointer;
+  font-weight: 600;
 }
 
 .button-proceed {
@@ -364,6 +370,7 @@ input[type="checkbox"]:checked {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  font-weight: 700;
 }
 
 .modal-buttons {
