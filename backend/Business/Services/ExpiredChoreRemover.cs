@@ -16,7 +16,7 @@ public class ExpiredChoreRemover(ILogger<ExpiredChoreRemover> logger,
         logger.LogInformation("Purging old data from the database...");
         
         var oldChores = await repository.Query().Where(c => c.IsDone && c.DueDate < DateTime.Now).ToListAsync();
-        if (oldChores.Any())
+        if (!oldChores.Any())
         {
             logger.LogInformation("No old chores found to purge.");
             return;
