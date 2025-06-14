@@ -12,7 +12,7 @@
                 <h3>
                     <Texte_language source="shoppingitem_name" />
                 </h3>
-                <input class="body-input" rows="3" v-model="item.name" required />
+                <input class="body-input" maxlength="42" v-model="item.name" required />
             </div>
             <div class="modal-buttons">
                 <button class="button button-proceed" @click.prevent="handleProceed">
@@ -83,14 +83,14 @@ const handleProceed = async () => {
 }
 
 .button {
-  padding: 10px 20px;
-  border-radius: 15px;
-  border: 0;
-  cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 15px;
+    border: 0;
+    cursor: pointer;
 }
 
 .button-proceed {
-  background: #00000088;
-  color: #fff;
+    background: #00000088;
+    color: #fff;
 }
 </style>
