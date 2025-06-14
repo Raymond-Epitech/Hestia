@@ -10,14 +10,19 @@
     <form method="post" action="">
       <div>
         <h3>
-          <Texte_language source="expense_name" />
+          <Texte_language source="expense_name" /> :
         </h3>
-        <input class="body-input" rows="3" v-model="expense.name" required />
-        <h3>
-          <Texte_language source="expense_amount" />
-        </h3>
-        <input class="body-input" type="number" v-model="expense.amount" placeholder="0.00" @input="filterNumericInput"
-          min="0" required />
+        <div class="name-expense-container">
+          <input class="name-input" maxlength="40" v-model="expense.name" required />
+          <!-- <h3> -->
+          <!-- <Texte_language source="expense_amount" /> -->
+          <!-- </h3> -->
+          <div class="expense-container">
+            <input class="expense-input" type="number" v-model="expense.amount" @input="filterNumericInput" min="0"
+              required />
+            <text>€</text>
+          </div>
+        </div>
         <h3>
           <Texte_language source="expense_paid_by" />
         </h3>
@@ -148,7 +153,7 @@ const calculatedSplitValue = computed(() => {
 const handleProceed = async () => {
   console.log(expense.value);
   api.addExpense(expense.value).then(() => {
-    
+
     console.log('Expense added successfully');
     router.back()
   }).catch((error) => {
@@ -190,6 +195,49 @@ const filterNumericInput = (event: Event) => {
   background-size: 100% 3ch;
   color: #fff;
   font-size: 18px;
+}
+
+.name-expense-container {
+  display: grid;
+  grid-template-columns: 4fr 1fr;
+  justify-content: center;
+  align-content: center;
+}
+
+.name-input {
+  height: 30px;
+  width: 90%;
+  margin-top: 8px;
+  box-sizing: border-box;
+  border: none;
+  background-color: #1E1E1E;
+  border-bottom: 2px dotted #dddddd94;
+  outline: none;
+  color: #FFFFFF;
+}
+
+.expense-container {
+  height: 62px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  align-items: center;
+  background-color: #393a40;
+  color: #FFFFFF;
+  border-radius: 9px;
+  font-size: 18px;
+  padding-right: 6px;
+}
+
+.expense-input {
+  height: 62px;
+  width: 100%;
+  background-color: #393a40;
+  color: #FFFFFF;
+  outline: none;
+  border: none;
+  border-radius: 9px;
+  text-align: center;
 }
 
 .split-value-input {
