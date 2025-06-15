@@ -47,7 +47,6 @@ api.getColocationById(userStore.user.colocationId).then((response) => {
 
 api.getUserbyCollocId(userStore.user.colocationId).then((response) => {
     list_coloc.value = response;
-    console.log(list_coloc)
 }).catch((error) => {
     console.error('Error fetching data:', error);
 });
@@ -108,7 +107,10 @@ const redirect = (page) => {
 
 .button {
     width: fit-content;
+    padding: 8px;
     margin-top: 20%;
+    border: none;
+    border-radius: 12px;
     background-color: #85AD7B;
     box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
     font-weight: 600;
