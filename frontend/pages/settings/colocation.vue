@@ -106,7 +106,7 @@ const redirect = (page) => {
 .button {
     width: fit-content;
     padding: 8px;
-    margin-top: 20%;
+    margin-top: 10%;
     border: none;
     border-radius: 12px;
     background-color: #85AD7B;
