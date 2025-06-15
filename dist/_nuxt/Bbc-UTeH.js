@@ -1,1 +1,0 @@
-import{ab as e,ac as o}from"./5LWRTrmI.js";const a=e("user",{state:()=>({user:{username:"",email:"",colocationId:"",id:""}}),actions:{setUser(s){this.user=s},setColocation(s){this.user.colocationId=s}},persist:{storage:o.localStorage()}});export{a as u};
