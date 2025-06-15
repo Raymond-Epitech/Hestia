@@ -22,6 +22,12 @@ import { useI18n } from 'vue-i18n';
 import { useUserStore } from '~/store/user';
 import { ShoppingItem } from '#components';
 
+useHead({
+    bodyAttrs: {
+        style: 'background-color: #1E1E1E;'
+    }
+})
+
 const route = useRoute();
 const userStore = useUserStore();
 const user = userStore.user;
@@ -84,7 +90,7 @@ const updateName = (id: string, value: string) => {
 
 <style scoped>
 .background {
-    height: 100vh;
+    height: 100%;
     background-color: #1E1E1E;
     color: white;
     padding: 20px;

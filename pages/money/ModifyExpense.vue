@@ -83,6 +83,12 @@ import type { Expense_Modif, Coloc } from '~/composables/service/type';
 import { useUserStore } from '~/store/user';
 import { useI18n } from '#imports';
 
+useHead({
+  bodyAttrs: {
+    style: 'background-color: #1E1E1E;'
+  }
+})
+
 const { t } = useI18n();
 const userStore = useUserStore();
 const user = userStore.user;
@@ -107,7 +113,7 @@ const splitTypes = [
 const expense = ref<Expense_Modif>({
   id: id,
   colocationId: collocid,
-  expenseCategoryId:  '',
+  expenseCategoryId: '',
   description: '',
   category: '',
   name: '',
@@ -211,9 +217,9 @@ const filterNumericInput = (event: Event) => {
 };
 </script>
 
-<style>
+<style scoped>
 .background {
-  height: 100vh;
+  height: 100%;
   background-color: #1E1E1E;
   color: white;
   padding: 20px;

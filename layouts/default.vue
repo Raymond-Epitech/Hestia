@@ -14,6 +14,12 @@
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '../store/auth';
 
+useHead({
+  bodyAttrs: {
+    style: 'background-color: #E7FEED;'
+  }
+})
+
 const router = useRouter();
 
 const { logUserOut } = useAuthStore();
@@ -28,7 +34,8 @@ const logout = () => {
 <style scoped>
 .body-container {
   position: absolute;
-  top: 20px;
+  border-top: 1px solid #d2edd9;
+  top: 20pt;
   bottom: 58px;
   left: 0;
   right: 0;

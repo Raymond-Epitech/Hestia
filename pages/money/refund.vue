@@ -8,7 +8,9 @@
             <p></p>
         </div>
         <div>
-            <h2><TexteLanguage source="refund_with_me"/></h2>
+            <h2>
+                <TexteLanguage source="refund_with_me" />
+            </h2>
             <ul>
                 <li v-for="refund in userRefunds" :key="`${refund.from}-${refund.to}-${refund.amount}}`">
                     <span v-if="refund.from === user.id">De vous à {{ getUsername(refund.to) }}</span>
@@ -16,13 +18,15 @@
                     <span> Montant : </span>
                     {{ refund.amount }}€
                     <button @click=refund_prosess(refund) class="button">
-                        <TexteLanguage source="refund_button"/>
+                        <TexteLanguage source="refund_button" />
                     </button>
                 </li>
             </ul>
         </div>
         <div>
-            <h2><TexteLanguage source="other_refund"/></h2>
+            <h2>
+                <TexteLanguage source="other_refund" />
+            </h2>
             <ul>
                 <li v-for="refund in otherRefunds" :key="`${refund.from}-${refund.to}-${refund.amount}}`">
                     <span>De {{ getUsername(refund.from) }} à {{ getUsername(refund.to) }}</span>
@@ -37,6 +41,12 @@
 <script setup lang="ts">
 import { useUserStore } from '~/store/user';
 import type { Coloc, refund, Expense } from '~/composables/service/type';
+
+useHead({
+    bodyAttrs: {
+        style: 'background-color: #1E1E1E;'
+    }
+})
 
 const route = useRoute();
 const listColoc = ref<Coloc[]>([]);
@@ -68,7 +78,7 @@ onMounted(() => {
     }).catch((error) => {
         console.error('Error fetching expenses:', error);
     });
-                
+
 });
 
 const refund_prosess = (refund: refund) => {
@@ -94,7 +104,7 @@ const refund_prosess = (refund: refund) => {
         }
     }).catch((error) => {
         console.error('Error adding expense:', error);
-    }); 
+    });
 }
 
 const userRefunds = computed(() => {
@@ -113,9 +123,9 @@ const getUsername = (id: string): string => {
 
 <style scoped>
 .background {
-  height: 100vh;
-  background-color: #1E1E1E;
-  color: white;
-  padding: 20px;
+    height: 100%;
+    background-color: #1E1E1E;
+    color: white;
+    padding: 20px;
 }
 </style>

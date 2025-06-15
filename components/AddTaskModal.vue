@@ -132,7 +132,7 @@ watch(visible, (value) => {
 <style scoped>
 .modal {
     width: 100%;
-    height: 340px;
+    height: 360px;
     overflow-y: auto;
     margin-top: 0px;
     border-top-left-radius: 0px;
