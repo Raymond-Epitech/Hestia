@@ -14,12 +14,6 @@
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '../store/auth';
 
-useHead({
-  bodyAttrs: {
-    style: 'background-color: #E7FEED;'
-  }
-})
-
 const router = useRouter();
 
 const { logUserOut } = useAuthStore();
