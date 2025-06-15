@@ -3,13 +3,13 @@
         <div v-if="visible">
             <div class="modal-background" @click="handleClose">
                 <div class="modal" @click.stop>
-                    <div class="modal-header left">
+                    <div class="modal-header">
                         <h1 class="modal-header-text">
                             <Texte_language source="newTask" />:
                         </h1>
                     </div>
                     <form method="post" action="">
-                        <div class="modal-body left">
+                        <div class="modal-body">
                             <input class="modal-body-input" v-model="task.title" placeholder="Set task name" required />
                             <input class="modal-body-input" v-model="task.description"
                                 placeholder="Set task description (optional)" />
@@ -24,9 +24,11 @@
                                 </option>
                             </select>
                         </div>
-                        <client-only>
-                            <vue-date-picker placeholder="MM/DD/YYYY" format="MM/dd/yyyy" v-model="task.dueDate" />
-                        </client-only>
+                        <div class="date-picker">
+                            <client-only>
+                                <vue-date-picker placeholder="MM/DD/YYYY" format="MM/dd/yyyy" v-model="task.dueDate" />
+                            </client-only>
+                        </div>
                         <div class="modal-buttons">
                             <button class="button-proceed" @click.prevent="handleProceed">
                                 <img src="../public/submit.png" class="submit">
@@ -132,9 +134,10 @@ watch(visible, (value) => {
 <style scoped>
 .modal {
     width: 100%;
-    height: 360px;
+    height: 390px;
     overflow-y: auto;
     margin-top: 0px;
+    padding-top: 20pt;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
     border-bottom-left-radius: 30px;
@@ -153,6 +156,7 @@ watch(visible, (value) => {
     padding: 16px 24px;
     font-weight: 600;
     color: #fff;
+    border: none;
 }
 
 .modal-header-text {
@@ -189,7 +193,7 @@ watch(visible, (value) => {
 .task-assignee {
     display: flex;
     flex-direction: column;
-    padding: 8px 24px;
+    padding: 8px 24px 12px 24px;
 }
 
 .text-task-assignee {
@@ -206,6 +210,11 @@ watch(visible, (value) => {
     outline: none;
     border: none;
     color: #FFFFFF;
+}
+
+.date-picker {
+    width: 60%;
+    padding-left: 24px;
 }
 
 .modal-background {
@@ -243,7 +252,6 @@ watch(visible, (value) => {
 /** Fallback Buttons */
 
 .button-proceed {
-    padding-right: 14px;
     display: flex;
     justify-content: center;
     align-items: center;

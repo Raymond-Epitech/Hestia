@@ -190,6 +190,7 @@ watch(visible, (value) => {
     height: 360px;
     overflow-y: auto;
     margin-top: 0px;
+    padding-top: 20pt;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
     border-bottom-left-radius: 30px;
@@ -303,7 +304,7 @@ watch(visible, (value) => {
 }
 
 .modal-buttons {
-    width: 85%;
+    width: 100%;
     padding: 14px;
     border-top: 0px;
     border-bottom-left-radius: 20px;
@@ -334,7 +335,8 @@ watch(visible, (value) => {
 
 /** Fallback Buttons */
 .button {
-    width: 110px;
+    min-width: 50%;
+    max-width: fit-content;
     margin-left: 20px;
     padding: 10px 10px;
     border-radius: 15px;
