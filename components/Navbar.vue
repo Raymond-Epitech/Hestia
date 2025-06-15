@@ -103,6 +103,7 @@ const redirect = (page) => {
     height: 30px;
     width: 30px;
 }
+
 .shopping {
     height: 38px;
     width: 48px;

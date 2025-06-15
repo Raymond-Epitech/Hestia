@@ -9,20 +9,20 @@ export default defineNuxtConfig({
     'nuxt-vue3-google-signin',
     '@nuxtjs/i18n',
     'pinia-plugin-persistedstate/nuxt',
-    '@nuxtjs/ionic',
   ],
 
   css: [
     '~/assets/styles/main.scss',
+    '@/assets/styles/fonts.scss'
   ],
 
   plugins: [
     { src: '~/plugins/bootstrap.js', mode: 'client' },
+    { src: '~/plugins/vue-datepicker', ssr: false },
   ],
 
   googleSignIn: {
-    // clientId: "80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com",
-    clientId: "80772791160-mlnmccfg78eafb49as0bfkjgqmijjmcc.apps.googleusercontent.com",
+    clientId: "80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com",
   },
 
   extends: ['nuxt-modal'],

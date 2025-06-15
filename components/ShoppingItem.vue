@@ -1,9 +1,12 @@
 <template>
     <div class="expense" @click="props.onclick && props.onclick()">
         <div class="expense-header">
-            <span v-if="!modif" class="expense-name">{{ item.name }} <span><img src="../public/edit.png" width="20"
-                        height="20" @click="modif = !modif" /> </span></span>
-            <span v-if="modif" class="expense-name"><input v-model="item.name" required /><button @click="modifname">
+            <span v-if="!modif" class="expense-name">{{ item.name }} <span>
+                    <img src="../public/edit.png" width="20" height="20" @click="modif = !modif" class="edit" />
+                </span></span>
+            <span v-if="modif" class="expense-name">
+                <input v-model="item.name" maxlength="42" required />
+                <button @click="modifname">
                     <Texte_language source="confirm" />
                 </button></span>
             <div class="check-zone" :class="{ checked: item.isChecked }" @click.stop="toggleCheck"></div>
@@ -36,14 +39,15 @@ const modifname = () => {
 
 <style scoped>
 .expense {
-    border-bottom: 2px solid #ddd;
+    border-bottom: 2px dotted #dddddd94;
     padding: 10px 0;
 }
 
 .expense-header {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 10fr 1fr;
     font-weight: bold;
+    align-items: center;
 }
 
 .check-zone {
@@ -61,12 +65,19 @@ const modifname = () => {
 }
 
 .check-zone:not(.checked) {
-    background-color: #8D90D6;
     border-color: #8D90D6;
 }
 
 .expense-name {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     flex-grow: 1;
     margin-right: 10px;
+    padding-left: 2px;
+}
+
+.edit {
+    margin-bottom: 2px;
 }
 </style>
