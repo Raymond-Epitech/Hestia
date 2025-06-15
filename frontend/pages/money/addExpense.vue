@@ -14,9 +14,6 @@
         </h3>
         <div class="name-expense-container">
           <input class="name-input" maxlength="40" v-model="expense.name" required />
-          <!-- <h3> -->
-          <!-- <Texte_language source="expense_amount" /> -->
-          <!-- </h3> -->
           <div class="expense-container">
             <input class="expense-input" type="number" v-model="expense.amount" @input="filterNumericInput" min="0"
               required />
@@ -277,7 +274,6 @@ h3 {
   outline: none;
   border: none;
   line-height: 3ch;
-  /* background-image: linear-gradient(transparent, transparent calc(3ch - 1px), #E7EFF8 0px); */
   background-size: 100% 3ch;
   color: #fff;
   font-size: 18px;
