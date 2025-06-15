@@ -56,5 +56,11 @@
   "shoppingitem_name": "Artikelname",
   "flatInfo": "Ihre derzeitige Mitbewohnerin",
   "roomates": "Mitbewohner",
-  "changeFlat": "Mitbewohner wechseln"
+  "changeFlat": "Mitbewohner wechseln",
+  "Assignee": "Zessionar",
+  "newTask": "Neue Aufgabe hinzufügen",
+  "quit": "Aufhören",
+  "Enroll": "Registrieren",
+  "isDone": "Diese Aufgabe wurde erledigt",
+  "Done": "Erledigt"
 }

@@ -18,6 +18,7 @@ export default defineNuxtConfig({
 
   plugins: [
     { src: '~/plugins/bootstrap.js', mode: 'client' },
+    { src: '~/plugins/vue-datepicker', ssr: false },
   ],
 
   googleSignIn: {

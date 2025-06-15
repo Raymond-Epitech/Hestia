@@ -56,5 +56,11 @@
   "shoppingitem_name": "Nombre del artículo",
   "flatInfo": "Su compañero de piso actual",
   "roomates": "compañeros de piso",
-  "changeFlat": "Modificación de cuotas planas"
+  "changeFlat": "Modificación de cuotas planas",
+  "Assignee": "Cesionario",
+  "newTask": "Agregar una nueva tarea",
+  "quit": "Abandonar",
+  "Enroll": "Inscribo",
+  "isDone": "Esta tarea ya se ha realizado",
+  "Done": "Terminado"
 }

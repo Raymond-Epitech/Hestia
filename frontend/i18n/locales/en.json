@@ -56,5 +56,11 @@
   "shoppingitem_name": "Article name",
   "flatInfo": "Your current flat-share",
   "roomates": "flatmates",
-  "changeFlat": "Changing flat-shares"
+  "changeFlat": "Changing flat-shares",
+  "Assignee": "Assignee",
+  "newTask": "Add a new task",
+  "quit": "Quit",
+  "Enroll": "Enroll",
+  "isDone": "This task has been done",
+  "Done": "Done"
 }
