@@ -3,7 +3,7 @@
         <div class="colocation-preview-container">
             <div class="colocation-preview">
                 <text class="header">
-                    <Texte_language source="flatInfo" /> :
+                    <Texte_language source="flatInfo" />
                 </text>
                 <text class="subtext">{{ colocationData.name }}</text>
                 <text class="subtext">{{ colocationData.address }}</text>
