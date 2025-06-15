@@ -13,21 +13,14 @@ export default defineNuxtRouteMiddleware((to) => {
   }
 
   if (token.value && to?.name === 'login') {
-    console.log(token.value)
-    console.log("navitage to /")
     return navigateTo('/');
   }
   if (!token.value && to?.name !== 'login') {
-    console.log(token.value)
-    console.log("navitage to /login")
     abortNavigation();
     return navigateTo('/login');
   }
 
   if (token.value && user.colocationId === null && to?.name !== 'colocation-mandatory') {
-    console.log(token.value)
-    console.log(user)
-    console.log("navitage to /colocation")
     abortNavigation();
     return navigateTo('/colocation-mandatory');
   }
