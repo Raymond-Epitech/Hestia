@@ -58,13 +58,11 @@ const redirect = (page) => {
 
 <style scoped>
 .page-container {
-    position: fixed;
-    inset: 0px;
-    width: fit-content;
-    height: fit-content;
-    max-width: 100vw;
-    max-height: 100dvh;
-    margin: 20% auto auto auto;
+    height: max-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20%;
 }
 
 .colocation-preview-container {
