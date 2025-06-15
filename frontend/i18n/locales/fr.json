@@ -50,5 +50,11 @@
   "header_add_shopping": "Ajouter une liste de courses",
   "shopping_list_name": "Nom de la liste de courses",
   "header_add_shoppingitem": "Ajouter un article à la liste de courses",
-  "shoppingitem_name": "Nom de l'article"
+  "shoppingitem_name": "Nom de l'article",
+  "Assignee": "Assigné",
+  "newTask": "Ajouter une nouvelle tâche",
+  "quit": "Renoncer",
+  "Enroll": "S'inscrire",
+  "isDone": "Cette tâche a été faite",
+  "Done": "Fini"
 }

@@ -107,7 +107,7 @@ watch(visible, (value) => {
 })
 </script>
 
-<style>
+<style scoped>
 .modal {
   width: 100%;
   height: 300px;
@@ -117,7 +117,7 @@ watch(visible, (value) => {
   border-top-right-radius: 0px;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
-  animation: slideIn 0.2s;
+  animation: slideIn 0.4s;
   background-color: #1e1e1eda;
   backdrop-filter: blur(8px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
@@ -284,7 +284,7 @@ watch(visible, (value) => {
 
 @keyframes slideIn {
   0% {
-    transform: translateY(100px);
+    transform: translateY(-400px);
   }
 
   100% {
@@ -298,7 +298,7 @@ watch(visible, (value) => {
   }
 
   100% {
-    transform: translateY(100px);
+    transform: translateY(-400px);
   }
 }
 
@@ -307,7 +307,7 @@ watch(visible, (value) => {
   /** Slide Out Transition (mobile only) */
   .modal-enter-from:deep(.modal),
   .modal-leave-to:deep(.modal) {
-    animation: slideOut 0.2s linear;
+    animation: slideOut 0.4s linear;
   }
 }
 

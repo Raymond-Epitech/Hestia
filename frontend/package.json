@@ -14,6 +14,7 @@
     "@capgo/capacitor-social-login": "^7.6.7",
     "@nuxtjs/i18n": "^9.1.0",
     "@pinia/nuxt": "^0.9.0",
+    "@vuepic/vue-datepicker": "^11.0.2",
     "bootstrap": "^5.3.3",
     "bootstrap-vue": "^2.23.1",
     "json-server": "^1.0.0-beta.3",

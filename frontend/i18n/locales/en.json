@@ -53,5 +53,11 @@
   "header_add_shopping": "Add a list of shopping",
   "shopping_list_name": "Name of the shopping list",
   "header_add_shoppingitem": "Add an item to the shopping list",
-  "shoppingitem_name": "Article name"
+  "shoppingitem_name": "Article name",
+  "Assignee": "Assignee",
+  "newTask": "Add a new task",
+  "quit": "Quit",
+  "Enroll": "Enroll",
+  "isDone": "This task has been done",
+  "Done": "Done"
 }
