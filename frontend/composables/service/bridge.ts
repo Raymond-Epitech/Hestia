@@ -256,6 +256,9 @@ export class bridge {
     async getColocationById(id: string) {
         return await fetch(this.url + "/api/Colocation/" + id, {
             method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt,
+            }
         }).then(response => {
             if (response.status == 200) {
                 return response.json();

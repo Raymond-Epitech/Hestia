@@ -1,10 +1,10 @@
 <template>
     <div class="center-container">
-        <Rectangle v-for="shopping in shopping_list" :key="shopping.id" color="#85AD7B" id="rec" class="center mini_rec"
+        <Rectangle v-for="shopping in shopping_list" :key="shopping.id" color="#85AD7B" id="rec" class="mini_rec"
             :onClick="() => redirectto(shopping.name, shopping.id)">
-            <p>{{ shopping.name }}</p>
+            <text>{{ shopping.name }}</text>
         </Rectangle>
-        <Rectangle color="#FFF973" id="rec" class="center regularize-text mini_rec"
+        <Rectangle color="#FFF973" id="rec" class="regularize-text mini_rec"
             :onClick="() => redirectto('add_shopping')">
             <Texte_language source="add_shopping" />
         </Rectangle>
@@ -43,30 +43,26 @@ api.getShoppingListByColocationId(collocid).then((response) => {
 
 <style scoped>
 .center-container {
+    min-height: 700px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     text-align: center;
 }
 
 .mini_rec {
-    width: 50%;
+    width: 80%;
     margin: 10px;
     padding: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
-}
-
-.center {
-    text-align: center;
+    font-weight: 600;
 }
 
 .regularize-text {
     font-size: 24px;
-    font-weight: bold;
 }
 </style>
