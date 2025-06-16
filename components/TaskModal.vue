@@ -187,7 +187,7 @@ watch(visible, (value) => {
 
 .modal {
     width: 100%;
-    height: 360px;
+    height: fit-content;
     overflow-y: auto;
     margin-top: 0px;
     padding-top: 25pt;
@@ -206,20 +206,19 @@ watch(visible, (value) => {
 }
 
 .modal-header {
+    height: fit-content;
     color: #000000;
     display: grid;
     grid-template-columns: 4fr 1fr;
-    align-items: center;
+    align-items: start;
     justify-content: space-between;
     width: 90%;
-    height: 80px;
     padding-left: 5%;
-    margin-top: 5px;
-    margin-bottom: 15px;
     border-bottom: none;
 }
 
 .modal-header-text {
+    padding-top: 4px;
     display: flex;
     flex-direction: column;
 }
@@ -235,6 +234,7 @@ watch(visible, (value) => {
 }
 
 .due-date {
+    height: fit-content;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -250,7 +250,7 @@ watch(visible, (value) => {
     align-content: center;
     text-align: center;
     height: 40px;
-    font-size: 38px;
+    font-size: 250%;
     margin-bottom: 4px;
     font-weight: 600;
 }

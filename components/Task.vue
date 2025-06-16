@@ -101,7 +101,8 @@ function getColor() {
 .task {
     display: grid;
     grid-template-columns: 4fr 1fr;
-    align-items: center;
+    align-items: top;
+    padding-top: 8px;
     justify-content: space-between;
     width: 90%;
     height: 80px;
@@ -115,10 +116,11 @@ function getColor() {
 h1 {
     font-weight: 700;
     font-size: 18px;
-    margin-bottom: 24px;
+    padding-top: 2px;
 }
 
 .due-date {
+    height: fit-content;
     display: flex;
     flex-direction: column;
     justify-content: center;

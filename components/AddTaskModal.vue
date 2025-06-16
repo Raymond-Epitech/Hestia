@@ -12,8 +12,9 @@
                     </div>
                     <form method="post" action="">
                         <div class="modal-body">
-                            <input class="modal-body-input" v-model="task.title" placeholder="Set task name" required />
-                            <input class="modal-body-input" v-model="task.description"
+                            <input class="modal-body-input" v-model="task.title" maxlength="35"
+                                placeholder="Set task name" required />
+                            <input class="modal-body-input" v-model="task.description" maxlength="45"
                                 placeholder="Set task description (optional)" />
                         </div>
                         <div class="task-assignee">

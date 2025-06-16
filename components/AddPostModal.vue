@@ -110,7 +110,7 @@ watch(visible, (value) => {
 <style scoped>
 .modal {
   width: 100%;
-  height: 330px;
+  height: fit-content;
   overflow-y: auto;
   margin-top: 0px;
   padding-top: 25pt;
@@ -228,7 +228,6 @@ watch(visible, (value) => {
 
 .modal-buttons {
   padding: 14px;
-  padding-bottom: 0px;
   border-top: 0px;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
