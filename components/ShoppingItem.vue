@@ -5,11 +5,11 @@
                     <img src="../public/edit.png" width="20" height="20" @click="modif = !modif" class="edit" />
                 </span></span>
             <span v-if="modif" class="expense-name">
-                <input v-model="item.name" maxlength="42" required />
-                <button @click="modifname">
+                <input class="modify-input" v-model="item.name" maxlength="42" required />
+                <button class="ok-button" @click="modifname">
                     <Texte_language source="confirm" />
                 </button></span>
-            <div class="check-zone" :class="{ checked: item.isChecked }" @click.stop="toggleCheck"></div>
+            <div v-if="!modif" class="check-zone" :class="{ checked: item.isChecked }" @click.stop="toggleCheck"></div>
         </div>
     </div>
 </template>
@@ -69,15 +69,30 @@ const modifname = () => {
 }
 
 .expense-name {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 9fr 1fr;
     align-items: center;
-    flex-grow: 1;
     margin-right: 10px;
     padding-left: 2px;
 }
 
 .edit {
     margin-bottom: 2px;
+}
+
+.modify-input {
+    border: none;
+    border-radius: 5px;
+    background-color: #393a40;
+    outline: none;
+}
+
+.ok-button {
+    width: 24px;
+    height: 24px;
+    margin-left: 30%;
+    border-radius: 4px;
+    background-color: #393a40;
+    font-weight: 600;
 }
 </style>
