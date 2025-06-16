@@ -3,6 +3,8 @@
         <div v-if="visible">
             <div class="modal-background" @click="handleClose">
                 <div class="modal" @click.stop>
+                    <div class="padding-top">
+                    </div>
                     <div class="modal-header">
                         <h1 class="modal-header-text">
                             <Texte_language source="newTask" />:
@@ -26,7 +28,8 @@
                         </div>
                         <div class="date-picker">
                             <client-only>
-                                <vue-date-picker placeholder="MM/DD/YYYY" format="MM/dd/yyyy" v-model="task.dueDate" />
+                                <vue-date-picker placeholder="MM/DD/YYYY" format="MM/dd/yyyy" v-model="task.dueDate"
+                                    teleport-center dark />
                             </client-only>
                         </div>
                         <div class="modal-buttons">
@@ -134,10 +137,9 @@ watch(visible, (value) => {
 <style scoped>
 .modal {
     width: 100%;
-    height: 390px;
-    overflow-y: auto;
+    min-height: 400px;
+    height: fit-content;
     margin-top: 0px;
-    padding-top: 20pt;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
     border-bottom-left-radius: 30px;
@@ -150,6 +152,10 @@ watch(visible, (value) => {
     flex-direction: column;
     justify-content: center;
     position: relative;
+}
+
+.padding-top {
+    height: 25pt;
 }
 
 .modal-header {
@@ -231,7 +237,7 @@ watch(visible, (value) => {
 }
 
 .modal-buttons {
-    height: 40px;
+    height: 48px;
     padding: 12px 24px;
     border-top: 0px;
     border-bottom-left-radius: 20px;

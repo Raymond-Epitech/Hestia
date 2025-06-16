@@ -190,7 +190,7 @@ watch(visible, (value) => {
     height: 360px;
     overflow-y: auto;
     margin-top: 0px;
-    padding-top: 20pt;
+    padding-top: 25pt;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
     border-bottom-left-radius: 30px;

@@ -29,7 +29,7 @@ const logout = () => {
 .body-container {
   position: absolute;
   border-top: 1px solid #d2edd9;
-  top: 20pt;
+  top: 25pt;
   bottom: 58px;
   left: 0;
   right: 0;
