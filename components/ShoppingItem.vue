@@ -88,8 +88,9 @@ const modifname = () => {
 }
 
 .ok-button {
-    width: 24px;
-    height: 24px;
+    width: fit-content;
+    height: fit-content;
+    padding: 2px 4px;
     margin-left: 30%;
     border-radius: 4px;
     background-color: #393a40;
