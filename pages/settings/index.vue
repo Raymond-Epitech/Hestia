@@ -35,10 +35,19 @@
                 <Texte_language source="Informations" />
             </h1>
         </Rectangle>
+        <Rectangle color="#FF6A61" @click.passive="logout()" id="logout">
+            <h1>
+                <Texte_language source="logout" />
+            </h1>
+        </Rectangle>
     </div>
 </template>
 
 <script setup>
+import { useAuthStore } from '~/store/auth';
+
+const authenticateUser = useAuthStore();
+
 const handleComposantClick = (id) => {
     console.log(`ID du composant cliqué: ${id}`);
     alert(`ID du composant cliqué: ${id}`);
@@ -46,6 +55,11 @@ const handleComposantClick = (id) => {
 const router = useRouter();
 const redirect = (page) => {
     router.push(page);
+}
+
+function logout() {
+    authenticateUser.logUserOut();
+    router.push('/');
 }
 </script>
 

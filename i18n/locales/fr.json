@@ -59,5 +59,6 @@
   "quit": "Renoncer",
   "Enroll": "S'inscrire",
   "isDone": "Cette tâche a été faite",
-  "Done": "Fini"
+  "Done": "Fini",
+  "logout": "Déconnexion"
 }

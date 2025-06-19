@@ -62,5 +62,6 @@
   "quit": "Quit",
   "Enroll": "Enroll",
   "isDone": "This task has been done",
-  "Done": "Done"
+  "Done": "Done",
+  "logout": "Logout"
 }

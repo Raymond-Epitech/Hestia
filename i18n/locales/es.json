@@ -62,5 +62,6 @@
   "quit": "Abandonar",
   "Enroll": "Inscribo",
   "isDone": "Esta tarea ya se ha realizado",
-  "Done": "Terminado"
+  "Done": "Terminado",
+  "logout": "cierre de sesión"
 }

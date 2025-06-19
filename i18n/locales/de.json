@@ -62,5 +62,6 @@
   "quit": "Aufhören",
   "Enroll": "Registrieren",
   "isDone": "Diese Aufgabe wurde erledigt",
-  "Done": "Erledigt"
+  "Done": "Erledigt",
+  "logout": "Abmeldung"
 }

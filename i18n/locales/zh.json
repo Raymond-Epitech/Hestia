@@ -62,5 +62,6 @@
   "quit": "辞职",
   "Enroll": "注册",
   "isDone": "此任务已完成",
-  "Done": "完毕"
+  "Done": "完毕",
+  "logout": "注销"
 }
