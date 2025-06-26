@@ -5,29 +5,29 @@ Hestia is a mobile app that requires beta-testing to ensure that it's functional
 ---
 
 ## 2. Selection of core functionalities
-Identify and describe the core functionalities that will be available in the beta version. These should be based on the functional specifications from your Action Plan and refined based on project evolution, feedback, and new requirements.
+Core functionalities that will be available in the beta version. These are based on the Action Plan and refined based on project evolution, feedback, and new requirements.
 
 ### 2.1 Core functionalities
 - **Account creation**: The ability to create a Hestia user account by connecting through a google account.
 - **Account configuration**: Creating or joining an existing collocation, setting personal information.
-- **Wall page**: Publish posts for other users in the same collocation to see, see other users posts.
-- **Tasks page**: Set tasks and their deadlines, set the people assigned to said task.
+- **Wall page**: Publish posts for other users in the same colocation to see, see other users posts, remove posts.
+- **Tasks page**: Set tasks and their deadlines, set the people assigned to said task, set tasks to `done` so they get deleted automaticaly.
 - **Settings page**: Change the language of the app, the notification prefferences, send a bug report or a feature request/modification.
 
 
 ### 2.2 Adaptations and refinements
-- None yet, app not yet beta tested.
+- Removal of task priority selection button, not usefull enough and confusing for users.
 
 ---
 
 ## 3. Definition of beta testing scenarios
-Develop structured test scenarios to assess the functionality of key features. Each scenario should include the user role, feature being tested, expected outcome, and steps to execute the test.
+Structured test scenarios to assess the functionality of key features. Each scenario include the user role, feature being tested, expected outcome, and steps to execute the test.
 
 ### 3.1 Test scenario 1
 - **End-user**
 - **Connection**
 - **Precondition**:
-  1. The user need to launch the application
+  1. The user needs to launch the application
 - **User was able to connect**
 - **Steps to execute**:
   1. User touches google connection button
@@ -45,7 +45,7 @@ Develop structured test scenarios to assess the functionality of key features. E
   2. User goes to the post page by touching the fridge icon
 	3. User touches the “+” button
 	4. An input form appears, allowing the user to fill in the post content and color
-	5. User fill the blank and click on “poster”
+	5. User fill the blank and click on “post”
 	6. the post is added to the page
 
 ### 3.3 Test scenario 3
@@ -95,6 +95,17 @@ Develop structured test scenarios to assess the functionality of key features. E
 
 ### 3.7 Test scenario 7
 - **End-user**
+- **Go to groceries page**
+- **Precondition**:
+  1. The user is logged in
+- **User is redirected to the task page**:
+- **Steps to execute**:
+  1. User opens the app
+  2. User touches the basket icon
+  3. User is redirected to the groceries page
+
+### 3.8 Test scenario 8
+- **End-user**
 - **Switch language**
 - **Precondition**:
   1. The user is logged in
@@ -119,7 +130,7 @@ Ensure the test scenarios reflect real-world use cases and cover all major inter
   - A registered user logs in, checks the wall page for updates, adds a new post, assigns a task to a roommate on the tasks page, and updates their notification preferences in the settings page.
 
 - **Journey 3**: **Language and settings management**
-  - A user goes to the settings page, switches the app language, adjusts their notification preferences to customize their experience, after en error with their notifications, they submit a bug report.
+  - A user goes to the settings page, switches the app language, adjusts their notification preferences to customize their experience.
 
 ### 4.2 Edge cases and failure points
 - **Edge Case 1**: **Failed google account connection**
