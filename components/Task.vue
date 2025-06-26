@@ -71,7 +71,7 @@ function getColor() {
         return "red"
     } else if (daysDifference < 3) {
         return "orange"
-    } else if (daysDifference > 3) {
+    } else if (daysDifference >= 3) {
         return "green"
     } else {
         return "red"
