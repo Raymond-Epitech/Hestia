@@ -327,6 +327,18 @@ Structured test scenarios to assess the functionality of key features. Each scen
   2. User does not fill a collocation ID and registers with their google account.  
   3. The register succeeds.
 
+### **3.22 Test Scenario 22** 
+- **End-user**  
+- **Attempt to log out of an account**  
+- **Precondition**:  
+  1. The user is on the settings page.
+- **Expected Outcome**:  
+  - The user is logged out and brought to the login/register page.  
+- **Steps to execute**:  
+  1. User scrolls down to the logout button on the settings page. 
+  2. User clicks the logout button.
+  3. User is successfully logged out.
+
 ---
 
 ## 4. Coverage of key user journeys
