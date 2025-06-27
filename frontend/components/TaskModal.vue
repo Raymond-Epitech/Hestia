@@ -253,12 +253,16 @@ watch(visible, (value) => {
     font-size: 250%;
     margin-bottom: 4px;
     font-weight: 600;
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
 }
 
 .month {
     font-size: 16px;
     font-weight: 600;
     text-transform: uppercase;
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
 }
 
 .modal-body {

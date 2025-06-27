@@ -139,11 +139,15 @@ h1 {
     font-size: 38px;
     margin-bottom: 4px;
     font-weight: 600;
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
 }
 
 .month {
     font-size: 16px;
     font-weight: 600;
     text-transform: uppercase;
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
 }
 </style>
