@@ -8,7 +8,7 @@ Hestia is a mobile app that requires beta-testing to ensure that it's functional
 Core functionalities that will be available in the beta version. These are based on the Action Plan and refined based on project evolution, feedback, and new requirements.
 
 ### 2.1 Core functionalities
-- **Account creation**: The ability to create a Hestia user account by connecting through a google account.
+- **Account creation**: The ability to create a Hestia user account by registering with a google account.
 - **Account configuration**: Creating or joining an existing collocation, setting personal information.
 - **Wall page**: Publish posts for other users in the same colocation to see, see other users posts, remove posts.
 - **Tasks page**: Set tasks and their deadlines, set the people assigned to said task, set tasks to `done` so they get deleted automaticaly.
@@ -313,7 +313,19 @@ Structured test scenarios to assess the functionality of key features. Each scen
   2. User clicks the “+” button to add a new task.  
   3. User leaves the "Task name" field blank but fills in other details.  
   4. User clicks "Save."  
-  5. An error message appears, and the task is not created.  
+  5. An error message appears, and the task is not created.
+ 
+### **3.21 Test Scenario 21** 
+- **End-user**  
+- **Attempt to register an account with no group**  
+- **Precondition**:  
+  1. The user is on the register page.
+- **Expected Outcome**:  
+  - The app opens the group creation/join page.  
+- **Steps to execute**:  
+  1. User opens the app and navigates to the register page.  
+  2. User does not fill a collocation ID and registers with their google account.  
+  3. The register succeeds.
 
 ---
 
@@ -338,6 +350,10 @@ Ensure the test scenarios reflect real-world use cases and cover all major inter
   - User 2 sees task and enrolls, goes out to get groceries, check each item in the list.
   - User 2 comes home, mark the task as `done`, goes to the money page and set a nex expense for the groceries.
   - User 1 sees the completed task and the new expense, reimburses User 2, then confirm reimbursement.
+
+- **Journey 6**: **Creating a new group**
+  - User 1 who allready has an account creates a new group for their colocation.
+  - User 2 creates an account and joins the new group by specifying the collocation ID provided to user 1 during group creation.
 
 ### 4.2 Edge cases and failure points
 - **Edge Case 1**: **Failed google account connection**
@@ -449,6 +465,13 @@ Ensure the test scenarios reflect real-world use cases and cover all major inter
   2. Verify the app:  
      - Rejects the input (e.g., "Amount too high").  
      - Or handles it correctly (no calculation errors).
+
+### **4.16 Edge Case 16**: **Group with no users**  
+- **Description**: All user accounts from a group have left a group or deleted their account.  
+- **Testing**:  
+  1. Create then leave a group.  
+  2. Verify the server:  
+     - Group and contents are deleted after a week.
 
 ---
 
