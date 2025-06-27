@@ -3,15 +3,18 @@
         <div v-if="visible">
             <div class="modal-background" @click="handleClose">
                 <div class="modal" @click.stop>
-                    <div class="modal-header left">
+                    <div class="padding-top">
+                    </div>
+                    <div class="modal-header">
                         <h1 class="modal-header-text">
                             <Texte_language source="newTask" />:
                         </h1>
                     </div>
                     <form method="post" action="">
-                        <div class="modal-body left">
-                            <input class="modal-body-input" v-model="task.title" placeholder="Set task name" required />
-                            <input class="modal-body-input" v-model="task.description"
+                        <div class="modal-body">
+                            <input class="modal-body-input" v-model="task.title" maxlength="35"
+                                placeholder="Set task name" required />
+                            <input class="modal-body-input" v-model="task.description" maxlength="45"
                                 placeholder="Set task description (optional)" />
                         </div>
                         <div class="task-assignee">
@@ -24,9 +27,12 @@
                                 </option>
                             </select>
                         </div>
-                        <client-only>
-                            <vue-date-picker placeholder="MM/DD/YYYY" format="MM/dd/yyyy" v-model="task.dueDate" />
-                        </client-only>
+                        <div class="date-picker">
+                            <client-only>
+                                <vue-date-picker placeholder="MM/DD/YYYY" format="MM/dd/yyyy" v-model="task.dueDate"
+                                    teleport-center dark />
+                            </client-only>
+                        </div>
                         <div class="modal-buttons">
                             <button class="button-proceed" @click.prevent="handleProceed">
                                 <img src="../public/submit.png" class="submit">
@@ -132,8 +138,8 @@ watch(visible, (value) => {
 <style scoped>
 .modal {
     width: 100%;
-    height: 340px;
-    overflow-y: auto;
+    min-height: 400px;
+    height: fit-content;
     margin-top: 0px;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
@@ -149,10 +155,15 @@ watch(visible, (value) => {
     position: relative;
 }
 
+.padding-top {
+    height: 25pt;
+}
+
 .modal-header {
     padding: 16px 24px;
     font-weight: 600;
     color: #fff;
+    border: none;
 }
 
 .modal-header-text {
@@ -189,7 +200,7 @@ watch(visible, (value) => {
 .task-assignee {
     display: flex;
     flex-direction: column;
-    padding: 8px 24px;
+    padding: 8px 24px 12px 24px;
 }
 
 .text-task-assignee {
@@ -208,6 +219,11 @@ watch(visible, (value) => {
     color: #FFFFFF;
 }
 
+.date-picker {
+    width: 60%;
+    padding-left: 24px;
+}
+
 .modal-background {
     top: 0;
     left: 0;
@@ -222,7 +238,7 @@ watch(visible, (value) => {
 }
 
 .modal-buttons {
-    height: 40px;
+    height: 48px;
     padding: 12px 24px;
     border-top: 0px;
     border-bottom-left-radius: 20px;
@@ -243,7 +259,6 @@ watch(visible, (value) => {
 /** Fallback Buttons */
 
 .button-proceed {
-    padding-right: 14px;
     display: flex;
     justify-content: center;
     align-items: center;

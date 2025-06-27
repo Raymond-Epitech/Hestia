@@ -48,7 +48,7 @@
   "expense_category_name": "Category name",
   "header_add_category": "Add a category",
   "header_modify_category": "Change the category",
-  "confirm": "Confirm",
+  "confirm": "ok",
   "add_shopping": "Add a list of shopping",
   "header_add_shopping": "Add a list of shopping",
   "shopping_list_name": "Name of the shopping list",
@@ -62,5 +62,6 @@
   "quit": "Quit",
   "Enroll": "Enroll",
   "isDone": "This task has been done",
-  "Done": "Done"
+  "Done": "Done",
+  "logout": "Logout"
 }

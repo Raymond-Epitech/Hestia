@@ -27,6 +27,12 @@
 import type { Expense, Coloc, shoppinglist_item } from '~/composables/service/type';
 import { useUserStore } from '~/store/user';
 
+useHead({
+    bodyAttrs: {
+        style: 'background-color: #1E1E1E;'
+    }
+})
+
 const userStore = useUserStore();
 const user = userStore.user;
 const route = useRoute();
@@ -64,7 +70,7 @@ const handleProceed = async () => {
 
 <style scoped>
 .background {
-    height: 100vh;
+    height: 100%;
     background-color: #1E1E1E;
     color: white;
     padding: 20px;

@@ -110,9 +110,10 @@ watch(visible, (value) => {
 <style scoped>
 .modal {
   width: 100%;
-  height: 300px;
+  height: fit-content;
   overflow-y: auto;
   margin-top: 0px;
+  padding-top: 25pt;
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
   border-bottom-left-radius: 20px;
@@ -128,9 +129,9 @@ watch(visible, (value) => {
 }
 
 .modal-header {
-  padding: 12px 16px;
+  padding: 0px 16px;
   font-weight: 600;
-  border-bottom: 1px dotted lightgrey;
+  border-bottom: none;
   color: #fff;
 }
 
@@ -139,7 +140,7 @@ watch(visible, (value) => {
 }
 
 .modal-body {
-  padding: 12px;
+  padding: 0px 12px 12px 12px;
   display: flex;
   flex-direction: column;
   overflow: auto;

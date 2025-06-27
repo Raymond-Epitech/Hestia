@@ -128,8 +128,9 @@ body {
 }
 
 .login {
-    height: 200px;
-    width: 300px;
+    min-height: 200px;
+    min-width: 300px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -177,8 +178,8 @@ h2 {
 }
 
 .register-button {
-    width: 68px;
-    height: 28px;
+    min-width: 68px;
+    min-height: 28px;
     margin-top: 14px;
     border-radius: 8px;
     color: #E7FEED;
@@ -191,8 +192,9 @@ h2 {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 200px;
+    min-width: 200px;
     height: 50px;
+    padding: 5px;
     background-color: #E7FEED;
     border-radius: 14px;
     color: #074338;

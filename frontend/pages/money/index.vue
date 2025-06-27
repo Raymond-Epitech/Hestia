@@ -1,25 +1,27 @@
 <template>
-    <div class="center-container">
-        <Rectangle v-for="expense in expenses_list" :key="expense.id" color="#85AD7B" id="rec" class="expense mini_rec"
-            :onClick="() => redirectto(expense.name, expense.id)">
-            <text class="category">{{ expense.name }}</text>
-            <text class="regularize-text number">
-                {{ expense.totalAmount }} €
-            </text>
-        </Rectangle>
-        <Rectangle color="#4FA3A6" id="rec" class="expense mini_rec">
-            <Texte_language class="category" source="global" />
-            <text class="regularize-text number">
-                {{ global }} €
-            </text>
-        </Rectangle>
-        <Rectangle color="#FFF973" id="rec" class="regularize-text mini_rec"
-            :onClick="() => redirectto('add_category')">
-            <Texte_language source="add_category" />
-        </Rectangle>
-        <Rectangle color="#FFF973" id="rec" class="regularize-text mini_rec" :onClick="() => redirectto('balance')">
-            <Texte_language source="regularize" />
-        </Rectangle>
+    <div class="body-container">
+        <div class="center-container">
+            <Rectangle v-for="expense in expenses_list" :key="expense.id" color="#85AD7B" id="rec"
+                class="expense mini_rec" :onClick="() => redirectto(expense.name, expense.id)">
+                <text class="category">{{ expense.name }}</text>
+                <text class="regularize-text number">
+                    {{ expense.totalAmount }} €
+                </text>
+            </Rectangle>
+            <Rectangle color="#4FA3A6" id="rec" class="expense mini_rec">
+                <Texte_language class="category" source="global" />
+                <text class="regularize-text number">
+                    {{ global }} €
+                </text>
+            </Rectangle>
+            <Rectangle color="#FFF973" id="rec" class="regularize-text mini_rec"
+                :onClick="() => redirectto('add_category')">
+                <Texte_language source="add_category" />
+            </Rectangle>
+            <Rectangle color="#FFF973" id="rec" class="regularize-text mini_rec" :onClick="() => redirectto('balance')">
+                <Texte_language source="regularize" />
+            </Rectangle>
+        </div>
     </div>
 </template>
 
@@ -64,7 +66,7 @@ api.getExpenseByColocationId(collocid).then((response) => {
 
 <style scoped>
 .center-container {
-    min-height: 700px;
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;

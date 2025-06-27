@@ -8,7 +8,7 @@
 
 <style scoped>
 .box {
-    height: 400px;
+    height: 150px;
     width: 100%;
     display: flex;
     justify-content: center;

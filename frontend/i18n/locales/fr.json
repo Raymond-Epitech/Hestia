@@ -45,7 +45,7 @@
   "expense_category_name": "Nom de la catégorie",
   "header_add_category": "Ajouter une catégorie",
   "header_modify_category": "Modifier la catégorie",
-  "confirm": "Confirmer",
+  "confirm": "ok",
   "add_shopping": "Ajouter une liste de courses",
   "header_add_shopping": "Ajouter une liste de courses",
   "shopping_list_name": "Nom de la liste de courses",
@@ -59,5 +59,6 @@
   "quit": "Renoncer",
   "Enroll": "S'inscrire",
   "isDone": "Cette tâche a été faite",
-  "Done": "Fini"
+  "Done": "Fini",
+  "logout": "Déconnexion"
 }

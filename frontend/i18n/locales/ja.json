@@ -48,7 +48,7 @@
   "expense_category_name": "カテゴリ名",
   "header_add_category": "カテゴリを追加します",
   "header_modify_category": "カテゴリを変更します",
-  "confirm": "確認する",
+  "confirm": "OK",
   "add_shopping": "買い物のリストを追加します",
   "header_add_shopping": "買い物のリストを追加します",
   "shopping_list_name": "買い物リストの名前",
@@ -62,5 +62,6 @@
   "quit": "やめる",
   "Enroll": "登録する",
   "isDone": "このタスクは完了しました",
-  "Done": "終わり"
+  "Done": "終わり",
+  "logout": "ログアウト"
 }
