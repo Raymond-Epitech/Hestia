@@ -22,7 +22,6 @@ const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 
 const posts = ref([]);
-api.setjwt(useCookie('token').value ?? '');
 
 const getall = async () => {
   console.log(userStore.user)

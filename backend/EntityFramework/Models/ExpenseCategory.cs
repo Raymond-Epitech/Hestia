@@ -17,6 +17,10 @@ public class ExpenseCategory
     [Required]
     public string Name { get; set; } = null!;
 
+<<<<<<<< HEAD:backend/EntityFramework/Models/ExpenseCategory.cs
     public ICollection<Expense> Expenses { get; set; } = null!;
+========
+    public ICollection<ShoppingItem> ShoppingItems { get; set; } = null!;
+>>>>>>>> develop:backend/EntityFramework/Models/ShoppingList.cs
 }
 

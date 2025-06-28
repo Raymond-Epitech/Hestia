@@ -114,6 +114,7 @@ h2 {
     box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
     font-weight: 500;
     font-size: 20px;
+    background-color: #FFFFFF;
 }
 
 .button {

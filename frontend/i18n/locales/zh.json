@@ -56,5 +56,12 @@
   "shoppingitem_name": "文章名称",
   "flatInfo": "您现在的室友",
   "roomates": "室友",
-  "changeFlat": "改变单位份额"
+  "changeFlat": "改变单位份额",
+  "Assignee": "受让人",
+  "newTask": "添加新任务",
+  "quit": "辞职",
+  "Enroll": "注册",
+  "isDone": "此任务已完成",
+  "Done": "完毕",
+  "logout": "注销"
 }

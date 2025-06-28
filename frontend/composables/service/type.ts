@@ -56,7 +56,7 @@ export type Expense_Modif = {
 }
 
 export type Expenseget = {
-    id:string,
+    id: string,
     createdAt: string,
     createdBy: string,
     colocationId: string,
@@ -77,7 +77,7 @@ export type ExpenseList = {
     category: string,
     totalAmount: number,
     expenses: Expenseget[]
-} 
+}
 
 export type UserBalance = {
     [key: string]: number
@@ -99,12 +99,12 @@ export type Colocation = {
 
 export type Chore = {
     id: string;
+    colocationId: string;
+    dueDate: string;
     title: string;
     description: string;
-    createdBy: string;
-    createdAt: string;
-    dueDate: string;
     isDone: boolean;
+    enrolled: string[];
 }
 
 export type Locale = 'fr' | 'en' | 'es' | 'de' | 'zh' | 'ja';

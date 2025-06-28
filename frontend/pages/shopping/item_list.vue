@@ -2,7 +2,7 @@
     <div class="background">
         <div class="header">
             <img src="/return.png" alt="Return" width="30" height="30" @click="$router.back()" />
-            <h1>{{ name }}</h1>
+            <h1 class="header-name">{{ name }}</h1>
             <div class="square">
                 <div id="add" :onClick="() => redirectto()">
                     <img src="/plus.png" alt="Return" width="30" height="30" />
@@ -21,6 +21,12 @@ import type { shoppinglist, shoppinglist_item } from '~/composables/service/type
 import { useI18n } from 'vue-i18n';
 import { useUserStore } from '~/store/user';
 import { ShoppingItem } from '#components';
+
+useHead({
+    bodyAttrs: {
+        style: 'background-color: #1E1E1E;'
+    }
+})
 
 const route = useRoute();
 const userStore = useUserStore();
@@ -84,7 +90,7 @@ const updateName = (id: string, value: string) => {
 
 <style scoped>
 .background {
-    height: 100vh;
+    height: 100%;
     background-color: #1E1E1E;
     color: white;
     padding: 20px;
@@ -98,12 +104,21 @@ const updateName = (id: string, value: string) => {
     width: 40px;
     height: 40px;
     border-radius: 10px;
+    margin-left: 10px;
 }
 
 .header {
-    display: flex;
-    justify-content: space-between;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 6fr 1fr;
     align-items: center;
     margin-bottom: 20px;
+    text-align: center;
+}
+
+.header-name {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 </style>

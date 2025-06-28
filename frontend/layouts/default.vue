@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div class="body-container">
       <slot />
     </div>
     <footer>
@@ -24,3 +24,15 @@ const logout = () => {
   router.push('/login');
 };
 </script>
+
+<style scoped>
+.body-container {
+  position: absolute;
+  border-top: 1px solid #d2edd9;
+  top: 25pt;
+  bottom: 58px;
+  left: 0;
+  right: 0;
+  overflow: auto;
+}
+</style>

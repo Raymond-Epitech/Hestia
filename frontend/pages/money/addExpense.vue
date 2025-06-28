@@ -81,6 +81,12 @@
 import type { Expense, Coloc } from '~/composables/service/type';
 import { useUserStore } from '~/store/user';
 
+useHead({
+  bodyAttrs: {
+    style: 'background-color: #1E1E1E;'
+  }
+})
+
 const userStore = useUserStore();
 const user = userStore.user;
 const route = useRoute();
@@ -176,7 +182,7 @@ const filterNumericInput = (event: Event) => {
 
 <style scoped>
 .background {
-  height: 100vh;
+  height: 100%;
   background-color: #1E1E1E;
   color: white;
   padding: 20px;
