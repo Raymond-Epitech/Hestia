@@ -24,6 +24,7 @@ api.setjwt(useCookie('token').value ?? '');
 const posts = ref([]);
 
 const getall = async () => {
+  console.log(userStore.user)
   const data = await api.getAllReminders(userStore.user.colocationId);
   posts.value = data;
 };
