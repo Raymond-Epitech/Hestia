@@ -59,11 +59,7 @@ const getBalance = (id: string): number => {
 };
 const redirectto = (name: string) => {
     if (name === 'refund') {
-<<<<<<< HEAD
-        router.push({ path: '/money/refund', query: { list_coloc: JSON.stringify(list_coloc.value) }  });
-=======
         router.push({ path: '/money/refund', query: { list_coloc: JSON.stringify(list_coloc.value) } });
->>>>>>> develop
         return;
     }
 }
