@@ -582,10 +582,11 @@ namespace Business.Services
         }
 
         /// <summary>
-        /// Calculate the best refund method for a list of debts. Used greedy algorithm to minimize the number of transactions.
+        /// Calculates the optimal refund strategy for a list of debts using a greedy algorithm
+        /// to minimize the number of transactions.
         /// </summary>
-        /// <param name="debts">The list of debts {UserId, Balance}</param>
-        /// <returns>The list of the refund you need to make in order to cancel the debts</returns>
+        /// <param name="debts">List of debts, each represented by {UserId, Balance}.</param>
+        /// <returns>A list of refund transactions required to settle all debts.</returns>
         private List<RefundOutput> CalculateBestRefundMethod(Dictionary<Guid, decimal> debts)
         {
             var debtorList = debts
