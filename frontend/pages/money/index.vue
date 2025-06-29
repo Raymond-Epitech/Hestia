@@ -66,11 +66,7 @@ api.getExpenseByColocationId(collocid).then((response) => {
 
 <style scoped>
 .center-container {
-<<<<<<< HEAD
-    min-height: 700px;
-=======
     height: 100%;
->>>>>>> develop
     display: flex;
     flex-direction: column;
     justify-content: center;
