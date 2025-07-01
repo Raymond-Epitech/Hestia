@@ -1,6 +1,6 @@
 <template>
     <div class="navbar">
-        <a class="settings-button" :onClick="() => redirect('/settings')">
+        <a class="settings-button" :onClick="() => redirect('/settings/language')">
             <img src="../public/settings.png" class="settings">
         </a>
         <a class="task-button" :onClick="() => redirect('/tasks')">
