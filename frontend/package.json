@@ -11,12 +11,6 @@
     "sync:translations": "node scripts/syncTranslations.js"
   },
   "dependencies": {
-    "@capacitor/android": "7.2.0",
-    "@capacitor/app": "7.0.1",
-    "@capacitor/core": "7.2.0",
-    "@capacitor/haptics": "7.0.1",
-    "@capacitor/keyboard": "7.0.1",
-    "@capacitor/status-bar": "7.0.1",
     "@nuxtjs/i18n": "^9.1.0",
     "@pinia/nuxt": "^0.9.0",
     "bootstrap": "^5.3.3",
@@ -34,8 +28,6 @@
     "vue": "latest"
   },
   "devDependencies": {
-    "@capacitor/cli": "7.2.0",
-    "@nuxtjs/ionic": "^0.18.0",
     "nuxt-modal": "^1.0.2",
     "sass": "1.77.6"
   }

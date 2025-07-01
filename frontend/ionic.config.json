@@ -1,7 +1,0 @@
-{
-  "name": "Hestia",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "vue"
-}

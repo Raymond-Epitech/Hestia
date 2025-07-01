@@ -9,7 +9,6 @@ export default defineNuxtConfig({
     'nuxt-vue3-google-signin',
     '@nuxtjs/i18n',
     'pinia-plugin-persistedstate/nuxt',
-    '@nuxtjs/ionic',
   ],
 
   css: [
