@@ -23,34 +23,15 @@
 
 <script setup>
 import { Browser } from '@capacitor/browser';
-import { SocialLogin } from '@capgo/capacitor-social-login'
-import { useRouter, useRoute } from 'vue-router'
-import { storeToRefs } from 'pinia';
-import { useAuthStore } from '~/store/auth';
-import { useUserStore } from '~/store/user';
 
 definePageMeta({
     layout: false
 })
 
-const { authenticateUser } = useAuthStore();
-const { authenticated } = storeToRefs(useAuthStore());
-const userStore = useUserStore();
-const { $bridge } = useNuxtApp()
-const router = useRouter();
-const route = useRoute()
 const username = ref('');
 const colocationID = ref('');
 const registretion = ref(false);
 const alert = ref(false);
-
-onMounted(() => {
-    SocialLogin.initialize({
-        google: {
-            webClientId: '80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com', // the web client id for Android and Web
-        }
-    })
-})
 
 function goRegister() {
     registretion.value = true;
@@ -70,30 +51,11 @@ const register = async () => {
 }
 
 const login = async () => {
-    const res = await SocialLogin.login({
-        provider: 'google',
-        options: {
-            scopes: ['email', 'profile'],
-        },
-    });
-    console.log(res.result.idToken)
-    if (res) {
-        const data = await $bridge.login(res.result.idToken);
-        console.log("user logged in")
-        if (data) {
-            $bridge.setjwt(data.jwt);
-            userStore.setUser(data.user);
-            await authenticateUser(data.jwt);
-        }
-        if (authenticated) {
-            router.push('/');
-        }
-    }
-    // registretion.value = false;
-    // const register_token = useCookie('register_token');
-    // register_token.value = "";
-    // const googleAuthURL = "https://accounts.google.com/o/oauth2/v2/auth?client_id=80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google-callback&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent";
-    // await Browser.open({ url: googleAuthURL });
+    registretion.value = false;
+    const register_token = useCookie('register_token');
+    register_token.value = "";
+    const googleAuthURL = "https://accounts.google.com/o/oauth2/v2/auth?client_id=80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google-callback&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent";
+    await Browser.open({ url: googleAuthURL });
 }
 
 </script>
