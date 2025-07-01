@@ -10,7 +10,7 @@
             <input class="input" type="text" placeholder="Optionel" v-model="colocationID" />
             <h2 class="register-font">Créer un compte :</h2>
             <a type="submit" @click.prevent="register()" class="google-button"> Register with Google</a>
-            <button class="register-button" @click="login()">Login</button>
+            <button class="register-button" @click="goLogin()">Login</button>
         </div>
         <div v-else class="login">
             <h2 class="login-font">Login : </h2>
@@ -50,6 +50,10 @@ onMounted(() => {
         }
     })
 })
+
+function goLogin() {
+    registretion.value = false;
+}
 
 function goRegister() {
     registretion.value = true;
