@@ -1,17 +1,17 @@
 <template>
     <div class="navbar">
-        <a class="settings-button" :onClick="() => redirect('/settings/language')">
+        <a class="settings-button" href="/settings">
             <img src="../public/settings.png" class="settings">
         </a>
-        <a class="task-button" :onClick="() => redirect('/tasks')">
+        <a class="task-button" href="/tasks">
             <div class="task-button-top-bar"></div>
             <div class="task-button-middle-bar"></div>
             <div class="task-button-bottom-bar"></div>
         </a>
-        <a class="wall-button" :onClick="() => redirect('/')">
+        <a class="wall-button" href="/">
             <img src="../public/frigo.png" class="fridge">
         </a>
-        <a class="money-button" :onClick="() => redirect('/money')">
+        <a class="money-button" href="/money">
             <img src="../public/money-button.png" class="money">
         </a>
 
@@ -19,10 +19,7 @@
 </template>
 
 <script setup>
-const router = useRouter();
-const redirect = (page) => {
-    router.push(page);
-}
+
 </script>
 
 <style>

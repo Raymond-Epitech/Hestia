@@ -22,6 +22,7 @@
 </template>
 
 <script setup>
+import { Browser } from '@capacitor/browser';
 import { SocialLogin } from '@capgo/capacitor-social-login'
 import { useRouter, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia';
@@ -63,6 +64,7 @@ const register = async () => {
     }
     alert.value = false;
     if (alert.value == false) {
+        console.log(username)
         const res = await SocialLogin.login({
             provider: 'google',
             options: {
@@ -75,6 +77,7 @@ const register = async () => {
                 colocationId: colocationID.value
             };
             const data = await $bridge.addUser(newuser, res.result.idToken);
+            console.log("user registerd")
             if (data) {
                 $bridge.setjwt(data.jwt);
                 userStore.setUser(data.user);
@@ -94,17 +97,33 @@ const login = async () => {
             scopes: ['email', 'profile'],
         },
     });
+    console.log(res.result.idToken)
     if (res) {
         const data = await $bridge.login(res.result.idToken);
+        console.log("user logged in")
         if (data) {
+            console.log("next is data");
+            console.log(data);
             $bridge.setjwt(data.jwt);
+            console.log("bridge setjwt....");
+            console.log(data.jwt);
             userStore.setUser(data.user);
+            console.log("set user store....");
+            console.log(data.user);
             await authenticateUser(data.jwt);
+            console.log("authenticateUser")
         }
         if (authenticated) {
+            console.log("passed if authenticated check");
             router.push('/');
+            console.log("after router push :/")
         }
     }
+    // registretion.value = false;
+    // const register_token = useCookie('register_token');
+    // register_token.value = "";
+    // const googleAuthURL = "https://accounts.google.com/o/oauth2/v2/auth?client_id=80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google-callback&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent";
+    // await Browser.open({ url: googleAuthURL });
 }
 
 </script>
