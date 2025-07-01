@@ -4,7 +4,7 @@
         <div v-if="registretion" class="register">
             <h2 class="login-font">Register : </h2>
             <h2 class="register-font">Nom d'utilisateur :</h2>
-            <input class="input" type="text" placeholder="Nom d'utilisateur" v-model="username" />
+            <input class="input" type="text" placeholder="Nom d'utilisateur" v-model="username" required />
             <h2 v-if="alert" class="alert">*Veuillez indiqué votre nom d'utilisateur*</h2>
             <h2 class="register-font">Id de colocation :</h2>
             <input class="input" type="text" placeholder="Optionel" v-model="colocationID" />
@@ -57,37 +57,16 @@ function goRegister() {
 }
 
 const register = async () => {
-    if (!username.value) {
-        console.log("no username")
+    if (!username) {
         alert.value = true;
         return;
     }
     alert.value = false;
-    if (alert.value == false) {
-        console.log(username)
-        const res = await SocialLogin.login({
-            provider: 'google',
-            options: {
-                scopes: ['email', 'profile'],
-            },
-        });
-        if (res) {
-            const newuser = {
-                username: username.value,
-                colocationId: colocationID.value
-            };
-            const data = await $bridge.addUser(newuser, res.result.idToken);
-            console.log("user registerd")
-            if (data) {
-                $bridge.setjwt(data.jwt);
-                userStore.setUser(data.user);
-                await authenticateUser(data.jwt);
-            }
-            if (authenticated) {
-                router.push('/');
-            }
-        }
-    }
+    const register_token = useCookie('register_token');
+    register_token.value = username.value;
+    console.log(`registe ${register_token.value}`)
+    const googleAuthURL = "https://accounts.google.com/o/oauth2/v2/auth?client_id=80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google-callback&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent";
+    await Browser.open({ url: googleAuthURL });
 }
 
 const login = async () => {
