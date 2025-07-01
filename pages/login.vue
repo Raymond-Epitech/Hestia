@@ -5,11 +5,10 @@
             <h2 class="login-font">Register : </h2>
             <h2 class="register-font">Nom d'utilisateur :</h2>
             <input class="input" type="text" placeholder="Nom d'utilisateur" v-model="username" required />
-            <h2 v-if="alert" class="alert">*Veuillez indiqué votre nom d'utilisateur*</h2>
             <h2 class="register-font">Id de colocation :</h2>
             <input class="input" type="text" placeholder="Optionel" v-model="colocationID" />
             <h2 class="register-font">Créer un compte :</h2>
-            <a type="submit" @click.prevent="register()" class="google-button"
+            <a type="submit" @click="register()" class="google-button"
                 href="https://accounts.google.com/o/oauth2/v2/auth?client_id=80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google-callback&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent">
                 Register with Google</a>
             <button class="register-button" @click="login()">Login</button>
@@ -19,7 +18,7 @@
             <a @click="login()" class="google-button"
                 href="https://accounts.google.com/o/oauth2/v2/auth?client_id=80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google-callback&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent">
                 Login with Google</a>
-            <button class="register-button" @click="goRegister()">Register</button>
+            <button class="register-button" @click="register()">Register</button>
         </div>
     </div>
 </template>
@@ -32,23 +31,12 @@ definePageMeta({
 const username = ref('');
 const colocationID = ref('');
 const registretion = ref(false);
-const alert = ref(false);
-
-function goRegister() {
-    registretion.value = true;
-}
 
 function register() {
-    if (!this.username) {
-        alert.value = true;
-        return;
-    }
-    alert.value = false;
+    registretion.value = true;
     const register_token = useCookie('register_token');
     register_token.value = username.value;
     console.log(`registe ${register_token.value}`)
-    const googleAuthURL = "https://accounts.google.com/o/oauth2/v2/auth?client_id=80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google-callback&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=consent";
-    window.location.href = googleAuthURL;
 }
 
 function login() {
@@ -146,14 +134,5 @@ h2 {
     font-weight: 600;
     font-size: 20px;
     text-decoration: none;
-}
-
-.alert {
-    padding: 0;
-    margin: 0;
-    margin-top: -6px;
-    margin-bottom: 8px;
-    font-size: 15px;
-    color: #FF6A61;
 }
 </style>
