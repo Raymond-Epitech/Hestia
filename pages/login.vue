@@ -12,14 +12,11 @@
         <div v-else class="login">
             <h2 class="login-font">Login : </h2>
             <GoogleSignInButton @success="handleLoginSuccess" @error="handleLoginError"></GoogleSignInButton>
-            <GoogleSignInButton @success="loginWithGoogle" @error="handleLoginError"></GoogleSignInButton>
-            <button @success="loginWithGoogle">button de login</button>
         </div>
     </div>
 </template>
 
 <script setup>
-import { SocialLogin } from '@capgo/capacitor-social-login'
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/store/auth';
 import { useUserStore } from '~/store/user';
@@ -52,15 +49,6 @@ const handleregistration = async (response) => {
         router.push('/');
     }
 };
-
-const loginWithGoogle = async () => {
-    try {
-        const response = await SocialLogin.signIn({ provider: 'google' })
-        console.log('Logged in user:', response)
-    } catch (err) {
-        console.error('Login failed:', err)
-    }
-}
 
 const handleLoginSuccess = async (response) => {
     if (registretion.value) {
