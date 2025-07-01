@@ -1,36 +1,43 @@
 <template>
     <div class="navbar">
-        <a class="settings-button" href="/settings">
+        <a class="money-button" :onClick="() => redirect('/settings')">
             <img src="../public/settings.png" class="settings">
         </a>
-        <a class="task-button" href="/tasks">
+        <a class="task-button" :onClick="() => redirect('/tasks')">
             <div class="task-button-top-bar"></div>
             <div class="task-button-middle-bar"></div>
             <div class="task-button-bottom-bar"></div>
         </a>
-        <a class="wall-button" href="/">
+        <a class="wall-button" :onClick="() => redirect('/')">
             <img src="../public/frigo.png" class="fridge">
         </a>
-        <a class="money-button" href="/money">
+        <a class="money-button" :onClick="() => redirect('/money')">
             <img src="../public/money-button.png" class="money">
         </a>
-
+        <a class="shopping-button" :onClick="() => redirect('/shopping')">
+            <img src="../public/shopping.png" class="shopping">
+        </a>
     </div>
 </template>
 
 <script setup>
-
+const router = useRouter();
+const redirect = (page) => {
+    router.push(page);
+}
 </script>
 
-<style>
+<style scoped>
 .navbar {
     position: fixed;
     bottom: 0px;
     width: 100vw;
     height: 58px;
     background-color: #074338;
-    display: flex;
-    justify-content: space-around;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    justify-content: center;
+    align-items: center;
     padding: 0%;
 }
 
@@ -39,7 +46,7 @@
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
-    width: 49px;
+    width: 100%;
     height: 35px;
 }
 
@@ -65,7 +72,7 @@
 }
 
 .wall-button {
-    width: 49px;
+    max-width: 100%;
     height: 35px;
     display: flex;
     justify-content: center;
@@ -73,7 +80,7 @@
 
 .fridge {
     display: flex;
-    width: 200px;
+    max-width: 125px;
     height: 200px;
     margin-top: -30px;
 }
@@ -82,12 +89,25 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 40px;
-    width: 40px;
+    height: 100%;
+    width: 100%;
 }
 
 .money {
     height: 58px;
-    width: 68px;
+    width: 66px;
+}
+
+.shopping-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.shopping {
+    height: 38px;
+    width: 38px;
 }
 </style>

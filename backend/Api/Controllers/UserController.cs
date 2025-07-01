@@ -3,6 +3,7 @@ using Business.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Exceptions;
+using Shared.Models.DTO;
 using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
@@ -66,6 +67,15 @@ namespace Api.Controllers
                 throw new InvalidEntityException("User Id is empty");
 
             return Ok(await userService.DeleteUserAsync(id));
+        }
+
+        [HttpPut("QuitColocation/{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> QuitColocation(Guid id)
+        {
+            return Ok(await userService.QuitColocationAsync(id));
         }
 
         [HttpPost("/Register")]

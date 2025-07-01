@@ -1,5 +1,6 @@
 import { json } from "stream/consumers";
-import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif } from "./type";
+import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif, refund, shoppinglist, shoppinglist_item, expenses_category, expenses_category_get } from "./type";
+
 
 export class bridge {
     constructor() {
@@ -255,6 +256,9 @@ export class bridge {
     async getColocationById(id: string) {
         return await fetch(this.url + "/api/Colocation/" + id, {
             method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt,
+            }
         }).then(response => {
             if (response.status == 200) {
                 return response.json();
@@ -265,11 +269,12 @@ export class bridge {
 
     // Chore section:
 
-    async addChore(chore: Chore) {
+    async addChore(chore: any) {
         return await fetch(this.url + "/api/Chore", {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
             },
             body: JSON.stringify(chore)
         }).then(response => {
@@ -284,7 +289,8 @@ export class bridge {
         return await fetch(this.url + "/api/Chore", {
             method: 'PUT',
             headers: {
-                'Content-type': 'application/json'
+                'Content-type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
             },
             body: JSON.stringify(chore)
         }).then(response => {
@@ -309,6 +315,9 @@ export class bridge {
     async getAllChore(colocationId: string) {
         return await fetch(this.url + "/api/Chore/GetByColocationId/" + colocationId, {
             method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
         }).then(response => {
             if (response.status == 200) {
                 return response.json();
@@ -373,7 +382,8 @@ export class bridge {
         return await fetch(`${this.url}/api/Chore/Enroll?ChoreId=${choreId}&UserId=${userId}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
             }
         }).then(response => {
             if (response.status == 200) {
@@ -384,10 +394,11 @@ export class bridge {
     }
 
     async deleteChoreUser(choreId: string, userId: string) {
-        return await fetch(`${this.url}/api/Chore/Unenroll?ChoreId=${choreId}&UserId=${userId}`, {
+        return await fetch(`${this.url}/api/Chore/Enroll?ChoreId=${choreId}&UserId=${userId}`, {
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
             }
         }).then(response => {
             if (response.status == 200) {
@@ -408,9 +419,12 @@ export class bridge {
         })
     }
 
-    async getUserEnrollChore(choreId: string) {
+    async getUserEnrollChore(choreId: string): Promise<User[]> {
         return await fetch(`${this.url}/api/Chore/Enroll/ByChore?ChoreId=${choreId}`, {
             method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
         }).then(response => {
             if (response.status == 200) {
                 return response.json();
@@ -421,7 +435,7 @@ export class bridge {
 
     // Expense section:
 
-    async getExpenseByColocationId(colocationId:string): Promise<ExpenseList[]> {
+    async getExpenseByColocationId(colocationId: string): Promise<expenses_category_get[]> {
         return await fetch(`${this.url}/api/Expense/GetByColocationId/${colocationId}`, {
             method: 'GET',
             headers: {
@@ -435,7 +449,22 @@ export class bridge {
         })
     }
 
-    async getExpenseById(id:string): Promise<Expenseget> {
+
+    async getExpensebycategoryId(categoryId: string): Promise<Expenseget[]> {
+        return await fetch(`${this.url}/api/Expense/GetByExpenseCategoryId/${categoryId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        });
+    }
+
+    async getExpenseById(id: string): Promise<Expenseget> {
         return await fetch(`${this.url}/api/Expense/GetById/${id}`, {
             method: 'GET',
             headers: {
@@ -465,8 +494,8 @@ export class bridge {
         });
     }
 
-    async updateExpense(data:Expense_Modif) {
-        return await fetch(`${this.url}/api/Expense`, {
+    async updateExpense(data: Expense) {
+        return await fetch(`${this.url}/api/Expense/${data.colocationId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -481,7 +510,7 @@ export class bridge {
         });
     }
 
-    async deleteExpense(id:string) {
+    async deleteExpense(id: string) {
         return await fetch(`${this.url}/api/Expense/${id}`, {
             method: 'DELETE',
             headers: {
@@ -495,7 +524,7 @@ export class bridge {
         });
     }
 
-    async getBalance(colocationId:string): Promise<UserBalance> {
+    async getBalance(colocationId: string): Promise<UserBalance> {
         return await fetch(`${this.url}/api/Expense/GetBalance/${colocationId}`, {
             method: 'GET',
             headers: {
@@ -509,7 +538,7 @@ export class bridge {
         })
     }
 
-    async updateBalance(colocationId:string): Promise<UserBalance[]> {
+    async updateBalance(colocationId: string): Promise<UserBalance[]> {
         return await fetch(`${this.url}/api/Expense/CalculBalance/${colocationId}`, {
             method: 'PUT',
             headers: {
@@ -521,5 +550,186 @@ export class bridge {
             }
             return [];
         })
+    }
+
+    async getRefund(colocationId: string): Promise<refund[]> {
+        return await fetch(`${this.url}/api/Expense/GetRefundMethods/${colocationId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        })
+    }
+
+    async addexpensecategory(category: expenses_category) {
+        return await fetch(`${this.url}/api/Expense/Category`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(category)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async updateexpensecategory(category: expenses_category) {
+        return await fetch(`${this.url}/api/Expense/Category`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(category)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async deleteexpensecategory(id: string) {
+        return await fetch(`${this.url}/api/Expense/Category/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    // shoppinglist section:
+    async getShoppingListByColocationId(colocationId: string): Promise<shoppinglist[]> {
+        return await fetch(`${this.url}/api/ShoppingList/GetByColocationId/${colocationId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        });
+    }
+
+    async getShoppingListById(id: string): Promise<shoppinglist> {
+        return await fetch(`${this.url}/api/ShoppingList/GetById/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return {} as shoppinglist;
+        });
+    }
+
+    async addShoppingList(data: shoppinglist) {
+        return await fetch(`${this.url}/api/ShoppingList`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async updateShoppingList(data: shoppinglist) {
+        return await fetch(`${this.url}/api/ShoppingList`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async deleteShoppingList(id: string) {
+        return await fetch(`${this.url}/api/ShoppingList/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async addShoppingListItem(item: shoppinglist_item) {
+        return await fetch(`${this.url}/api/ShoppingList/Item`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(item)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async updateShoppingListItem(item: shoppinglist_item) {
+        return await fetch(`${this.url}/api/ShoppingList/Item`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(item)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async deleteShoppingListItem(id: string) {
+        return await fetch(`${this.url}/api/ShoppingList/Item/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
     }
 }

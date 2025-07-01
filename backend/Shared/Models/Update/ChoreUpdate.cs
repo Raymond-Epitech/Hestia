@@ -18,5 +18,6 @@ namespace Shared.Models.Update
         public string? Description { get; set; } = null;
 
         public bool IsDone { get; set; } = false;
+        public List<Guid> Enrolled { get; set; } = null!;
     }
 }

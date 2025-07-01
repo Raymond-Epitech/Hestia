@@ -7,29 +7,31 @@
         <p></p>
       </h1>
     </div>
-    <form method="post" action="">
+    <form class="form-container" method="post" action="">
       <div>
         <h3>
-          <Texte_language source="expense_name" />
+          <Texte_language source="expense_name" /> :
         </h3>
-        <input class="body-input" rows="3" v-model="expense.name" required />
-        <h3>
-          <Texte_language source="expense_amount" />
+        <div class="name-expense-container">
+          <input class="name-input" maxlength="40" v-model="expense.name" required />
+          <div class="expense-container">
+            <input class="expense-input" type="number" v-model="expense.amount" @input="filterNumericInput" min="0"
+              required />
+            <text>€</text>
+          </div>
+        </div>
+        <h3 class="subtext">
+          <Texte_language source="expense_paid_by" /> :
         </h3>
-        <input class="body-input" type="number" v-model="expense.amount" placeholder="0.00" @input="filterNumericInput"
-          min="0" required />
-        <h3>
-          <Texte_language source="expense_paid_by" />
-        </h3>
-        <select v-model="expense.paidBy" class="body-input">
+        <select v-model="expense.paidBy" class="drop-down-input">
           <option v-for="coloc in list_coloc" :key="coloc.id" :value="coloc.id">
             {{ coloc.username }}
           </option>
         </select>
-        <h3>
+        <h3 class="subtext">
           <Texte_language source="split_type" />
         </h3>
-        <select v-model="expense.splitType" class="body-input">
+        <select v-model="expense.splitType" class="drop-down-input">
           <option v-for="type in splitTypes" :key="type.value" :value="type.value">
             <Texte_language :source=type.label />
           </option>
@@ -56,8 +58,8 @@
         </div>
         <div v-if="expense.splitType == 2">
           <div class="checkbox-list">
-            <label v-for="coloc in list_coloc" :key="coloc.id" class="checkbox-item">
-              <input type="checkbox" :value="coloc.id" />
+            <label v-for="coloc in list_coloc" :key="coloc.id" class="checkbox-item-pourcentage">
+              <input class="check-zone" type="checkbox" :value="coloc.id" />
               {{ coloc.username }}
               <input type="number" class="split-value-input" v-model.number="expense.splitPercentages[coloc.id]"
                 placeholder="0" min="0" max="100" />
@@ -78,6 +80,12 @@
 <script setup lang="ts">
 import type { Expense, Coloc } from '~/composables/service/type';
 import { useUserStore } from '~/store/user';
+
+useHead({
+  bodyAttrs: {
+    style: 'background-color: #1E1E1E;'
+  }
+})
 
 const userStore = useUserStore();
 const user = userStore.user;
@@ -100,11 +108,12 @@ const splitTypes = [
 
 const expense = ref<Expense>({
   colocationId: collocid,
+  expenseCategoryId: route.query.categoryId as string,
   createdBy: '',
-  description: '',
-  category: name,
   name: '',
+  description: '',
   amount: 0,
+  category: name,
   paidBy: list_coloc.value[0]?.id || '',
   splitType: 0,
   splitBetween: [],
@@ -117,6 +126,7 @@ api.getUserbyCollocId(collocid).then((response) => {
   list_coloc.value = response;
   Object.assign(expense.value, {
     colocationId: collocid,
+    expenseCategoryId: route.query.categoryId as string,
     createdBy: myid,
     description: '',
     category: name,
@@ -146,6 +156,7 @@ const calculatedSplitValue = computed(() => {
 const handleProceed = async () => {
   console.log(expense.value);
   api.addExpense(expense.value).then(() => {
+
     console.log('Expense added successfully');
     router.back()
   }).catch((error) => {
@@ -169,12 +180,24 @@ const filterNumericInput = (event: Event) => {
 };
 </script>
 
-<style>
+<style scoped>
 .background {
-  height: 100vh;
+  height: 100%;
   background-color: #1E1E1E;
   color: white;
   padding: 20px;
+  font-weight: 600;
+}
+
+h3 {
+  font-weight: 600;
+  margin-left: 2px;
+}
+
+.form-container {
+  width: 90%;
+  margin-left: 5%;
+  margin-right: 5%;
 }
 
 .body-input {
@@ -189,16 +212,78 @@ const filterNumericInput = (event: Event) => {
   font-size: 18px;
 }
 
+.name-expense-container {
+  display: grid;
+  grid-template-columns: 7fr 2fr;
+  justify-content: center;
+  align-content: center;
+}
+
+.name-input {
+  height: 30px;
+  width: 90%;
+  margin-top: 8px;
+  box-sizing: border-box;
+  border: none;
+  background-color: #1E1E1E;
+  border-bottom: 2px dotted #dddddd94;
+  outline: none;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.expense-container {
+  height: 62px;
+  margin-left: 10px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  align-items: center;
+  background-color: #393a40;
+  color: #FFFFFF;
+  border-radius: 9px;
+  font-size: 18px;
+  padding-right: 6px;
+}
+
+.expense-input {
+  height: 62px;
+  width: 100%;
+  background-color: #393a40;
+  color: #FFFFFF;
+  outline: none;
+  border: none;
+  border-radius: 9px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.subtext {
+  margin-bottom: 15px;
+}
+
+.drop-down-input {
+  width: 100%;
+  height: 34px;
+  margin-bottom: 15px;
+  padding-left: 10px;
+  border-radius: 9px;
+  background-color: #393a40;
+  color: #FFFFFF;
+  border: none;
+  font-weight: 600;
+}
+
 .split-value-input {
-  width: 25%;
+  width: 90%;
   background-color: #1e1e1e00;
   outline: none;
   border: none;
   line-height: 3ch;
-  background-image: linear-gradient(transparent, transparent calc(3ch - 1px), #E7EFF8 0px);
   background-size: 100% 3ch;
   color: #fff;
   font-size: 18px;
+  text-align: end;
 }
 
 /** Fallback Buttons */
@@ -207,6 +292,7 @@ const filterNumericInput = (event: Event) => {
   border-radius: 15px;
   border: 0;
   cursor: pointer;
+  font-weight: 600;
 }
 
 .button-proceed {
@@ -237,10 +323,48 @@ input[type="number"] {
 }
 
 .checkbox-item {
-  display: flex;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 7fr 2fr;
   align-items: center;
   justify-content: space-between;
-  width: 100%
+  padding-left: 4px;
+  border-radius: 9px;
+  background-color: #393a40;
+}
+
+.checkbox-item-pourcentage {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 3fr 18fr 4fr 6fr;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 4px;
+  border-radius: 9px;
+  background-color: #393a40;
+}
+
+input[type="checkbox"] {
+  /* Add if not using autoprefixer */
+  -webkit-appearance: none;
+  appearance: none;
+  /* For iOS < 15 to remove gradient background */
+  background-color: #fff;
+  /* Not removed via appearance */
+  margin: 0;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ddd;
+  border-color: #8D90D6;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  background-color: #1E1E1E;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #85AD7B;
+  border-color: #85AD7B;
 }
 
 .header {
@@ -248,5 +372,13 @@ input[type="number"] {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.modal-buttons {
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

@@ -1,27 +1,26 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+# Étape 1 : build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
 
+# Copie tout le code backend
+COPY . .
+
+# Restaure les dépendances
+WORKDIR /src/Api
+RUN dotnet restore
+
+# Build
+RUN dotnet build -c Release -o /app/build
+
+# Publish
+RUN dotnet publish -c Release -o /app/publish
+
+# Étape 2 : runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-
-WORKDIR /src
-COPY ["../", "Api/"]
-RUN dotnet restore "Api/Api/Api.csproj"
-COPY . .
-
-WORKDIR /src/Api/Api
-
-RUN dotnet build "Api.csproj" -c Release -o /app/build
-
-FROM build AS publish
-
-RUN dotnet publish "Api.csproj" -c Release -o /app/publish
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
 
 ENTRYPOINT ["dotnet", "Api.dll"]

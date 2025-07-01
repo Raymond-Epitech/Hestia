@@ -9,14 +9,17 @@ export default defineNuxtConfig({
     'nuxt-vue3-google-signin',
     '@nuxtjs/i18n',
     'pinia-plugin-persistedstate/nuxt',
+    '@nuxtjs/ionic',
   ],
 
   css: [
     '~/assets/styles/main.scss',
+    '@/assets/styles/fonts.scss'
   ],
 
   plugins: [
     { src: '~/plugins/bootstrap.js', mode: 'client' },
+    { src: '~/plugins/vue-datepicker', ssr: false },
   ],
 
   googleSignIn: {
@@ -40,5 +43,5 @@ export default defineNuxtConfig({
     strategy: 'no_prefix'
   },
 
-  compatibilityDate: '2025-02-21',
+  compatibilityDate: '2025-06-27',
 })

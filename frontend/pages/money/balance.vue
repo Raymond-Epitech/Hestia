@@ -10,11 +10,14 @@
         <div class="center-container">
             <Rectangle v-for="coloc in list_coloc" :key="coloc.id"
                 :color="getBalance(coloc.id) < 0 ? '#FF6A61' : '#85AD7B'" class="center">
-                <h3>{{ coloc.username }}</h3>
-                <h4>
+                <text>{{ coloc.username }}</text>
+                <text>
                     {{ getBalance(coloc.id) }} €
-                </h4>
+                </text>
             </Rectangle>
+            <rectangle color="#4FA3A6" id="rec" class="regularize-text" :onClick="() => redirectto('refund')">
+                <Texte_language source="refund" />
+            </rectangle>
         </div>
     </div>
 </template>
@@ -22,6 +25,12 @@
 <script setup lang="ts">
 import type { Coloc, UserBalance } from '~/composables/service/type';
 import { useUserStore } from '~/store/user';
+
+useHead({
+    bodyAttrs: {
+        style: 'background-color: #1E1E1E;'
+    }
+})
 
 const userStore = useUserStore();
 const user = userStore.user;
@@ -32,6 +41,7 @@ const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 const collocid = user.colocationId
 const myid = user.id
+const router = useRouter();
 
 api.getBalance(collocid).then((response) => {
     list_balance.value = response;
@@ -47,13 +57,18 @@ api.getUserbyCollocId(collocid).then((response) => {
 const getBalance = (id: string): number => {
     return list_balance.value?.[id] ?? 0;
 };
+const redirectto = (name: string) => {
+    if (name === 'refund') {
+        router.push({ path: '/money/refund', query: { list_coloc: JSON.stringify(list_coloc.value) } });
+        return;
+    }
+}
 </script>
-
 
 <style scoped>
 .background {
-    height: 100vh;
     background-color: #1E1E1E;
+    height: 100%;
     color: white;
     padding: 20px;
 }
@@ -65,22 +80,31 @@ const getBalance = (id: string): number => {
     margin-bottom: 20px;
 }
 
-.center {
-    width: 50%;
-    margin: 10px;
-    padding: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    flex-direction: column;
-}
-
 .center-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.center {
+    width: 80%;
+    margin: 10px;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+}
+
+.regularize-text {
+    width: 80%;
+    margin: 10px;
+    padding: 10px;
 }
 </style>

@@ -107,17 +107,18 @@ watch(visible, (value) => {
 })
 </script>
 
-<style>
+<style scoped>
 .modal {
   width: 100%;
-  height: 300px;
+  height: fit-content;
   overflow-y: auto;
   margin-top: 0px;
+  padding-top: 25pt;
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
-  animation: slideIn 0.2s;
+  animation: slideIn 0.4s;
   background-color: #1e1e1eda;
   backdrop-filter: blur(8px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
@@ -128,9 +129,9 @@ watch(visible, (value) => {
 }
 
 .modal-header {
-  padding: 12px 16px;
+  padding: 0px 16px;
   font-weight: 600;
-  border-bottom: 1px dotted lightgrey;
+  border-bottom: none;
   color: #fff;
 }
 
@@ -139,7 +140,7 @@ watch(visible, (value) => {
 }
 
 .modal-body {
-  padding: 12px;
+  padding: 0px 12px 12px 12px;
   display: flex;
   flex-direction: column;
   overflow: auto;
@@ -284,7 +285,7 @@ watch(visible, (value) => {
 
 @keyframes slideIn {
   0% {
-    transform: translateY(100px);
+    transform: translateY(-400px);
   }
 
   100% {
@@ -298,7 +299,7 @@ watch(visible, (value) => {
   }
 
   100% {
-    transform: translateY(100px);
+    transform: translateY(-400px);
   }
 }
 
@@ -307,7 +308,7 @@ watch(visible, (value) => {
   /** Slide Out Transition (mobile only) */
   .modal-enter-from:deep(.modal),
   .modal-leave-to:deep(.modal) {
-    animation: slideOut 0.2s linear;
+    animation: slideOut 0.4s linear;
   }
 }
 
