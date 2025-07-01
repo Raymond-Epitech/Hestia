@@ -7,7 +7,10 @@ export const useAuthStore = defineStore('auth', {
   }),
   actions: {
     async authenticateUser(credential) {
+      console.log("trying to authenticate User");
+      console.log(credential)
       if (credential) {
+        console.log("passed the credential check");
         const token = useCookie('token');
         token.value = credential;
         this.authenticated = true;
