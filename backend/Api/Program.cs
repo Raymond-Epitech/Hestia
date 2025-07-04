@@ -77,7 +77,10 @@ try
         app.UseSwagger();
         app.UseSwaggerUI();
         app.UseStatusCodePages();
-        app.UseHangfireDashboard("/hangfire");
+        app.UseHangfireDashboard("/hangfire", new DashboardOptions
+        {
+            Authorization = [new AllowAllDashboardAuthorization()]
+        });
     }
 
     if (!app.Environment.IsDevelopment())

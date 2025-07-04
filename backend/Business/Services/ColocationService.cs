@@ -28,7 +28,7 @@ namespace Business.Services
                     Id = c.Id,
                     Name = c.Name,
                     Address = c.Address,
-                    Colocataires = c.Users.Select(u => u.Id).ToList()
+                    Colocataires = c.Users.Where(u => !u.IsDeleted).Select(u => u.Id).ToList()
                 })
                 .ToListAsync();
 

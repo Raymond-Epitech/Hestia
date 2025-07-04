@@ -19,8 +19,7 @@ namespace Business.Services;
 
 public class UserService(ILogger<UserService> logger,
     IRepository<User> userRepository,
-    IJwtService jwtService,
-    System.Net.Http.IHttpClientFactory httpClientFactory) : IUserService
+    IJwtService jwtService) : IUserService
 {
     /// <summary>
     /// Get all users from a collocation
@@ -31,7 +30,7 @@ public class UserService(ILogger<UserService> logger,
     public async Task<List<UserOutput>> GetAllUserAsync(Guid collocationId)
     {
         var users = await userRepository.Query()
-            .Where(u => u.ColocationId == collocationId)
+            .Where(u => u.ColocationId == collocationId && !u.IsDeleted)
             .Select(u => new UserOutput
             {
                 Id = u.Id,
@@ -106,7 +105,18 @@ public class UserService(ILogger<UserService> logger,
     /// <exception cref="ContextException">An error occurred while getting all chores from the db</exception>
     public async Task<Guid> DeleteUserAsync(Guid id)
     {
-        await userRepository.DeleteFromIdAsync(id);
+        var user = await userRepository.GetByIdAsync(id);
+
+        if (user == null)
+            throw new NotFoundException($"User {id} not found");
+
+        user.Email = "";
+        user.ColocationId = null;
+        user.Username = "Deleted User";
+        user.PathToProfilePicture = "deleted.jpg";
+        user.IsDeleted = true;
+
+        userRepository.Update(user);
 
         await userRepository.SaveChangesAsync();
 
@@ -122,51 +132,11 @@ public class UserService(ILogger<UserService> logger,
         if (user == null)
             throw new NotFoundException($"User {id} not found");
 
-        user.ColocationId = Guid.Empty;
+        user.ColocationId = null;
         userRepository.Update(user);
         await userRepository.SaveChangesAsync();
         logger.LogInformation($"Succes : User {user.Id} quit colocation {user.ColocationId}");
         return user.Id;
-    }
-
-    private async Task<string> GetGoogleJwt(GoogleCredentials googleCredentials, string code)
-    {
-
-        if (string.IsNullOrEmpty(googleCredentials.ClientId) ||
-            string.IsNullOrEmpty(googleCredentials.ClientSecret) ||
-            string.IsNullOrEmpty(googleCredentials.RedirectUri))
-        {
-            throw new InvalidEntityException("Google credentials are not set");
-        }
-
-        var parameters = new Dictionary<string, string>
-        {
-            { "code", code },
-            { "client_id", googleCredentials.ClientId },
-            { "client_secret", googleCredentials.ClientSecret },
-            { "redirect_uri", googleCredentials.RedirectUri },
-            { "grant_type", "authorization_code" }
-        };
-
-        var request = new HttpRequestMessage(HttpMethod.Post, "https://oauth2.googleapis.com/token")
-        {
-            Content = new FormUrlEncodedContent(parameters)
-        };
-
-        var client = httpClientFactory.CreateClient();
-        var response = await client.SendAsync(request);
-        var responseContent = await response.Content.ReadAsStringAsync();
-        var tokenResponse = JsonSerializer.Deserialize<GoogleTokenResponse>(responseContent, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
-
-        if (!response.IsSuccessStatusCode || tokenResponse is null || tokenResponse.IdToken is null)
-        {
-            throw new InvalidEntityException($"Google token exchange failed: {responseContent}");
-        }
-        
-        return tokenResponse.IdToken;
     }
 
     /// <summary>
