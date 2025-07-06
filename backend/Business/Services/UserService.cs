@@ -112,7 +112,7 @@ public class UserService(ILogger<UserService> logger,
 
         user.Email = "";
         user.ColocationId = null;
-        user.Username = "Deleted User";
+        user.Username = $"(Deleted) {user.Username}";
         user.PathToProfilePicture = "deleted.jpg";
         user.IsDeleted = true;
 

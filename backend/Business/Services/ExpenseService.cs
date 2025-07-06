@@ -549,6 +549,8 @@ namespace Business.Services
             await expenseRepository.SaveChangesAsync();
 
             cache.Remove($"balances:{expense.ExpenseCategory.ColocationId}");
+            cache.Remove($"expenseCategories:{expense.ExpenseCategoryId}");
+            cache.Remove($"refundMethods:{expense.ExpenseCategory.ColocationId}");
 
             logger.LogInformation($"Succes : Expense with id {id} deleted");
             return id;
