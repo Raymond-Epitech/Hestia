@@ -1,7 +1,7 @@
 <template>
   <NuxtPage />
   <div class="container">
-    <Rectangle color="#85AD7B" id="return" @click="$router.back()">
+    <Rectangle color="#85AD7B" id="return" :onClick="() => redirect('/settings')">
       <div class="inner-class">
         <img src="/return.png" alt="Return" width="64" height="64" />
         <h1>
@@ -66,6 +66,11 @@ import Texte_language from '~/components/texte_language.vue';
 import type { Locale } from '~/composables/service/type';
 const { setLocale } = useI18n();
 const { $locally } = useNuxtApp()
+const router = useRouter();
+const redirect = (page) => {
+  router.push(page);
+}
+
 
 const setlangue = (lang: Locale) => {
   setLocale(lang);
