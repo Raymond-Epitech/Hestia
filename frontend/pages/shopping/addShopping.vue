@@ -76,6 +76,16 @@ const handleProceed = async () => {
     margin-bottom: 20px;
 }
 
+.body-input {
+    margin: 10px 0px;
+    background-color: #393a40;
+    border-radius: 8px;
+    color: #ffffff;
+    outline: none;
+    border: none;
+}
+
+
 .button {
     padding: 10px 20px;
     border-radius: 15px;
