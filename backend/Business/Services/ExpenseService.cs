@@ -184,6 +184,8 @@ namespace Business.Services
             await expenseCategoryRepository.SaveChangesAsync();
 
             cache.Remove($"expenseCategories:{expenseCategory.ColocationId}");
+            cache.Remove($"balances:{expenseCategory.ColocationId}");
+            cache.Remove($"refundMethods:{expenseCategory.ColocationId}");
 
             logger.LogInformation($"Succes : Expense category with id {id} was deleted from db");
             return id;
@@ -549,7 +551,7 @@ namespace Business.Services
             await expenseRepository.SaveChangesAsync();
 
             cache.Remove($"balances:{expense.ExpenseCategory.ColocationId}");
-            cache.Remove($"expenseCategories:{expense.ExpenseCategoryId}");
+            cache.Remove($"expenseCategories:{expense.ExpenseCategory.ColocationId}");
             cache.Remove($"refundMethods:{expense.ExpenseCategory.ColocationId}");
 
             logger.LogInformation($"Succes : Expense with id {id} deleted");
