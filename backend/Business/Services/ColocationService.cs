@@ -1,6 +1,7 @@
 ﻿using Business.Interfaces;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
@@ -73,7 +74,7 @@ namespace Business.Services
         /// <param name="colocation">The object colocation you want to add</param>
         /// <param name="AddedBy"> The User that added the colocation</param>
         /// <exception cref="ContextException">An error has occured while retriving the colocation from db</exception>
-        public async Task<Guid> AddColocation(ColocationInput colocation, Guid? AddedBy)
+        public async Task<Guid> AddColocation(ColocationInput colocation)
         {
             var newColocation = new Colocation
             {
@@ -84,13 +85,13 @@ namespace Business.Services
                 CreatedBy = colocation.CreatedBy
             };
 
-            if (AddedBy is not null && AddedBy != Guid.Empty)
+            if (colocation.CreatedBy != Guid.Empty)
             {
-                var user = await userRepository.GetByIdAsync(AddedBy!.Value);
+                var user = await userRepository.GetByIdAsync(colocation.CreatedBy);
 
                 if (user is null)
                 {
-                    throw new NotFoundException($"The user {AddedBy} who created the colocation do not exist");
+                    throw new NotFoundException($"The user {colocation.CreatedBy} who created the colocation do not exist");
                 }
 
                 user.ColocationId = newColocation.Id;
