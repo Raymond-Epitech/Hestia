@@ -1,22 +1,24 @@
 <template>
-    <div class="base">
-        <img src="../public/logo-hestia.png" class="logo" />
-        <div v-if="registretion" class="register">
-            <h2 class="login-font">Register : </h2>
-            <h2 class="register-font">Nom d'utilisateur :</h2>
-            <input class="input" type="text" placeholder="Nom d'utilisateur" v-model="username" />
-            <h2 v-if="alert" class="alert">*Veuillez indiqué votre nom d'utilisateur*</h2>
-            <h2 class="register-font">Id de colocation :</h2>
-            <input class="input" type="text" placeholder="Optionel" v-model="colocationID" />
-            <h2 class="register-font">Créer un compte :</h2>
-            <a type="submit" @click.prevent="register()" class="google-button"> Register with Google</a>
-            <button class="register-button" @click="goLogin()">Login</button>
-        </div>
-        <div v-else class="login">
-            <h2 class="login-font">Login : </h2>
-            <a @click="login()" class="google-button">
-                Login with Google</a>
-            <button class="register-button" @click="goRegister()">Register</button>
+    <div class="body-container">
+        <div class="base">
+            <img src="../public/logo-hestia.png" class="logo" />
+            <div v-if="registretion" class="register">
+                <h2 class="login-font">Register : </h2>
+                <h2 class="register-font">Nom d'utilisateur :</h2>
+                <input class="input" type="text" placeholder="Nom d'utilisateur" v-model="username" />
+                <h2 v-if="alert" class="alert">*Veuillez indiqué votre nom d'utilisateur*</h2>
+                <h2 class="register-font">Id de colocation :</h2>
+                <input class="input" type="text" placeholder="Optionel" v-model="colocationID" />
+                <h2 class="register-font">Créer un compte :</h2>
+                <a type="submit" @click.prevent="register()" class="google-button"> Register with Google</a>
+                <button class="register-button" @click="goLogin()">Login</button>
+            </div>
+            <div v-else class="login">
+                <h2 class="login-font">Login : </h2>
+                <a @click="login()" class="google-button">
+                    Login with Google</a>
+                <button class="register-button" @click="goRegister()">Register</button>
+            </div>
         </div>
     </div>
 </template>
@@ -114,8 +116,13 @@ const login = async () => {
 </script>
 
 <style scoped>
-body {
-    background-color: #E7FEED;
+.body-container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: auto;
 }
 
 .base {
@@ -123,10 +130,10 @@ body {
     justify-content: space-evenly;
     flex-direction: column;
     align-items: center;
-    height: 100vh;
 }
 
 .logo {
+    padding: 30px;
     width: 280px;
     border-radius: 15px;
 }
@@ -134,7 +141,8 @@ body {
 .login {
     min-height: 200px;
     min-width: 300px;
-    padding: 10px;
+    padding: 30px;
+    margin: 30px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -147,6 +155,8 @@ body {
 .register {
     height: 400px;
     width: 300px;
+    padding: 30px;
+    margin: 30px;
     display: flex;
     flex-direction: column;
     justify-content: center;
