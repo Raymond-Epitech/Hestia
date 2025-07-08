@@ -110,6 +110,7 @@ const redirect = (page) => {
     border: none;
     border-radius: 12px;
     background-color: #85AD7B;
+    color: #000000;
     box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
     font-weight: 600;
 }

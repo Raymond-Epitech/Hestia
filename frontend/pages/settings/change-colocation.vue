@@ -54,12 +54,14 @@ const joinColocation = async () => {
     const data = await api.updateUser(new_data.value)
     if (data) {
         userStore.setColocation(new_data.value.colocationId);
+        router.push('/');
     }
 }
 const createColocation = async () => {
     const data = await api.addColocation(colocation.value);
     if (data) {
         userStore.setColocation(data);
+        router.push('/');
     }
 }
 
