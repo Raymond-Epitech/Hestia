@@ -33,7 +33,7 @@
                                     teleport-center dark />
                             </client-only>
                         </div>
-                        <div v-if="task.dueDate && task.title && task.enrolled" class="modal-buttons">
+                        <div v-if="task.dueDate && task.title" class="modal-buttons">
                             <button class="button-proceed" @click.prevent="handleProceed">
                                 <img src="../public/submit.png" class="submit">
                             </button>
