@@ -8,7 +8,7 @@
           </div>
           <form method="post" action="">
             <div class="modal-body left">
-              <textarea class="modal-body-input" rows="3" v-model="post.content" required></textarea>
+              <textarea class="modal-body-input" rows="3" maxlength="150" v-model="post.content" required></textarea>
             </div>
             <div class="post-colors-buttons">
               <input class="form-check-input color-choice blue" v-model="post.color" type="radio" name="gridRadios"
