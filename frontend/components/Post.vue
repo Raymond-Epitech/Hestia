@@ -1,6 +1,8 @@
 <template>
     <div class="post" :class="color">
-        <button class="delete-button" @click="handleDelete">x</button>
+        <button class="delete-button" @click="handleDelete">
+            <div class="close"></div>
+        </button>
         <p>{{ text }}</p>
         <ProfileIcon class="profile-icon" />
     </div>
@@ -53,19 +55,23 @@ const handleDelete = async () => {
 .delete-button {
     display: flex;
     justify-content: center;
+    align-items: center;
     position: absolute;
     top: 10px;
     right: 10px;
     background: #FF6A61;
-    color: white;
     border: none;
     border-radius: 50%;
     width: 30px;
     height: 30px;
-    cursor: pointer;
-    opacity: 1;
-    transition: opacity 0.3s ease;
-    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+}
+
+.close {
+    height: 12px;
+    width: 12px;
+    clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%);
+    background-color: white;
 }
 
 .post h1 {
