@@ -1,10 +1,10 @@
 <template>
     <div class="post" :class="color">
+        <ProfileIcon class="profile-icon" :height="30" :width="30" />
         <button class="delete-button" @click="handleDelete">
             <div class="close"></div>
         </button>
         <p>{{ text }}</p>
-        <ProfileIcon class="profile-icon" />
     </div>
 </template>
 
@@ -44,12 +44,12 @@ const handleDelete = async () => {
 
 <style scoped>
 .post {
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
     width: 250px;
     height: 250px;
+    margin: 20px;
     position: relative;
+    border-radius: 96% 4% 92% 8% / 0% 100% 6% 100%;
+    box-shadow: -9px 16px 12px 0px rgba(0, 0, 0, 0.33);
 }
 
 .delete-button {
@@ -58,7 +58,7 @@ const handleDelete = async () => {
     align-items: center;
     position: absolute;
     top: 10px;
-    right: 10px;
+    right: 14px;
     background: #FF6A61;
     border: none;
     border-radius: 50%;
@@ -85,7 +85,7 @@ const handleDelete = async () => {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-60%, -50%);
+    transform: translate(-50%, -50%);
     width: 200px;
     max-height: 250px;
     color: rgb(10, 10, 10);
@@ -95,8 +95,8 @@ const handleDelete = async () => {
 
 .profile-icon {
     position: absolute;
-    bottom: 10px;
-    right: 10px;
+    top: 10px;
+    left: 10px;
 }
 
 .blue {
