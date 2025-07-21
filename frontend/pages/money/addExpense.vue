@@ -155,10 +155,11 @@ const calculatedSplitValue = computed(() => {
 
 const handleProceed = async () => {
   console.log(expense.value);
-  api.addExpense(expense.value).then(() => {
-
-    console.log('Expense added successfully');
-    router.back()
+  api.addExpense(expense.value).then((response) => {
+    if (response === true) {
+      console.log("Expense added successfully!");
+      router.back()
+    }
   }).catch((error) => {
     console.error('Error adding expense:', error);
   });

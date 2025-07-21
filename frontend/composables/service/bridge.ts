@@ -478,7 +478,7 @@ export class bridge {
         })
     }
 
-    async addExpense(data: Expense) {
+    async addExpense(data: Expense): Promise<boolean | { error: any }> {
         return await fetch(`${this.url}/api/Expense`, {
             method: 'POST',
             headers: {
@@ -486,16 +486,21 @@ export class bridge {
                 'Authorization': 'Bearer ' + this.jwt
             },
             body: JSON.stringify(data)
-        }).then(response => {
+        }).then(async response => {
             if (response.status == 200) {
                 return true;
             }
-            return false;
+            const errorJson = await response.json();
+            console.error("Error adding expense:", errorJson);
+            return { error: errorJson };
+        }).catch((error) => {
+            console.error("Network error:", error);
+            return { error };
         });
     }
 
-    async updateExpense(data: Expense) {
-        return await fetch(`${this.url}/api/Expense/${data.colocationId}`, {
+    async updateExpense(data: Expense_Modif) {
+        return await fetch(`${this.url}/api/Expense`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
