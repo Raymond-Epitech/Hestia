@@ -127,6 +127,7 @@ h2 {
     border-radius: 15px;
     border: 0;
     box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
+    color: #000000;
     background-color: #85AD7B;
     font-size: 32px;
     font-weight: 600;
