@@ -33,8 +33,13 @@
                                     teleport-center dark />
                             </client-only>
                         </div>
-                        <div class="modal-buttons">
+                        <div v-if="task.dueDate && task.title && task.enrolled" class="modal-buttons">
                             <button class="button-proceed" @click.prevent="handleProceed">
+                                <img src="../public/submit.png" class="submit">
+                            </button>
+                        </div>
+                        <div v-else class="modal-buttons">
+                            <button class="button-proceed" @click.prevent="handleProceed" disabled>
                                 <img src="../public/submit.png" class="submit">
                             </button>
                         </div>
@@ -115,9 +120,11 @@ const handleProceed = async () => {
         ...task.value,
         enrolled: task.value.enrolled ? [task.value.enrolled] : []
     }
-    await api.addChore(new_task)
-    close()
-    emit('proceed')
+    const response = await api.addChore(new_task)
+    if (response) {
+        close()
+        emit('proceed')
+    }
 }
 
 watch(
@@ -268,8 +275,8 @@ watch(visible, (value) => {
     width: 22px;
 }
 
-.button-proceed:hover {
-    opacity: 0.7;
+button:disabled {
+    opacity: 0.5;
 }
 
 /* Transition */
