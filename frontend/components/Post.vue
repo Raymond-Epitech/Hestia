@@ -1,11 +1,17 @@
 <template>
     <div class="post" :class="color">
-        <button class="delete-button" @click="handleDelete">
+        <button class="delete-button" @click="showPopup">
             <div class="close"></div>
         </button>
         <p>{{ text }}</p>
         <ProfileIcon class="profile-icon" />
     </div>
+    <popup
+        v-if="popup_vue"
+        :text="$t('confirm_delete_reminder')"
+        @confirm="confirmDelete"
+        @close="cancelDelete"
+    />
 </template>
 
 <script setup>
@@ -26,19 +32,30 @@ const props = defineProps({
         required: true
     }
 })
-
+const popup_vue = ref(false)
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 
 const emit = defineEmits(['delete'])
-const handleDelete = async () => {
-    const confirmed = window.confirm(t('confirm_delete_reminder'));
-    if (confirmed) {
-        await api.deleteReminder(props.id)
-        emit('delete')
+
+const showPopup = () => {
+    popup_vue.value = true;
+};
+
+const confirmDelete = async () => {
+    popup_vue.value = false;
+    try {
+        await api.deleteReminder(props.id);
+        emit('delete');
+    } catch (error) {
+        console.error('Failed to delete the post:', error);
     }
-}
+};
+
+const cancelDelete = () => {
+    popup_vue.value = false;
+};
 
 </script>
 
