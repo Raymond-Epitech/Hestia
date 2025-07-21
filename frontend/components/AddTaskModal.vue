@@ -22,6 +22,7 @@
                                 <Texte_language source="Assignee" />:
                             </text>
                             <select v-model="task.enrolled" class="input-task-assignee">
+                                <option></option>
                                 <option v-for="coloc in list_coloc" :key="coloc.id" :value="coloc.id">
                                     {{ coloc.username }}
                                 </option>
