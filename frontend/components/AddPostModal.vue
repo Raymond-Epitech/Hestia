@@ -81,7 +81,20 @@ defineExpose({
   visible,
 })
 
+const resetPost = () => {
+  post.value = {
+    createdBy: userStore.user.id,
+    content: '',
+    color: '',
+    coordX: 0,
+    coordY: 0,
+    coordZ: 0,
+    colocationId: userStore.user.colocationId,
+  }
+}
+
 const handleClose = () => {
+  resetPost()
   close()
   emit('closed')
 }
@@ -89,6 +102,7 @@ const handleClose = () => {
 const handleProceed = async () => {
   const response = await api.addReminder(post.value)
   if (response) {
+    resetPost()
     close()
   }
   emit('proceed')

@@ -110,7 +110,20 @@ defineExpose({
     visible,
 })
 
+const resetTask = () => {
+    task.value = {
+        colocationId: userStore.user.colocationId,
+        createdBy: userStore.user.id,
+        dueDate: '',
+        title: '',
+        description: '',
+        enrolled: null,
+        isDone: false,
+    }
+}
+
 const handleClose = () => {
+    resetTask()
     close()
     emit('closed')
 }
@@ -122,6 +135,7 @@ const handleProceed = async () => {
     }
     const response = await api.addChore(new_task)
     if (response) {
+        resetTask()
         close()
         emit('proceed')
     }
