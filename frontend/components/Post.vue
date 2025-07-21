@@ -6,12 +6,8 @@
         </button>
         <p>{{ text }}</p>
     </div>
-    <popup
-        v-if="popup_vue"
-        :text="$t('confirm_delete_reminder')"
-        @confirm="confirmDelete"
-        @close="cancelDelete"
-    />
+    <popup v-if="popup_vue" :text="$t('confirm_delete_reminder')" @confirm="confirmDelete" @close="cancelDelete">
+    </popup>
 </template>
 
 <script setup>

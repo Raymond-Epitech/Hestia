@@ -78,8 +78,8 @@
       </div>
     </form>
   </div>
-  <popup v-if="popup_vue" :text="$t('confirm_delete_expense')" @confirm="handleProceed('delete')"
-    @close="cancelDelete" />
+  <popup v-if="popup_vue" :text="$t('confirm_delete_expense')" @confirm="handleProceed('delete')" @close="cancelDelete">
+  </popup>
 </template>
 
 <script setup lang="ts">
