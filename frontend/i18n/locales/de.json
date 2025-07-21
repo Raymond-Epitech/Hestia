@@ -63,5 +63,6 @@
   "Enroll": "Registrieren",
   "isDone": "Diese Aufgabe wurde erledigt",
   "Done": "Erledigt",
-  "logout": "Abmeldung"
+  "logout": "Abmeldung",
+  "confirm_delete_reminder": "Sind Sie sicher, dass Sie diese Erinnerung löschen möchten?"
 }

@@ -63,5 +63,6 @@
   "Enroll": "登録する",
   "isDone": "このタスクは完了しました",
   "Done": "終わり",
-  "logout": "ログアウト"
+  "logout": "ログアウト",
+  "confirm_delete_reminder": "このリマインダーを削除したいですか？"
 }

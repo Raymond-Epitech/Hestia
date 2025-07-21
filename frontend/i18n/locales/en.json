@@ -63,5 +63,6 @@
   "Enroll": "Enroll",
   "isDone": "This task has been done",
   "Done": "Done",
-  "logout": "Logout"
+  "logout": "Logout",
+  "confirm_delete_reminder": "Are you sure you want to delete this reminder?"
 }

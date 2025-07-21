@@ -36,6 +36,7 @@
   "modify": "Modifier",
   "delete": "Supprimer",
   "confirm_delete_expense": "Etes-vous sûr de vouloir supprimer cette dépense ?",
+  "confirm_delete_reminder": "Etes-vous sûr de vouloir supprimer ce rappel ?",
   "refund": "Rembourser",
   "header_refund": "Options de remboursement",
   "other_refund": "Autre remboursement",

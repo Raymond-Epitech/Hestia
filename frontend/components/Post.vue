@@ -7,6 +7,9 @@
 </template>
 
 <script setup>
+import { useI18n } from '#imports';
+
+const { t } = useI18n();
 const props = defineProps({
     id: {
         type: String,
@@ -28,8 +31,11 @@ api.setjwt(useCookie('token').value ?? '');
 
 const emit = defineEmits(['delete'])
 const handleDelete = async () => {
-    await api.deleteReminder(props.id)
-    emit('delete')
+    const confirmed = window.confirm(t('confirm_delete_reminder'));
+    if (confirmed) {
+        await api.deleteReminder(props.id)
+        emit('delete')
+    }
 }
 
 </script>
@@ -73,9 +79,12 @@ const handleDelete = async () => {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-60%, -50%);
+    width: 200px;
+    max-height: 250px;
     color: rgb(10, 10, 10);
     overflow-wrap: anywhere;
+    text-align: center;
 }
 
 .profile-icon {

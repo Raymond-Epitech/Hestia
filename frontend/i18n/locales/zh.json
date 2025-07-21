@@ -63,5 +63,6 @@
   "Enroll": "注册",
   "isDone": "此任务已完成",
   "Done": "完毕",
-  "logout": "注销"
+  "logout": "注销",
+  "confirm_delete_reminder": "您确定要删除此提醒吗？"
 }
