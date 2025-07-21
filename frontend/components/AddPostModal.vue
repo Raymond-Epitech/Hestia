@@ -87,8 +87,10 @@ const handleClose = () => {
 }
 
 const handleProceed = async () => {
-  await api.addReminder(post.value)
-  close()
+  const response = await api.addReminder(post.value)
+  if (response) {
+    close()
+  }
   emit('proceed')
 }
 
