@@ -39,8 +39,8 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 42px;
-  height: 42px;
+  width: 30px;
+  height: 30px;
   margin: 16px 16px;
   background-color: #FFF973;
   border-radius: 9px;
@@ -49,7 +49,7 @@ onMounted(async () => {
 }
 
 .plus {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
 }
 </style>

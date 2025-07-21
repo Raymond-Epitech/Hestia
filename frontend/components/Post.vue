@@ -75,6 +75,7 @@ const handleDelete = async () => {
     left: 50%;
     transform: translate(-50%, -50%);
     color: rgb(10, 10, 10);
+    overflow-wrap: anywhere;
 }
 
 .profile-icon {
