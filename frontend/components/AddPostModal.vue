@@ -20,8 +20,11 @@
               <input class="form-check-input color-choice green" v-model="post.color" type="radio" name="gridRadios"
                 id="gridRadios4" value="green">
             </div>
-            <div class="modal-buttons">
+            <div v-if="post.color && post.content" class="modal-buttons">
               <button class="button button-proceed" @click.prevent="handleProceed">Poster</button>
+            </div>
+            <div v-else class="modal-buttons">
+              <button class="button button-proceed" @click.prevent="handleProceed" disabled>Poster</button>
             </div>
           </form>
         </div>
@@ -274,8 +277,8 @@ watch(visible, (value) => {
   color: #fff;
 }
 
-.button-proceed:hover {
-  opacity: 0.7;
+button:disabled {
+  opacity: 0.5;
 }
 
 /* Transition */
