@@ -2,11 +2,9 @@
     <div class="background">
         <div class="header">
             <img src="/return.png" alt="Return" width="30" height="30" @click="$router.back()" />
-            <h1 class="header-name">{{ name }}</h1>
-            <div class="square">
-                <div id="add" :onClick="() => redirectto()">
-                    <img src="/plus.png" alt="Return" width="30" height="30" />
-                </div>
+            <div class="header-name">{{ name }}</div>
+            <div class="square" :onClick="() => redirectto()">
+                <img src="/plus.png" alt="Return" width="20" height="20" />
             </div>
         </div>
         <div>
@@ -78,10 +76,11 @@ const redirecttomodify = (id: string) => {
     justify-content: center;
     align-items: center;
     background-color: #FFF973;
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
     margin-left: 10px;
+    box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
 }
 
 .header {
@@ -89,8 +88,8 @@ const redirecttomodify = (id: string) => {
     display: grid;
     grid-template-columns: 1fr 6fr 1fr;
     align-items: center;
-    margin-bottom: 20px;
     text-align: center;
+    font-size: 30px;
 }
 
 .header-name {
