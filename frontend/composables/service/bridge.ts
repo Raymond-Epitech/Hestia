@@ -6,7 +6,7 @@ export class bridge {
     constructor() {
         console.log('Bridge instance created')
     }
-    url: string = "https://hestiaapp.org/back";
+    url: string = "https://hestiaapp.org";
     jwt: string = "";
 
     seturl(new_url: string) {
