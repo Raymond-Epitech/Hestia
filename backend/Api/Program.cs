@@ -4,6 +4,7 @@ using Business.Jwt;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography.X509Certificates;
 
 try
 {
@@ -15,13 +16,15 @@ try
         o.ValidateScopes = true;
     });
 
+    var cert = X509Certificate2.CreateFromPemFile("/etc/ssl/certificate.pem", "/etc/ssl/key.pem");
+
     builder.WebHost.ConfigureKestrel(options =>
     {
         options.ListenAnyIP(8081);
 
         options.ListenAnyIP(8080, listenOptions =>
         {
-            listenOptions.UseHttps("certificat.pfx", builder.Configuration["Certificat:Password"]);
+            listenOptions.UseHttps(cert);
         });
     });
 

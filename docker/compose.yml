@@ -13,6 +13,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     networks:
     - app-network
+    volumes:
+      - /etc/ssl:/etc/ssl
 
 networks:
   app-network:
