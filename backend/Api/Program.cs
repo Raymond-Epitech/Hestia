@@ -15,6 +15,16 @@ try
         o.ValidateScopes = true;
     });
 
+    builder.WebHost.ConfigureKestrel(options =>
+    {
+        options.ListenAnyIP(8081);
+
+        options.ListenAnyIP(8080, listenOptions =>
+        {
+            listenOptions.UseHttps("certificat.pfx", builder.Configuration["Certificat:Password"]);
+        });
+    });
+
     // Controllers
     builder.Services.AddMvcCore();
     builder.Services.AddControllers().AddNewtonsoftJson();
@@ -88,6 +98,7 @@ try
         app.UseHttpsRedirection();
     }
 
+    app.UseHttpsRedirection();
     app.UseExceptionHandler();
     app.UseAuthentication();
     app.UseAuthorization();
