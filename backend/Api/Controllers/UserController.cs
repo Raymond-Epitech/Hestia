@@ -3,7 +3,6 @@ using Business.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Exceptions;
-using Shared.Models.DTO;
 using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
@@ -78,7 +77,7 @@ namespace Api.Controllers
             return Ok(await userService.QuitColocationAsync(id));
         }
 
-        [HttpPost("/Register")]
+        [HttpPost("Register")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -91,7 +90,7 @@ namespace Api.Controllers
             return Ok(await userService.RegisterUserAsync(googleToken, userInput));
         }
 
-        [HttpPost("/Login")]
+        [HttpPost("Login")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
