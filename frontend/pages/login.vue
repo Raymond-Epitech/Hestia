@@ -3,21 +3,26 @@
         <div class="base">
             <img src="../public/logo-hestia.png" class="logo" />
             <div v-if="registretion" class="register">
-                <h2 class="login-font">Register : </h2>
-                <h2 class="register-font">Nom d'utilisateur :</h2>
-                <input class="input" type="text" placeholder="Nom d'utilisateur" v-model="username" />
-                <h2 v-if="alert" class="alert">*Veuillez indiqué votre nom d'utilisateur*</h2>
-                <h2 class="register-font">Id de colocation :</h2>
-                <input class="input" type="text" placeholder="Optionel" v-model="colocationID" />
-                <h2 class="register-font">Créer un compte :</h2>
-                <a type="submit" @click.prevent="register()" class="google-button"> Register with Google</a>
-                <button class="register-button" @click="goLogin()">Login</button>
+                <h2 class="login-font">{{$t('register')}} :</h2>
+                <h2 class="register-font">{{ $t('user_name') }} :</h2>
+                <input class="input" type="text" :placeholder="$t('user_name')" v-model="username" />
+                <h2 v-if="alert" class="alert">{{ $t('error_register') }}</h2>
+                <h2 class="register-font">{{ $t('colocation_id') }} :</h2>
+                <input class="input" type="text" :placeholder="$t('optional')" v-model="colocationID" />
+                <h2 class="register-font">{{ $t('create_account') }} :</h2>
+                <a type="submit" @click.prevent="register()" class="google-button">
+                    {{$t('register_with_google')}}
+                </a>
+                <button class="register-button" @click="goLogin()">{{$t('login')}}</button>
             </div>
             <div v-else class="login">
-                <h2 class="login-font">Login : </h2>
+                <h2 class="login-font">{{$t('login')}} : </h2>
                 <a @click="login()" class="google-button">
-                    Login with Google</a>
-                <button class="register-button" @click="goRegister()">Register</button>
+                    {{$t('login_with_google')}}
+                </a>
+                <button class="register-button" @click="goRegister()">
+                    {{$t('register')}}
+                </button>
             </div>
         </div>
     </div>

@@ -66,5 +66,16 @@
   "logout": "cierre de sesión",
   "confirm_delete_reminder": "¿Estás seguro de que quieres eliminar esta publicación?",
   "confirm_delete_shoppingitem": "¿Estás seguro de que quieres eliminar este artículo?",
-  "cancel": "Cancelar"
+  "cancel": "Cancelar",
+  "optional": "Opcional",
+  "user_name": "Nombre de usuario",
+  "task_name": "Nombre de la tarea",
+  "task_description": "Descripción de la tarea (opcional)",
+  "login": "Conexión",
+  "register": "Registro",
+  "register_with_google": "Regístrese en Google",
+  "login_with_google": "Google Connect",
+  "error_register": "*Indique su nombre de usuario*",
+  "colocation_id": "Id de colocation",
+  "create_account": "Crear una cuenta"
 }

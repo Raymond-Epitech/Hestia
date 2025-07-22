@@ -66,5 +66,16 @@
   "logout": "注销",
   "confirm_delete_reminder": "您确定要删除这篇文章吗？",
   "confirm_delete_shoppingitem": "您确定要删除本文吗？",
-  "cancel": "取消"
+  "cancel": "取消",
+  "optional": "选修的",
+  "user_name": "用户名",
+  "task_name": "任务名称",
+  "task_description": "任务的描述（可选）",
+  "login": "连接",
+  "register": "登记",
+  "register_with_google": "向Google注册",
+  "login_with_google": "Google Connect",
+  "error_register": "*请指示您的用户名*",
+  "colocation_id": "共享",
+  "create_account": "创建一个帐户"
 }

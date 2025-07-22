@@ -66,5 +66,16 @@
   "logout": "Abmeldung",
   "confirm_delete_reminder": "Sind Sie sicher, dass Sie diesen Beitrag löschen möchten?",
   "confirm_delete_shoppingitem": "Sind Sie sicher, dass Sie diesen Artikel löschen möchten?",
-  "cancel": "Stornieren"
+  "cancel": "Stornieren",
+  "optional": "Optional",
+  "user_name": "Benutzername",
+  "task_name": "Aufgabenname",
+  "task_description": "Beschreibung der Aufgabe (optional)",
+  "login": "Verbindung",
+  "register": "Registrieren",
+  "register_with_google": "Registrieren Sie sich bei Google",
+  "login_with_google": "Google Connect",
+  "error_register": "*Bitte geben Sie Ihren Benutzernamen an*",
+  "colocation_id": "Geteilt",
+  "create_account": "Ein Konto erstellen"
 }

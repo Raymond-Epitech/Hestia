@@ -66,5 +66,16 @@
   "logout": "Logout",
   "confirm_delete_reminder": "Are you sure you want to delete this post?",
   "confirm_delete_shoppingitem": "Are you sure you want to delete this article?",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "optional": "Optional",
+  "user_name": "User name",
+  "task_name": "Task name",
+  "task_description": "Description of the task (optional)",
+  "login": "Connexion",
+  "register": "Register",
+  "register_with_google": "Register with google",
+  "login_with_google": "Google connect",
+  "error_register": "*Please indicate your username*",
+  "colocation_id": "Shared",
+  "create_account": "Create an account"
 }

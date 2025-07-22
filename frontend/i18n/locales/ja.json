@@ -66,5 +66,16 @@
   "logout": "ログアウト",
   "confirm_delete_reminder": "この投稿を削除したいですか？",
   "confirm_delete_shoppingitem": "この記事を削除したいですか？",
-  "cancel": "キャンセル"
+  "cancel": "キャンセル",
+  "optional": "オプション",
+  "user_name": "ユーザー名",
+  "task_name": "タスク名",
+  "task_description": "タスクの説明（オプション）",
+  "login": "接続",
+  "register": "登録する",
+  "register_with_google": "Googleに登録してください",
+  "login_with_google": "Google Connect",
+  "error_register": "*ユーザー名を示してください*",
+  "colocation_id": "共有",
+  "create_account": "アカウントを作成する"
 }
