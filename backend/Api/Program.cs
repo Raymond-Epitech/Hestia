@@ -101,7 +101,7 @@ try
         app.UseHttpsRedirection();
     }
 
-    app.UseHttpsRedirection();
+    //app.UseHttpsRedirection();
     app.UseExceptionHandler();
     app.UseAuthentication();
     app.UseAuthorization();
