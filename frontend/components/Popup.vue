@@ -2,7 +2,7 @@
     <div class="overlay" @click.self="emit('close')">
         <div class="popup">
             <h1>{{ title }}</h1>
-            <p>{{ text }}</p>
+            <p class="text">{{ text }}</p>
             <div class="button">
                 <button class="cancel-button" @click="emit('close')">
                     <Texte_language source="cancel" />
@@ -82,6 +82,11 @@ const emit = defineEmits([
     justify-content: center;
 }
 
+.text {
+    text-align: center;
+    font-size: 16px;
+    color: #333;
+}
 .popup .cancel-button {
     margin-right: 10px;
     background-color: #00000088;

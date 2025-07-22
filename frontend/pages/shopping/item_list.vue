@@ -10,7 +10,8 @@
         <div>
             <ShoppingItem v-for="item in shopping_list.shoppingItems" :key="item.id ?? item.name" :item="item"
                 @update:isChecked="updateIsChecked(item.id ?? '', $event)"
-                @update:name="updateName(item.id ?? '', $event)" />
+                @update:name="updateName(item.id ?? '', $event)"
+                @delete="deleteItem(item.id ?? '')" />
         </div>
     </div>
 </template>
@@ -83,6 +84,19 @@ const updateName = (id: string, value: string) => {
             console.error(`Error updating item ${id}:`, error);
         });
     }
+};
+
+const deleteItem = (id: string) => {
+    api.deleteShoppingListItem(id).then((response) => {
+        if (!response) {
+            console.error(`Failed to delete item ${id}`);
+            return;
+        }
+        console.log(`Item ${id} deleted successfully`);
+        shopping_list.value.shoppingItems = shopping_list.value.shoppingItems?.filter((item) => item.id !== id);
+    }).catch((error) => {
+        console.error(`Error deleting item ${id}:`, error);
+    });
 };
 </script>
 

@@ -725,7 +725,7 @@ export class bridge {
     }
 
     async deleteShoppingListItem(id: string) {
-        return await fetch(`${this.url}/api/ShoppingList/Item/${id}`, {
+        return await fetch(`${this.url}/api/ShoppingList/Item?shoppingItemId=${id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': 'Bearer ' + this.jwt

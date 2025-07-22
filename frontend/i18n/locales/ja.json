@@ -64,5 +64,7 @@
   "isDone": "このタスクは完了しました",
   "Done": "終わり",
   "logout": "ログアウト",
-  "confirm_delete_reminder": "この投稿を削除したいですか？"
+  "confirm_delete_reminder": "この投稿を削除したいですか？",
+  "confirm_delete_shoppingitem": "この記事を削除したいですか？",
+  "cancel": "キャンセル"
 }

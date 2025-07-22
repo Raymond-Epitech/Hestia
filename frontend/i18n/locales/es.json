@@ -64,5 +64,7 @@
   "isDone": "Esta tarea ya se ha realizado",
   "Done": "Terminado",
   "logout": "cierre de sesión",
-  "confirm_delete_reminder": "¿Estás seguro de que quieres eliminar esta publicación?"
+  "confirm_delete_reminder": "¿Estás seguro de que quieres eliminar esta publicación?",
+  "confirm_delete_shoppingitem": "¿Estás seguro de que quieres eliminar este artículo?",
+  "cancel": "Cancelar"
 }

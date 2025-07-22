@@ -64,5 +64,7 @@
   "isDone": "Diese Aufgabe wurde erledigt",
   "Done": "Erledigt",
   "logout": "Abmeldung",
-  "confirm_delete_reminder": "Sind Sie sicher, dass Sie diesen Beitrag löschen möchten?"
+  "confirm_delete_reminder": "Sind Sie sicher, dass Sie diesen Beitrag löschen möchten?",
+  "confirm_delete_shoppingitem": "Sind Sie sicher, dass Sie diesen Artikel löschen möchten?",
+  "cancel": "Stornieren"
 }

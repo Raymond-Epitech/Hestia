@@ -64,5 +64,7 @@
   "isDone": "此任务已完成",
   "Done": "完毕",
   "logout": "注销",
-  "confirm_delete_reminder": "您确定要删除这篇文章吗？"
+  "confirm_delete_reminder": "您确定要删除这篇文章吗？",
+  "confirm_delete_shoppingitem": "您确定要删除本文吗？",
+  "cancel": "取消"
 }

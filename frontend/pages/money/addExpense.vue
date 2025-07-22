@@ -61,8 +61,11 @@
             <label v-for="coloc in list_coloc" :key="coloc.id" class="checkbox-item-pourcentage">
               <input class="check-zone" type="checkbox" :value="coloc.id" />
               {{ coloc.username }}
-              <input type="number" class="split-value-input" v-model.number="expense.splitPercentages[coloc.id]"
-                placeholder="0" min="0" max="100" />
+              <div class="split-value-container">
+                <input type="number" class="split-value-input" v-model.number="expense.splitPercentages[coloc.id]"
+                  placeholder="0" min="0" max="100" />
+                <span class="percentage-symbol">%</span>
+              </div>
               <input type="number" class="split-value-input" :value="calculateValueFromPercentage(coloc.id)" readonly />
             </label>
           </div>
@@ -275,6 +278,13 @@ h3 {
   font-weight: 600;
 }
 
+.split-value-container {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+
 .split-value-input {
   width: 90%;
   background-color: #1e1e1e00;
@@ -285,6 +295,12 @@ h3 {
   color: #fff;
   font-size: 18px;
   text-align: end;
+}
+
+.percentage-symbol {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 /** Fallback Buttons */
