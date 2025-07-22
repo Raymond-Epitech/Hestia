@@ -3,7 +3,7 @@
 	"appName": "Hestia",
 	"server": {
 		"allowNavigation": [
-			"http://91.134.48.124:8080"
+			"https://91.134.48.124:8080"
 		]
 	},
 	"webDir": "dist",
