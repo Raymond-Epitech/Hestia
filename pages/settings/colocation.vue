@@ -62,7 +62,7 @@ const redirect = (page) => {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20%;
+    margin-top: 10%;
 }
 
 .colocation-preview-container {
@@ -106,10 +106,11 @@ const redirect = (page) => {
 .button {
     width: fit-content;
     padding: 8px;
-    margin-top: 10%;
+    margin: 10% 0;
     border: none;
     border-radius: 12px;
     background-color: #85AD7B;
+    color: #000000;
     box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
     font-weight: 600;
 }

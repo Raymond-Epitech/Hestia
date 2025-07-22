@@ -89,20 +89,20 @@ const redirect = (page) => {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 58px;
+    height: 100%;
     width: 100%;
 }
 
 .money {
     height: 58px;
-    width: 58px;
+    width: 66px;
 }
 
 .shopping-button {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 30px;
+    height: 100%;
     width: 100%;
 }
 

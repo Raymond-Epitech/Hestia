@@ -54,12 +54,14 @@ const joinColocation = async () => {
     const data = await api.updateUser(new_data.value)
     if (data) {
         userStore.setColocation(new_data.value.colocationId);
+        router.push('/');
     }
 }
 const createColocation = async () => {
     const data = await api.addColocation(colocation.value);
     if (data) {
         userStore.setColocation(data);
+        router.push('/');
     }
 }
 
@@ -125,6 +127,7 @@ h2 {
     border-radius: 15px;
     border: 0;
     box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
+    color: #000000;
     background-color: #85AD7B;
     font-size: 32px;
     font-weight: 600;

@@ -13,15 +13,16 @@
                     <form method="post" action="">
                         <div class="modal-body">
                             <input class="modal-body-input" v-model="task.title" maxlength="35"
-                                placeholder="Set task name" required />
+                                :placeholder="$t('task_name')" required />
                             <input class="modal-body-input" v-model="task.description" maxlength="45"
-                                placeholder="Set task description (optional)" />
+                                :placeholder="$t('task_description')" />
                         </div>
                         <div class="task-assignee">
                             <text class="text-task-assignee">
                                 <Texte_language source="Assignee" />:
                             </text>
                             <select v-model="task.enrolled" class="input-task-assignee">
+                                <option></option>
                                 <option v-for="coloc in list_coloc" :key="coloc.id" :value="coloc.id">
                                     {{ coloc.username }}
                                 </option>
@@ -33,8 +34,13 @@
                                     teleport-center dark />
                             </client-only>
                         </div>
-                        <div class="modal-buttons">
+                        <div v-if="task.dueDate && task.title" class="modal-buttons">
                             <button class="button-proceed" @click.prevent="handleProceed">
+                                <img src="../public/submit.png" class="submit">
+                            </button>
+                        </div>
+                        <div v-else class="modal-buttons">
+                            <button class="button-proceed" @click.prevent="handleProceed" disabled>
                                 <img src="../public/submit.png" class="submit">
                             </button>
                         </div>
@@ -105,7 +111,20 @@ defineExpose({
     visible,
 })
 
+const resetTask = () => {
+    task.value = {
+        colocationId: userStore.user.colocationId,
+        createdBy: userStore.user.id,
+        dueDate: '',
+        title: '',
+        description: '',
+        enrolled: null,
+        isDone: false,
+    }
+}
+
 const handleClose = () => {
+    resetTask()
     close()
     emit('closed')
 }
@@ -115,9 +134,12 @@ const handleProceed = async () => {
         ...task.value,
         enrolled: task.value.enrolled ? [task.value.enrolled] : []
     }
-    await api.addChore(new_task)
-    close()
-    emit('proceed')
+    const response = await api.addChore(new_task)
+    if (response) {
+        resetTask()
+        close()
+        emit('proceed')
+    }
 }
 
 watch(
@@ -268,8 +290,8 @@ watch(visible, (value) => {
     width: 22px;
 }
 
-.button-proceed:hover {
-    opacity: 0.7;
+button:disabled {
+    opacity: 0.5;
 }
 
 /* Transition */

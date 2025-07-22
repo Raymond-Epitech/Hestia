@@ -4,7 +4,7 @@ const config: CapacitorConfig = {
   appId: 'io.ionic.starter',
   appName: 'Hestia',
   server: {
-    "allowNavigation": ["http://91.134.48.124:8080"]
+    "allowNavigation": ["https://91.134.48.124:8080"]
   },
   webDir: 'dist',
   "plugins": {

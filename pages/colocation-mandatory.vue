@@ -79,7 +79,12 @@ const createColocation = async () => {
 
 <style scoped>
 .conteneur {
-    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: auto;
 }
 
 .header {

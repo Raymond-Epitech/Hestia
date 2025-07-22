@@ -1,12 +1,19 @@
 <template>
     <div class="post" :class="color">
-        <button class="delete-button" @click="handleDelete">x</button>
+        <ProfileIcon class="profile-icon" :height="30" :width="30" />
+        <button class="delete-button" @click="showPopup">
+            <div class="close"></div>
+        </button>
         <p>{{ text }}</p>
-        <ProfileIcon class="profile-icon" />
     </div>
+    <popup v-if="popup_vue" :text="$t('confirm_delete_reminder')" @confirm="confirmDelete" @close="cancelDelete">
+    </popup>
 </template>
 
 <script setup>
+import { useI18n } from '#imports';
+
+const { t } = useI18n();
 const props = defineProps({
     id: {
         type: String,
@@ -21,45 +28,63 @@ const props = defineProps({
         required: true
     }
 })
-
+const popup_vue = ref(false)
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 
 const emit = defineEmits(['delete'])
-const handleDelete = async () => {
-    await api.deleteReminder(props.id)
-    emit('delete')
-}
+
+const showPopup = () => {
+    popup_vue.value = true;
+};
+
+const confirmDelete = async () => {
+    popup_vue.value = false;
+    try {
+        await api.deleteReminder(props.id);
+        emit('delete');
+    } catch (error) {
+        console.error('Failed to delete the post:', error);
+    }
+};
+
+const cancelDelete = () => {
+    popup_vue.value = false;
+};
 
 </script>
 
 <style scoped>
 .post {
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
     width: 250px;
     height: 250px;
+    margin: 20px;
     position: relative;
+    border-radius: 96% 4% 92% 8% / 0% 100% 6% 100%;
+    box-shadow: -9px 16px 12px 0px rgba(0, 0, 0, 0.33);
 }
 
 .delete-button {
     display: flex;
     justify-content: center;
+    align-items: center;
     position: absolute;
     top: 10px;
-    right: 10px;
+    right: 14px;
     background: #FF6A61;
-    color: white;
     border: none;
     border-radius: 50%;
     width: 30px;
     height: 30px;
-    cursor: pointer;
-    opacity: 1;
-    transition: opacity 0.3s ease;
-    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+}
+
+.close {
+    height: 12px;
+    width: 12px;
+    clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%);
+    background-color: white;
 }
 
 .post h1 {
@@ -74,13 +99,17 @@ const handleDelete = async () => {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    width: 200px;
+    max-height: 250px;
     color: rgb(10, 10, 10);
+    overflow-wrap: anywhere;
+    text-align: center;
 }
 
 .profile-icon {
     position: absolute;
-    bottom: 10px;
-    right: 10px;
+    top: 10px;
+    left: 10px;
 }
 
 .blue {

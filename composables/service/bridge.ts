@@ -6,7 +6,7 @@ export class bridge {
     constructor() {
         console.log('Bridge instance created')
     }
-    url: string = "http://91.134.48.124:8080";
+    url: string = "https://hestiaapp.org";
     jwt: string = "";
 
     seturl(new_url: string) {
@@ -115,7 +115,7 @@ export class bridge {
     // User section:
 
     async login(google_token: string) {
-        return await fetch(this.url + "/Login?googleToken=" + google_token, {
+        return await fetch(this.url + "/api/User/Login?googleToken=" + google_token, {
             method: 'POST'
         }).then(async response => {
             if (response.status == 200) {
@@ -132,7 +132,7 @@ export class bridge {
     }
 
     async addUser(user: User, google_token: string) {
-        return await fetch(this.url + "/Register?googleToken=" + google_token, {
+        return await fetch(this.url + "/api/User/Register?googleToken=" + google_token, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -478,7 +478,7 @@ export class bridge {
         })
     }
 
-    async addExpense(data: Expense) {
+    async addExpense(data: Expense): Promise<boolean | { error: any }> {
         return await fetch(`${this.url}/api/Expense`, {
             method: 'POST',
             headers: {
@@ -486,16 +486,21 @@ export class bridge {
                 'Authorization': 'Bearer ' + this.jwt
             },
             body: JSON.stringify(data)
-        }).then(response => {
+        }).then(async response => {
             if (response.status == 200) {
                 return true;
             }
-            return false;
+            const errorJson = await response.json();
+            console.error("Error adding expense:", errorJson);
+            return { error: errorJson };
+        }).catch((error) => {
+            console.error("Network error:", error);
+            return { error };
         });
     }
 
-    async updateExpense(data: Expense) {
-        return await fetch(`${this.url}/api/Expense/${data.colocationId}`, {
+    async updateExpense(data: Expense_Modif) {
+        return await fetch(`${this.url}/api/Expense`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -720,7 +725,7 @@ export class bridge {
     }
 
     async deleteShoppingListItem(id: string) {
-        return await fetch(`${this.url}/api/ShoppingList/Item/${id}`, {
+        return await fetch(`${this.url}/api/ShoppingList/Item?shoppingItemId=${id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': 'Bearer ' + this.jwt

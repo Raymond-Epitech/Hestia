@@ -2,17 +2,16 @@
     <div class="background">
         <div class="header">
             <img src="/return.png" alt="Return" width="30" height="30" @click="$router.back()" />
-            <h1 class="header-name">{{ name }}</h1>
-            <div class="square">
-                <div id="add" :onClick="() => redirectto()">
-                    <img src="/plus.png" alt="Return" width="30" height="30" />
-                </div>
+            <div class="header-name">{{ name }}</div>
+            <div class="square" :onClick="() => redirectto()">
+                <img src="/plus.png" alt="Return" width="20" height="20" />
             </div>
         </div>
         <div>
             <ShoppingItem v-for="item in shopping_list.shoppingItems" :key="item.id ?? item.name" :item="item"
                 @update:isChecked="updateIsChecked(item.id ?? '', $event)"
-                @update:name="updateName(item.id ?? '', $event)" />
+                @update:name="updateName(item.id ?? '', $event)"
+                @delete="deleteItem(item.id ?? '')" />
         </div>
     </div>
 </template>
@@ -86,6 +85,19 @@ const updateName = (id: string, value: string) => {
         });
     }
 };
+
+const deleteItem = (id: string) => {
+    api.deleteShoppingListItem(id).then((response) => {
+        if (!response) {
+            console.error(`Failed to delete item ${id}`);
+            return;
+        }
+        console.log(`Item ${id} deleted successfully`);
+        shopping_list.value.shoppingItems = shopping_list.value.shoppingItems?.filter((item) => item.id !== id);
+    }).catch((error) => {
+        console.error(`Error deleting item ${id}:`, error);
+    });
+};
 </script>
 
 <style scoped>
@@ -101,10 +113,11 @@ const updateName = (id: string, value: string) => {
     justify-content: center;
     align-items: center;
     background-color: #8D90D6;
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
     margin-left: 10px;
+    box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
 }
 
 .header {
@@ -112,8 +125,8 @@ const updateName = (id: string, value: string) => {
     display: grid;
     grid-template-columns: 1fr 6fr 1fr;
     align-items: center;
-    margin-bottom: 20px;
     text-align: center;
+    font-size: 30px;
 }
 
 .header-name {

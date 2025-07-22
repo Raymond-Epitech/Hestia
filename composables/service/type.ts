@@ -42,7 +42,6 @@ export type Expense_Modif = {
     name: string,
     description: string,
     amount: number,
-    category: string,
     paidBy: string
     splitType: number,
     splitBetween: string[],

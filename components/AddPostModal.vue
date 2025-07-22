@@ -4,11 +4,11 @@
       <div class="modal-background" @click="handleClose">
         <div class="modal" @click.stop>
           <div class="modal-header left">
-            <h1 class="modal-header-text">Contenu du post : </h1>
+            <h1 class="modal-header-text">{{ $t('post-content') }} :</h1>
           </div>
           <form method="post" action="">
             <div class="modal-body left">
-              <textarea class="modal-body-input" rows="3" v-model="post.content" required></textarea>
+              <textarea class="modal-body-input" rows="3" maxlength="150" v-model="post.content" required></textarea>
             </div>
             <div class="post-colors-buttons">
               <input class="form-check-input color-choice blue" v-model="post.color" type="radio" name="gridRadios"
@@ -20,8 +20,11 @@
               <input class="form-check-input color-choice green" v-model="post.color" type="radio" name="gridRadios"
                 id="gridRadios4" value="green">
             </div>
-            <div class="modal-buttons">
-              <button class="button button-proceed" @click.prevent="handleProceed">Poster</button>
+            <div v-if="post.color && post.content" class="modal-buttons">
+              <button class="button button-proceed" @click.prevent="handleProceed">{{ $t('poster') }}</button>
+            </div>
+            <div v-else class="modal-buttons">
+              <button class="button button-proceed" @click.prevent="handleProceed" disabled>{{ $t('poster') }}</button>
             </div>
           </form>
         </div>
@@ -81,14 +84,30 @@ defineExpose({
   visible,
 })
 
+const resetPost = () => {
+  post.value = {
+    createdBy: userStore.user.id,
+    content: '',
+    color: '',
+    coordX: 0,
+    coordY: 0,
+    coordZ: 0,
+    colocationId: userStore.user.colocationId,
+  }
+}
+
 const handleClose = () => {
+  resetPost()
   close()
   emit('closed')
 }
 
 const handleProceed = async () => {
-  await api.addReminder(post.value)
-  close()
+  const response = await api.addReminder(post.value)
+  if (response) {
+    resetPost()
+    close()
+  }
   emit('proceed')
 }
 
@@ -258,8 +277,8 @@ watch(visible, (value) => {
   color: #fff;
 }
 
-.button-proceed:hover {
-  opacity: 0.7;
+button:disabled {
+  opacity: 0.5;
 }
 
 /* Transition */

@@ -33,6 +33,7 @@
   "split_type2": "Partage par pourcentage",
   "paidby": "Payé par",
   "poster": "Poster",
+  "post-content": "Contenu du post",
   "modify": "Modifier",
   "delete": "Supprimer",
   "confirm_delete_expense": "Etes-vous sûr de vouloir supprimer cette dépense ?",
@@ -60,5 +61,19 @@
   "Enroll": "S'inscrire",
   "isDone": "Cette tâche a été faite",
   "Done": "Fini",
-  "logout": "Déconnexion"
+  "logout": "Déconnexion",
+  "confirm_delete_reminder": "Etes-vous sûr de vouloir supprimer ce post ?",
+  "confirm_delete_shoppingitem": "Etes-vous sûr de vouloir supprimer cet article ?",
+  "cancel": "Annuler",
+  "optional": "Optionnel",
+  "user_name": "Nom d'utilisateur",
+  "task_name": "Nom de la tâche",
+  "task_description": "Description de la tâche (optionnel)",
+  "login": "Connexion",
+  "register": "S'inscrire",
+  "register_with_google": "S'inscrire avec Google",
+  "login_with_google": "Se connecter avec Google",
+  "error_register": "*Veuillez indiqué votre nom d'utilisateur*",
+  "colocation_id": "Id de colocation",
+  "create_account": "Créer un compte"
 }

@@ -15,7 +15,7 @@
                 <input class="body-input" maxlength="42" v-model="item.name" required />
             </div>
             <div class="modal-buttons">
-                <button class="button button-proceed" @click.prevent="handleProceed">
+                <button class="button" @click.prevent="handleProceed">
                     <Texte_language source="poster" />
                 </button>
             </div>
@@ -76,11 +76,6 @@ const handleProceed = async () => {
     padding: 20px;
 }
 
-.square {
-    width: 50px;
-    height: 64px;
-}
-
 .header {
     display: flex;
     justify-content: space-between;
@@ -88,14 +83,24 @@ const handleProceed = async () => {
     margin-bottom: 20px;
 }
 
+.body-input {
+    width: 70%;
+    background-color: #1e1e1e00;
+    outline: none;
+    border: none;
+    line-height: 3ch;
+    background-image: linear-gradient(transparent, transparent calc(3ch - 1px), #E7EFF8 0px);
+    background-size: 100% 3ch;
+    color: #fff;
+    font-size: 18px;
+}
+
 .button {
+    margin-top: 16px;
     padding: 10px 20px;
     border-radius: 15px;
     border: 0;
     cursor: pointer;
-}
-
-.button-proceed {
     background: #00000088;
     color: #fff;
 }
