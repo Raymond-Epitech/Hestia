@@ -4,7 +4,7 @@
       <div class="modal-background" @click="handleClose">
         <div class="modal" @click.stop>
           <div class="modal-header left">
-            <h1 class="modal-header-text">Contenu du post : </h1>
+            <h1 class="modal-header-text">{{ $t('post-content') }} :</h1>
           </div>
           <form method="post" action="">
             <div class="modal-body left">
@@ -21,10 +21,10 @@
                 id="gridRadios4" value="green">
             </div>
             <div v-if="post.color && post.content" class="modal-buttons">
-              <button class="button button-proceed" @click.prevent="handleProceed">Poster</button>
+              <button class="button button-proceed" @click.prevent="handleProceed">{{ $t('poster') }}</button>
             </div>
             <div v-else class="modal-buttons">
-              <button class="button button-proceed" @click.prevent="handleProceed" disabled>Poster</button>
+              <button class="button button-proceed" @click.prevent="handleProceed" disabled>{{ $t('poster') }}</button>
             </div>
           </form>
         </div>
