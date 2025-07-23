@@ -189,12 +189,12 @@ h2 {
 }
 
 .register-font {
-    font-size: 20px;
+    font-size: 1.5em;
 }
 
 .login-font {
     padding-bottom: 20px;
-    font-size: 50px;
+    font-size: 3em;
 }
 
 .register-button {
@@ -221,7 +221,7 @@ h2 {
     border-radius: 14px;
     color: #074338;
     font-weight: 600;
-    font-size: 20px;
+    font-size: 1.5rem;
     text-decoration: none;
 }
 
@@ -230,7 +230,7 @@ h2 {
     margin: 0;
     margin-top: -6px;
     margin-bottom: 8px;
-    font-size: 15px;
+    font-size: 0.8rem;
     color: #FF6A61;
 }
 </style>
