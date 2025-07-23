@@ -1,7 +1,7 @@
 <template>
     <div class="task-container">
-        <TaskModal v-model="isModalOpen" :id="id" :title="title" :description="description" :color="getColor()"
-            :dueDate="dueDate" :isDone="isDone" @proceed="emitProceed()"></TaskModal>
+        <TaskModal v-model="isModalOpen" :key="id" :id="id" :title="title" :description="description"
+            :color="getColor()" :dueDate="dueDate" :isDone="isDone" @proceed="emitProceed()"></TaskModal>
         <div class="task" :class="[getColor()]" data-toggle="modal" data-target=".bd-example-modal-sm"
             @click="openModal">
             <h1>{{ title }}</h1>
