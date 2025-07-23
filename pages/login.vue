@@ -223,6 +223,7 @@ h2 {
     font-weight: 600;
     font-size: 1.3rem;
     text-decoration: none;
+    text-align: center;
 }
 
 .alert {

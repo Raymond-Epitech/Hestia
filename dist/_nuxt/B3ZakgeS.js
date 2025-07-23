@@ -1,1 +1,0 @@
-import{_ as s,a as o,b as _,F as a}from"./AxnGTxi-.js";const r={class:"text"},c={__name:"texte_language",props:{source:{type:String,required:!0}},setup(e){return(t,n)=>(_(),o("span",r,a(t.$t(e.source)),1))}},u=s(c,[["__scopeId","data-v-c90b929d"]]);export{u as _};
