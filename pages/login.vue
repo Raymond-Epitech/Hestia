@@ -221,7 +221,7 @@ h2 {
     border-radius: 14px;
     color: #074338;
     font-weight: 600;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     text-decoration: none;
 }
 
