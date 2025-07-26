@@ -26,6 +26,7 @@ public static class ServiceConfigurationExtension
         services.AddScoped<IExpenseService, ExpenseService>();
         services.AddScoped<IShoppingListService, ShoppingListService>();
         services.AddScoped<IExpiredChoreRemover, ExpiredChoreRemover>();
+        services.AddScoped<IRealTimeService, RealTimeService>();
 
         // Repositories
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

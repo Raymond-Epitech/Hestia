@@ -14,6 +14,7 @@ namespace Business.Services;
 
 public class ReminderService(ILogger<ReminderService> logger,
     IRepository<Reminder> reminderRepository,
+    IRealTimeService realTimeService,
     IAppCache cache) : IReminderService
 {
     /// <summary>
@@ -97,6 +98,19 @@ public class ReminderService(ILogger<ReminderService> logger,
 
         cache.Remove($"reminders:{reminder.ColocationId}");
 
+        var reminderOutput = new ReminderOutput
+        {
+            Id = reminder.Id,
+            Content = reminder.Content,
+            Color = reminder.Color,
+            CreatedBy = reminder.CreatedBy,
+            CreatedAt = reminder.CreatedAt,
+            CoordX = reminder.CoordX,
+            CoordY = reminder.CoordY,
+            CoordZ = reminder.CoordZ
+        };
+        await realTimeService.NotifyReminderAdded(reminderOutput);
+
         logger.LogInformation("Succes : Reminder added");
             
         return reminder.Id;
@@ -123,6 +137,19 @@ public class ReminderService(ILogger<ReminderService> logger,
         await reminderRepository.SaveChangesAsync();
 
         cache.Remove($"reminders:{reminder.ColocationId}");
+
+        var reminderOutput = new ReminderOutput
+        {
+            Id = reminder.Id,
+            Content = reminder.Content,
+            Color = reminder.Color,
+            CreatedBy = reminder.CreatedBy,
+            CreatedAt = reminder.CreatedAt,
+            CoordX = reminder.CoordX,
+            CoordY = reminder.CoordY,
+            CoordZ = reminder.CoordZ
+        };
+        await realTimeService.NotifyReminderUpdated(reminderOutput);
 
         logger.LogInformation("Succes : Reminder updated");
 
@@ -196,6 +223,19 @@ public class ReminderService(ILogger<ReminderService> logger,
 
         cache.Remove($"reminders:{reminders.FirstOrDefault()!.ColocationId}");
 
+        var reminderOutputs = reminders.Select(r => new ReminderOutput
+        {
+            Id = r.Id,
+            Content = r.Content,
+            Color = r.Color,
+            CreatedBy = r.CreatedBy,
+            CreatedAt = r.CreatedAt,
+            CoordX = r.CoordX,
+            CoordY = r.CoordY,
+            CoordZ = r.CoordZ
+        }).ToList();
+        await realTimeService.NotifyReminderUpdateRange(reminderOutputs);
+
         logger.LogInformation("Succes : Reminders all updated");
 
         return reminders.Count;
@@ -219,6 +259,8 @@ public class ReminderService(ILogger<ReminderService> logger,
         await reminderRepository.SaveChangesAsync();
 
         cache.Remove($"reminders:{reminder.ColocationId}");
+
+        await realTimeService.NotifyReminderDeleted(id);
 
         logger.LogInformation("Succes : Reminder deleted");
 

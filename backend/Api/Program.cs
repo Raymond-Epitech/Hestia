@@ -4,6 +4,7 @@ using Business.Jwt;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Mvc;
+using SignalRChat.Hubs;
 using System.Security.Cryptography.X509Certificates;
 
 try
@@ -71,6 +72,12 @@ try
     // Swagger
     builder.Services.ConfigureSwagger(builder.Configuration, builder.Environment.IsDevelopment());
 
+    // SignalR
+    builder.Services.AddSignalR(options =>
+    {
+        options.EnableDetailedErrors = true;
+    });
+
     // Hangfire
     builder.Services.AddHangfire(config => config
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
@@ -106,6 +113,8 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
+
+    app.MapHub<HestiaHub>("/hestiaHub");
 
     // Configure Hangfire recurring jobs
     using (var scope = app.Services.CreateScope())
