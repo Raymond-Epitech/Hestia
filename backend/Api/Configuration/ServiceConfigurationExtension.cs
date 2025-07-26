@@ -27,6 +27,7 @@ public static class ServiceConfigurationExtension
         services.AddScoped<IShoppingListService, ShoppingListService>();
         services.AddScoped<IExpiredChoreRemover, ExpiredChoreRemover>();
         services.AddScoped<IRealTimeService, RealTimeService>();
+        services.AddScoped<IFirebaseNotificationService, FirebaseNotificationService>();
 
         // Repositories
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

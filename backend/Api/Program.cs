@@ -4,6 +4,7 @@ using Business.Jwt;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Models.Configuration;
 using SignalRChat.Hubs;
 using System.Security.Cryptography.X509Certificates;
 
@@ -77,6 +78,9 @@ try
     {
         options.EnableDetailedErrors = true;
     });
+
+    // Firebase
+    builder.Services.Configure<FirebaseSettings>(builder.Configuration.GetSection("Firebase"));
 
     // Hangfire
     builder.Services.AddHangfire(config => config
