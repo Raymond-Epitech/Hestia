@@ -4,9 +4,6 @@ namespace Business.Interfaces;
 
 public interface IRealTimeService
 {
-    Task NotifyReminderAdded(ReminderOutput reminder);
-    Task NotifyReminderUpdated(ReminderOutput reminder);
-    Task NotifyReminderUpdateRange(List<ReminderOutput> reminders);
-    Task NotifyReminderDeleted(Guid reminderId);
+    Task SendToGroupAsync(Guid colocationId, string methodName, object? payload);
 }
 

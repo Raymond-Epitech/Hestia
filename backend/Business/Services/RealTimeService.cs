@@ -14,24 +14,10 @@ public class RealTimeService : IRealTimeService
         _hubContext = hubContext;
     }
 
-    public async Task NotifyReminderAdded(ReminderOutput reminder)
+    public async Task SendToGroupAsync(Guid colocationId, string methodName, object? payload)
     {
-        await _hubContext.Clients.All.SendAsync("NewReminderAdded", reminder);
-    }
-
-    public async Task NotifyReminderUpdated(ReminderOutput reminder)
-    {
-        await _hubContext.Clients.All.SendAsync("ReminderUpdated", reminder);
-    }
-
-    public async Task NotifyReminderUpdateRange(List<ReminderOutput> reminders)
-    {
-        await _hubContext.Clients.All.SendAsync("ReminderUpdateRange", reminders);
-    }
-
-    public async Task NotifyReminderDeleted(Guid reminderId)
-    {
-        await _hubContext.Clients.All.SendAsync("ReminderDeleted", reminderId);
+        var groupName = $"colocation:{colocationId}";
+        await _hubContext.Clients.Group(groupName).SendAsync(methodName, payload);
     }
 }
 
