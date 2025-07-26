@@ -1,7 +1,7 @@
 <template>
     <div class="post" :class="color">
         <ProfileIcon class="profile-icon" :height="30" :width="30" />
-        <button class="delete-button" @click="showPopup">
+        <button class="delete-button" @click="showPopup" v-if="createdBy == user.id">
             <div class="close"></div>
         </button>
         <p>{{ text }}</p>
@@ -11,6 +11,7 @@
 </template>
 
 <script setup>
+import { useUserStore } from '~/store/user';
 import { useI18n } from '#imports';
 
 const { t } = useI18n();
@@ -26,12 +27,18 @@ const props = defineProps({
     color: {
         type: String,
         required: true
+    },
+    createdBy: {
+        type: String,
+        required: true
     }
 })
 const popup_vue = ref(false)
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
+const userStore = useUserStore();
+const user = userStore.user;
 
 const emit = defineEmits(['delete'])
 
