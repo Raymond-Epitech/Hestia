@@ -1,6 +1,5 @@
 ﻿using Business.Interfaces;
 using Microsoft.AspNetCore.SignalR;
-using Shared.Models.Output;
 using SignalRChat.Hubs;
 
 namespace Business.Services;

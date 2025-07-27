@@ -6,7 +6,6 @@ using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Models.Configuration;
 using SignalRChat.Hubs;
-using System.Security.Cryptography.X509Certificates;
 
 try
 {
