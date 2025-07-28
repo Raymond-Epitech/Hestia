@@ -16,7 +16,7 @@ try
         o.ValidateScopes = true;
     });
 
-    var cert = X509Certificate2.CreateFromPemFile("/etc/ssl/certificate.pem", "/etc/ssl/key.pem");
+    /*var cert = X509Certificate2.CreateFromPemFile("/etc/ssl/certificate.pem", "/etc/ssl/key.pem");
 
     builder.WebHost.ConfigureKestrel(options =>
     {
@@ -27,7 +27,7 @@ try
             listenOptions.UseHttps(cert);
         });
     });
-
+*/
     // Controllers
     builder.Services.AddMvcCore();
     builder.Services.AddControllers().AddNewtonsoftJson();

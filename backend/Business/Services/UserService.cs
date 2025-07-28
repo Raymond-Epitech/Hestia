@@ -3,17 +3,14 @@ using Business.Jwt;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
 using Google.Apis.Auth;
-using Google.Apis.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
-using Shared.Models.DTO;
 using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text.Json;
 
 namespace Business.Services;
 
@@ -36,7 +33,8 @@ public class UserService(ILogger<UserService> logger,
                 Id = u.Id,
                 Username = u.Username,
                 Email = u.Email,
-                ColocationId = u.ColocationId
+                ColocationId = u.ColocationId,
+                ProfilePictureUrl = u.PathToProfilePicture
             })
             .ToListAsync();
 
@@ -61,7 +59,8 @@ public class UserService(ILogger<UserService> logger,
                 Id = u.Id,
                 Username = u.Username,
                 Email = u.Email,
-                ColocationId = u.ColocationId
+                ColocationId = u.ColocationId,
+                ProfilePictureUrl = u.PathToProfilePicture
             })
             .FirstOrDefaultAsync();
 
@@ -161,7 +160,7 @@ public class UserService(ILogger<UserService> logger,
             logger.LogWarning(ex, "Google token validation failed.");
             throw new InvalidTokenException("Google token invalid");
         }
-            
+
         var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, validPayload.Subject),
@@ -181,7 +180,7 @@ public class UserService(ILogger<UserService> logger,
             Username = userInput.Username,
             Email = validPayload.Email,
             ColocationId = userInput.ColocationId,
-            PathToProfilePicture = "default.jpg"
+            PathToProfilePicture = validPayload.Picture ?? "default.jpg"
         };
 
         await userRepository.AddAsync(newUser);
