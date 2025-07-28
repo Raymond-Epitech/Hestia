@@ -117,7 +117,7 @@ try
     app.UseAuthorization();
     app.MapControllers();
 
-    app.MapHub<HestiaHub>("/hestiaHub");
+    app.MapHub<HestiaHub>("/api/hestiaHub");
 
     // Configure Hangfire recurring jobs
     using (var scope = app.Services.CreateScope())
