@@ -17,17 +17,17 @@ try
         o.ValidateScopes = true;
     });
 
-    /*var cert = X509Certificate2.CreateFromPemFile("/etc/ssl/certificate.pem", "/etc/ssl/key.pem");
+    //var cert = X509Certificate2.CreateFromPemFile("/etc/ssl/certificate.pem", "/etc/ssl/key.pem");
 
     builder.WebHost.ConfigureKestrel(options =>
     {
         options.ListenAnyIP(8081);
 
-        options.ListenAnyIP(8080, listenOptions =>
+        /*options.ListenAnyIP(8080, listenOptions =>
         {
             listenOptions.UseHttps(cert);
-        });
-    });*/
+        });*/
+    });
 
     // Controllers
     builder.Services.AddMvcCore();
