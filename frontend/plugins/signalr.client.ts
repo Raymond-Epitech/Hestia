@@ -1,10 +1,13 @@
-import { HubConnectionBuilder, HubConnection, LogLevel } from '@microsoft/signalr'
+import { HubConnectionBuilder, HubConnection, LogLevel, HttpTransportType } from '@microsoft/signalr'
 
 export default defineNuxtPlugin(() => {
     const config = useRuntimeConfig()
 
     const connection = new HubConnectionBuilder()
-        .withUrl("https://hestiaapp.org/api/hestiaHub")
+        .withUrl("https://hestiaapp.org/api/hestiaHub", {
+            skipNegotiation: true,
+            transport: HttpTransportType.WebSockets
+        })
         .withAutomaticReconnect()
         .configureLogging(LogLevel.Information)
         .build()
