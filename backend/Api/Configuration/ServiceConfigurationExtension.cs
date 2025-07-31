@@ -43,7 +43,7 @@ public static class ServiceConfigurationExtension
         services.AddCors(opt =>
         {
             opt.AddPolicy("AllowFrontend", policy => policy
-                .WithOrigins("http://localhost:3000", "https://hestiaapp.org/")
+                .WithOrigins("http://localhost:3000", "https://hestiaapp.org")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials()

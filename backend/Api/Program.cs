@@ -93,6 +93,7 @@ try
 
     var app = builder.Build();
 
+    app.UseRouting();
     app.UseCors("AllowFrontend");
 
     if (app.Environment.IsDevelopment())
