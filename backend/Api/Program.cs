@@ -5,7 +5,7 @@ using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Models.Configuration;
-using SignalRChat.Hubs;
+using SignalR.Hubs;
 
 try
 {
@@ -118,7 +118,7 @@ try
     app.UseAuthorization();
     app.MapControllers();
 
-    app.MapHub<HestiaHub>("/api/hestiaHub");
+    app.MapHub<HestiaHub>("/hestiaHub");
 
     // Configure Hangfire recurring jobs
     using (var scope = app.Services.CreateScope())

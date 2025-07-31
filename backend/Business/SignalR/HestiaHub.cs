@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
-namespace SignalRChat.Hubs;
+namespace SignalR.Hubs;
 
 public class HestiaHub : Hub
 {
