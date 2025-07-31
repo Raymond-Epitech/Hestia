@@ -89,6 +89,7 @@ try
     .UsePostgreSqlStorage(options =>
         options.UseNpgsqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
     );
+    builder.Logging.SetMinimumLevel(LogLevel.Debug);
     builder.Services.AddHangfireServer();
 
     var app = builder.Build();
