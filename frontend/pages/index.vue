@@ -10,8 +10,9 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useUserStore } from '~/store/user';
+import type { Reminder } from '../composables/service/type'
 
 const isModalOpen = ref(false)
 const openModal = () => (isModalOpen.value = true)
@@ -21,15 +22,17 @@ const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 
-const posts = ref([]);
+const posts = ref<Reminder[]>([]);
 
 const { $signalr } = useNuxtApp()
 
 $signalr.on("NewReminderAdded", (ReminderOutput) => {
-  console.log(ReminderOutput);
+  if (!posts.value.some(post => post.id === ReminderOutput.id)) {
+    posts.value.push(ReminderOutput)
+  }
 })
 $signalr.on("reminderdeleted", (ReminderOutput) => {
-  console.log(ReminderOutput);
+  posts.value = posts.value.filter(post => post.id !== ReminderOutput)
 })
 
 
