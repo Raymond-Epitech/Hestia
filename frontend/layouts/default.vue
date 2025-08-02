@@ -15,9 +15,10 @@ import { storeToRefs } from 'pinia';
 import { useUserStore } from '~/store/user';
 
 const userStore = useUserStore();
-const { $signalr } = useNuxtApp()
+const { $signalr, $signalrReady } = useNuxtApp()
 
-onMounted(() => {
+onMounted(async () => {
+  await $signalrReady
   if (userStore.user?.colocationId) {
     $signalr.invoke("JoinColocationGroup", userStore.user.colocationId)
       .then(() => console.log("Demande envoyée au hub"))

@@ -13,10 +13,16 @@ export default defineNuxtPlugin(() => {
         .configureLogging(LogLevel.Information)
         .build()
 
+    let resolveReady: () => void
+    const ready = new Promise<void>((resolve) => {
+        resolveReady = resolve
+    })
+
     const startConnection = async () => {
         try {
             await connection.start()
             console.log('SignalR connected')
+            resolveReady()
         } catch (err) {
             console.error('SignalR Connection Error:', err)
             setTimeout(startConnection, 5000)
@@ -27,7 +33,8 @@ export default defineNuxtPlugin(() => {
 
     return {
         provide: {
-            signalr: connection
+            signalr: connection,
+            signalrReady: ready
         }
     }
 })
