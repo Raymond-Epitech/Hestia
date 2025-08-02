@@ -13,6 +13,16 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '../store/auth';
+import { useUserStore } from '~/store/user';
+
+const userStore = useUserStore();
+const { $signalr } = useNuxtApp()
+
+onMounted(() => {
+  $signalr.invoke("JoinColocationGroup", userStore.user.colocationId)
+    .then(() => console.log("Demande envoyée au hub"))
+    .catch(err => console.error("Erreur lors de l'envoi", err));
+})
 
 const router = useRouter();
 
