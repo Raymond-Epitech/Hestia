@@ -35,6 +35,13 @@ $signalr.on("reminderdeleted", (ReminderOutput) => {
   posts.value = posts.value.filter(post => post.id !== ReminderOutput)
 })
 
+// $signalr.on("ReminderUpdated", (ReminderOutput) => {
+//  console.log(ReminderOutput)
+// })
+// $signalr.on("RemindersUpdated", (ReminderOutput) => {
+//  console.log(ReminderOutput)
+// })
+
 
 const getall = async () => {
   const data = await api.getAllReminders(userStore.user.colocationId);
