@@ -45,7 +45,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      signalrUrl: 'https://hestiaapp.org/api/hestiaHub'
+      signalrUrl: 'https://hestiaapp.org/hestiaHub'
     }
   },
 

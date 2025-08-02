@@ -4,9 +4,10 @@ export default defineNuxtPlugin(() => {
     const config = useRuntimeConfig()
 
     const connection = new HubConnectionBuilder()
-        .withUrl("https://hestiaapp.org/api/hestiaHub", {
+        .withUrl("https://hestiaapp.org/hestiaHub", {
             skipNegotiation: true,
-            transport: HttpTransportType.WebSockets
+            transport: HttpTransportType.WebSockets,
+            withCredentials: true
         })
         .withAutomaticReconnect()
         .configureLogging(LogLevel.Information)

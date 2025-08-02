@@ -25,14 +25,13 @@ const posts = ref([]);
 
 const { $signalr } = useNuxtApp()
 
-onMounted(() => {
-  $signalr.invoke("JoinColocationGroup", userStore.user.colocationId)
-    .then(() => console.log("Demande envoyée au hub"))
-    .catch(err => console.error("Erreur lors de l'envoi", err));
-  $signalr.on("NewReminderAdded", (ReminderOutput) => {
-    console.log(`Nouveau post it : ${ReminderOutput}`);
-  })
+$signalr.on("NewReminderAdded", (ReminderOutput) => {
+  console.log(ReminderOutput);
 })
+$signalr.on("reminderdeleted", (ReminderOutput) => {
+  console.log(ReminderOutput);
+})
+
 
 const getall = async () => {
   const data = await api.getAllReminders(userStore.user.colocationId);
