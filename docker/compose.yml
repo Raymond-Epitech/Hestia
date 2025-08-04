@@ -15,6 +15,7 @@ services:
     - app-network
     volumes:
       - /etc/ssl:/etc/ssl
+      - ../backend/Api/wwwroot:/app/wwwroot
 
 networks:
   app-network:

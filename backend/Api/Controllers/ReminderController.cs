@@ -94,5 +94,39 @@ namespace Api.Controllers
 
             return Ok(await reminderService.DeleteReminderAsync(id));
         }
+
+        [HttpPost("/images")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<string>> UploadImage(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                throw new InvalidEntityException("File is empty");
+
+            await Task.Delay(100);
+
+            return Ok();
+        }
+
+        [HttpGet("/images/{fileName}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> GetImage(string fileName)
+        {
+            var filePath = Path.Combine("wwwroot/uploads/", fileName);
+
+            if (!System.IO.File.Exists(filePath))
+                throw new NotFoundException("Image not found");
+
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+
+            await Task.Delay(100);
+
+            return File(fileBytes, "image/jpeg", fileName);
+        }
     }
 }
