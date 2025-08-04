@@ -105,12 +105,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Guid>> DeleteChoreMessageByChoreId(Guid choreId)
+        public async Task<ActionResult<Guid>> DeleteChoreMessageByChoreMessageId(ChoreMessageToDelete choreMessage)
         {
-            if (choreId == Guid.Empty)
-                throw new InvalidEntityException("Chore Id is empty");
+            if (choreMessage.ChoreMessageId == Guid.Empty || choreMessage.ColocationId == Guid.Empty)
+                throw new InvalidEntityException("One of the Id is empty");
 
-            return Ok(await choreService.DeleteChoreMessageByChoreIdAsync(choreId));
+            return Ok(await choreService.DeleteChoreMessageByChoreMessageIdAsync(choreMessage));
         }
 
         [HttpGet("Enroll/ByUser")]

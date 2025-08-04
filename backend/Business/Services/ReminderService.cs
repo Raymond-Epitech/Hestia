@@ -109,7 +109,7 @@ public class ReminderService(ILogger<ReminderService> logger,
             CoordY = reminder.CoordY,
             CoordZ = reminder.CoordZ
         };
-        await realTimeService.SendToGroupAsync(reminder.ColocationId, "NewReminderAdded", reminder);
+        await realTimeService.SendToGroupAsync(reminder.ColocationId, "NewReminderAdded", reminderOutput);
 
         logger.LogInformation("Succes : Reminder added");
             
@@ -149,7 +149,7 @@ public class ReminderService(ILogger<ReminderService> logger,
             CoordY = reminder.CoordY,
             CoordZ = reminder.CoordZ
         };
-        await realTimeService.SendToGroupAsync(reminder.ColocationId, "ReminderUpdated", reminder);
+        await realTimeService.SendToGroupAsync(reminder.ColocationId, "ReminderUpdated", reminderOutput);
 
         logger.LogInformation("Succes : Reminder updated");
 
@@ -234,7 +234,7 @@ public class ReminderService(ILogger<ReminderService> logger,
             CoordY = r.CoordY,
             CoordZ = r.CoordZ
         }).ToList();
-        await realTimeService.SendToGroupAsync(reminders.First().ColocationId, "RemindersUpdated", reminders); ;
+        await realTimeService.SendToGroupAsync(reminders.First().ColocationId, "RemindersUpdated", reminderOutputs); ;
 
         logger.LogInformation("Succes : Reminders all updated");
 
