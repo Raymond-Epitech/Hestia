@@ -28,7 +28,7 @@ try
             listenOptions.UseHttps(cert);
         });*/
     });
-*/
+
     // Controllers
     builder.Services.AddMvcCore();
     builder.Services.AddControllers().AddNewtonsoftJson();
