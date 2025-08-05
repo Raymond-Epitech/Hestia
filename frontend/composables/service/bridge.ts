@@ -6,7 +6,7 @@ export class bridge {
     constructor() {
         console.log('Bridge instance created')
     }
-    url: string = "https://hestiaapp.org";
+    url: string = "http://91.134.48.124:8081";
     jwt: string = "";
 
     seturl(new_url: string) {
@@ -737,4 +737,42 @@ export class bridge {
             return false;
         });
     }
+
+    // Image section:
+
+    async uploadImage(file: File,): Promise<string> {
+        const formData = new FormData();
+        formData.append('file', file, file.name);
+        return await fetch(`${this.url}/images`, {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: formData
+        }).then(response => {
+            if (response.status == 200) {
+                return response.text();
+            }
+            return '';
+        });
+    }
+
+    async getImage(name: string): Promise<string> {
+        return await fetch(`${this.url}/images/${name}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            console.log("Image response status:", response.status);
+            console.log("Image response:", response);
+            if (response.status == 200) {
+                return response.blob().then(blob => {
+                    return URL.createObjectURL(blob);
+                });
+            }
+            return '';
+        });
+    }
+
 }
