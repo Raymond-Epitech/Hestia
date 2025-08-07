@@ -33,7 +33,7 @@
     "translatte": "^3.0.1"
   },
   "overrides": {
-    "vue": "latest"
+    "vue": "^3.5.18"
   },
   "devDependencies": {
     "nuxt-modal": "^1.0.2",
