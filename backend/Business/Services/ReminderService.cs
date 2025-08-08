@@ -42,6 +42,7 @@ public class ReminderService(ILogger<ReminderService> logger,
                 Color = r.Color,
                 CreatedBy = r.CreatedBy,
                 CreatedAt = r.CreatedAt,
+                IsImage = r.IsImage,
                 CoordX = r.CoordX,
                 CoordY = r.CoordY,
                 CoordZ = r.CoordZ
