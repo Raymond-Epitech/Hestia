@@ -14,5 +14,6 @@ namespace Business.Interfaces
         Task<int> UpdateRangeReminderAsync(List<ReminderUpdate> inputs);
         Task<Guid> DeleteReminderAsync(Guid id);
         Task<FileDTO> GetImageByNameAsync(string fileName);
+        string DeleteImage(string fileName);
     }
 }

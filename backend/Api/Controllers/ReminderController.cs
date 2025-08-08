@@ -114,5 +114,18 @@ namespace Api.Controllers
 
             return File(file.Content, file.ContentType, file.FileName);
         }
+
+        [HttpDelete("/images/{fileName}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult DeleteImage(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+                throw new InvalidEntityException("File name is empty");
+
+            return Ok(reminderService.DeleteImage(fileName));
+        }
     }
 }

@@ -172,12 +172,12 @@ public class ReminderService(ILogger<ReminderService> logger,
     /// <param name="fileName">The file name</param>
     /// <returns>The file name</returns>
     /// <exception cref="InvalidDataException"></exception>
-    private string DeleteImage(string fileName)
+    public string DeleteImage(string fileName)
     {
-        if (string.IsNullOrWhiteSpace(fileName))
-            throw new InvalidDataException("File name invalid");
-
         var filePath = Path.Combine(Directory.GetCurrentDirectory(), ImageRoute, fileName);
+
+        if (!File.Exists(filePath))
+            throw new NotFoundException("Image not found");
 
         File.Delete(filePath);
 
