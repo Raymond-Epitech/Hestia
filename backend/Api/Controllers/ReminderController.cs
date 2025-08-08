@@ -1,6 +1,7 @@
 ﻿using Business.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Shared.Exceptions;
 using Shared.Models.Input;
 using Shared.Models.Output;
@@ -42,11 +43,18 @@ namespace Api.Controllers
         [HttpPost]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Guid>> AddReminder(ReminderInput input)
         {
             if (input.ColocationId == Guid.Empty)
                 throw new InvalidEntityException("ColocationId is empty");
+
+            if (input.IsImage && (input.Image is null || input.Image.Length == 0))
+                throw new InvalidEntityException("Image is empty or invalid");
+
+            if (!input.IsImage && input.Content.IsNullOrEmpty())
+                throw new InvalidEntityException("Content is empty or invalid");
 
             return Ok(await reminderService.AddReminderAsync(input));
         }
@@ -95,21 +103,6 @@ namespace Api.Controllers
             return Ok(await reminderService.DeleteReminderAsync(id));
         }
 
-        [HttpPost("/images")]
-        [Authorize]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<string>> UploadImage(IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-                throw new InvalidEntityException("File is empty");
-
-            await Task.Delay(100);
-
-            return Ok();
-        }
-
         [HttpGet("/images/{fileName}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
@@ -117,16 +110,9 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> GetImage(string fileName)
         {
-            var filePath = Path.Combine("wwwroot/uploads/", fileName);
+            var file = await reminderService.GetImageByNameAsync(fileName);
 
-            if (!System.IO.File.Exists(filePath))
-                throw new NotFoundException("Image not found");
-
-            var fileBytes = System.IO.File.ReadAllBytes(filePath);
-
-            await Task.Delay(100);
-
-            return File(fileBytes, "image/jpeg", fileName);
+            return File(file.Content, file.ContentType, file.FileName);
         }
     }
 }
