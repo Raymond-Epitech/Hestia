@@ -114,9 +114,13 @@ export class bridge {
 
     // User section:
 
-    async login(google_token: string) {
+    async login(google_token: string, push_token: string) {
         return await fetch(this.url + "/api/User/Login?googleToken=" + google_token, {
-            method: 'POST'
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(push_token)
         }).then(async response => {
             if (response.status == 200) {
                 return await response.json();
@@ -131,13 +135,13 @@ export class bridge {
         })
     }
 
-    async addUser(user: User, google_token: string) {
+    async addUser(user: User, google_token: string, push_token: string) {
         return await fetch(this.url + "/api/User/Register?googleToken=" + google_token, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(user)
+            body: JSON.stringify([user, push_token])
         }).then(async response => {
             if (response.status == 200) {
                 return await response.json();
