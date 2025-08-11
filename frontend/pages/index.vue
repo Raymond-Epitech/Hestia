@@ -1,5 +1,7 @@
 <template>
   <div>
+    <button @click="chargeImage">Charger l'image</button>
+    <img :src="imageget" alt="Image" />
     <AddPostModal v-model="isModalOpen" @proceed="getall()" />
     <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
       <img src="~/public/plus.png" class="plus">
@@ -52,6 +54,18 @@ onMounted(async () => {
   await getall();
 });
 
+const imageget = ref('');
+function chargeImage() {
+    api.getImagefromcache('test.jpg').then((image) => {
+        if (image) {
+            imageget.value = image;
+        } else {
+            console.error('Image non trouvée dans le cache');
+        }
+    }).catch((error) => {
+        console.error('Erreur lors de la récupération de l\'image :', error);
+    });
+}
 </script>
 
 <style scoped>
