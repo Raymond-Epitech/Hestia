@@ -1,5 +1,6 @@
 <template>
     <input type="file" accept="image/*" @change="handleFile" />
+    <button @click="chargeImage">Charger l'image</button>
     <img :src="imageget" alt="Image" />
 </template>
 
@@ -24,9 +25,18 @@ function handleFile(event) {
         console.log('Image sélectionnée :', file)
     }
 }
+function chargeImage() {
+    api.getImagefromcache('test.jpg').then((image) => {
+        if (image) {
+            imageget.value = image;
+        } else {
+            console.error('Image non trouvée dans le cache');
+        }
+    }).catch((error) => {
+        console.error('Erreur lors de la récupération de l\'image :', error);
+    });
+}
 onMounted(async () => {
-  const test = await api.getImage('test2.png');
-    console.log(test);
-    imageget.value = test;
+    await api.getImagetocache('test.jpg');
 });
 </script>
