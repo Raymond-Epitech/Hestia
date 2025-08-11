@@ -1,6 +1,11 @@
 import { json } from "stream/consumers";
 import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif, refund, shoppinglist, shoppinglist_item, expenses_category, expenses_category_get } from "./type";
+import { Capacitor } from '@capacitor/core'
+const { Filesystem, Directory } = await import('@capacitor/filesystem');
 
+function isNative() {
+    return Capacitor.isNativePlatform()
+}
 
 export class bridge {
     constructor() {
@@ -757,22 +762,56 @@ export class bridge {
         });
     }
 
-    async getImage(name: string): Promise<string> {
-        return await fetch(`${this.url}/images/${name}`, {
+    async getImagetocache(name: string): Promise<string> {
+        const url = `${this.url}/images/${name}`;
+        return await fetch(url, {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + this.jwt
             }
-        }).then(response => {
-            console.log("Image response status:", response.status);
-            console.log("Image response:", response);
+        }).then(async response => {
             if (response.status == 200) {
-                return response.blob().then(blob => {
-                    return URL.createObjectURL(blob);
-                });
+                const blob = await response.blob();
+                if (isNative()) {
+                    const reader = new FileReader()
+                    reader.onloadend = async () => {
+                        const base64Data = (reader.result as string).split(',')[1];
+                        await Filesystem.writeFile({
+                            path: name,
+                            data: base64Data,
+                            directory: Directory.Data
+                        })
+                    }
+                    reader.readAsDataURL(blob)
+                } else {
+                    const cache = await caches.open('images-cache');
+                    await cache.put(url, new Response(blob));
+                }
             }
             return '';
         });
     }
 
+    async getImagefromcache(name: string): Promise<string | null> {
+        const url = `${this.url}/images/${name}`;
+        if (isNative()) {
+            // Mobile : lecture depuis le disque
+            try {
+                const result = await Filesystem.readFile({
+                    path: name,
+                    directory: Directory.Data
+                })
+                return `data:image/jpeg;base64,${result.data}`
+            } catch {
+                return null
+            }
+        } else {
+            // Web : lecture depuis Cache Storage API
+            const cache = await caches.open('images-cache')
+            const response = await cache.match(url)
+            if (!response) return null
+            const blob = await response.blob()
+            return URL.createObjectURL(blob)
+        }
+    }
 }
