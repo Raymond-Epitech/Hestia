@@ -787,8 +787,9 @@ export class bridge {
                     const cache = await caches.open('images-cache');
                     await cache.put(url, new Response(blob));
                 }
+                return 'OK';
             }
-            return '';
+            return 'KO';
         });
     }
 
