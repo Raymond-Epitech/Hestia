@@ -16,7 +16,9 @@ namespace Business.Services;
 
 public class UserService(ILogger<UserService> logger,
     IRepository<User> userRepository,
-    IJwtService jwtService) : IUserService
+    IRepository<FCMDevice> fcmDeviceRepository,
+    IJwtService jwtService,
+    IFirebaseNotificationService notificationService) : IUserService
 {
     /// <summary>
     /// Get all users from a collocation
@@ -183,6 +185,19 @@ public class UserService(ILogger<UserService> logger,
             PathToProfilePicture = validPayload.Picture ?? "default.jpg"
         };
 
+        if (userInput.FCMToken is not null)
+        {
+            var fmcDevice = new FCMDevice
+            {
+                FCMToken = userInput.FCMToken,
+                UserId = newUser.Id
+            };
+
+            await fcmDeviceRepository.AddAsync(fmcDevice);
+            
+            logger.LogInformation($"Succes : FCM Device {fmcDevice.FCMToken} added for user {newUser.Id}");
+        }
+
         await userRepository.AddAsync(newUser);
 
         await userRepository.SaveChangesAsync();
@@ -217,13 +232,13 @@ public class UserService(ILogger<UserService> logger,
     /// <exception cref="InvalidTokenException">Token is invalid</exception>
     /// <exception cref="NotFoundException">User is not found</exception>
     /// <returns>Info of user</returns>
-    public async Task<UserInfo> LoginUserAsync(string googleToken)
+    public async Task<UserInfo> LoginUserAsync(LoginInput loginInput)
     {
         GoogleJsonWebSignature.Payload validPayload = null!;
 
         try
         {
-            validPayload = await jwtService.ValidateGoogleTokenAsync(googleToken);
+            validPayload = await jwtService.ValidateGoogleTokenAsync(loginInput.GoogleToken);
             logger.LogInformation("Token valid");
         }
         catch (Exception ex)
@@ -252,6 +267,20 @@ public class UserService(ILogger<UserService> logger,
         user.LastConnection = DateTime.UtcNow;
 
         userRepository.Update(user);
+
+        if (loginInput.FCMToken is not null && await fcmDeviceRepository.Query().AnyAsync(f => f.FCMToken != loginInput.FCMToken))
+        {
+            var fmcDevice = new FCMDevice
+            {
+                FCMToken = loginInput.FCMToken,
+                UserId = user.Id
+            };
+
+            await fcmDeviceRepository.AddAsync(fmcDevice);
+
+            logger.LogInformation($"Succes : FCM Device {fmcDevice.FCMToken} added for user {user.Id}");
+        }
+
         await userRepository.SaveChangesAsync();
 
         logger.LogInformation($"Succes : User {user.Id}'s last connexion updated");
@@ -275,5 +304,61 @@ public class UserService(ILogger<UserService> logger,
         logger.LogInformation("Succes : User logged in and JWT created");
 
         return userInfo;
+    }
+
+    /// <summary>
+    /// Send a notification to a user
+    /// </summary>
+    /// <param name="UserId">The id of the user</param>
+    /// <returns>The id of the User</returns>
+    /// <exception cref="NotFoundException"></exception>
+    public async Task<Guid> SendNotificationToUserAsync(Guid UserId)
+    {
+        var user = await userRepository.GetByIdAsync(UserId);
+
+        if (user == null)
+            throw new NotFoundException($"User {UserId} not found");
+
+        var fcmDevices = await fcmDeviceRepository.Query()
+            .Where(f => f.UserId == UserId)
+            .ToListAsync();
+
+        if (fcmDevices.Count == 0)
+            throw new NotFoundException($"No FCM devices found for user {UserId}");
+
+        await notificationService.SendNotificationAsync(fcmDevices.Select(f => f.FCMToken).ToList(), "Notification Title", "Notification Body");
+
+        logger.LogInformation($"Succes : Notification sent to user {UserId}");
+        
+        return UserId;
+    }
+
+    /// <summary>
+    /// Send a notification to all users in a colocation
+    /// </summary>
+    /// <param name="ColocationId">The id of the colocation</param>
+    /// <returns>The ids of all the user who received a notification</returns>
+    /// <exception cref="NotFoundException"></exception>
+    public async Task<List<Guid>> SendNotificationToColocationAsync(Guid ColocationId)
+    {
+        var users = await userRepository.Query()
+            .Where(u => u.ColocationId == ColocationId && !u.IsDeleted)
+            .ToListAsync();
+
+        if (users.Count == 0)
+            throw new NotFoundException($"No users found in colocation {ColocationId}");
+
+        var fcmDevices = await fcmDeviceRepository.Query()
+            .Where(f => users.Select(u => u.Id).Contains(f.UserId))
+            .ToListAsync();
+
+        if (fcmDevices.Count == 0)
+            throw new NotFoundException($"No FCM devices found for colocation {ColocationId}");
+
+        await notificationService.SendNotificationAsync(fcmDevices.Select(f => f.FCMToken).ToList(), "Colocation Notification", "Notification Body");
+
+        logger.LogInformation($"Succes : Notification sent to colocation {ColocationId}");
+
+        return users.Select(u => u.Id).ToList();
     }
 }

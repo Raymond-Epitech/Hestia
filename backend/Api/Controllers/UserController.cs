@@ -95,12 +95,36 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<UserInfo>> Login(string googleToken, string? FCMToken)
+        public async Task<ActionResult<UserInfo>> Login(LoginInput loginInput)
         {
-            if (googleToken is "")
+            if (loginInput.GoogleToken is "")
                 throw new InvalidEntityException("Google token is empty");
 
-            return Ok(await userService.LoginUserAsync(googleToken));
+            return Ok(await userService.LoginUserAsync(loginInput));
+        }
+
+        [HttpPost("Notifications/users")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> SendNotificationToUser(Guid UserId)
+        {
+            await userService.SendNotificationToUserAsync(UserId);
+
+            return Ok(UserId);
+        }
+
+        [HttpPost("Notifications/colocation")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> SendNotificationToColocation(Guid UserId)
+        {
+            await userService.SendNotificationToColocationAsync(UserId);
+
+            return Ok(UserId);
         }
     }
 }

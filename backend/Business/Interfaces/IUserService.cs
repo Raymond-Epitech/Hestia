@@ -14,6 +14,8 @@ namespace Business.Interfaces
         Task<Guid> DeleteUserAsync(Guid id);
         Task<Guid> QuitColocationAsync(Guid id);
         Task<UserInfo> RegisterUserAsync(string code, UserInput userInput);
-        Task<UserInfo> LoginUserAsync(string code);
+        Task<UserInfo> LoginUserAsync(LoginInput loginInput);
+        Task<Guid> SendNotificationToUserAsync(Guid UserId);
+        Task<List<Guid>> SendNotificationToColocationAsync(Guid ColocationId);
     }
 }

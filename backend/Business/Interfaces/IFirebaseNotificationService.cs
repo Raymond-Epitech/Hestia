@@ -2,6 +2,6 @@
 
 public interface IFirebaseNotificationService
 {
-    Task SendNotificationAsync(string title, string body);
+    Task SendNotificationAsync(List<string> fcmDevices, string title, string body);
 }
 
