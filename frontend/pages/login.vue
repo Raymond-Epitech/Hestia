@@ -35,6 +35,7 @@ import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/store/auth';
 import { useUserStore } from '~/store/user';
 import { PushNotifications } from '@capacitor/push-notifications';
+import { addListeners, registerNotifications } from '~/store/push';
 
 definePageMeta({
     layout: false
@@ -58,7 +59,10 @@ onMounted(() => {
             webClientId: '80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com', // the web client id for Android and Web
         }
     })
+    registerNotifications();
 })
+
+addListeners();
 
 function goLogin() {
     registretion.value = false;

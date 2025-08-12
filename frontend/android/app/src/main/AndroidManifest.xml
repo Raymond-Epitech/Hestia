@@ -12,19 +12,19 @@
 
         <!-- Firebase push notifications service and settings -->
         <service
-            android:name=".java.MyFirebaseMessagingService"
+            android:name=".HestiaFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
-        <!--meta-data
+        <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_stat_ic_notification" /-->
+            android:resource="@drawable/ic_hestia_push" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/colorAccent" />
+            android:resource="@color/colorNotifications" />
         <!--meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_notification_channel_id" /-->
