@@ -8,7 +8,6 @@ public class FirebaseNotificationService : IFirebaseNotificationService
 {
     private readonly HttpClient _httpClient;
     private readonly FirebaseSettings _settings;
-    private const string FirebaseUrl = "https://fcm.googleapis.com/fcm/send";
 
     public FirebaseNotificationService(HttpClient httpClient, IOptions<FirebaseSettings> options)
     {
@@ -30,7 +29,7 @@ public class FirebaseNotificationService : IFirebaseNotificationService
                 }
             };
 
-            var request = new HttpRequestMessage(HttpMethod.Post, FirebaseUrl);
+            var request = new HttpRequestMessage(HttpMethod.Post, _settings.Url);
             request.Headers.TryAddWithoutValidation("Authorization", $"key={_settings.ServerKey}");
             request.Content = new StringContent(JsonSerializer.Serialize(message), Encoding.UTF8, "application/json");
 

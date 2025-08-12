@@ -95,7 +95,7 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<UserInfo>> Login(string googleToken)
+        public async Task<ActionResult<UserInfo>> Login(string googleToken, string? FCMToken)
         {
             if (googleToken is "")
                 throw new InvalidEntityException("Google token is empty");
