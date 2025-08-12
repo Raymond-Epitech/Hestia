@@ -232,13 +232,13 @@ public class UserService(ILogger<UserService> logger,
     /// <exception cref="InvalidTokenException">Token is invalid</exception>
     /// <exception cref="NotFoundException">User is not found</exception>
     /// <returns>Info of user</returns>
-    public async Task<UserInfo> LoginUserAsync(LoginInput loginInput)
+    public async Task<UserInfo> LoginUserAsync(string googleToken, LoginInput? loginInput)
     {
         GoogleJsonWebSignature.Payload validPayload = null!;
 
         try
         {
-            validPayload = await jwtService.ValidateGoogleTokenAsync(loginInput.GoogleToken);
+            validPayload = await jwtService.ValidateGoogleTokenAsync(googleToken);
             logger.LogInformation("Token valid");
         }
         catch (Exception ex)
@@ -268,7 +268,7 @@ public class UserService(ILogger<UserService> logger,
 
         userRepository.Update(user);
 
-        if (loginInput.FCMToken is not null && await fcmDeviceRepository.Query().AnyAsync(f => f.FCMToken != loginInput.FCMToken))
+        if (loginInput is not null && await fcmDeviceRepository.Query().AnyAsync(f => f.FCMToken != loginInput.FCMToken))
         {
             var fmcDevice = new FCMDevice
             {

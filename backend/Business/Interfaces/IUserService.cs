@@ -13,8 +13,8 @@ namespace Business.Interfaces
         Task<Guid> UpdateUserAsync(UserUpdate user);
         Task<Guid> DeleteUserAsync(Guid id);
         Task<Guid> QuitColocationAsync(Guid id);
-        Task<UserInfo> RegisterUserAsync(string code, UserInput userInput);
-        Task<UserInfo> LoginUserAsync(LoginInput loginInput);
+        Task<UserInfo> RegisterUserAsync(string googleToken, UserInput userInput);
+        Task<UserInfo> LoginUserAsync(string googleToken, LoginInput? loginInput);
         Task<Guid> SendNotificationToUserAsync(Guid UserId);
         Task<List<Guid>> SendNotificationToColocationAsync(Guid ColocationId);
     }

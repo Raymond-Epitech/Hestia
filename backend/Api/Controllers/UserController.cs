@@ -95,12 +95,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<UserInfo>> Login(LoginInput loginInput)
+        public async Task<ActionResult<UserInfo>> Login(string googleToken, LoginInput? loginInput)
         {
-            if (loginInput.GoogleToken is "")
+            if (googleToken is "")
                 throw new InvalidEntityException("Google token is empty");
 
-            return Ok(await userService.LoginUserAsync(loginInput));
+            return Ok(await userService.LoginUserAsync(googleToken, loginInput));
         }
 
         [HttpPost("Notifications/users")]
