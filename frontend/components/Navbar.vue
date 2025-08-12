@@ -22,7 +22,6 @@
 
 <script setup>
 const router = useRouter();
-const colorMode = useColorMode()
 const redirect = (page) => {
     router.push(page);
 }

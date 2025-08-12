@@ -10,7 +10,6 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     'pinia-plugin-persistedstate/nuxt',
     '@nuxtjs/ionic',
-    '@nuxtjs/color-mode',
   ],
 
   css: [
