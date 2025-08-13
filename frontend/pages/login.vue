@@ -152,10 +152,14 @@ const login = async () => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #a3d397;
+    background-color: white;
     border-radius: 20px;
     box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
     text-align: center;
+}
+
+.dark .login {
+    background-color: black;
 }
 
 .register {
@@ -167,25 +171,38 @@ const login = async () => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #a3d397;
+    background-color: white;
     border-radius: 20px;
     box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
 }
 
+.dark .register {
+    background-color: black;
+}
+
 h2 {
-    color: #E7FEED;
+    color: #000000;
     font-weight: 600;
+}
+
+.dark h2 {
+    color: #FFFFFF;
 }
 
 .input {
     margin-bottom: 10px;
     outline: none;
-    background-color: #E7FEED;
+    background-color: #FFFCF7;
     border-radius: 8px;
     border: none;
     text-align: center;
-    color: #85AD7B;
+    color: #4B4B4B;
     font-weight: 600;
+}
+
+.dark .input {
+    background-color: #1D1B20;
+    color: #D6D6D6;
 }
 
 .register-font {
@@ -203,11 +220,16 @@ h2 {
     margin-top: 14px;
     padding: 0px 5px;
     border-radius: 8px;
-    color: #E7FEED;
-    background-color: #074338;
+    color: white;
+    background-color: black;
     font-weight: 600;
     border: none;
     text-align: center;
+}
+
+.dark .register-button {
+    background-color: white;
+    color: black;
 }
 
 .google-button {
@@ -219,10 +241,15 @@ h2 {
     padding: 5px;
     background-color: #E7FEED;
     border-radius: 14px;
-    color: #074338;
+    color: black;
     font-weight: 600;
     font-size: 20px;
     text-decoration: none;
+}
+
+.dark .google-button {
+    background-color: #1D1B20;
+    color: #E7FEED;
 }
 
 .alert {

@@ -79,5 +79,9 @@
   "login_with_google": "Google Connect",
   "error_register": "*ユーザー名を示してください*",
   "colocation_id": "共有",
-  "create_account": "アカウントを作成する"
+  "create_account": "アカウントを作成する",
+  "nav_profile": "プロフィール",
+  "nav_tasks": "タスク",
+  "nav_expenses": "費用",
+  "nav_messages": "メッセージ"
 }

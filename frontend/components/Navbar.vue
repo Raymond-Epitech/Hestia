@@ -3,12 +3,12 @@
         <a class="button" :onClick="() => redirect('/settings')"> <!--change to profile page-->
             <img src="../public/navbar/Profile.svg" class="icon">
             <br>
-            <p class="icon-subtext">Profile</p>
+            <p class="icon-subtext">{{ $t('nav_profile') }}</p>
         </a>
         <a class="button" :onClick="() => redirect('/tasks')">
             <img src="../public/navbar/Tasks.svg" class="icon">
             <br>
-            <p class="icon-subtext">Tasks</p>
+            <p class="icon-subtext">{{ $t('nav_tasks') }}</p>
         </a>
         <a class="wall-button" :onClick="() => redirect('/')">
             <img src="../public/navbar/Fridge.png" class="fridge">
@@ -16,12 +16,12 @@
         <a class="button" :onClick="() => redirect('/shopping')">
             <img src="../public/navbar/Message.svg" class="icon">
             <br>
-            <p class="icon-subtext">Messages</p>
+            <p class="icon-subtext">{{ $t('nav_messages') }}</p>
         </a>
         <a class="button" :onClick="() => redirect('/money')">
             <img src="../public/navbar/Money.svg" class="icon">
             <br>
-            <p class="icon-subtext">Budget</p>
+            <p class="icon-subtext">{{ $t('nav_expenses') }}</p>
         </a>
     </div>
 </template>

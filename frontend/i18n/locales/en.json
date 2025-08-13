@@ -79,5 +79,9 @@
   "login_with_google": "Google connect",
   "error_register": "*Please indicate your username*",
   "colocation_id": "Shared",
-  "create_account": "Create an account"
+  "create_account": "Create an account",
+  "nav_profile": "Profile",
+  "nav_tasks": "Tasks",
+  "nav_expenses": "Expenses",
+  "nav_messages": "Messages"
 }

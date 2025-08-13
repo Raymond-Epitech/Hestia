@@ -79,5 +79,9 @@
   "login_with_google": "Google Connect",
   "error_register": "*请指示您的用户名*",
   "colocation_id": "共享",
-  "create_account": "创建一个帐户"
+  "create_account": "创建一个帐户",
+  "nav_profile": "个人资料",
+  "nav_tasks": "任务",
+  "nav_expenses": "费用",
+  "nav_messages": "消息"
 }
