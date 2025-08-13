@@ -28,11 +28,15 @@ const logout = () => {
 <style scoped>
 .body-container {
   position: absolute;
-  border-top: 1px solid #d2edd9;
+  border-top: 1px solid #f3f3f3;
   top: 25pt;
   bottom: 58px;
   left: 0;
   right: 0;
   overflow: auto;
+}
+
+.dark .body-container {
+  border-top: 1px solid #333333;
 }
 </style>

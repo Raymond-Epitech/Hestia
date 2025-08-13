@@ -1,6 +1,6 @@
 <template>
     <div class="icon">
-        <img src="../public/profile-icon.png" alt="profile icon" :style="{height: `${props.height}px`, width: `${props.width}px`}">
+        <img class="icon_image" src="../public/profile-icon.svg" alt="profile icon" :style="{height: `${props.height}px`, width: `${props.width}px`}">
     </div>
 </template>
 
@@ -24,6 +24,19 @@ const props = defineProps({
 <style scoped>
 .icon {
     border-radius: 50px;
-    background-color: #88c0b0
+    background-color: white
 }
+
+.dark .icon {
+    background-color: black;
+}
+
+.icon_image {
+    filter: brightness(29%);
+}
+
+.dark .icon_image {
+    filter: none;
+}
+
 </style>

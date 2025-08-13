@@ -4,11 +4,11 @@
             <h1>{{ title }}</h1>
             <p class="text">{{ text }}</p>
             <div class="button">
-                <button class="cancel-button" @click="emit('close')">
-                    <Texte_language source="cancel" />
-                </button>
                 <button class="confirm-button" @click="emit('confirm')">
                     <Texte_language source="confirm" />
+                </button>
+                <button class="cancel-button" @click="emit('close')">
+                    <Texte_language source="cancel" />
                 </button>
             </div>
         </div>
@@ -44,6 +44,7 @@ const emit = defineEmits([
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    backdrop-filter: blur(6px);
 }
 
 .popup {
@@ -53,8 +54,9 @@ const emit = defineEmits([
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #E7FEED;
-    padding: 20px;
+    background-color: #1D1B20;
+    
+    padding: 4%;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     z-index: 1000;
@@ -80,21 +82,24 @@ const emit = defineEmits([
 .button {
     display: flex;
     justify-content: center;
+    gap: 16px
 }
 
 .text {
     text-align: center;
     font-size: 16px;
-    color: #333;
+    color: white;
+    font-weight: bold;
 }
 .popup .cancel-button {
-    margin-right: 10px;
-    background-color: #00000088;
-    color: #FFFFFF;
+    background-color: #000000;
+    color: white;
+    width: 120px;
 }
 
 .popup .confirm-button {
-    background-color: #a3d297;
+    background-color: #526074;
     color: white;
+    width: 120px;
 }
 </style>

@@ -94,6 +94,10 @@ const cancelDelete = () => {
     background-color: white;
 }
 
+.dark .close {
+    filter: brightness(0);
+}
+
 .post h1 {
     position: absolute;
     left: 50%;

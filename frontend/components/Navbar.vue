@@ -1,21 +1,27 @@
 <template>
     <div class="navbar">
-        <a class="money-button" :onClick="() => redirect('/settings')">
-            <img src="../public/settings.png" class="settings">
+        <a class="button" :onClick="() => redirect('/settings')"> <!--change to profile page-->
+            <img src="../public/navbar/Profile.svg" class="icon">
+            <br>
+            <p class="icon-subtext">Profile</p>
         </a>
-        <a class="task-button" :onClick="() => redirect('/tasks')">
-            <div class="task-button-top-bar"></div>
-            <div class="task-button-middle-bar"></div>
-            <div class="task-button-bottom-bar"></div>
+        <a class="button" :onClick="() => redirect('/tasks')">
+            <img src="../public/navbar/Tasks.svg" class="icon">
+            <br>
+            <p class="icon-subtext">Tasks</p>
         </a>
         <a class="wall-button" :onClick="() => redirect('/')">
-            <img src="../public/frigo.png" class="fridge">
+            <img src="../public/navbar/Fridge.png" class="fridge">
         </a>
-        <a class="money-button" :onClick="() => redirect('/money')">
-            <img src="../public/money-button.png" class="money">
+        <a class="button" :onClick="() => redirect('/shopping')">
+            <img src="../public/navbar/Message.svg" class="icon">
+            <br>
+            <p class="icon-subtext">Messages</p>
         </a>
-        <a class="shopping-button" :onClick="() => redirect('/shopping')">
-            <img src="../public/shopping.png" class="shopping">
+        <a class="button" :onClick="() => redirect('/money')">
+            <img src="../public/navbar/Money.svg" class="icon">
+            <br>
+            <p class="icon-subtext">Budget</p>
         </a>
     </div>
 </template>
@@ -31,44 +37,54 @@ const redirect = (page) => {
 .navbar {
     position: fixed;
     bottom: 0px;
-    width: 100vw;
-    height: 58px;
-    background-color: #074338;
+    width: 100%;
+    height: 8%;
+    background-color: #FFFFFF;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: repeat(5, 1fr);
     justify-content: center;
     align-items: center;
     padding: 0%;
 }
 
-.task-button {
+.dark .navbar{
+    background-color: #000000;
+}
+
+.icon-subtext {
+    font-size: 65%;
+    margin-top: 1%;
+    font-weight: bold;
+    list-style: none;
+    text-align: center;
+    display: block;
+    color: #4B4B4B;
+}
+
+.dark .icon-subtext {
+    color: #D6D6D6;
+}
+
+.button {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
+    height: 100%;
     width: 100%;
-    height: 35px;
+    padding-top: 7%;
+    margin-top: 5%;
+    text-decoration: none;
 }
 
-.task-button-top-bar {
-    width: 39px;
-    height: 7px;
-    background-color: #85AD7B;
-    border-radius: 8px;
+.icon {
+    height: 60%;
+    filter: brightness(29%);
 }
 
-.task-button-middle-bar {
-    width: 39px;
-    height: 7px;
-    background-color: #FFC93D;
-    border-radius: 8px;
-}
-
-.task-button-bottom-bar {
-    width: 39px;
-    height: 7px;
-    background-color: #FF6A61;
-    border-radius: 8px;
+.dark .icon {
+    color: #FFFFFF;
+    filter: none;
 }
 
 .wall-button {
@@ -80,34 +96,9 @@ const redirect = (page) => {
 
 .fridge {
     display: flex;
-    max-width: 125px;
-    height: 200px;
-    margin-top: -30px;
+    max-width: 175%;
+    height: 400%;
+    margin-top: -40%;
 }
 
-.money-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-}
-
-.money {
-    height: 58px;
-    width: 66px;
-}
-
-.shopping-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-}
-
-.shopping {
-    height: 38px;
-    width: 38px;
-}
 </style>

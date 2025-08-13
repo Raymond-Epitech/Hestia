@@ -10,6 +10,9 @@
             <div class="modal-body left">
               <textarea class="modal-body-input" rows="3" maxlength="150" v-model="post.content" required></textarea>
             </div>
+            <div class="modal-header left">
+              <h1 class="modal-header-text">{{ $t('post-color') }} :</h1>
+            </div>
             <div class="post-colors-buttons">
               <input class="form-check-input color-choice blue" v-model="post.color" type="radio" name="gridRadios"
                 id="gridRadios1" value="blue" required>
@@ -304,7 +307,7 @@ button:disabled {
 
 @keyframes slideIn {
   0% {
-    transform: translateY(-400px);
+    transform: translateY(-600px);
   }
 
   100% {
@@ -318,7 +321,7 @@ button:disabled {
   }
 
   100% {
-    transform: translateY(-400px);
+    transform: translateY(-600px);
   }
 }
 
