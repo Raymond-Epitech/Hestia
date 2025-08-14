@@ -45,7 +45,7 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Guid>> AddReminder(ReminderInput input)
+        public async Task<ActionResult<Guid>> AddReminder([FromForm] ReminderInput input)
         {
             if (input.ColocationId == Guid.Empty)
                 throw new InvalidEntityException("ColocationId is empty");
