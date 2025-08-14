@@ -108,11 +108,11 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Guid>> SendNotificationToUser(Guid UserId)
+        public async Task<ActionResult<Guid>> SendNotificationToUser(NotificationInput notification)
         {
-            await userService.SendNotificationToUserAsync(UserId);
+            await userService.SendNotificationToUserAsync(notification);
 
-            return Ok(UserId);
+            return Ok(notification.Id);
         }
 
         [HttpPost("Notifications/colocation")]
@@ -120,11 +120,11 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Guid>> SendNotificationToColocation(Guid UserId)
+        public async Task<ActionResult<List<Guid>>> SendNotificationToColocation(NotificationInput notification)
         {
-            await userService.SendNotificationToColocationAsync(UserId);
+            var users = await userService.SendNotificationToColocationAsync(notification);
 
-            return Ok(UserId);
+            return Ok(users);
         }
     }
 }
