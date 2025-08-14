@@ -1,13 +1,11 @@
 <template>
   <div>
-    <button @click="chargeImage">Charger l'image</button>
-    <img :src="imageget" alt="Image" />
     <AddPostModal v-model="isModalOpen" @proceed="getall()" />
     <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
       <img src="~/public/plus.png" class="plus">
     </button>
     <div v-for="(post, index) in posts" :key="index">
-      <Post :id="post.id" :text="post.content" :color="post.color" :createdBy="post.createdBy" @delete="getall()" />
+      <Post :id="post.id" :text="post.content" :color="post.color" :createdBy="post.createdBy" :isImage="post.isImage" @delete="getall()" />
     </div>
   </div>
 </template>
@@ -47,25 +45,17 @@ $signalr.on("reminderdeleted", (ReminderOutput) => {
 
 const getall = async () => {
   const data = await api.getAllReminders(userStore.user.colocationId);
+  for (const post of data) {
+    if (post.isImage) {
+      await api.getImagetocache(post.content);
+    }
+  }
   posts.value = data;
 };
 
 onMounted(async () => {
   await getall();
 });
-
-const imageget = ref('');
-function chargeImage() {
-    api.getImagefromcache('test.jpg').then((image) => {
-        if (image) {
-            imageget.value = image;
-        } else {
-            console.error('Image non trouvée dans le cache');
-        }
-    }).catch((error) => {
-        console.error('Erreur lors de la récupération de l\'image :', error);
-    });
-}
 </script>
 
 <style scoped>
