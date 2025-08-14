@@ -1,7 +1,10 @@
 export type Reminder = {
+    colocationId?: string,
     id: string,
     createdBy: string,
     content: string,
+    isImage: boolean,
+    image?: File | null,
     color: string,
     coordX: number,
     coordY: number,

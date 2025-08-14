@@ -1,10 +1,11 @@
 <template>
-    <div class="post" :class="color">
+    <div :class="[isImage ? 'post_image' : 'post', , !props.isImage && color]">
         <ProfileIcon class="profile-icon" :height="30" :width="30" />
         <button class="delete-button" @click="showPopup">
             <div class="close"></div>
         </button>
-        <p>{{ text }}</p>
+        <p v-if="!isImage">{{ text }}</p>
+        <img v-if="isImage" :src="imageget" alt="Post Image" class="image" />
     </div>
     <popup v-if="popup_vue" :text="$t('confirm_delete_reminder')" @confirm="confirmDelete" @close="cancelDelete">
     </popup>
@@ -26,13 +27,17 @@ const props = defineProps({
     color: {
         type: String,
         required: true
+    },
+    isImage: {
+        type: Boolean,
+        default: false
     }
 })
 const popup_vue = ref(false)
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
-
+const imageget = ref('');
 const emit = defineEmits(['delete'])
 
 const showPopup = () => {
@@ -52,6 +57,19 @@ const confirmDelete = async () => {
 const cancelDelete = () => {
     popup_vue.value = false;
 };
+onMounted(() => {
+    if (props.isImage) {
+        api.getImagefromcache(props.text).then((image) => {
+            if (image) {
+                imageget.value = image;
+            } else {
+                console.error('Image non trouvée dans le cache');
+            }
+        }).catch((error) => {
+            console.error('Erreur lors de la récupération de l\'image :', error);
+        });
+    }
+});
 
 </script>
 
@@ -63,6 +81,13 @@ const cancelDelete = () => {
     position: relative;
     border-radius: 96% 4% 92% 8% / 0% 100% 6% 100%;
     box-shadow: -9px 16px 12px 0px rgba(0, 0, 0, 0.33);
+}
+
+.post_image {
+    width: 250px;
+    margin: 20px;
+    position: relative;
+    background-color: transparent; 
 }
 
 .delete-button {
@@ -126,5 +151,10 @@ const cancelDelete = () => {
 
 .green {
     background-color: #9CFFB2;
+}
+
+.image {
+    max-width: 100%;
+
 }
 </style>
