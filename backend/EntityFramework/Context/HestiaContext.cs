@@ -18,6 +18,7 @@ namespace EntityFramework.Context
         public virtual DbSet<ShoppingList> ShoppingList { get; set; } = null!;
         public virtual DbSet<ShoppingItem> ShoppingItems { get; set; } = null!;
         public virtual DbSet<FCMDevice> FCMDevices { get; set; } = null!;
+        public virtual DbSet<Message> Messages { get; set; } = null!;
 
         public HestiaContext(DbContextOptions<HestiaContext> options) : base(options) { }
 
@@ -47,6 +48,11 @@ namespace EntityFramework.Context
                     .OnDelete(DeleteBehavior.Cascade);
 
                 c.HasMany(x => x.ShoppingLists)
+                    .WithOne(x => x.Colocation)
+                    .HasForeignKey(x => x.ColocationId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                c.HasMany(x => x.Messages)
                     .WithOne(x => x.Colocation)
                     .HasForeignKey(x => x.ColocationId)
                     .OnDelete(DeleteBehavior.Cascade);
