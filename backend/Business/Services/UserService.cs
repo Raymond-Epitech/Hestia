@@ -362,6 +362,12 @@ public class UserService(ILogger<UserService> logger,
         return users.Select(u => u.Id).ToList();
     }
 
+    /// <summary>
+    /// Delete a fcm device for a user
+    /// </summary>
+    /// <param name="input">The user id and the fcmToken</param>
+    /// <returns>The fcmToken deleted</returns>
+    /// <exception cref="NotFoundException"></exception>
     public async Task<string> LogoutUserAsync(LogoutInput input)
     {
         var fcmDevice = await fcmDeviceRepository.Query()
