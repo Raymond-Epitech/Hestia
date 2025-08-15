@@ -1,5 +1,4 @@
 ﻿using Business.Jwt;
-using Shared.Models.DTO;
 using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
@@ -17,5 +16,6 @@ namespace Business.Interfaces
         Task<UserInfo> LoginUserAsync(string googleToken, LoginInput? loginInput);
         Task<Guid> SendNotificationToUserAsync(NotificationInput notification);
         Task<List<Guid>> SendNotificationToColocationAsync(NotificationInput notification);
+        Task<string> LogoutUserAsync(LogoutInput input);
     }
 }

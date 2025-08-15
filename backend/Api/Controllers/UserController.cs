@@ -103,6 +103,18 @@ namespace Api.Controllers
             return Ok(await userService.LoginUserAsync(googleToken, loginInput));
         }
 
+        [HttpDelete("Logout")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<string>> Logout(LogoutInput input)
+        {
+            if (input.UserId == Guid.Empty)
+                throw new InvalidEntityException("User Id is empty");
+
+            return Ok(await userService.LogoutUserAsync(input));
+        }
+
         [HttpPost("Notifications/users")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
