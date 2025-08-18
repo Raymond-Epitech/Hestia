@@ -12,9 +12,12 @@
   },
   "dependencies": {
     "@capacitor/android": "^7.3.0",
-    "@capacitor/cli": "^7.3.0",
-    "@capacitor/core": "^7.3.0",
+    "@capacitor/app": "7.0.2",
+    "@capacitor/core": "7.4.2",
+    "@capacitor/haptics": "7.0.2",
     "@capacitor/ios": "^7.3.0",
+    "@capacitor/keyboard": "7.0.2",
+    "@capacitor/status-bar": "7.0.2",
     "@capgo/capacitor-social-login": "^7.6.7",
     "@microsoft/signalr": "^8.0.7",
     "@nuxt/kit": "^3.17.5",
@@ -24,6 +27,7 @@
     "@vuepic/vue-datepicker": "^11.0.2",
     "bootstrap": "^5.3.3",
     "bootstrap-vue": "^2.23.1",
+    "capacitor-secure-storage-plugin": "^0.11.0",
     "json-server": "^1.0.0-beta.3",
     "node": "^20.18.1",
     "nuxi": "^3.22.2",
@@ -33,9 +37,10 @@
     "translatte": "^3.0.1"
   },
   "overrides": {
-    "vue": "latest"
+    "vue": "3.5.18"
   },
   "devDependencies": {
+    "@capacitor/cli": "7.4.2",
     "nuxt-modal": "^1.0.2",
     "sass": "1.77.6"
   }
