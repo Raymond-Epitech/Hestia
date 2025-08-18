@@ -83,5 +83,9 @@
   "nav_profile": "个人资料",
   "nav_tasks": "任务",
   "nav_expenses": "费用",
-  "nav_messages": "消息"
+  "nav_messages": "消息",
+  "Display": "显示",
+  "system": "系统",
+  "dark": "深色",
+  "light": "浅色"
 }

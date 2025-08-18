@@ -5,6 +5,11 @@
                 <Texte_language source="Language" />
             </h1>
         </Rectangle>
+        <Rectangle color="#85AD7B" :onClick="() => redirect('/settings/display')" id="display">
+            <h1>
+                <Texte_language source="Display" />
+            </h1>
+        </Rectangle>
         <Rectangle color="#85AD7B" :onClick="() => redirect('/settings/colocation')" id="colocation">
             <h1>
                 <Texte_language source="Colocation" />
@@ -44,37 +49,37 @@
 </template>
 
 <script setup>
-import { useAuthStore } from '~/store/auth';
+    import { useAuthStore } from '~/store/auth';
 
-const authenticateUser = useAuthStore();
+    const authenticateUser = useAuthStore();
 
-const handleComposantClick = (id) => {
-    console.log(`ID du composant cliqué: ${id}`);
-    alert(`ID du composant cliqué: ${id}`);
-}
-const router = useRouter();
-const redirect = (page) => {
-    router.push(page);
-}
+    const handleComposantClick = (id) => {
+        console.log(`ID du composant cliqué: ${id}`);
+        alert(`ID du composant cliqué: ${id}`);
+    }
+    const router = useRouter();
+    const redirect = (page) => {
+        router.push(page);
+    }
 
-function logout() {
-    authenticateUser.logUserOut();
-    router.push('/');
-}
+    function logout() {
+        authenticateUser.logUserOut();
+        router.push('/');
+    }
 </script>
 
 <style scoped>
-.conteneur {
-    display: grid;
-    align-items: center;
-    gap: 40px;
-    width: 80%;
-    margin: 40px auto;
-}
+    .conteneur {
+        display: grid;
+        align-items: center;
+        gap: 40px;
+        width: 80%;
+        margin: 40px auto;
+    }
 
-h1 {
-    align-items: center;
-    font-weight: 600;
-    margin: 0;
-}
+    h1 {
+        align-items: center;
+        font-weight: 600;
+        margin: 0;
+    }
 </style>

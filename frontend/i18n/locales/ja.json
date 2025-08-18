@@ -83,5 +83,9 @@
   "nav_profile": "プロフィール",
   "nav_tasks": "タスク",
   "nav_expenses": "費用",
-  "nav_messages": "メッセージ"
+  "nav_messages": "メッセージ",
+  "Display": "表示",
+  "system": "システム",
+  "dark": "ダーク",
+  "light": "ライト"
 }

@@ -80,5 +80,9 @@
   "nav_profile": "Profil",
   "nav_tasks": "Tâches",
   "nav_expenses": "Dépenses",
-  "nav_messages": "Messages"
+  "nav_messages": "Messages",
+  "Display": "Affichage",
+  "system": "système",
+  "dark": "sombre",
+  "light": "clair"
 }
