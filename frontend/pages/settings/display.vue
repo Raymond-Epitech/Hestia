@@ -23,30 +23,30 @@
 
 <style scoped>
     body {
-        background-color: #fff;
-        color: rgba(0, 0, 0, 0.8);
+        background-color: var(--primary-light);
+        color: var(--font-color-dark);
     }
 
     .dark-mode body {
-        background-color: #091a28;
-        color: #ebf4f1;
+        background-color: var(--primary-dark);
+        color: var(--font-color-light);
     }
 
     .select-theme {
-        background-color: #fff;
+        background-color: var(--primary-light);
         width: 60%;
         height: 30px;
         border-radius: 9px;
-        border-color: #091a28;
-        color: #091a28;
+        border-color: var(--font-color-dark);
+        color: var(--font-color-dark);
     }
 
     .dark .select-theme {
-        background-color: #1D1B20;
+        background-color: var(--primary-dark);
         width: 60%;
         height: 30px;
         border-radius: 9px;
-        border-color: #fff;
-        color: #fff;
+        border-color: var(--font-color-light);
+        color: var(--font-color-light);
     }
 </style>
