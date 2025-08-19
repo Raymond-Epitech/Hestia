@@ -51,7 +51,7 @@ const username = ref('');
 const colocationID = ref('');
 const registretion = ref(false);
 const alert = ref(false);
-const userInfo = ref([]);
+const fcmToken = ref('');
 
 onMounted(() => {
     SocialLogin.initialize({
@@ -60,6 +60,10 @@ onMounted(() => {
         }
     })
     registerNotifications();
+
+    PushNotifications.addListener('registration', (token) => {
+        fcmToken.value = token.value;
+    });
 })
 
 addListeners();
@@ -91,14 +95,11 @@ const register = async () => {
                 username: username.value,
                 colocationId: colocationID.value
             };
-            const token = await PushNotifications.addListener('registration', token => {});
-            console.log(token);
-            userInfo.value = await $bridge.addUser(newuser, res.result.idToken, token.value);
-            
-            if (userInfo) {
-                $bridge.setjwt(userInfo.jwt);
-                userStore.setUser(userInfo.user);
-                await authenticateUser(userInfo.jwt);
+            const data = await $bridge.addUser(newuser, res.result.idToken, fcmToken.value);
+            if (data) {
+                $bridge.setjwt(data.jwt);
+                userStore.setUser(data.user);
+                await authenticateUser(data.jwt);
             }
             if (authenticated) {
                 router.push('/');
@@ -115,14 +116,11 @@ const login = async () => {
         },
     });
     if (res) {
-        const token = await PushNotifications.addListener('registration', token => {});
-        console.log(token);
-        userInfo.value = await $bridge.login(res.result.idToken, token.value);
-        
-        if (userInfo) {
-            $bridge.setjwt(userInfo.jwt);
-            userStore.setUser(userInfo.user);
-            await authenticateUser(userInfo.jwt);
+        const data = await $bridge.login(res.result.idToken, fcmToken.value);
+        if (data) {
+            $bridge.setjwt(data.jwt);
+            userStore.setUser(data.user);
+            await authenticateUser(data.jwt);
         }
         if (authenticated) {
             router.push('/');

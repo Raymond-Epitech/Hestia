@@ -4,7 +4,7 @@ const config: CapacitorConfig = {
     appId: 'com.hestiaapp.org',
     appName: 'Hestia',
     server: {
-        "allowNavigation": ["http://91.134.93.112:8080"]
+        "allowNavigation": ["http://91.134.48.124:8080"]
     },
     webDir: 'dist',
     "plugins": {

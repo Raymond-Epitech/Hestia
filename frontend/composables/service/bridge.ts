@@ -114,13 +114,13 @@ export class bridge {
 
     // User section:
 
-    async login(google_token: string, push_token: string) {
+    async login(google_token: string, fcm_token: string) {
         return await fetch(this.url + "/api/User/Login?googleToken=" + google_token, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(push_token)
+            body: JSON.stringify({fcmToken: fcm_token})
         }).then(async response => {
             if (response.status == 200) {
                 return await response.json();
@@ -130,18 +130,23 @@ export class bridge {
                     return { error: "User not found" };
                 }
                 return { error: "Internal server error" };
+            } else if (response.status == 422) {
+                const jsonresponse = await response.json();
+                if (jsonresponse.message == "Invalid json body") {
+                    return { error: "Invalid json body" };
+                }
             }
             return {};
         })
     }
 
-    async addUser(user: User, google_token: string, push_token: string) {
+    async addUser(user: User, google_token: string, fcm_token: string) {
         return await fetch(this.url + "/api/User/Register?googleToken=" + google_token, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify([user, push_token])
+            body: JSON.stringify({username: user.username, colocationId: user.colocationId, fcmToken: fcm_token})
         }).then(async response => {
             if (response.status == 200) {
                 return await response.json();
