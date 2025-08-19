@@ -120,7 +120,7 @@ export class bridge {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({fcmToken: fcm_token})
+            body: JSON.stringify({ fcmToken: fcm_token })
         }).then(async response => {
             if (response.status == 200) {
                 return await response.json();
@@ -140,13 +140,33 @@ export class bridge {
         })
     }
 
+    async logout(userId: string, fcm_token: string) {
+        return await fetch(this.url + "/api/User/Logout", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId: userId, fcmToken: fcm_token })
+        }).then(async response => {
+            if (response.status == 200) {
+                return await response.json();
+            } else if (response.status == 500) {
+                const jsonresponse = await response.json();
+                if (jsonresponse.message == "Internal server error") {
+                    return { error: "Internal server error" };
+                }
+            }
+            return {};
+        });
+    }
+
     async addUser(user: User, google_token: string, fcm_token: string) {
         return await fetch(this.url + "/api/User/Register?googleToken=" + google_token, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({username: user.username, colocationId: user.colocationId, fcmToken: fcm_token})
+            body: JSON.stringify({ username: user.username, colocationId: user.colocationId, fcmToken: fcm_token })
         }).then(async response => {
             if (response.status == 200) {
                 return await response.json();
