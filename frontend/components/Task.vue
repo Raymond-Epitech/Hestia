@@ -100,7 +100,7 @@
 
     .task {
         display: grid;
-        grid-template-columns: 4fr 1fr;
+        grid-template-columns: 80% 20%;
         padding-top: 10px;
         justify-content: space-between;
         width: 90%;

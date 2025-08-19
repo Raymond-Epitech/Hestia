@@ -14,11 +14,6 @@
                         </div>
                     </div>
 
-                    <div class="modal-body">
-                        <task-message-box></task-message-box>
-                        <slot name="content"></slot>
-                    </div>
-
                     <!-- Buttons -->
                     <div class="modal-buttons">
                         <div class="enrollees-icon-container">
@@ -178,11 +173,11 @@
     }
 
     .orange {
-        background-color: #FFC93D;
+        background-color: var(--basic-yellow);
     }
 
     .green {
-        background-color: #85AD7B;
+        background-color: var(--basic-green);
     }
 
     .modal {
@@ -207,17 +202,16 @@
 
     .modal-header {
         height: fit-content;
-        color: #000000;
-        display: grid;
-        grid-template-columns: 4fr 1fr;
+        color: var(--page-text-light);
         align-items: start;
         justify-content: space-between;
         width: 90%;
-        padding-left: 5%;
+        padding: 0;
         border-bottom: none;
     }
 
     .modal-header-text {
+        max-width: 80%;
         padding-top: 4px;
         display: flex;
         flex-direction: column;
