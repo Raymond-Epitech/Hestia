@@ -203,6 +203,8 @@
     .modal-header {
         height: fit-content;
         color: var(--page-text-light);
+        display: grid;
+        grid-template-columns: 80% 20%;
         align-items: start;
         justify-content: space-between;
         width: 90%;
@@ -211,10 +213,11 @@
     }
 
     .modal-header-text {
-        max-width: 80%;
         padding-top: 4px;
+        padding-left: 6%;
         display: flex;
         flex-direction: column;
+        line-height: normal;
     }
 
     .title {
