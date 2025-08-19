@@ -47,6 +47,7 @@
         backdrop-filter: blur(6px);
     }
 
+
     .popup {
         position: fixed;
         display: flex;
@@ -54,11 +55,15 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background-color: var(--background-dark);
+        background-color: var(--background-light);
         padding: 4%;
         border-radius: 8px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         z-index: 1000;
+    }
+
+    .dark .popup {
+        background-color: var(--background-dark);
     }
 
     .popup h1 {
@@ -68,7 +73,7 @@
 
     .popup p {
         margin: 0 0 20px;
-        font-size: 16px;
+        font-size: 20px;
         text-align: center;
     }
 
@@ -76,6 +81,7 @@
         padding: 10px 20px;
         border: none;
         border-radius: 7px;
+        border-radius: 16px;
     }
 
     .button {
@@ -87,19 +93,37 @@
     .text {
         text-align: center;
         font-size: 16px;
-        color: white;
         font-weight: bold;
+        color: var(--page-text-light);
     }
 
-    .popup .cancel-button {
+    .dark .text {
+        color: var(--page-text-dark);
+    }
+
+    .cancel-button {
+        background-color: var(--main-buttons-light);
+        color: var(--page-text-light);
+        width: 120px;
+        box-shadow: var(--button-shadow-light);
+    }
+
+    .confirm-button {
+        background-color: var(--basic-red);
+        color: var(--page-text-light);
+        width: 120px;
+        box-shadow: var(--button-shadow-light);
+    }
+
+    .dark .cancel-button {
         background-color: #000000;
-        color: white;
+        color: var(--page-text-dark);
         width: 120px;
     }
 
-    .popup .confirm-button {
-        background-color: #526074;
-        color: white;
+    .dark .confirm-button {
+        background-color: var(--sent-message-dark);
+        color: var(--page-text-dark);
         width: 120px;
     }
 </style>

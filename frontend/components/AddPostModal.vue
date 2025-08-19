@@ -185,6 +185,7 @@
     background-size: 100% 3ch;
     color: #fff;
     font-size: 18px;
+    margin-bottom: 12px;
   }
 
   .post-colors-buttons {
