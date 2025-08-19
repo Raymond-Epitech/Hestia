@@ -101,8 +101,7 @@
     .task {
         display: grid;
         grid-template-columns: 4fr 1fr;
-        align-items: top;
-        padding-top: 8px;
+        padding-top: 10px;
         justify-content: space-between;
         width: 90%;
         height: 80px;
@@ -115,8 +114,8 @@
 
     h1 {
         font-weight: 700;
-        font-size: 18px;
-        padding-top: 2px;
+        font-size: 16px;
+        padding-top: 6px;
     }
 
     .due-date {
@@ -125,6 +124,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        padding-left: 10px;
         padding-bottom: 6px;
         width: 62px;
         height: 62px;
@@ -135,9 +135,9 @@
         justify-content: center;
         align-content: center;
         text-align: center;
-        height: 40px;
-        font-size: 38px;
-        margin-bottom: 4px;
+        height: 32px;
+        font-size: 34px;
+        margin-bottom: 10%;
         font-weight: 600;
         -webkit-text-size-adjust: none;
         text-size-adjust: none;
