@@ -23,30 +23,30 @@
 
 <style scoped>
     body {
-        background-color: var(--primary-light);
-        color: var(--font-color-dark);
+        background-color: var(--background-light);
+        color: var(--page-text-light);
     }
 
     .dark-mode body {
-        background-color: var(--primary-dark);
-        color: var(--font-color-light);
+        background-color: var(--background-dark);
+        color: var(--page-text-dark);
     }
 
     .select-theme {
-        background-color: var(--primary-light);
+        background-color: var(--background-light);
         width: 60%;
         height: 30px;
         border-radius: 9px;
-        border-color: var(--font-color-dark);
-        color: var(--font-color-dark);
+        border-color: var(--page-text-light);
+        color: var(--page-text-light);
     }
 
     .dark .select-theme {
-        background-color: var(--primary-dark);
+        background-color: var(--background-dark);
         width: 60%;
         height: 30px;
         border-radius: 9px;
-        border-color: var(--font-color-light);
-        color: var(--font-color-light);
+        border-color: var(--page-text-dark);
+        color: var(--page-text-dark);
     }
 </style>

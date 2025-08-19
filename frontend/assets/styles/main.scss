@@ -1,20 +1,34 @@
 @import "bootstrap/scss/bootstrap";
 
 :root {
-    --primary-light: #FFFCF7;
-    --secondary-light: #FFFFFF;
-    --primary-dark: #1D1B20;
-    --secondary-dark: #000;
-    --font-color-dark: #1D1B20;
-    --font-color-light: #FFFCF7;
+    --main-buttons-light: #FFFFFF;
+    --main-buttons-dark: #000000;
+    --background-light: #FFFCF7;
+    --background-dark: #1D1B20;
+    --page-text-light: #000000;
+    --page-text-dark: #FFFFFF;
+    --overlay-text: #FFFFFF;
+    --overlay-background-light: #1d1b20a6;
+    --overlay-background-dark: #1d1b2099;
+    --list-lines-light: #BDD4F6;
+    --list-lines-dark: #727C8C;
+    --recieved-message-light: #C1E0B9;
+    --recieved-message-dark: #4D4D4C;
+    --sent-message-light: #BDD4F6;
+    --sent-message-dark: #526074;
+
+    --basic-grey: #4B4B4B;
+    --basic-red: #FF6A61;
+    --basic-purple: #8D90D6;
+    --basic-green: #85AD7B;
 }
 
 body {
-    background-color: var(--primary-light);
+    background-color: var(--background-light);
     padding-bottom: 70px;
     font-family: 'Inter-Variable', sans-serif;
 }
 
 .dark body {
-    background-color: var(--primary-dark);
+    background-color: var(--background-dark);
 }
