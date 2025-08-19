@@ -87,5 +87,8 @@
   "Display": "Anzeige",
   "system": "system",
   "dark": "dunkel",
-  "light": "hell"
+  "light": "hell",
+  "Language-subtext": "Sprache der Anwendung ändern",
+  "Display-subtext": "Sprache der Anwendung ändern",
+  "Colocation-subtext": "Anzeigeeinstellungen ändern"
 }

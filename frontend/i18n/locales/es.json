@@ -65,7 +65,7 @@
   "Enroll": "Inscribo",
   "isDone": "Esta tarea ya se ha realizado",
   "Done": "Terminado",
-  "logout": "cierre de sesión",
+  "logout": "Cierre de sesión",
   "confirm_delete_reminder": "¿Estás seguro de que quieres eliminar esta publicación?",
   "confirm_delete_shoppingitem": "¿Estás seguro de que quieres eliminar este artículo?",
   "cancel": "Cancelar",
@@ -87,5 +87,8 @@
   "Display": "Visualización",
   "system": "sistema",
   "dark": "oscuro",
-  "light": "claro"
+  "light": "claro",
+  "Language-subtext": "Cambiar el idioma de la aplicación",
+  "Display-subtext": "Modificar los parámetros de visualización",
+  "Colocation-subtext": "Parámetros de tu piso compartido"
 }

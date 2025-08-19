@@ -87,5 +87,8 @@
   "Display": "Display",
   "system": "system",
   "dark": "dark",
-  "light": "light"
+  "light": "light",
+  "Language-subtext": "Change the application language",
+  "Display-subtext": "Change display settings",
+  "Colocation-subtext": "Change display settings"
 }

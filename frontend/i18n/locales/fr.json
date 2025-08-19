@@ -84,5 +84,8 @@
   "Display": "Affichage",
   "system": "système",
   "dark": "sombre",
-  "light": "clair"
+  "light": "clair",
+  "Language-subtext": "Changer la langue de l’application",
+  "Display-subtext": "Modifier les paramètres d’affichage",
+  "Colocation-subtext": "Paramètres de ta colocation"
 }
