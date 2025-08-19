@@ -144,3 +144,11 @@ export type expenses_category_get = {
     name: string,
     totalAmount: number,
 }
+
+export type message = {
+    id?: string,
+    colocationId: string,
+    content: string,
+    sendBy: string,
+    sendAt?: string,
+}

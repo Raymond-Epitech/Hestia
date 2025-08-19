@@ -1,5 +1,5 @@
 import { json } from "stream/consumers";
-import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif, refund, shoppinglist, shoppinglist_item, expenses_category, expenses_category_get } from "./type";
+import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif, refund, shoppinglist, shoppinglist_item, expenses_category, expenses_category_get, message } from "./type";
 import { Capacitor } from '@capacitor/core'
 const { Filesystem, Directory } = await import('@capacitor/filesystem');
 
@@ -827,5 +827,79 @@ export class bridge {
             const blob = await response.blob()
             return URL.createObjectURL(blob)
         }
+    }
+
+    // Message section:
+    async getMessageByColocationId(colocationId: string): Promise<message[]> {
+        return await fetch(`${this.url}/api/Message?colocationId=${colocationId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        });
+    }
+
+    async addMessage(data: message): Promise<boolean> {
+        return await fetch(`${this.url}/api/Message`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async deleteMessage(id: string): Promise<boolean> {
+        return await fetch(`${this.url}/api/Message/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async getMessageById(id: string): Promise<message> {
+        return await fetch(`${this.url}/api/Message/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return {} as message;
+        });
+    }
+
+    async updateMessage(data: message): Promise<boolean> {
+        return await fetch(`${this.url}/api/Message`, {
+            method: 'PUT',
+            headers: {
+               'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
     }
 }
