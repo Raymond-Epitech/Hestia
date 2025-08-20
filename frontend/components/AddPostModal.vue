@@ -75,9 +75,9 @@
   const { open, close, toggle, visible } = useModal(props.name)
 
   const emit = defineEmits < {
-    closed: [] // named tuple syntax
-  proceed: []
-  'update:modelValue': [value: boolean]
+    closed: [], // named tuple syntax
+    proceed: [],
+    'update:modelValue': [value: boolean]
   } > ()
 
   defineExpose({
@@ -154,7 +154,7 @@
     padding: 0px 16px;
     font-weight: 600;
     border-bottom: none;
-    color: #fff;
+    color: var(--overlay-text);
   }
 
   .modal-header-text {
@@ -183,7 +183,7 @@
     line-height: 3ch;
     background-image: linear-gradient(transparent, transparent calc(3ch - 1px), #E7EFF8 0px);
     background-size: 100% 3ch;
-    color: #fff;
+    color: var(--overlay-text);
     font-size: 18px;
     margin-bottom: 12px;
   }
@@ -278,7 +278,7 @@
 
   .button-proceed {
     background: #00000088;
-    color: #fff;
+    color: var(--overlay-text);
   }
 
   button:disabled {
