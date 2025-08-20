@@ -145,7 +145,7 @@ namespace Business.Services
             {
                 Id = expenseCategory.Id,
                 Name = expenseCategory.Name,
-                TotalAmount = expenseCategory.Expenses.Sum(e => e.Amount)
+                TotalAmount = 0
             };
             await realTimeService.SendToGroupAsync(expenseCategory.ColocationId, "NewExpenseCategoryAdded", expenseCategoryOutput);
 
