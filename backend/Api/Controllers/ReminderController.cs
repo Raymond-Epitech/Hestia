@@ -1,6 +1,7 @@
 ﻿using Business.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Shared.Exceptions;
 using Shared.Models.Input;
 using Shared.Models.Output;
@@ -42,11 +43,18 @@ namespace Api.Controllers
         [HttpPost]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Guid>> AddReminder(ReminderInput input)
+        public async Task<ActionResult<Guid>> AddReminder([FromForm] ReminderInput input)
         {
             if (input.ColocationId == Guid.Empty)
                 throw new InvalidEntityException("ColocationId is empty");
+
+            if (input.IsImage && (input.Image is null || input.Image.Length == 0))
+                throw new InvalidEntityException("Image is empty or invalid");
+
+            if (!input.IsImage && input.Content.IsNullOrEmpty())
+                throw new InvalidEntityException("Content is empty or invalid");
 
             return Ok(await reminderService.AddReminderAsync(input));
         }
@@ -93,6 +101,31 @@ namespace Api.Controllers
                 throw new InvalidEntityException("Id is empty");
 
             return Ok(await reminderService.DeleteReminderAsync(id));
+        }
+
+        [HttpGet("/images/{fileName}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> GetImage(string fileName)
+        {
+            var file = await reminderService.GetImageByNameAsync(fileName);
+
+            return File(file.Content, file.ContentType, file.FileName);
+        }
+
+        [HttpDelete("/images/{fileName}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult DeleteImage(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+                throw new InvalidEntityException("File name is empty");
+
+            return Ok(reminderService.DeleteImage(fileName));
         }
     }
 }

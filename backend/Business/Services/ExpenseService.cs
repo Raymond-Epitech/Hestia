@@ -18,6 +18,7 @@ namespace Business.Services
         IRepository<Expense> expenseRepository,
         IRepository<Entry> entryRepository,
         IRepository<SplitBetween> splitbetweenRepository,
+        IRealTimeService realTimeService,
         IAppCache cache) : IExpenseService
     {
         /// <summary>
@@ -140,6 +141,14 @@ namespace Business.Services
 
             cache.Remove($"expenseCategories:{input.ColocationId}");
 
+            var expenseCategoryOutput = new ExpenseCategoryOutput
+            {
+                Id = expenseCategory.Id,
+                Name = expenseCategory.Name,
+                TotalAmount = 0
+            };
+            await realTimeService.SendToGroupAsync(expenseCategory.ColocationId, "NewExpenseCategoryAdded", expenseCategoryOutput);
+
             logger.LogInformation($"Succes : Expense category with id {expenseCategory.Id} was added to db");
             return expenseCategory.Id;
         }
@@ -164,6 +173,14 @@ namespace Business.Services
 
             cache.Remove($"expenseCategories:{expenseCategory.ColocationId}");
 
+            var expenseCategoryOutput = new ExpenseCategoryOutput
+            {
+                Id = expenseCategory.Id,
+                Name = expenseCategory.Name,
+                TotalAmount = expenseCategory.Expenses.Sum(e => e.Amount)
+            };
+            await realTimeService.SendToGroupAsync(expenseCategory.ColocationId, "ExpenseCategoryUpdated", expenseCategoryOutput);
+
             logger.LogInformation($"Succes : Expense category with id {expenseCategory.Id} was updated in db");
 
             return expenseCategory.Id;
@@ -186,6 +203,8 @@ namespace Business.Services
             cache.Remove($"expenseCategories:{expenseCategory.ColocationId}");
             cache.Remove($"balances:{expenseCategory.ColocationId}");
             cache.Remove($"refundMethods:{expenseCategory.ColocationId}");
+
+            await realTimeService.SendToGroupAsync(expenseCategory.ColocationId, "ExpenseCategoryDeleted", expenseCategory.Id);
 
             logger.LogInformation($"Succes : Expense category with id {id} was deleted from db");
             return id;
@@ -440,6 +459,22 @@ namespace Business.Services
 
                     transaction.Commit();
 
+                    var expenseOutput = new ExpenseOutput
+                    {
+                        Id = expense.Id,
+                        CreatedBy = expense.CreatedBy,
+                        Name = expense.Name,
+                        Description = expense.Description,
+                        Amount = expense.Amount,
+                        PaidBy = expense.PaidBy,
+                        SplitType = Enum.Parse<SplitTypeEnum>(expense.SplitType),
+                        SplitBetween = expense.SplitBetweens.AsEnumerable().ToDictionary(k => k.UserId, v => v.Amount),
+                        DateOfPayment = expense.DateOfPayment,
+                        ExpenseCategoryId = expense.ExpenseCategoryId,
+                        ExpenseCategoryName = expense.ExpenseCategory.Name
+                    };
+                    await realTimeService.SendToGroupAsync(input.ColocationId, "NewExpenseAdded", expenseOutput);
+
                     logger.LogInformation("Succes : Transaction commited");
 
                     return expense.Id;
@@ -515,6 +550,22 @@ namespace Business.Services
 
                     transaction.Commit();
 
+                    var expenseOutput = new ExpenseOutput
+                    {
+                        Id = expense.Id,
+                        CreatedBy = expense.CreatedBy,
+                        Name = expense.Name,
+                        Description = expense.Description,
+                        Amount = expense.Amount,
+                        PaidBy = expense.PaidBy,
+                        SplitType = Enum.Parse<SplitTypeEnum>(expense.SplitType),
+                        SplitBetween = expense.SplitBetweens.AsEnumerable().ToDictionary(k => k.UserId, v => v.Amount),
+                        DateOfPayment = expense.DateOfPayment,
+                        ExpenseCategoryId = expense.ExpenseCategoryId,
+                        ExpenseCategoryName = expense.ExpenseCategory.Name
+                    };
+                    await realTimeService.SendToGroupAsync(input.ColocationId, "ExpenseUpdated", expenseOutput);
+
                     logger.LogInformation("Succes : Transaction commited");
 
                     return expense.Id;
@@ -553,6 +604,8 @@ namespace Business.Services
             cache.Remove($"balances:{expense.ExpenseCategory.ColocationId}");
             cache.Remove($"expenseCategories:{expense.ExpenseCategory.ColocationId}");
             cache.Remove($"refundMethods:{expense.ExpenseCategory.ColocationId}");
+
+            await realTimeService.SendToGroupAsync(expense.ExpenseCategory.ColocationId, "ExpenseDeleted", id);
 
             logger.LogInformation($"Succes : Expense with id {id} deleted");
             return id;

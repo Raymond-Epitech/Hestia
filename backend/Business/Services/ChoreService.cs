@@ -5,7 +5,6 @@ using EntityFramework.Repositories;
 using LazyCache;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Shared.Exceptions;
 using Shared.Models.Input;
 using Shared.Models.Output;
@@ -19,7 +18,8 @@ public class ChoreService(
     IRepository<ChoreMessage> choreMessageRepository,
     IRepository<User> userRepository,
     IRepository<ChoreEnrollment> choreEnrollmentRepository,
-    IAppCache cache) : IChoreService
+    IAppCache cache,
+    IRealTimeService realTimeService) : IChoreService
 {
     /// <summary>
     /// Get all Chores
@@ -139,6 +139,18 @@ public class ChoreService(
 
         cache.Remove($"chores:{input.ColocationId}");
 
+        var choreOutput = new ChoreOutput
+        {
+            Id = chore.Id,
+            CreatedBy = chore.CreatedBy,
+            CreatedAt = chore.CreatedAt,
+            DueDate = chore.DueDate,
+            Title = chore.Title,
+            Description = chore.Description,
+            IsDone = chore.IsDone
+        };
+        await realTimeService.SendToGroupAsync(chore.ColocationId, "NewChoreAdded", choreOutput);
+
         logger.LogInformation("Succes : Chore added");
             
         return chore.Id;
@@ -155,6 +167,15 @@ public class ChoreService(
         
         await choreMessageRepository.AddAsync(choreMessage);
         await choreRepository.SaveChangesAsync();
+
+        var choreMessageOutput = new ChoreMessageOutput
+        {
+            Id = choreMessage.Id,
+            CreatedBy = choreMessage.CreatedBy,
+            CreatedAt = choreMessage.CreatedAt,
+            Content = choreMessage.Content
+        };
+        await realTimeService.SendToGroupAsync(input.ColocationId, "NewChoreMessageAdded", choreMessageOutput);
 
         logger.LogInformation("Succes : Chore message added");
             
@@ -197,6 +218,18 @@ public class ChoreService(
 
         cache.Remove($"chores:{input.ColocationId}");
 
+        var choreOutput = new ChoreOutput
+        {
+            Id = chore.Id,
+            CreatedBy = chore.CreatedBy,
+            CreatedAt = chore.CreatedAt,
+            DueDate = chore.DueDate,
+            Title = chore.Title,
+            Description = chore.Description,
+            IsDone = chore.IsDone
+        };
+        await realTimeService.SendToGroupAsync(chore.ColocationId, "ChoreUpdated", choreOutput);
+
         logger.LogInformation("Succes : Chore updated");
 
         return chore.Id;
@@ -222,6 +255,8 @@ public class ChoreService(
 
         cache.Remove($"chores:{chore.ColocationId}");
 
+        await realTimeService.SendToGroupAsync(chore.ColocationId, "ChoreDeleted", id);
+
         logger.LogInformation("Succes : Chore deleted");
 
         return id;
@@ -233,16 +268,18 @@ public class ChoreService(
     /// <param name="id">The id of the chore to be deleted</param>
     /// <exception cref="NotFoundException">No chore where found with this id</exception>
     /// <exception cref="ContextException">An error has occured while adding chore from db</exception>
-    public async Task<Guid> DeleteChoreMessageByChoreIdAsync(Guid choreId)
+    public async Task<Guid> DeleteChoreMessageByChoreMessageIdAsync(ChoreMessageToDelete choreMessage)
     {
         await choreMessageRepository.Query()
-            .Where(c => c.ChoreId == choreId)
+            .Where(c => c.Id == choreMessage.ChoreMessageId)
             .ExecuteDeleteAsync();
         await choreRepository.SaveChangesAsync();
 
+        await realTimeService.SendToGroupAsync(choreMessage.ColocationId, "ChoreMessagesDeleted", choreMessage.ChoreMessageId);
+
         logger.LogInformation("Succes : Chore message deleted");
 
-        return choreId;
+        return choreMessage.ChoreMessageId;
     }
 
     /// <summary>
@@ -313,6 +350,8 @@ public class ChoreService(
         await choreEnrollmentRepository.AddAsync(enroll);
         await choreRepository.SaveChangesAsync();
 
+        await realTimeService.SendToGroupAsync(enroll.Chore.ColocationId, "ChoreEnrollmentAdded", enroll);
+
         logger.LogInformation("Succes : User enrolled to the chore");
 
         return enroll.ChoreId;
@@ -337,6 +376,8 @@ public class ChoreService(
 
         choreEnrollmentRepository.Delete(enrollement);
         await choreEnrollmentRepository.SaveChangesAsync();
+
+        await realTimeService.SendToGroupAsync(enrollement.Chore.ColocationId, "ChoreEnrollmentRemoved", enrollement);
 
         logger.LogInformation("Succes : User unenrolled to the chore");
 

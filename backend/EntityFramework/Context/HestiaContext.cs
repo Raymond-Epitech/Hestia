@@ -17,6 +17,8 @@ namespace EntityFramework.Context
         public virtual DbSet<SplitBetween> SplitBetweens { get; set; } = null!;
         public virtual DbSet<ShoppingList> ShoppingList { get; set; } = null!;
         public virtual DbSet<ShoppingItem> ShoppingItems { get; set; } = null!;
+        public virtual DbSet<FCMDevice> FCMDevices { get; set; } = null!;
+        public virtual DbSet<Message> Messages { get; set; } = null!;
 
         public HestiaContext(DbContextOptions<HestiaContext> options) : base(options) { }
 
@@ -49,6 +51,11 @@ namespace EntityFramework.Context
                     .WithOne(x => x.Colocation)
                     .HasForeignKey(x => x.ColocationId)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                c.HasMany(x => x.Messages)
+                    .WithOne(x => x.Colocation)
+                    .HasForeignKey(x => x.ColocationId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
             modelBuilder.Entity<Chore>(c =>
             {
@@ -73,10 +80,16 @@ namespace EntityFramework.Context
                     .WithOne(x => x.User)
                     .HasForeignKey(x => x.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
+
                 c.HasMany(x => x.SplitBetweens)
                     .WithOne(x => x.User)
                     .HasForeignKey(x => x.UserId)
                     .OnDelete(DeleteBehavior.SetNull);
+
+                c.HasMany(x => x.FCMDevices)
+                    .WithOne(x => x.User)
+                    .HasForeignKey(x => x.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
             modelBuilder.Entity<ChoreEnrollment>(c =>
             {

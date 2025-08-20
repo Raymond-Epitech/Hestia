@@ -8,5 +8,6 @@ namespace Shared.Models.Input
         public string Username { get; set; } = null!;
 
         public Guid? ColocationId { get; set; }
+        public string? FCMToken { get; set; } = null;
     }
 }

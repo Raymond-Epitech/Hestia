@@ -23,5 +23,6 @@ namespace EntityFramework.Models
         public ICollection<Reminder> Reminders { get; set; } = null!;
         public ICollection<ExpenseCategory> ExpenseCategories { get; set; } = null!;
         public ICollection<ShoppingList> ShoppingLists { get; set; } = null!;
+        public ICollection<Message> Messages { get; set; } = null!;
     }
 }

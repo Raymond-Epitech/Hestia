@@ -3,9 +3,11 @@ using Business.Mappers;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
 using LazyCache;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
+using Shared.Models.DTO;
 using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
@@ -14,8 +16,11 @@ namespace Business.Services;
 
 public class ReminderService(ILogger<ReminderService> logger,
     IRepository<Reminder> reminderRepository,
+    IRealTimeService realTimeService,
     IAppCache cache) : IReminderService
 {
+    private string ImageRoute => "wwwroot/uploads/";
+
     /// <summary>
     /// Get all reminders
     /// </summary>
@@ -37,6 +42,7 @@ public class ReminderService(ILogger<ReminderService> logger,
                 Color = r.Color,
                 CreatedBy = r.CreatedBy,
                 CreatedAt = r.CreatedAt,
+                IsImage = r.IsImage,
                 CoordX = r.CoordX,
                 CoordY = r.CoordY,
                 CoordZ = r.CoordZ
@@ -67,6 +73,7 @@ public class ReminderService(ILogger<ReminderService> logger,
                 Color = r.Color,
                 CreatedBy = r.CreatedBy,
                 CreatedAt = r.CreatedAt,
+                IsImage = r.IsImage,
                 CoordX = r.CoordX,
                 CoordY = r.CoordY,
                 CoordZ = r.CoordZ
@@ -84,18 +91,138 @@ public class ReminderService(ILogger<ReminderService> logger,
     }
 
     /// <summary>
+    /// Get the content type of a file based on its extension
+    /// </summary>
+    /// <param name="path">The path of the file to get the content type</param>
+    /// <returns>The correct content path</returns>
+    private string GetContentType(string path)
+    {
+        var ext = Path.GetExtension(path).ToLowerInvariant();
+        return ext switch
+        {
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            ".webp" => "image/webp",
+            ".pdf" => "application/pdf",
+            ".txt" => "text/plain",
+            _ => "application/octet-stream"
+        };
+    }
+
+    /// <summary>
+    /// Get an image by its name
+    /// </summary>
+    /// <param name="fileName">The name of the file</param>
+    /// <returns>The file's byte and its parameters</returns>
+    /// <exception cref="InvalidDataException"></exception>
+    /// <exception cref="NotFoundException"></exception>
+    public async Task<FileDTO> GetImageByNameAsync(string fileName)
+    {
+        if (string.IsNullOrWhiteSpace(fileName))
+            throw new InvalidDataException("File name invalid");
+
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), ImageRoute, fileName);
+
+        if (!File.Exists(filePath))
+            throw new NotFoundException("Image not found");
+
+        var file = new FileDTO
+        {
+            FileName = fileName,
+            ContentType = GetContentType(filePath),
+            Content = await File.ReadAllBytesAsync(filePath)
+        };
+        
+        if (file.Content == null)
+        {
+            throw new NotFoundException("Image not found");
+        }
+
+        return file;
+    }
+
+    /// <summary>
+    /// Save an image to the server
+    /// </summary>
+    /// <param name="file">The file</param>
+    /// <returns>the new name of the file</returns>
+    private async Task<string> SaveImage(IFormFile file)
+    {
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), ImageRoute);
+
+        if (!Directory.Exists(uploadsFolder))
+            Directory.CreateDirectory(uploadsFolder);
+
+        var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+
+        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        return uniqueFileName;
+    }
+
+    /// <summary>
+    /// Delete an image from the server
+    /// </summary>
+    /// <param name="fileName">The file name</param>
+    /// <returns>The file name</returns>
+    /// <exception cref="InvalidDataException"></exception>
+    public string DeleteImage(string fileName)
+    {
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), ImageRoute, fileName);
+
+        if (!File.Exists(filePath))
+            throw new NotFoundException("Image not found");
+
+        File.Delete(filePath);
+
+        return fileName;
+    }
+
+    /// <summary>
     /// Add a reminder
     /// </summary>
     /// <param name="input">The reminder class with all info of a reminder</param>
     /// <exception cref="ContextException">An error has occured while adding reminder from db</exception>
     public async Task<Guid> AddReminderAsync(ReminderInput input)
     {
-        var reminder = input.ToDb();
-            
-        await reminderRepository.AddAsync(reminder);
-        await reminderRepository.SaveChangesAsync();
+        var fileName = "";
+        if (input.IsImage)
+            fileName = await SaveImage(input.Image!);
+        
+        var reminder = input.ToDb(fileName);
+
+        try
+        {
+            await reminderRepository.AddAsync(reminder);
+            await reminderRepository.SaveChangesAsync();
+        }
+        catch
+        {
+            if (input.IsImage)
+                DeleteImage(fileName);
+        }
 
         cache.Remove($"reminders:{reminder.ColocationId}");
+
+        var reminderOutput = new ReminderOutput
+        {
+            Id = reminder.Id,
+            Content = reminder.Content,
+            Color = reminder.Color,
+            IsImage = reminder.IsImage,
+            CreatedBy = reminder.CreatedBy,
+            CreatedAt = reminder.CreatedAt,
+            CoordX = reminder.CoordX,
+            CoordY = reminder.CoordY,
+            CoordZ = reminder.CoordZ
+        };
+        await realTimeService.SendToGroupAsync(reminder.ColocationId, "NewReminderAdded", reminderOutput);
 
         logger.LogInformation("Succes : Reminder added");
             
@@ -123,6 +250,19 @@ public class ReminderService(ILogger<ReminderService> logger,
         await reminderRepository.SaveChangesAsync();
 
         cache.Remove($"reminders:{reminder.ColocationId}");
+
+        var reminderOutput = new ReminderOutput
+        {
+            Id = reminder.Id,
+            Content = reminder.Content,
+            Color = reminder.Color,
+            CreatedBy = reminder.CreatedBy,
+            CreatedAt = reminder.CreatedAt,
+            CoordX = reminder.CoordX,
+            CoordY = reminder.CoordY,
+            CoordZ = reminder.CoordZ
+        };
+        await realTimeService.SendToGroupAsync(reminder.ColocationId, "ReminderUpdated", reminderOutput);
 
         logger.LogInformation("Succes : Reminder updated");
 
@@ -196,6 +336,19 @@ public class ReminderService(ILogger<ReminderService> logger,
 
         cache.Remove($"reminders:{reminders.FirstOrDefault()!.ColocationId}");
 
+        var reminderOutputs = reminders.Select(r => new ReminderOutput
+        {
+            Id = r.Id,
+            Content = r.Content,
+            Color = r.Color,
+            CreatedBy = r.CreatedBy,
+            CreatedAt = r.CreatedAt,
+            CoordX = r.CoordX,
+            CoordY = r.CoordY,
+            CoordZ = r.CoordZ
+        }).ToList();
+        await realTimeService.SendToGroupAsync(reminders.First().ColocationId, "RemindersUpdated", reminderOutputs); ;
+
         logger.LogInformation("Succes : Reminders all updated");
 
         return reminders.Count;
@@ -219,6 +372,8 @@ public class ReminderService(ILogger<ReminderService> logger,
         await reminderRepository.SaveChangesAsync();
 
         cache.Remove($"reminders:{reminder.ColocationId}");
+
+        await realTimeService.SendToGroupAsync(reminder.ColocationId, "ReminderDeleted", id);
 
         logger.LogInformation("Succes : Reminder deleted");
 
