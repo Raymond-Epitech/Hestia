@@ -31,6 +31,13 @@ Ce document liste les codes d'événements utilisés dans la communication Signa
 | `ExpenseUpdated` | Une dépense a été modifiée | Guid |
 | `ExpenseDeleted` | Une dépense a été supprimée | {ChoreID, UserId} |
 
+### Messsages 
+| Code événement | Description | Payload (données envoyées) |
+|--|--|--|
+| `NewMessageAdded` | Un message a été ajouté | MessageOutput |
+| `MessageUpdated` | Un message a été modifié | MessageOutput |
+| `MessageDeleted` | Un message a été supprimé | GUID |
+
 ---
 
 ## Notes

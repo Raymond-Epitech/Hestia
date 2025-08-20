@@ -6,12 +6,14 @@ using Microsoft.Extensions.Logging;
 using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
+using System;
 
 namespace Business.Services;
 
 public class MessageService(
     ILogger<MessageService> logger,
-    IRepository<Message> repository) : IMessageService
+    IRepository<Message> repository,
+    IRealTimeService realTimeService) : IMessageService
 {
     public async Task<List<MessageOutput>> GetAllMessagesAsync(Guid colocationId)
     {
@@ -72,6 +74,18 @@ public class MessageService(
 
         logger.LogInformation($"Added new message with Id {message.Id} for colocation {input.ColocationId}");
 
+        var messageOutput = new MessageOutput
+        {
+            Id = message.Id,
+            ColocationId = message.ColocationId,
+            Content = message.Content,
+            SendAt = message.SentAt,
+            SendBy = message.SentBy
+        };
+        await realTimeService.SendToGroupAsync(messageOutput.ColocationId, "NewMessageAdded", messageOutput);
+
+        logger.LogInformation($"Sent real-time notification for new message with Id {message.Id}");
+
         return message.Id;
     }
 
@@ -92,6 +106,18 @@ public class MessageService(
 
         logger.LogInformation($"Updated message with Id {input.Id}");
 
+        var messageOutput = new MessageOutput
+        {
+            Id = message.Id,
+            ColocationId = message.ColocationId,
+            Content = message.Content,
+            SendAt = message.SentAt,
+            SendBy = message.SentBy
+        };
+        await realTimeService.SendToGroupAsync(messageOutput.ColocationId, "MessageUpdated", messageOutput);
+
+        logger.LogInformation($"Sent real-time notification for updated message with Id {message.Id}");
+
         return message.Id;
     }
 
@@ -101,6 +127,8 @@ public class MessageService(
         await repository.SaveChangesAsync();
 
         logger.LogInformation($"Deleted message with Id {id}");
+
+        await realTimeService.SendToGroupAsync(id, "MessageDeleted", id);
 
         return id;
     }
