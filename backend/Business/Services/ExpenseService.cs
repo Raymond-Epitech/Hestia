@@ -701,15 +701,15 @@ namespace Business.Services
                 .Distinct()
                 .ToList();
 
-            var userPPs = await userRepository
+            var usernames = await userRepository
                 .Query()
                 .Where(u => userIds.Contains(u.Id))
-                .ToDictionaryAsync(u => u.Id, u => u.PathToProfilePicture);
+                .ToDictionaryAsync(u => u.Id, u => u.Username);
 
             foreach (var refund in refunds)
             {
-                refund.FromUrlPP = userPPs.GetValueOrDefault(refund.From, "default.jpg");
-                refund.ToUrlPP = userPPs.GetValueOrDefault(refund.To, "default.jpg");
+                refund.FromUsername = usernames.GetValueOrDefault(refund.From, "Unknown User");
+                refund.ToUsername = usernames.GetValueOrDefault(refund.To, "Unknown User");
             }
 
             return refunds;

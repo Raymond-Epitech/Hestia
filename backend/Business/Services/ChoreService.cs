@@ -33,10 +33,15 @@ public class ChoreService(
         return await cache.GetOrAddAsync(cacheKey, async entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+
             var chores = await choreRepository.Query()
                 .Include(c => c.ChoreEnrollments)
                 .ThenInclude(ce => ce.User)
                 .Where(c => c.ColocationId == colocationId)
+                .OrderBy(c => c.DueDate)
+                .ToListAsync();
+
+            var choreOutputs = chores
                 .Select(c => new ChoreOutput
                 {
                     Id = c.Id,
@@ -46,16 +51,14 @@ public class ChoreService(
                     Title = c.Title,
                     Description = c.Description,
                     IsDone = c.IsDone,
-                    EnrolledUsers = c.ChoreEnrollments.ToDictionary(
-                        ce => ce.UserId,
-                        ce => ce.User.PathToProfilePicture)
+                    EnrolledUsers = c.ChoreEnrollments
+                        .ToDictionary(ce => ce.UserId, ce => ce.User.PathToProfilePicture)
                 })
-                .OrderBy(c => c.DueDate)
-                .ToListAsync();
+                .ToList();
 
             logger.LogInformation($"Succes : All chores from the colocation {colocationId} found");
 
-            return chores;
+            return choreOutputs;
         });
     }
 
@@ -68,32 +71,30 @@ public class ChoreService(
     /// <exception cref="ContextException">An error has occured while retriving chore from db</exception>
     public async Task<ChoreOutput> GetChoreAsync(Guid id)
     {
-        var chore = await choreRepository.Query()
-            .Where(c => c.Id == id)
-            .Include(c => c.ChoreEnrollments)
-            .ThenInclude(ce => ce.User)
-            .Select(c => new ChoreOutput
-            {
-                Id = c.Id,
-                CreatedBy = c.CreatedBy,
-                CreatedAt = c.CreatedAt,
-                DueDate = c.DueDate,
-                Title = c.Title,
-                Description = c.Description,
-                IsDone = c.IsDone,
-                EnrolledUsers = c.ChoreEnrollments.ToDictionary(
-                        ce => ce.UserId,
-                        ce => ce.User.PathToProfilePicture)
-            })
-            .FirstOrDefaultAsync();
+        var choreEntity = await choreRepository.Query()
+        .Where(c => c.Id == id)
+        .Include(c => c.ChoreEnrollments)
+        .ThenInclude(ce => ce.User)
+        .FirstOrDefaultAsync();
 
-        if (chore == null)
+        if (choreEntity is null)
+            throw new NotFoundException($"Chore with id {id} not found");
+
+        var choreOutput = new ChoreOutput
         {
-            throw new NotFoundException("Chore not found");
-        }
+            Id = choreEntity.Id,
+            CreatedBy = choreEntity.CreatedBy,
+            CreatedAt = choreEntity.CreatedAt,
+            DueDate = choreEntity.DueDate,
+            Title = choreEntity.Title,
+            Description = choreEntity.Description,
+            IsDone = choreEntity.IsDone,
+            EnrolledUsers = choreEntity.ChoreEnrollments
+                .ToDictionary(ce => ce.UserId, ce => ce.User.PathToProfilePicture)
+        };
 
         logger.LogInformation("Succes : Chore found");
-        return chore;
+        return choreOutput;
     }
 
     /// <summary>
@@ -337,10 +338,13 @@ public class ChoreService(
     /// <exception cref="ContextException">An error occurred while adding the user to the db</exception>
     public async Task<List<ChoreOutput>> GetChoreFromUser(Guid userId)
     {
-        var chores = await choreRepository.Query()
+        var choreEntities = await choreRepository.Query()
             .Where(c => c.ChoreEnrollments.Any(ce => ce.UserId == userId))
             .Include(c => c.ChoreEnrollments)
             .ThenInclude(ce => ce.User)
+            .ToListAsync();
+
+        var chores = choreEntities
             .Select(c => new ChoreOutput
             {
                 Id = c.Id,
@@ -350,11 +354,10 @@ public class ChoreService(
                 Title = c.Title,
                 Description = c.Description,
                 IsDone = c.IsDone,
-                EnrolledUsers = c.ChoreEnrollments.ToDictionary(
-                        ce => ce.UserId,
-                        ce => ce.User.PathToProfilePicture)
+                EnrolledUsers = c.ChoreEnrollments
+                    .ToDictionary(ce => ce.UserId, ce => ce.User.PathToProfilePicture)
             })
-            .ToListAsync();
+            .ToList();
 
         logger.LogInformation("Succes : Chores found");
 
