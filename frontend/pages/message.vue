@@ -1,9 +1,14 @@
 <template>
     <div class="background">
-        <div v-for="msg in messages" :key="msg.id">
-            <MessageBox :content="msg.content" :sendBy="getUsername(msg.sendBy)" />
+        <div class="messages-box">
+            <MessageBox
+                v-for="message in messages"
+                :key="message.id"
+                :content="message.content"
+                :sendBy="getUsername(message.sendBy)"
+            />
         </div>
-        <form @submit.prevent="handleSendMessage">
+        <form @submit.prevent="handleSendMessage" class="form">
             <input v-model="newMessage.content" type="text" placeholder="Message" class="body-input" required />
             <button type="submit" class="button">
                 <img src="/Submit.svg" alt="Submit Icon" class="svg-icon" />
@@ -32,6 +37,7 @@ signalr.on("NewMessageAdded", (messageOutput) => {
     }
 });
 signalr.on("MessageDeleted", (messageId) => {
+    console.log("Message deleted:", messageId);
     messages.value = messages.value.filter(msg => msg.id !== messageId);
 });
 signalr.on("MessageUpdated", (messageOutput) => {
@@ -87,5 +93,28 @@ const getUsername = (sendById: string): string => {
     /* Ajustez la hauteur */
     display: inline-block;
     vertical-align: middle;
+}
+
+.body-input {
+    width: 80%;
+    padding-right: 40px;
+    border: none;
+    border-bottom: 2px solid #BDD4F6;
+}
+
+form {
+    position: fixed;
+    bottom: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.messages-box {
+    margin: 10px 5%;
+    max-height: 50%;
+    overflow-y: auto;
 }
 </style>

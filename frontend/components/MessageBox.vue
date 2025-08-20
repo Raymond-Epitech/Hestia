@@ -20,8 +20,6 @@ const props = defineProps({
         type: String,
         default: ''
     },
-
-
 })
 </script>
 
@@ -31,6 +29,8 @@ const props = defineProps({
     padding: 10px;
     border-radius: 8px;
     margin-bottom: 10px;
+    margin-right: 5%;
+    margin-left: 5%;
 }
 .header {
     display: flex;
@@ -46,16 +46,21 @@ const props = defineProps({
 .content {
     color: black;
     align-content: center;
+    max-width: 80%;
+    width: fit-content;
+    padding: 10px;
 }
 
 .content-me {
     font-size: 14px;
     border-radius: 8px 8px 0 8px;
-    background-color: #BDD4F6
+    background-color: #BDD4F6;
+    margin-left: auto;
 }
 .content-other {
     font-size: 14px;
     border-radius: 8px 8px 8px 0;
-    background-color: #C1E0B9
+    background-color: #C1E0B9;
+    margin-right: auto;
 }
 </style>
