@@ -152,3 +152,7 @@ export type message = {
     sendBy: string,
     sendAt?: string,
 }
+
+export type SignalRClient = {
+    on(event: string, callback: (data: any) => void): void;
+}

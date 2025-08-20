@@ -4,8 +4,7 @@
             <MessageBox :content="msg.content" :sendBy="getUsername(msg.sendBy)" />
         </div>
         <form @submit.prevent="handleSendMessage">
-            <input v-model="newMessage.content" type="text" placeholder="Message" class="body-input"
-                required />
+            <input v-model="newMessage.content" type="text" placeholder="Message" class="body-input" required />
             <button type="submit" class="button">
                 <img src="/Submit.svg" alt="Submit Icon" class="svg-icon" />
             </button>
@@ -15,7 +14,7 @@
 
 <script setup lang="ts">
 import { useUserStore } from '~/store/user';
-import type { Coloc, message } from '~/composables/service/type';
+import type { Coloc, message, SignalRClient } from '~/composables/service/type';
 
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
@@ -24,7 +23,25 @@ api.setjwt(useCookie('token').value ?? '');
 const colocationId = userStore.user.colocationId;
 const messages = ref<message[]>([]);
 const list_coloc = ref<Coloc[]>([]);
+const { $signalr } = useNuxtApp()
+const signalr = $signalr as SignalRClient;
 
+signalr.on("NewMessageAdded", (messageOutput) => {
+    if (!messages.value.some(msg => msg.id === messageOutput.id)) {
+        messages.value.push(messageOutput);
+    }
+});
+signalr.on("MessageDeleted", (messageId) => {
+    messages.value = messages.value.filter(msg => msg.id !== messageId);
+});
+signalr.on("MessageUpdated", (messageOutput) => {
+    for (let i = 0; i < messages.value.length; i++) {
+        if (messages.value[i].id === messageOutput.id) {
+            messages.value[i] = messageOutput;
+            break;
+        }
+    }
+});
 const fetchMessages = async () => {
     try {
         messages.value = await api.getMessageByColocationId(colocationId);
@@ -64,8 +81,10 @@ const getUsername = (sendById: string): string => {
 
 <style scoped>
 .svg-icon {
-    width: 24px; /* Ajustez la largeur */
-    height: 24px; /* Ajustez la hauteur */
+    width: 24px;
+    /* Ajustez la largeur */
+    height: 24px;
+    /* Ajustez la hauteur */
     display: inline-block;
     vertical-align: middle;
 }
