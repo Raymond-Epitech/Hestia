@@ -10,6 +10,7 @@ using Shared.Models.DTO;
 using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
+using System.Threading.Tasks;
 
 namespace Business.Services
 {
@@ -18,6 +19,7 @@ namespace Business.Services
         IRepository<Expense> expenseRepository,
         IRepository<Entry> entryRepository,
         IRepository<SplitBetween> splitbetweenRepository,
+        IRepository<User> userRepository,
         IRealTimeService realTimeService,
         IAppCache cache) : IExpenseService
     {
@@ -459,6 +461,10 @@ namespace Business.Services
 
                     transaction.Commit();
 
+                    var splitBetweens = await splitbetweenRepository.Query()
+                        .Where(e => e.ExpenseId == expense.Id)
+                        .ToListAsync();
+
                     var expenseOutput = new ExpenseOutput
                     {
                         Id = expense.Id,
@@ -468,7 +474,7 @@ namespace Business.Services
                         Amount = expense.Amount,
                         PaidBy = expense.PaidBy,
                         SplitType = Enum.Parse<SplitTypeEnum>(expense.SplitType),
-                        SplitBetween = expense.SplitBetweens.AsEnumerable().ToDictionary(k => k.UserId, v => v.Amount),
+                        SplitBetween = splitBetweens.ToDictionary(k => k.UserId, v => v.Amount),
                         DateOfPayment = expense.DateOfPayment,
                         ExpenseCategoryId = expense.ExpenseCategoryId,
                         ExpenseCategoryName = expense.ExpenseCategory.Name
@@ -550,6 +556,10 @@ namespace Business.Services
 
                     transaction.Commit();
 
+                    var splitbetweens = await splitbetweenRepository.Query()
+                        .Where(e => e.ExpenseId == expense.Id)
+                        .ToListAsync();
+
                     var expenseOutput = new ExpenseOutput
                     {
                         Id = expense.Id,
@@ -559,7 +569,7 @@ namespace Business.Services
                         Amount = expense.Amount,
                         PaidBy = expense.PaidBy,
                         SplitType = Enum.Parse<SplitTypeEnum>(expense.SplitType),
-                        SplitBetween = expense.SplitBetweens.AsEnumerable().ToDictionary(k => k.UserId, v => v.Amount),
+                        SplitBetween = splitbetweens.ToDictionary(k => k.UserId, v => v.Amount),
                         DateOfPayment = expense.DateOfPayment,
                         ExpenseCategoryId = expense.ExpenseCategoryId,
                         ExpenseCategoryName = expense.ExpenseCategory.Name
@@ -644,7 +654,7 @@ namespace Business.Services
         /// </summary>
         /// <param name="debts">List of debts, each represented by {UserId, Balance}.</param>
         /// <returns>A list of refund transactions required to settle all debts.</returns>
-        private List<RefundOutput> CalculateBestRefundMethod(Dictionary<Guid, decimal> debts)
+        private async Task<List<RefundOutput>> CalculateBestRefundMethod(Dictionary<Guid, decimal> debts)
         {
             var debtorList = debts
                 .Where(x => x.Value < 0)
@@ -685,6 +695,23 @@ namespace Business.Services
                 if (creditorList[j].Amount == 0)
                     j++;
             }
+
+            var userIds = refunds
+                .SelectMany(r => new[] { r.From, r.To })
+                .Distinct()
+                .ToList();
+
+            var userPPs = await userRepository
+                .Query()
+                .Where(u => userIds.Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id, u => u.PathToProfilePicture);
+
+            foreach (var refund in refunds)
+            {
+                refund.FromUrlPP = userPPs.GetValueOrDefault(refund.From, "default.jpg");
+                refund.ToUrlPP = userPPs.GetValueOrDefault(refund.To, "default.jpg");
+            }
+
             return refunds;
         }
 
@@ -700,7 +727,7 @@ namespace Business.Services
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
                 var balances = await GetAllBalanceAsync(colocationId);
-                return CalculateBestRefundMethod(balances);
+                return await CalculateBestRefundMethod(balances);
             });
         }
     }

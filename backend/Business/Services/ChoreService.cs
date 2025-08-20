@@ -34,6 +34,8 @@ public class ChoreService(
         {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
             var chores = await choreRepository.Query()
+                .Include(c => c.ChoreEnrollments)
+                .ThenInclude(ce => ce.User)
                 .Where(c => c.ColocationId == colocationId)
                 .Select(c => new ChoreOutput
                 {
@@ -43,7 +45,10 @@ public class ChoreService(
                     DueDate = c.DueDate,
                     Title = c.Title,
                     Description = c.Description,
-                    IsDone = c.IsDone
+                    IsDone = c.IsDone,
+                    EnrolledUsers = c.ChoreEnrollments.ToDictionary(
+                        ce => ce.UserId,
+                        ce => ce.User.PathToProfilePicture)
                 })
                 .OrderBy(c => c.DueDate)
                 .ToListAsync();
@@ -65,6 +70,8 @@ public class ChoreService(
     {
         var chore = await choreRepository.Query()
             .Where(c => c.Id == id)
+            .Include(c => c.ChoreEnrollments)
+            .ThenInclude(ce => ce.User)
             .Select(c => new ChoreOutput
             {
                 Id = c.Id,
@@ -73,7 +80,10 @@ public class ChoreService(
                 DueDate = c.DueDate,
                 Title = c.Title,
                 Description = c.Description,
-                IsDone = c.IsDone
+                IsDone = c.IsDone,
+                EnrolledUsers = c.ChoreEnrollments.ToDictionary(
+                        ce => ce.UserId,
+                        ce => ce.User.PathToProfilePicture)
             })
             .FirstOrDefaultAsync();
 
@@ -139,6 +149,10 @@ public class ChoreService(
 
         cache.Remove($"chores:{input.ColocationId}");
 
+        var users = await userRepository.Query()
+            .Where(u => input.Enrolled.Contains(u.Id))
+            .ToDictionaryAsync(u => u.Id, u => u.PathToProfilePicture);
+
         var choreOutput = new ChoreOutput
         {
             Id = chore.Id,
@@ -147,7 +161,10 @@ public class ChoreService(
             DueDate = chore.DueDate,
             Title = chore.Title,
             Description = chore.Description,
-            IsDone = chore.IsDone
+            IsDone = chore.IsDone,
+            EnrolledUsers = chore.ChoreEnrollments.ToDictionary(
+                ce => ce.UserId,
+                ce => ce.User.PathToProfilePicture)
         };
         await realTimeService.SendToGroupAsync(chore.ColocationId, "NewChoreAdded", choreOutput);
 
@@ -191,8 +208,11 @@ public class ChoreService(
     /// <exception cref="ContextException">An error has occured while adding chore from db</exception>
     public async Task<Guid> UpdateChoreAsync(ChoreUpdate input)
     {
-        var chore = await choreRepository.GetByIdAsync(input.Id);
-        
+        var chore = await choreRepository.Query()
+            .Include(c => c.ChoreEnrollments)
+            .ThenInclude(ce => ce.User)
+            .FirstOrDefaultAsync(c => c.Id == input.Id);
+
         if (chore == null)
         {
             throw new NotFoundException($"Chore {input.Id} not found");
@@ -226,7 +246,10 @@ public class ChoreService(
             DueDate = chore.DueDate,
             Title = chore.Title,
             Description = chore.Description,
-            IsDone = chore.IsDone
+            IsDone = chore.IsDone,
+            EnrolledUsers = chore.ChoreEnrollments.ToDictionary(
+                ce => ce.UserId,
+                ce => ce.User.PathToProfilePicture)
         };
         await realTimeService.SendToGroupAsync(chore.ColocationId, "ChoreUpdated", choreOutput);
 
@@ -316,6 +339,8 @@ public class ChoreService(
     {
         var chores = await choreRepository.Query()
             .Where(c => c.ChoreEnrollments.Any(ce => ce.UserId == userId))
+            .Include(c => c.ChoreEnrollments)
+            .ThenInclude(ce => ce.User)
             .Select(c => new ChoreOutput
             {
                 Id = c.Id,
@@ -324,7 +349,10 @@ public class ChoreService(
                 DueDate = c.DueDate,
                 Title = c.Title,
                 Description = c.Description,
-                IsDone = c.IsDone
+                IsDone = c.IsDone,
+                EnrolledUsers = c.ChoreEnrollments.ToDictionary(
+                        ce => ce.UserId,
+                        ce => ce.User.PathToProfilePicture)
             })
             .ToListAsync();
 

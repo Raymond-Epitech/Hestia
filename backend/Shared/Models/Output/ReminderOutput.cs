@@ -7,6 +7,7 @@
         public bool IsImage { get; set; } = false;
         public string Color { get; set; } = null!;
         public Guid CreatedBy { get; set; }
+        public string LinkToPP { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
         public int CoordX { get; set; }
         public int CoordY { get; set; }
