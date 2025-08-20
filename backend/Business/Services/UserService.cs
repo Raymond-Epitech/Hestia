@@ -171,6 +171,8 @@ public class UserService(ILogger<UserService> logger,
             new Claim("picture", validPayload.Picture ?? ""),
         };
 
+        logger.LogInformation($"Google link to profil picture is : {validPayload.Picture}");
+
         if (userRepository.Query().Any(u => u.Email == validPayload.Email))
         {
             throw new AlreadyExistException("This user already exist with this email");
