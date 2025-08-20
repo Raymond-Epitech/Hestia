@@ -1,27 +1,31 @@
 <template>
     <div class="body-container">
         <AddCategoryModal v-model="isModalOpen" @proceed="getall()" />
-        <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
-            <img src="~/public/plus.png" class="plus">
-        </button>
+        <div class="top-bar">
+            <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
+                <img src="~/public/plus.png" class="plus">
+            </button>
+            <button class="add-post">
+                <img src="~/public/dollar-sign.svg" class="plus">
+                <!-- <Rectangle color="#FFF973" id="rec" class="regularize-text mini_rec" :onClick="() => redirectto('balance')">
+                    <Texte_language source="regularize" />
+                </Rectangle> -->
+            </button>
+        </div>
         <div class="center-container">
-            <Rectangle v-for="expense in expenses_list" :key="expense.id" color="#85AD7B" id="rec"
-                class="expense mini_rec" :onClick="() => redirectto(expense.name, expense.id)">
+            <div v-for="expense in expenses_list" :key="expense.id" class="expense"
+                :onClick="() => redirectto(expense.name, expense.id)">
                 <text class="category">{{ expense.name }}</text>
                 <text class="regularize-text number">
                     {{ expense.totalAmount }} €
                 </text>
-            </Rectangle>
-            <Rectangle color="#4FA3A6" id="rec" class="expense mini_rec">
+            </div>
+            <div class="global">
                 <Texte_language class="category" source="global" />
                 <text class="regularize-text number">
                     {{ global }} €
                 </text>
-            </Rectangle>
-
-            <Rectangle color="#FFF973" id="rec" class="regularize-text mini_rec" :onClick="() => redirectto('balance')">
-                <Texte_language source="regularize" />
-            </Rectangle>
+            </div>
         </div>
     </div>
 </template>
@@ -38,10 +42,6 @@
     api.setjwt(useCookie('token').value ?? '');
     const { t } = useI18n();
     const router = useRouter();
-    const global = ref(0);
-    const food = ref(0);
-    const health = ref(0);
-    const partie = ref(0);
     const expenses_list = ref < expenses_category_get[] > ([]);
     const collocid = user.colocationId
 
@@ -84,6 +84,11 @@
         text-align: center;
     }
 
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+    }
+
     .add-post {
         display: flex;
         justify-content: center;
@@ -110,17 +115,24 @@
         filter: invert(1) opacity(1);
     }
 
-    .mini_rec {
-        width: 80%;
+    .expense {
+        width: 90%;
+        height: 88px;
         margin: 10px;
         padding: 10px;
         display: grid;
         align-items: center;
-    }
-
-    .expense {
         grid-template-columns: 1fr 1fr;
         justify-content: space-between;
+        background-color: var(--recieved-message-light);
+        border-radius: 20px;
+        box-shadow: var(--rectangle-shadow-light);
+        color: var(--page-text-light);
+    }
+
+    .dark .expense {
+        background-color: var(--recieved-message-dark);
+        color: var(--page-text-dark);
     }
 
     .regularize-text {
@@ -129,13 +141,36 @@
     }
 
     .category {
+        font-size: 20px;
         margin-left: 5px;
         font-weight: 600;
         text-align: left;
     }
 
     .number {
+        font-size: 28px;
         margin-right: 5px;
         text-align: right;
+    }
+
+    .global {
+        position: fixed;
+        bottom: 62px;
+        width: 100%;
+        height: 88px;
+        padding: 10px;
+        display: grid;
+        align-items: center;
+        grid-template-columns: 1fr 1fr;
+        justify-content: space-between;
+        background-color: var(--main-buttons-light);
+        border-radius: 20px 20px 0px 0px;
+        box-shadow: var(--button-shadow-light);
+        color: var(--page-text-light);
+    }
+
+    .dark .global {
+        background-color: var(--main-buttons-dark);
+        color: var(--page-text-dark);
     }
 </style>
