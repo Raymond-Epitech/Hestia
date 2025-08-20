@@ -90,5 +90,9 @@
   "light": "浅色",
   "Language-subtext": "更改应用程序语言",
   "Display-subtext": "更改应用程序语言",
-  "Colocation-subtext": "你的合租设置"
+  "Colocation-subtext": "你的合租设置",
+  "owes_you": "欠你",
+  "Due_to": "由于",
+  "from": "来自",
+  "to": "到"
 }

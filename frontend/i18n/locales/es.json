@@ -90,5 +90,9 @@
   "light": "claro",
   "Language-subtext": "Cambiar el idioma de la aplicación",
   "Display-subtext": "Modificar los parámetros de visualización",
-  "Colocation-subtext": "Parámetros de tu piso compartido"
+  "Colocation-subtext": "Parámetros de tu piso compartido",
+  "owes_you": "te debe",
+  "Due_to": "Debido a",
+  "from": "De",
+  "to": "a"
 }

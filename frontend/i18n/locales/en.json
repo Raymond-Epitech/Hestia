@@ -90,5 +90,9 @@
   "light": "light",
   "Language-subtext": "Change the application language",
   "Display-subtext": "Change display settings",
-  "Colocation-subtext": "Change display settings"
+  "Colocation-subtext": "Change display settings",
+  "owes_you": "owes you",
+  "Due_to": "Due to",
+  "from": "From",
+  "to": "an"
 }

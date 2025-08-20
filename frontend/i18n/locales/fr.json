@@ -87,5 +87,9 @@
   "light": "clair",
   "Language-subtext": "Changer la langue de l’application",
   "Display-subtext": "Modifier les paramètres d’affichage",
-  "Colocation-subtext": "Paramètres de ta colocation"
+  "Colocation-subtext": "Paramètres de ta colocation",
+  "owes_you": "te doit",
+  "Due_to": "Dû à",
+  "from": "De",
+  "to": "à"
 }

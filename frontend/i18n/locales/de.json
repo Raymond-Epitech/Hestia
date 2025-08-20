@@ -90,5 +90,9 @@
   "light": "hell",
   "Language-subtext": "Sprache der Anwendung ändern",
   "Display-subtext": "Sprache der Anwendung ändern",
-  "Colocation-subtext": "Anzeigeeinstellungen ändern"
+  "Colocation-subtext": "Anzeigeeinstellungen ändern",
+  "owes_you": "schuldet dir",
+  "Due_to": "Aufgrund von",
+  "from": "Von",
+  "to": "an"
 }

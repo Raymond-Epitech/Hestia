@@ -1,11 +1,12 @@
 <template>
     <div class="body-container">
-        <AddCategoryModal v-model="isModalOpen" @proceed="getall()" />
+        <AddCategoryModal v-model="isCategoryModalOpen" @proceed="getall()" />
+        <AddBalanceModal v-model="isBalanceModalOpen" @proceed="getall()" />
         <div class="top-bar">
-            <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
+            <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openCategoryModal">
                 <img src="~/public/plus.png" class="plus">
             </button>
-            <button class="add-post">
+            <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openBalanceModal">
                 <img src="~/public/dollar-sign.svg" class="plus">
                 <!-- <Rectangle color="#FFF973" id="rec" class="regularize-text mini_rec" :onClick="() => redirectto('balance')">
                     <Texte_language source="regularize" />
@@ -42,11 +43,15 @@
     api.setjwt(useCookie('token').value ?? '');
     const { t } = useI18n();
     const router = useRouter();
+    const global = ref(0);
     const expenses_list = ref < expenses_category_get[] > ([]);
     const collocid = user.colocationId
 
-    const isModalOpen = ref(false)
-    const openModal = () => (isModalOpen.value = true)
+    const isCategoryModalOpen = ref(false)
+    const openCategoryModal = () => (isCategoryModalOpen.value = true)
+
+    const isBalanceModalOpen = ref(false)
+    const openBalanceModal = () => (isBalanceModalOpen.value = true)
 
     const redirectto = (name: string, id?: string) => {
         if (name === 'balance') {
