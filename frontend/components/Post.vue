@@ -1,6 +1,6 @@
 <template>
     <div class="post" :class="color">
-        <ProfileIcon class="profile-icon" :height="30" :width="30" />
+        <ProfileIcon class="profile-icon" :height="30" :width="30" :linkToPP="props.linkToPP" />
         <button class="delete-button" @click="showPopup" v-if="createdBy == user.id">
             <div class="close"></div>
         </button>
@@ -31,6 +31,10 @@
         createdBy: {
             type: String,
             required: true
+        },
+        linkToPP: {
+            type: String,
+            required: false
         }
     })
     const popup_vue = ref(false)

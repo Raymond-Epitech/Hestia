@@ -1,13 +1,19 @@
 <template>
     <div class="task-container">
         <TaskModal v-model="isModalOpen" :key="id" :id="id" :title="title" :description="description"
-            :color="getColor()" :dueDate="dueDate" :isDone="isDone" @proceed="emitProceed()"></TaskModal>
+            :color="getColor()" :dueDate="dueDate" :isDone="isDone" :enrolledUsers="enrolledUsers"
+            @proceed="emitProceed()"></TaskModal>
         <div class="task" :class="[getColor()]" data-toggle="modal" data-target=".bd-example-modal-sm"
             @click="openModal">
             <h1>{{ title }}</h1>
             <div class="due-date">
                 <div class="number">{{ getDayNumber() }}</div>
                 <div class="month">{{ getMonthAbbreviation() }}</div>
+            </div>
+        </div>
+        <div class="enrolles-list">
+            <div v-for="(userObj, index) in enrolledUsers" :key="index" class="enrolles-pictures">
+                <profile-icon :linkToPP="userObj" :height="33" :width="33"></profile-icon>
             </div>
         </div>
     </div>
@@ -42,7 +48,11 @@
         isDone: {
             type: Boolean,
             required: true,
-        }
+        },
+        enrolledUsers: {
+            type: Object,
+            required: false,
+        },
     })
     const isModalOpen = ref(false)
     const openModal = () => (isModalOpen.value = true)
@@ -99,6 +109,7 @@
     }
 
     .task {
+        position: relative;
         display: grid;
         grid-template-columns: 80% 20%;
         padding-top: 10px;
@@ -149,5 +160,20 @@
         text-transform: uppercase;
         -webkit-text-size-adjust: none;
         text-size-adjust: none;
+    }
+
+    .enrolles-list {
+        width: 90%;
+        position: absolute;
+        float: left;
+        display: flex;
+        justify-content: left;
+        margin-top: 58px;
+        margin-left: 28px;
+    }
+
+    .enrolles-pictures {
+        margin-left: -12px;
+        z-index: 1;
     }
 </style>

@@ -17,8 +17,9 @@
                     <!-- Buttons -->
                     <div class="modal-buttons">
                         <div class="enrollees-icon-container">
-                            <div v-for="enroll in enrollees" :key="enroll.id" :value="enroll.id" class="enrollees-icon">
-                                <profile-icon :height="33" :width="33"></profile-icon>
+                            <div v-for="link in linkToPP" :key="linkToPP.id" :value="linkToPP.id"
+                                class="enrollees-icon">
+                                <profile-icon :linkToPP="link" :height="33" :width="33"></profile-icon>
                             </div>
                         </div>
                         <slot name="buttons">
@@ -57,13 +58,14 @@
     import type { User } from '../composables/service/type'
 
     const props = defineProps < {
-        id: string
-    title: string
-    modelValue?: boolean
-    description: string
-    color: string
-    dueDate: string
-    isDone: boolean
+        id: string,
+        title: string,
+        modelValue?: boolean,
+        description: string,
+        color: string,
+        dueDate: string,
+        isDone: boolean,
+        enrolledUsers: Object,
     } > ();
 
     const userStore = useUserStore();
@@ -71,7 +73,9 @@
     const api = $bridge;
     api.setjwt(useCookie('token').value ?? '');
     const isEnrolled = ref(false);
-    const enrollees = ref < User[] > ([]);
+    const enrollees = Object.keys(props.enrolledUsers);
+    const linkToPP = Object.values(props.enrolledUsers);
+
     var done = props.isDone;
 
     const { modelValue } = toRefs(props)
@@ -92,8 +96,7 @@
 
     const getEnroll = async () => {
         const data = await api.getUserEnrollChore(props.id);
-        enrollees.value = data;
-        isEnrolled.value = data.some(obj => obj.id === userStore.user.id);
+        isEnrolled.value = enrollees.includes(userStore.user.id);
     };
 
     const handleClose = () => {
@@ -312,7 +315,7 @@
         border-bottom-right-radius: 20px;
         margin-top: auto;
         display: grid;
-        grid-template-columns: 1fr 3fr 3fr;
+        grid-template-columns: 2fr 3fr 3fr;
         align-items: center;
         gap: 1em;
     }
@@ -328,10 +331,12 @@
 
     .enrollees-icon-container {
         display: flex;
+        margin-left: 28px;
     }
 
     .enrollees-icon {
-        margin-right: -14px;
+        margin-left: -12px;
+        z-index: 1;
     }
 
     /** Fallback Buttons */
