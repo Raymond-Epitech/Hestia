@@ -5,6 +5,9 @@ namespace Shared.Models.Input
     public class ChoreMessageInput
     {
         [Required]
+        public Guid ColocationId { get; set; }
+
+        [Required]
         public Guid ChoreId { get; set; }
 
         [Required]

@@ -1,4 +1,5 @@
-﻿using Shared.Models.Input;
+﻿using Shared.Models.DTO;
+using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
 
@@ -12,5 +13,7 @@ namespace Business.Interfaces
         Task<Guid> UpdateReminderAsync(ReminderUpdate input);
         Task<int> UpdateRangeReminderAsync(List<ReminderUpdate> inputs);
         Task<Guid> DeleteReminderAsync(Guid id);
+        Task<FileDTO> GetImageByNameAsync(string fileName);
+        string DeleteImage(string fileName);
     }
 }

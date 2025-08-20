@@ -175,14 +175,14 @@ public class ColocationControllerTests
         };
         var addedBy = Guid.NewGuid();
 
-        _colocationServiceMock.Setup(service => service.AddColocation(colocationInput, addedBy))
+        _colocationServiceMock.Setup(service => service.AddColocation(colocationInput))
             .ThrowsAsync(new ContextException("Invalid colocation"));
 
         // Act
-        await Assert.ThrowsAsync<ContextException>(() => _controller.AddCollocation(colocationInput, addedBy));
+        await Assert.ThrowsAsync<ContextException>(() => _controller.AddCollocation(colocationInput));
 
         // Assert
-        _colocationServiceMock.Verify(service => service.AddColocation(colocationInput, addedBy), Times.Once);
+        _colocationServiceMock.Verify(service => service.AddColocation(colocationInput), Times.Once);
     }
 
     // UPDATE COLOCATION
