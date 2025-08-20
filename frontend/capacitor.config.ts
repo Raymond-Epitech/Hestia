@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-    appId: 'io.ionic.starter',
+    appId: 'com.hestiaapp.org',
     appName: 'Hestia',
     server: {
         "allowNavigation": ["http://91.134.93.112:8080"]

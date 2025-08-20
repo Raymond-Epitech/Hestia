@@ -5,7 +5,7 @@
       <img src="~/public/plus.png" class="plus">
     </button>
     <div v-for="(post, index) in posts" :key="index">
-      <Post :id="post.id" :text="post.content" :color="post.color" @delete="getall()" />
+      <Post :id="post.id" :text="post.content" :color="post.color" :createdBy="post.createdBy" @delete="getall()" />
     </div>
   </div>
 </template>
