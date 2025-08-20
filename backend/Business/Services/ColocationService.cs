@@ -1,7 +1,6 @@
 ﻿using Business.Interfaces;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
@@ -13,7 +12,8 @@ namespace Business.Services
 {
     public class ColocationService(ILogger<ColocationService> logger,
         IRepository<Colocation> colocationRepository,
-        IRepository<User> userRepository
+        IRepository<User> userRepository,
+        IRepository<ExpenseCategory> expenseCategoryRepository
         ) : IColocationService
     {
         /// <summary>
@@ -101,6 +101,14 @@ namespace Business.Services
             }
 
             await colocationRepository.AddAsync(newColocation);
+
+            await expenseCategoryRepository.AddAsync(new ExpenseCategory
+            {
+                Id = Guid.NewGuid(),
+                Name = "Refund",
+                ColocationId = newColocation.Id
+            });
+
             await colocationRepository.SaveChangesAsync();
 
             logger.LogInformation($"Succes : Colocation {newColocation.Id} added");
