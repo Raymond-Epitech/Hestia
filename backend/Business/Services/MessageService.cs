@@ -123,12 +123,19 @@ public class MessageService(
 
     public async Task<Guid> DeleteMessageAsync(Guid id)
     {
-        await repository.DeleteFromIdAsync(id);
+        var message = await repository.GetByIdAsync(id);
+
+        if (message == null)
+        {
+            throw new KeyNotFoundException($"Message with Id {id} not found");
+        }
+
+        repository.Delete(message);
         await repository.SaveChangesAsync();
 
         logger.LogInformation($"Deleted message with Id {id}");
 
-        await realTimeService.SendToGroupAsync(id, "MessageDeleted", id);
+        await realTimeService.SendToGroupAsync(message.ColocationId, "MessageDeleted", id);
 
         return id;
     }
