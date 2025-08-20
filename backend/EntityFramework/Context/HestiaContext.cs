@@ -86,10 +86,10 @@ namespace EntityFramework.Context
                     .HasForeignKey(x => x.UserId)
                     .OnDelete(DeleteBehavior.SetNull);
 
-                c.HasMany(x => x.FCMDevices)
-                    .WithOne(x => x.User)
-                    .HasForeignKey(x => x.UserId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                c.HasMany(u => u.FCMDevices)
+                    .WithMany(d => d.Users)
+                    .UsingEntity(j => j.ToTable("UserFCMDevices"));
+
             });
             modelBuilder.Entity<ChoreEnrollment>(c =>
             {

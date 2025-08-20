@@ -465,6 +465,11 @@ namespace Business.Services
                         .Where(e => e.ExpenseId == expense.Id)
                         .ToListAsync();
 
+                    var expenseCategory = await expenseCategoryRepository.GetByIdAsync(input.ExpenseCategoryId);
+
+                    if (expenseCategory is null)
+                        throw new NotFoundException($"The expense category with id {input.ExpenseCategoryId} was not found");
+
                     var expenseOutput = new ExpenseOutput
                     {
                         Id = expense.Id,
@@ -476,8 +481,8 @@ namespace Business.Services
                         SplitType = Enum.Parse<SplitTypeEnum>(expense.SplitType),
                         SplitBetween = splitBetweens.ToDictionary(k => k.UserId, v => v.Amount),
                         DateOfPayment = expense.DateOfPayment,
-                        ExpenseCategoryId = expense.ExpenseCategoryId,
-                        ExpenseCategoryName = expense.ExpenseCategory.Name
+                        ExpenseCategoryId = expenseCategory.Id,
+                        ExpenseCategoryName = expenseCategory.Name
                     };
                     await realTimeService.SendToGroupAsync(input.ColocationId, "NewExpenseAdded", expenseOutput);
 
