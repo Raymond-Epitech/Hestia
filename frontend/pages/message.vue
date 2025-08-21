@@ -88,9 +88,7 @@ const getUsername = (sendById: string): string => {
 <style scoped>
 .svg-icon {
     width: 24px;
-    /* Ajustez la largeur */
     height: 24px;
-    /* Ajustez la hauteur */
     display: inline-block;
     vertical-align: middle;
 }

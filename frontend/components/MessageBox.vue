@@ -1,7 +1,7 @@
 <template>
     <div class="box">
         <div v-if="sendBy != 'me'" class="header">
-            <ProfileIcon :height="33" :width="33"/>
+            <ProfileIcon :height="15" :width="15"/>
             <p>{{ sendBy }}</p>
         </div>
         <div :class="['content', sendBy === 'me' ? 'content-me' : 'content-other']">
