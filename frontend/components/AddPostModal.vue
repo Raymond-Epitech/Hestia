@@ -104,11 +104,11 @@ const { modelValue } = toRefs(props)
 
 const { open, close, toggle, visible } = useModal(props.name)
 
-const emit = defineEmits<{
-  closed: []
-  proceed: []
+const emit = defineEmits < {
+  closed: [], // named tuple syntax
+  proceed: [],
   'update:modelValue': [value: boolean]
-}>()
+} > ()
 
 defineExpose({
   open,
@@ -129,36 +129,8 @@ const resetPost = () => {
     coordY: 0,
     coordZ: 0,
     colocationId: userStore.user.colocationId,
-  })
-
-  const { modelValue } = toRefs(props)
-
-  const { open, close, toggle, visible } = useModal(props.name)
-
-  const emit = defineEmits < {
-    closed: [], // named tuple syntax
-    proceed: [],
-    'update:modelValue': [value: boolean]
-  } > ()
-
-  defineExpose({
-    open,
-    close,
-    toggle,
-    visible,
-  })
-
-  const resetPost = () => {
-    post.value = {
-      createdBy: userStore.user.id,
-      content: '',
-      color: '',
-      coordX: 0,
-      coordY: 0,
-      coordZ: 0,
-      colocationId: userStore.user.colocationId,
-    }
   }
+}
 
 const handleClose = () => {
   resetPost()
@@ -176,6 +148,7 @@ const handleProceed = async () => {
     close()
     emit('closed')
   }
+}
 
 const handleImageUpload = (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0];
@@ -194,6 +167,7 @@ watch(
     }
     emit('proceed')
   }
+)
 
 watch(
   () => post.value.isImage,
@@ -214,6 +188,7 @@ watch(
 watch(visible, (value) => {
   emit('update:modelValue', value)
 })
+
 </script>
 
 <style scoped>

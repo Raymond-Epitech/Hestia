@@ -5,6 +5,7 @@ export type Reminder = {
     content: string,
     isImage: boolean,
     image?: File | null,
+    linkToPP: string,
     color: string,
     coordX: number,
     coordY: number,
