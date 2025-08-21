@@ -5,13 +5,14 @@
       <img src="~/public/plus.png" class="plus">
     </button>
     <div v-for="(post, index) in posts" :key="index">
-      <Post :id="post.id" :text="post.content" :color="post.color" :isImage="post.isImage" @delete="getall()" />
+      <Post :id="post.id" :text="post.content" :color="post.color" :createdBy="post.createdBy" :isImage="post.isImage" @delete="getall()" />
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useUserStore } from '~/store/user';
+import type { Reminder } from '../composables/service/type'
 
 const isModalOpen = ref(false)
 const openModal = () => (isModalOpen.value = true)
@@ -21,7 +22,26 @@ const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 
-const posts = ref([]);
+const posts = ref<Reminder[]>([]);
+
+const { $signalr } = useNuxtApp()
+
+$signalr.on("NewReminderAdded", (ReminderOutput) => {
+  if (!posts.value.some(post => post.id === ReminderOutput.id)) {
+    posts.value.push(ReminderOutput)
+  }
+})
+$signalr.on("reminderdeleted", (ReminderOutput) => {
+  posts.value = posts.value.filter(post => post.id !== ReminderOutput)
+})
+
+// $signalr.on("ReminderUpdated", (ReminderOutput) => {
+//  console.log(ReminderOutput)
+// })
+// $signalr.on("RemindersUpdated", (ReminderOutput) => {
+//  console.log(ReminderOutput)
+// })
+
 
 const getall = async () => {
   const data = await api.getAllReminders(userStore.user.colocationId);

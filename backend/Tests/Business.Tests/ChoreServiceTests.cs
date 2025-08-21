@@ -1,4 +1,5 @@
-﻿using Business.Services;
+﻿using Business.Interfaces;
+using Business.Services;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
 using FluentAssertions;
@@ -19,6 +20,7 @@ public class ChoreServiceTests
     private readonly Mock<IRepository<User>> _userRepositoryMock = new();
     private readonly Mock<IRepository<ChoreEnrollment>> _choreEnrollmentRepositoryMock = new();
     private readonly Mock<IAppCache> _cacheMock = new();
+    private readonly Mock<IRealTimeService> _realTimeService = new();
 
     private readonly ChoreService _service;
 
@@ -30,7 +32,8 @@ public class ChoreServiceTests
             _choreMessageRepositoryMock.Object,
             _userRepositoryMock.Object,
             _choreEnrollmentRepositoryMock.Object,
-            _cacheMock.Object);
+            _cacheMock.Object,
+            _realTimeService.Object);
     }
 
     [Fact]

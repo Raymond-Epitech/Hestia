@@ -222,6 +222,47 @@ namespace EntityFramework.Migrations
                     b.ToTable("ExpenseCategories");
                 });
 
+            modelBuilder.Entity("EntityFramework.Models.FCMDevice", b =>
+                {
+                    b.Property<string>("FCMToken")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("FCMToken");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("FCMDevices");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Message", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ColocationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("SentBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ColocationId");
+
+                    b.ToTable("Messages");
+                });
+
             modelBuilder.Entity("EntityFramework.Models.Reminder", b =>
                 {
                     b.Property<Guid>("Id")
@@ -253,6 +294,9 @@ namespace EntityFramework.Migrations
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("IsImage")
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -469,6 +513,28 @@ namespace EntityFramework.Migrations
                     b.Navigation("Colocation");
                 });
 
+            modelBuilder.Entity("EntityFramework.Models.FCMDevice", b =>
+                {
+                    b.HasOne("EntityFramework.Models.User", "User")
+                        .WithMany("FCMDevices")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Message", b =>
+                {
+                    b.HasOne("EntityFramework.Models.Colocation", "Colocation")
+                        .WithMany("Messages")
+                        .HasForeignKey("ColocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Colocation");
+                });
+
             modelBuilder.Entity("EntityFramework.Models.Reminder", b =>
                 {
                     b.HasOne("EntityFramework.Models.Colocation", "Colocation")
@@ -544,6 +610,8 @@ namespace EntityFramework.Migrations
 
                     b.Navigation("ExpenseCategories");
 
+                    b.Navigation("Messages");
+
                     b.Navigation("Reminders");
 
                     b.Navigation("ShoppingLists");
@@ -575,6 +643,8 @@ namespace EntityFramework.Migrations
                     b.Navigation("Entries");
 
                     b.Navigation("Expenses");
+
+                    b.Navigation("FCMDevices");
 
                     b.Navigation("SplitBetweens");
                 });

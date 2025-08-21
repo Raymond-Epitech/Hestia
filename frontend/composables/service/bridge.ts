@@ -132,30 +132,66 @@ export class bridge {
 
     // User section:
 
-    async login(google_token: string) {
-        return await fetch(this.url + "/api/User/Login?googleToken=" + google_token, {
-            method: 'POST'
+    async login(google_token: string, fcm_token: string) {
+        const options: RequestInit = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+        if (fcm_token && fcm_token !== "") {
+            options.body = JSON.stringify({ fcmToken: fcm_token });
+        }
+        return await fetch(this.url + "/api/User/Login?googleToken=" + google_token, options)
+            .then(async response => {
+                if (response.status == 200) {
+                    return await response.json();
+                } else if (response.status == 404) {
+                    const jsonresponse = await response.json();
+                    if (jsonresponse.message == "User not found") {
+                        return { error: "User not found" };
+                    }
+                    return { error: "Internal server error" };
+                } else if (response.status == 422) {
+                    const jsonresponse = await response.json();
+                    if (jsonresponse.message == "Invalid json body") {
+                        return { error: "Invalid json body" };
+                    }
+                }
+                return {};
+            });
+    }
+
+    async logout(userId: string, fcm_token: string) {
+        if (!fcm_token || fcm_token === "") {
+            return { error: "FCM token is required (could be absent on browser)" };
+        }
+        return await fetch(this.url + "/api/User/Logout", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId: userId, fcmToken: fcm_token })
         }).then(async response => {
             if (response.status == 200) {
                 return await response.json();
-            } else if (response.status == 404) {
+            } else if (response.status == 500) {
                 const jsonresponse = await response.json();
-                if (jsonresponse.message == "User not found") {
-                    return { error: "User not found" };
+                if (jsonresponse.message == "Internal server error") {
+                    return { error: "Internal server error" };
                 }
-                return { error: "Internal server error" };
             }
             return {};
-        })
+        });
     }
 
-    async addUser(user: User, google_token: string) {
+    async addUser(user: User, google_token: string, fcm_token: string) {
         return await fetch(this.url + "/api/User/Register?googleToken=" + google_token, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(user)
+            body: JSON.stringify({ username: user.username, colocationId: user.colocationId, fcmToken: fcm_token })
         }).then(async response => {
             if (response.status == 200) {
                 return await response.json();
@@ -168,7 +204,8 @@ export class bridge {
         return await fetch(this.url + "/api/User", {
             method: 'PUT',
             headers: {
-                'Authorization': 'Bearer ' + this.jwt,
+                'Authorization': 'Bearer ' + 
+                this.jwt,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(user)

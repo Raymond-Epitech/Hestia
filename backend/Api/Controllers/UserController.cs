@@ -95,12 +95,48 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<UserInfo>> Login(string googleToken)
+        public async Task<ActionResult<UserInfo>> Login(string googleToken, LoginInput? loginInput)
         {
             if (googleToken is "")
                 throw new InvalidEntityException("Google token is empty");
 
-            return Ok(await userService.LoginUserAsync(googleToken));
+            return Ok(await userService.LoginUserAsync(googleToken, loginInput));
+        }
+
+        [HttpDelete("Logout")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<string>> Logout(LogoutInput input)
+        {
+            if (input.UserId == Guid.Empty)
+                throw new InvalidEntityException("User Id is empty");
+
+            return Ok(await userService.LogoutUserAsync(input));
+        }
+
+        [HttpPost("Notifications/users")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> SendNotificationToUser(NotificationInput notification)
+        {
+            await userService.SendNotificationToUserAsync(notification);
+
+            return Ok(notification.Id);
+        }
+
+        [HttpPost("Notifications/colocation")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<Guid>>> SendNotificationToColocation(NotificationInput notification)
+        {
+            var users = await userService.SendNotificationToColocationAsync(notification);
+
+            return Ok(users);
         }
     }
 }

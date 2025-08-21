@@ -1,5 +1,5 @@
 {
-	"appId": "io.ionic.starter",
+	"appId": "com.hestiaapp.org",
 	"appName": "Hestia",
 	"server": {
 		"allowNavigation": [
@@ -17,6 +17,13 @@
 					"clientId": "80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com"
 				}
 			}
+		},
+		"PushNotifications": {
+			"presentationOptions": [
+				"badge",
+				"sound",
+				"alert"
+			]
 		}
 	}
 }
