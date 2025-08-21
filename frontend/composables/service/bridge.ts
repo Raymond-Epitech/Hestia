@@ -4,6 +4,7 @@ import { Capacitor } from '@capacitor/core'
 const { Filesystem, Directory } = await import('@capacitor/filesystem');
 
 function isNative() {
+    console.log("Capacitor.isNativePlatform():", Capacitor.isNativePlatform());
     return Capacitor.isNativePlatform()
 }
 
@@ -813,7 +814,7 @@ export class bridge {
     }
 
     async getImagetocache(name: string): Promise<string> {
-        const url = `${this.url}/images/${name}`;
+        const url = `http://91.134.48.124:8081/images/${name}`;
         return await fetch(url, {
             method: 'GET',
             headers: {
@@ -844,7 +845,7 @@ export class bridge {
     }
 
     async getImagefromcache(name: string): Promise<string | null> {
-        const url = `${this.url}/images/${name}`;
+        const url = `http://91.134.48.124:8081/images/${name}`;
         if (isNative()) {
             // Mobile : lecture depuis le disque
             try {
