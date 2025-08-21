@@ -59,12 +59,14 @@ const confirmDelete = async () => {
     } catch (error) {
         console.error('Failed to delete the post:', error);
     }
+};
 
 const cancelDelete = () => {
     popup_vue.value = false;
 };
 onMounted(() => {
     if (props.isImage) {
+        console.log('Image URL:', props.text);
         api.getImagefromcache(props.text).then((image) => {
             if (image) {
                 imageget.value = image;
@@ -76,7 +78,6 @@ onMounted(() => {
         });
     }
 });
-}
 </script>
 
 <style scoped>

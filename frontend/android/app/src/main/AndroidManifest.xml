@@ -25,7 +25,7 @@
             android:resource="@drawable/ic_hestia_push" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/colorNotifications" />
+            android:resource="@color/colorNotification" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_notification_channel_id" />

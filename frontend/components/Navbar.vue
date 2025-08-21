@@ -38,7 +38,7 @@
         position: fixed;
         bottom: 0px;
         width: 100%;
-        height: 62px;
+        height: 8%;
         background-color: var(--main-buttons-light);
         display: grid;
         grid-template-columns: repeat(5, 1fr);

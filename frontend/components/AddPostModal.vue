@@ -40,7 +40,7 @@
               />
               <img v-if="prewiew" :src="prewiew" alt="Image sélectionnée" style="max-width: 10%; margin-top: 1em;" />
             </div>
-            <div class="post-colors-buttons">
+            <div v-if="!post.isImage" class="post-colors-buttons">
               <input class="form-check-input color-choice blue" v-model="post.color" type="radio" name="gridRadios"
                 id="gridRadios1" value="blue" required>
               <input class="form-check-input color-choice yellow" v-model="post.color" type="radio" name="gridRadios"

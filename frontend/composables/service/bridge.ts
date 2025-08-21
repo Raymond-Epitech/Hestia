@@ -1,7 +1,7 @@
 import { json } from "stream/consumers";
 import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif, refund, shoppinglist, shoppinglist_item, expenses_category, expenses_category_get, message } from "./type";
 import { Capacitor } from '@capacitor/core'
-const { Filesystem, Directory } = await import('@capacitor/filesystem');
+import { Filesystem, Directory } from '@capacitor/filesystem';
 
 function isNative() {
     console.log("Capacitor.isNativePlatform():", Capacitor.isNativePlatform());
@@ -824,16 +824,24 @@ export class bridge {
             if (response.status == 200) {
                 const blob = await response.blob();
                 if (isNative()) {
-                    const reader = new FileReader()
-                    reader.onloadend = async () => {
-                        const base64Data = (reader.result as string).split(',')[1];
-                        await Filesystem.writeFile({
-                            path: name,
-                            data: base64Data,
-                            directory: Directory.Data
-                        })
-                    }
-                    reader.readAsDataURL(blob)
+                    await new Promise<void>((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onloadend = async () => {
+                            try {
+                                const base64Data = (reader.result as string).split(',')[1];
+                                await Filesystem.writeFile({
+                                    path: name,
+                                    data: base64Data,
+                                    directory: Directory.Data
+                                });
+                                resolve();
+                            } catch (err) {
+                                reject(err);
+                            }
+                        };
+                        reader.onerror = reject;
+                        reader.readAsDataURL(blob);
+                    });
                 } else {
                     const cache = await caches.open('images-cache');
                     await cache.put(url, new Response(blob));
