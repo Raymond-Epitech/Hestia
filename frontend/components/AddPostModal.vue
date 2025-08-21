@@ -7,8 +7,38 @@
             <h1 class="modal-header-text">{{ $t('post-content') }} :</h1>
           </div>
           <form method="post" action="">
-            <div class="modal-body left">
+            <div class="post-type-buttons">
+              <input
+                class="form-check-input type-choice"
+                v-model="post.isImage"
+                type="radio"
+                name="postType"
+                id="postTypeText"
+                :value="false"
+              />
+              <label for="postTypeText">{{ $t('text') }}</label>
+              <input
+                class="form-check-input type-choice"
+                v-model="post.isImage"
+                type="radio"
+                name="postType"
+                id="postTypeImage"
+                :value="true"
+              />
+              <label for="postTypeImage">{{ $t('image') }}</label>
+            </div>
+            <div v-if="!post.isImage" class="modal-body left">
               <textarea class="modal-body-input" rows="3" maxlength="150" v-model="post.content" required></textarea>
+            </div>
+            <div v-else class="modal-body left">
+              <input
+                type="file"
+                class="modal-body-input"
+                @change="handleImageUpload"
+                accept="image/*"
+                required
+              />
+              <img v-if="prewiew" :src="prewiew" alt="Image sélectionnée" style="max-width: 10%; margin-top: 1em;" />
             </div>
             <div class="post-colors-buttons">
               <input class="form-check-input color-choice blue" v-model="post.color" type="radio" name="gridRadios"
@@ -56,11 +86,14 @@ const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
+const prewiew = ref('');
 
 const post = ref({
   createdBy: userStore.user.id,
   content: '',
   color: '',
+  isImage: false,
+  image: new File([], 'test.jpg'), 
   coordX: 0,
   coordY: 0,
   coordZ: 0,
@@ -72,7 +105,7 @@ const { modelValue } = toRefs(props)
 const { open, close, toggle, visible } = useModal(props.name)
 
 const emit = defineEmits<{
-  closed: [] // named tuple syntax
+  closed: []
   proceed: []
   'update:modelValue': [value: boolean]
 }>()
@@ -85,10 +118,13 @@ defineExpose({
 })
 
 const resetPost = () => {
+  prewiew.value = '';
   post.value = {
     createdBy: userStore.user.id,
     content: '',
     color: '',
+    isImage: false,
+    image: new File([], 'test.jpg'),
     coordX: 0,
     coordY: 0,
     coordZ: 0,
@@ -103,6 +139,9 @@ const handleClose = () => {
 }
 
 const handleProceed = async () => {
+  if (post.value.isImage) {
+    post.value.content = '';
+  }
   const response = await api.addReminder(post.value)
   if (response) {
     resetPost()
@@ -110,6 +149,15 @@ const handleProceed = async () => {
   }
   emit('proceed')
 }
+
+const handleImageUpload = (event: Event) => {
+  const file = (event.target as HTMLInputElement).files?.[0];
+  if (file) {
+    post.value.image = file;
+    prewiew.value = URL.createObjectURL(file);
+    post.value.content = 'none';
+  }
+};
 
 watch(
   modelValue,
@@ -120,6 +168,22 @@ watch(
   },
   { immediate: true }
 )
+
+watch(
+  () => post.value.isImage,
+  (newValue, oldValue) => {
+    if (newValue !== oldValue) {
+      prewiew.value = '';
+      if (post.value.isImage) {
+        post.value.content = '';
+        post.value.color = 'none'
+      } else {
+        post.value.image = new File([], 'test.jpg');
+        post.value.color = '';
+      }
+    }
+  }
+);
 
 watch(visible, (value) => {
   emit('update:modelValue', value)

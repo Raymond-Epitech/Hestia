@@ -1,6 +1,11 @@
 import { json } from "stream/consumers";
 import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif, refund, shoppinglist, shoppinglist_item, expenses_category, expenses_category_get } from "./type";
+import { Capacitor } from '@capacitor/core'
+const { Filesystem, Directory } = await import('@capacitor/filesystem');
 
+function isNative() {
+    return Capacitor.isNativePlatform()
+}
 
 export class bridge {
     constructor() {
@@ -34,7 +39,7 @@ export class bridge {
 
     // Reminder section: get all reminders, get reminder by ID, add reminder, update reminder, delete reminder
 
-    async getAllReminders(id_colloc: string) {
+    async getAllReminders(id_colloc: string): Promise<Reminder[]> {
         const response: Response = await fetch(this.url + "/api/Reminder/GetByColocation/" + id_colloc,
             {
                 method: 'GET',
@@ -58,13 +63,26 @@ export class bridge {
     }
 
     async addReminder(data: any) {
+        const formData = new FormData();
+        formData.append('ColocationId', data.colocationId || '');
+        formData.append('CreatedBy', data.createdBy);
+        formData.append('Content', data.content);
+        formData.append('IsImage', String(data.isImage));
+        formData.append('Color', data.color);
+        formData.append('CoordX', String(data.coordX));
+        formData.append('CoordY', String(data.coordY));
+        formData.append('CoordZ', String(data.coordZ));
+        if (data.image) {
+            formData.append('Image', data.image, data.image.name);
+        } else {
+            formData.append('Image', '');
+        }
         return await fetch(this.url + "/api/Reminder", {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + this.jwt
             },
-            body: JSON.stringify(data)
+            body: formData
         }).then(response => {
             if (response.status == 200) {
                 return true;
@@ -773,5 +791,78 @@ export class bridge {
             }
             return false;
         });
+    }
+
+    // Image section:
+
+    async uploadImage(file: File,): Promise<string> {
+        const formData = new FormData();
+        formData.append('file', file, file.name);
+        return await fetch(`${this.url}/images`, {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: formData
+        }).then(response => {
+            if (response.status == 200) {
+                return response.text();
+            }
+            return '';
+        });
+    }
+
+    async getImagetocache(name: string): Promise<string> {
+        const url = `${this.url}/images/${name}`;
+        return await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(async response => {
+            if (response.status == 200) {
+                const blob = await response.blob();
+                if (isNative()) {
+                    const reader = new FileReader()
+                    reader.onloadend = async () => {
+                        const base64Data = (reader.result as string).split(',')[1];
+                        await Filesystem.writeFile({
+                            path: name,
+                            data: base64Data,
+                            directory: Directory.Data
+                        })
+                    }
+                    reader.readAsDataURL(blob)
+                } else {
+                    const cache = await caches.open('images-cache');
+                    await cache.put(url, new Response(blob));
+                }
+                return 'OK';
+            }
+            return 'KO';
+        });
+    }
+
+    async getImagefromcache(name: string): Promise<string | null> {
+        const url = `${this.url}/images/${name}`;
+        if (isNative()) {
+            // Mobile : lecture depuis le disque
+            try {
+                const result = await Filesystem.readFile({
+                    path: name,
+                    directory: Directory.Data
+                })
+                return `data:image/jpeg;base64,${result.data}`
+            } catch {
+                return null
+            }
+        } else {
+            // Web : lecture depuis Cache Storage API
+            const cache = await caches.open('images-cache')
+            const response = await cache.match(url)
+            if (!response) return null
+            const blob = await response.blob()
+            return URL.createObjectURL(blob)
+        }
     }
 }
