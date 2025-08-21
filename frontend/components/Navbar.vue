@@ -3,9 +3,6 @@
         <a class="money-button" :onClick="() => redirect('/settings')">
             <img src="../public/settings.png" class="settings">
         </a>
-        <a class="money-button" :onClick="() => redirect('/test')">
-            TEST
-        </a>
         <a class="task-button" :onClick="() => redirect('/tasks')">
             <div class="task-button-top-bar"></div>
             <div class="task-button-middle-bar"></div>
