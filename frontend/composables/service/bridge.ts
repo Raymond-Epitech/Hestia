@@ -11,7 +11,7 @@ export class bridge {
     constructor() {
         console.log('Bridge instance created')
     }
-    url: string = "http://91.134.48.124:8081";
+    url: string = "https://hestiaapp.org";
     jwt: string = "";
 
     seturl(new_url: string) {
