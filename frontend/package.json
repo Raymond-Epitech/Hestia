@@ -17,6 +17,7 @@
     "@capacitor/core": "^7.3.0",
     "@capacitor/filesystem": "^7.1.4",
     "@capacitor/ios": "^7.3.0",
+    "@capacitor/push-notifications": "^7.0.2",
     "@capgo/capacitor-social-login": "^7.6.7",
     "@microsoft/signalr": "^8.0.7",
     "@nuxt/kit": "^3.17.5",

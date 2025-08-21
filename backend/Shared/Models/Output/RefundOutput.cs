@@ -3,9 +3,9 @@
 public class RefundOutput
 {
     public Guid From { get; set; }
-    public string FromUrlPP { get; set; } = "default.jpg";
+    public string FromUsername { get; set; } = "";
     public Guid To { get; set; }
-    public string ToUrlPP { get; set; } = "default.jpg";
+    public string ToUsername { get; set; } = "";
     public decimal Amount { get; set; }
 }
 

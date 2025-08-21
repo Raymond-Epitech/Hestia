@@ -191,8 +191,7 @@ public class UserService(ILogger<UserService> logger,
         {
             var fmcDevice = new FCMDevice
             {
-                FCMToken = userInput.FCMToken,
-                UserId = newUser.Id
+                FCMToken = userInput.FCMToken
             };
 
             await fcmDeviceRepository.AddAsync(fmcDevice);
@@ -274,8 +273,7 @@ public class UserService(ILogger<UserService> logger,
         {
             var fmcDevice = new FCMDevice
             {
-                FCMToken = loginInput.FCMToken,
-                UserId = user.Id
+                FCMToken = loginInput.FCMToken
             };
 
             await fcmDeviceRepository.AddAsync(fmcDevice);
@@ -321,9 +319,7 @@ public class UserService(ILogger<UserService> logger,
         if (user == null)
             throw new NotFoundException($"User {notification.Id} not found");
 
-        var fcmDevices = await fcmDeviceRepository.Query()
-            .Where(f => f.UserId == notification.Id)
-            .ToListAsync();
+        var fcmDevices = user.FCMDevices;
 
         if (fcmDevices.Count == 0)
             throw new NotFoundException($"No FCM devices found for user {notification.Id}");
@@ -350,9 +346,7 @@ public class UserService(ILogger<UserService> logger,
         if (users.Count == 0)
             throw new NotFoundException($"No users found in colocation {notification.Id}");
 
-        var fcmDevices = await fcmDeviceRepository.Query()
-            .Where(f => users.Select(u => u.Id).Contains(f.UserId))
-            .ToListAsync();
+        var fcmDevices = users.SelectMany(u => u.FCMDevices).ToList();
 
         if (fcmDevices.Count == 0)
             throw new NotFoundException($"No FCM devices found for colocation {notification.Id}");
@@ -373,7 +367,7 @@ public class UserService(ILogger<UserService> logger,
     public async Task<string> LogoutUserAsync(LogoutInput input)
     {
         var fcmDevice = await fcmDeviceRepository.Query()
-            .Where(f => f.UserId == input.UserId && f.FCMToken == input.FCMToken)
+            .Where(f => f.FCMToken == input.FCMToken && f.Users.Any(u => u.Id == input.UserId))
             .FirstOrDefaultAsync();
 
         if (fcmDevice == null)
