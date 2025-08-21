@@ -8,9 +8,6 @@
             </button>
             <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openBalanceModal">
                 <img src="~/public/dollar-sign.svg" class="plus">
-                <!-- <Rectangle color="#FFF973" id="rec" class="regularize-text mini_rec" :onClick="() => redirectto('balance')">
-                    <Texte_language source="regularize" />
-                </Rectangle> -->
             </button>
         </div>
         <div class="center-container">

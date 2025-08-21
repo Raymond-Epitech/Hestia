@@ -110,7 +110,9 @@ export type Locale = 'fr' | 'en' | 'es' | 'de' | 'zh' | 'ja';
 
 export type refund = {
     from: string,
+    fromUsername: string,
     to: string,
+    toUsername: string,
     amount: number,
 }
 
