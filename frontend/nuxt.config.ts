@@ -56,5 +56,12 @@ export default defineNuxtConfig({
     strategy: 'no_prefix'
   },
   ssr: false,
+
+  runtimeConfig: {
+    public: {
+      signalrUrl: 'https://hestiaapp.org/hestiaHub'
+    }
+  },
+
   compatibilityDate: '2025-06-27',
 })

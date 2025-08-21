@@ -12,10 +12,14 @@
   },
   "dependencies": {
     "@capacitor/android": "^7.3.0",
+    "@capacitor/camera": "^7.0.2",
     "@capacitor/cli": "^7.3.0",
     "@capacitor/core": "^7.3.0",
+    "@capacitor/filesystem": "^7.1.4",
     "@capacitor/ios": "^7.3.0",
+    "@capacitor/push-notifications": "^7.0.2",
     "@capgo/capacitor-social-login": "^7.6.7",
+    "@microsoft/signalr": "^8.0.7",
     "@nuxt/kit": "^3.17.5",
     "@nuxtjs/color-mode": "^3.5.2",
     "@nuxtjs/i18n": "^9.1.0",
@@ -29,7 +33,6 @@
     "nuxi": "^3.22.2",
     "nuxt": "^3.15.4",
     "nuxt-vue3-google-signin": "^0.0.11",
-    "pinia": "^2.3.1",
     "pinia-plugin-persistedstate": "^4.2.0",
     "translatte": "^3.0.1"
   },

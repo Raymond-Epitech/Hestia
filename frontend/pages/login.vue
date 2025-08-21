@@ -29,76 +29,61 @@
 </template>
 
 <script setup>
-    import { SocialLogin } from '@capgo/capacitor-social-login'
-    import { useRouter, useRoute } from 'vue-router'
-    import { storeToRefs } from 'pinia';
-    import { useAuthStore } from '~/store/auth';
-    import { useUserStore } from '~/store/user';
+import { SocialLogin } from '@capgo/capacitor-social-login'
+import { useRouter, useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from '~/store/auth';
+import { useUserStore } from '~/store/user';
+import { PushNotifications } from '@capacitor/push-notifications';
+import { addListeners, registerNotifications } from '~/store/push';
 
-    definePageMeta({
-        layout: false
-    })
+definePageMeta({
+    layout: false
+})
 
-    const { authenticateUser } = useAuthStore();
-    const { authenticated } = storeToRefs(useAuthStore());
-    const userStore = useUserStore();
-    const { $bridge } = useNuxtApp()
-    const router = useRouter();
-    const route = useRoute()
-    const username = ref('');
-    const colocationID = ref('');
-    const registretion = ref(false);
-    const alert = ref(false);
+const { authenticateUser } = useAuthStore();
+const { authenticated } = storeToRefs(useAuthStore());
+const userStore = useUserStore();
+const { $bridge } = useNuxtApp()
+const router = useRouter();
+const route = useRoute()
+const username = ref('');
+const colocationID = ref('');
+const registretion = ref(false);
+const alert = ref(false);
+const fcmToken = ref('');
 
-    onMounted(() => {
-        SocialLogin.initialize({
-            google: {
-                webClientId: '80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com', // the web client id for Android and Web
-            }
-        })
-    })
-
-    function goLogin() {
-        registretion.value = false;
-    }
-
-    function goRegister() {
-        registretion.value = true;
-    }
-
-    const register = async () => {
-        if (!username.value) {
-            console.log("no username")
-            alert.value = true;
-            return;
+onMounted(() => {
+    SocialLogin.initialize({
+        google: {
+            webClientId: '80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com', // the web client id for Android and Web
         }
-        alert.value = false;
-        if (alert.value == false) {
-            const res = await SocialLogin.login({
-                provider: 'google',
-                options: {
-                    scopes: ['email', 'profile'],
-                },
-            });
-            if (res) {
-                const newuser = {
-                    username: username.value,
-                    colocationId: colocationID.value
-                };
-                const data = await $bridge.addUser(newuser, res.result.idToken);
-                if (data) {
-                    $bridge.setjwt(data.jwt);
-                    userStore.setUser(data.user);
-                    await authenticateUser(data.jwt);
-                }
-                if (authenticated) {
-                    router.push('/');
-                }
-            }
-        }
-    }
+    })
+    registerNotifications();
 
-    const login = async () => {
+    PushNotifications.addListener('registration', (token) => {
+        fcmToken.value = token.value;
+    });
+})
+
+addListeners();
+
+function goLogin() {
+    registretion.value = false;
+}
+
+function goRegister() {
+    registretion.value = true;
+}
+
+const register = async () => {
+    if (!username.value) {
+        console.log("no username")
+        alert.value = true;
+        return;
+    }
+    alert.value = false;
+    if (alert.value == false) {
         const res = await SocialLogin.login({
             provider: 'google',
             options: {
@@ -106,7 +91,11 @@
             },
         });
         if (res) {
-            const data = await $bridge.login(res.result.idToken);
+            const newuser = {
+                username: username.value,
+                colocationId: colocationID.value
+            };
+            const data = await $bridge.addUser(newuser, res.result.idToken);
             if (data) {
                 $bridge.setjwt(data.jwt);
                 userStore.setUser(data.user);
@@ -117,6 +106,27 @@
             }
         }
     }
+}
+
+const login = async () => {
+    const res = await SocialLogin.login({
+        provider: 'google',
+        options: {
+            scopes: ['email', 'profile'],
+        },
+    });
+    if (res) {
+        const data = await $bridge.login(res.result.idToken, fcmToken.value);
+        if (data) {
+            $bridge.setjwt(data.jwt);
+            userStore.setUser(data.user);
+            await authenticateUser(data.jwt);
+        }
+        if (authenticated) {
+            router.push('/');
+        }
+    }
+}
 
 </script>
 

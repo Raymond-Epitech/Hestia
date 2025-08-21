@@ -16,15 +16,22 @@ namespace Business.Mappers
             };
         }
 
-        public static Reminder ToDb(this ReminderInput reminder)
+        public static Reminder ToDb(this ReminderInput reminder, string fileName)
         {
+            var content = "";
+            if (reminder.IsImage)
+                content = fileName;
+            else
+                content = reminder.Content;
+
             return new Reminder
             {
                 Id = Guid.NewGuid(),
                 ColocationId = reminder.ColocationId,
                 CreatedAt = DateTime.Now.ToUniversalTime(),
                 CreatedBy = reminder.CreatedBy,
-                Content = reminder.Content,
+                Content = content!,
+                IsImage = reminder.IsImage,
                 Color = reminder.Color,
                 CoordX = reminder.CoordX,
                 CoordY = reminder.CoordY,

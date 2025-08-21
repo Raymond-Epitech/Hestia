@@ -4,7 +4,7 @@ const config: CapacitorConfig = {
     appId: 'com.hestiaapp.org',
     appName: 'Hestia',
     server: {
-        "allowNavigation": ["http://91.134.93.112:8080"]
+        "allowNavigation": ["http://91.134.48.124:8080"]
     },
     webDir: 'dist',
     "plugins": {
@@ -17,7 +17,10 @@ const config: CapacitorConfig = {
                     clientId: "80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com"
                 }
             }
-        }
+        },
+        PushNotifications: {
+            presentationOptions: ["badge", "sound", "alert"],  
+        },
     }
 };
 

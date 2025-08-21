@@ -5,14 +5,15 @@
       <img src="~/public/posts/Post.svg" class="post">
     </button>
     <div v-for="(post, index) in posts" :key="index">
-      <Post :id="post.id" :text="post.content" :color="post.color" :createdBy="post.createdBy" :linkToPP="post.linkToPP"
+      <Post :id="post.id" :text="post.content" :color="post.color" :createdBy="post.createdBy" :linkToPP="post.linkToPP :isImage="post.isImage"
         @delete="getall()" />
     </div>
   </div>
 </template>
 
-<script setup>
-  import { useUserStore } from '~/store/user';
+<script setup lang="ts">
+import { useUserStore } from '~/store/user';
+import type { Reminder, SignalRClient } from '../composables/service/type'
 
   const isModalOpen = ref(false)
   const openModal = () => (isModalOpen.value = true)
@@ -22,17 +23,42 @@
   const api = $bridge;
   api.setjwt(useCookie('token').value ?? '');
 
-  const posts = ref([]);
+const posts = ref<Reminder[]>([]);
 
-  const getall = async () => {
-    const data = await api.getAllReminders(userStore.user.colocationId);
-    posts.value = data;
-  };
+const { $signalr } = useNuxtApp()
+const signalr = $signalr as SignalRClient;
+signalr.on("NewReminderAdded", (ReminderOutput) => {
+  if (!posts.value.some(post => post.id === ReminderOutput.id)) {
+    posts.value.push(ReminderOutput)
+  }
+})
+signalr.on("reminderdeleted", (ReminderOutput) => {
+  posts.value = posts.value.filter(post => post.id !== ReminderOutput)
+})
 
-  onMounted(async () => {
-    await getall();
-  });
+signalr.on("ReminderUpdated", (ReminderOutput) => {
+  for (let i = 0; i < posts.value.length; i++) {
+    if (posts.value[i].id === ReminderOutput.id) {
+      posts.value[i] = ReminderOutput;
+      break;
+    }
+  }
+})
 
+
+const getall = async () => {
+  const data = await api.getAllReminders(userStore.user.colocationId);
+  for (const post of data) {
+    if (post.isImage) {
+      await api.getImagetocache(post.content);
+    }
+  }
+  posts.value = data;
+};
+
+onMounted(async () => {
+  await getall();
+});
 </script>
 
 <style scoped>
