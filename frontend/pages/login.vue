@@ -85,7 +85,7 @@
                     username: username.value,
                     colocationId: colocationID.value
                 };
-                const data = await $bridge.addUser(newuser, res.result.idToken);
+                const data = await $bridge.addUser(newuser, res.result.idToken, fcmToken.value);
                 if (data) {
                     $bridge.setjwt(data.jwt);
                     userStore.setUser(data.user);
