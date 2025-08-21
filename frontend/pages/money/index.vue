@@ -64,7 +64,8 @@
 
     const getall = async () => {
         api.getExpenseByColocationId(collocid).then((response) => {
-            expenses_list.value = response;
+            expenses_list.value = response.filter(item => item.name !== "refund");
+            console.log(expenses_list.value)
             global.value = expenses_list.value.reduce((acc, expense) => acc + expense.totalAmount, 0);
         }).catch((error) => {
             console.error('Error fetching data:', error);
