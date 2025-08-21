@@ -1,113 +1,103 @@
 <template>
     <div class="navbar">
-        <a class="money-button" :onClick="() => redirect('/settings')">
-            <img src="../public/settings.png" class="settings">
+        <a class="button" :onClick="() => redirect('/settings')"> <!--change to profile page-->
+            <img src="../public/navbar/Profile.svg" class="icon">
+            <br>
+            <p class="icon-subtext">{{ $t('nav_profile') }}</p>
         </a>
-        <a class="task-button" :onClick="() => redirect('/tasks')">
-            <div class="task-button-top-bar"></div>
-            <div class="task-button-middle-bar"></div>
-            <div class="task-button-bottom-bar"></div>
+        <a class="button" :onClick="() => redirect('/tasks')">
+            <img src="../public/navbar/Tasks.svg" class="icon">
+            <br>
+            <p class="icon-subtext">{{ $t('nav_tasks') }}</p>
         </a>
         <a class="wall-button" :onClick="() => redirect('/')">
-            <img src="../public/frigo.png" class="fridge">
+            <img src="../public/navbar/Fridge.png" class="fridge">
         </a>
-        <a class="money-button" :onClick="() => redirect('/money')">
-            <img src="../public/money-button.png" class="money">
+        <a class="button" :onClick="() => redirect('/shopping')">
+            <img src="../public/navbar/Message.svg" class="icon">
+            <br>
+            <p class="icon-subtext">{{ $t('nav_messages') }}</p>
         </a>
-        <a class="shopping-button" :onClick="() => redirect('/shopping')">
-            <img src="../public/shopping.png" class="shopping">
+        <a class="button" :onClick="() => redirect('/money')">
+            <img src="../public/navbar/Money.svg" class="icon">
+            <br>
+            <p class="icon-subtext">{{ $t('nav_expenses') }}</p>
         </a>
     </div>
 </template>
 
 <script setup>
-const router = useRouter();
-const redirect = (page) => {
-    router.push(page);
-}
+    const router = useRouter();
+    const redirect = (page) => {
+        router.push(page);
+    }
 </script>
 
 <style scoped>
-.navbar {
-    position: fixed;
-    bottom: 0px;
-    width: 100vw;
-    height: 58px;
-    background-color: #074338;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    justify-content: center;
-    align-items: center;
-    padding: 0%;
-}
+    .navbar {
+        position: fixed;
+        bottom: 0px;
+        width: 100%;
+        height: 62px;
+        background-color: var(--main-buttons-light);
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        justify-content: center;
+        align-items: center;
+        padding: 0%;
+    }
 
-.task-button {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-    width: 100%;
-    height: 35px;
-}
+    .dark .navbar {
+        background-color: var(--main-buttons-dark);
+    }
 
-.task-button-top-bar {
-    width: 39px;
-    height: 7px;
-    background-color: #85AD7B;
-    border-radius: 8px;
-}
+    .icon-subtext {
+        font-size: 65%;
+        margin-top: 1%;
+        font-weight: bold;
+        list-style: none;
+        text-align: center;
+        display: block;
+        color: var(--basic-grey);
+    }
 
-.task-button-middle-bar {
-    width: 39px;
-    height: 7px;
-    background-color: #FFC93D;
-    border-radius: 8px;
-}
+    .dark .icon-subtext {
+        color: var(--light-grey);
+    }
 
-.task-button-bottom-bar {
-    width: 39px;
-    height: 7px;
-    background-color: #FF6A61;
-    border-radius: 8px;
-}
+    .button {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+        padding-top: 7%;
+        margin-top: 5%;
+        text-decoration: none;
+    }
 
-.wall-button {
-    max-width: 100%;
-    height: 35px;
-    display: flex;
-    justify-content: center;
-}
+    .icon {
+        height: 60%;
+        filter: brightness(29%);
+    }
 
-.fridge {
-    display: flex;
-    max-width: 125px;
-    height: 200px;
-    margin-top: -30px;
-}
+    .dark .icon {
+        color: var(--page-text-dark);
+        filter: none;
+    }
 
-.money-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-}
+    .wall-button {
+        max-width: 100%;
+        height: 35px;
+        display: flex;
+        justify-content: center;
+    }
 
-.money {
-    height: 58px;
-    width: 66px;
-}
-
-.shopping-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-}
-
-.shopping {
-    height: 38px;
-    width: 38px;
-}
+    .fridge {
+        display: flex;
+        max-width: 175%;
+        height: 400%;
+        margin-top: -40%;
+    }
 </style>

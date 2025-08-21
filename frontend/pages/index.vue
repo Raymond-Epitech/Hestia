@@ -2,10 +2,10 @@
   <div>
     <AddPostModal v-model="isModalOpen" @proceed="getall()" />
     <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
-      <img src="~/public/plus.png" class="plus">
+      <img src="~/public/posts/Post.svg" class="post">
     </button>
     <div v-for="(post, index) in posts" :key="index">
-      <Post :id="post.id" :text="post.content" :color="post.color" :createdBy="post.createdBy" :isImage="post.isImage"
+      <Post :id="post.id" :text="post.content" :color="post.color" :createdBy="post.createdBy" :linkToPP="post.linkToPP :isImage="post.isImage"
         @delete="getall()" />
     </div>
   </div>
@@ -15,13 +15,13 @@
 import { useUserStore } from '~/store/user';
 import type { Reminder, SignalRClient } from '../composables/service/type'
 
-const isModalOpen = ref(false)
-const openModal = () => (isModalOpen.value = true)
+  const isModalOpen = ref(false)
+  const openModal = () => (isModalOpen.value = true)
 
-const userStore = useUserStore();
-const { $bridge } = useNuxtApp()
-const api = $bridge;
-api.setjwt(useCookie('token').value ?? '');
+  const userStore = useUserStore();
+  const { $bridge } = useNuxtApp()
+  const api = $bridge;
+  api.setjwt(useCookie('token').value ?? '');
 
 const posts = ref<Reminder[]>([]);
 
@@ -62,21 +62,32 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.add-post {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 30px;
-  height: 30px;
-  margin: 16px 16px;
-  background-color: #FFF973;
-  border-radius: 9px;
-  border: none;
-  box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
-}
+  .add-post {
+    position: fixed;
+    top: 6%;
+    right: 3%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    background-color: #FFFFFF;
+    border-radius: 9px;
+    border: none;
+    box-shadow: var(--button-shadow-light);
+  }
 
-.plus {
-  width: 20px;
-  height: 20px;
-}
+  .dark .add-post {
+    background-color: #000000;
+  }
+
+  .post {
+    width: 72%;
+    padding-top: 5%;
+    filter: brightness(29%);
+  }
+
+  .dark .post {
+    filter: none;
+  }
 </style>

@@ -1,80 +1,124 @@
 <template>
     <div class="conteneur">
-        <Rectangle color="#85AD7B" :onClick="() => redirect('/settings/language')" id="language">
-            <h1>
-                <Texte_language source="Language" />
-            </h1>
-        </Rectangle>
-        <Rectangle color="#85AD7B" :onClick="() => redirect('/settings/colocation')" id="colocation">
-            <h1>
-                <Texte_language source="Colocation" />
-            </h1>
-        </Rectangle>
-        <Rectangle color="#85AD7B" :onClick="() => handleComposantClick('notif')" id="notif">
-            <h1>
-                <Texte_language source="Notifications" />
-            </h1>
-        </Rectangle>
-        <Rectangle color="#85AD7B" :onClick="() => handleComposantClick('acces')" id="acces">
-            <h1>
-                <Texte_language source="Accessibility" />
-            </h1>
-        </Rectangle>
-        <Rectangle color="#85AD7B" :onClick="() => handleComposantClick('regle')" id="regle">
-            <h1>
-                <Texte_language source="Rules" />
-            </h1>
-        </Rectangle>
-        <Rectangle color="#85AD7B" :onClick="() => handleComposantClick('conf')" id="conf">
-            <h1>
-                <Texte_language source="Confidentiality" />
-            </h1>
-        </Rectangle>
-        <Rectangle color="#85AD7B" :onClick="() => handleComposantClick('info')" id="info">
-            <h1>
-                <Texte_language source="Informations" />
-            </h1>
-        </Rectangle>
-        <Rectangle color="#FF6A61" @click.passive="logout()" id="logout">
-            <h1>
-                <Texte_language source="logout" />
-            </h1>
-        </Rectangle>
+        <div class="setting-button" :onClick="() => redirect('/settings/language')" id="language">
+            <div class="icon">
+                <img src="~/public/settings/language.svg">
+            </div>
+            <div class="setting-text">
+                <Texte_language class="header" source="Language" />
+                <Texte_language class="sub-header" source="Language-subtext" />
+            </div>
+        </div>
+        <div class="setting-button" :onClick="() => redirect('/settings/display')" id="display">
+            <div class="icon">
+                <img src="~/public/settings/Affichage.svg">
+            </div>
+            <div class="setting-text">
+                <Texte_language class="header" source="Display" />
+                <Texte_language class="sub-header" source="Display-subtext" />
+            </div>
+        </div>
+        <div class="setting-button" :onClick="() => redirect('/settings/colocation')" id="colocation">
+            <img src>
+            <div class="setting-text">
+                <Texte_language class="header" source="Colocation" />
+                <Texte_language class="sub-header" source="Colocation-subtext" />
+            </div>
+        </div>
+        <!-- <div class="setting-button" :onClick="() => handleComposantClick('notif')" id="notif">
+            <img src>
+            <Texte_language class="header" source="Notifications" />
+        </div>
+        <div class="setting-button" :onClick="() => handleComposantClick('acces')" id="acces">
+            <img src>
+            <Texte_language  class="header" source="Accessibility" />
+        </div>
+        <div class="setting-button" :onClick="() => handleComposantClick('regle')" id="regle">
+            <img src>
+            <Texte_language class="header" source="Rules" />
+        </div>
+        <div class="setting-button" :onClick="() => handleComposantClick('conf')" id="conf">
+            <img src>
+            <Texte_language class="header" source="Confidentiality" />
+        </div>
+        <div class="setting-button" :onClick="() => handleComposantClick('info')" id="info">
+            <img src>
+            <Texte_language class="header" source="Informations" />
+        </div> -->
+        <div class="setting-button" color="#FF6A61" @click.passive="logout()" id="logout">
+            <img src>
+            <Texte_language class="header" source="logout" />
+        </div>
     </div>
 </template>
 
 <script setup>
-import { useAuthStore } from '~/store/auth';
+    import { useAuthStore } from '~/store/auth';
 
-const authenticateUser = useAuthStore();
+    const authenticateUser = useAuthStore();
 
-const handleComposantClick = (id) => {
-    console.log(`ID du composant cliqué: ${id}`);
-    alert(`ID du composant cliqué: ${id}`);
-}
-const router = useRouter();
-const redirect = (page) => {
-    router.push(page);
-}
+    const handleComposantClick = (id) => {
+        console.log(`ID du composant cliqué: ${id}`);
+        alert(`ID du composant cliqué: ${id}`);
+    }
+    const router = useRouter();
+    const redirect = (page) => {
+        router.push(page);
+    }
 
-function logout() {
-    authenticateUser.logUserOut();
-    router.push('/');
-}
+    function logout() {
+        authenticateUser.logUserOut();
+        router.push('/');
+    }
 </script>
 
 <style scoped>
-.conteneur {
-    display: grid;
-    align-items: center;
-    gap: 40px;
-    width: 80%;
-    margin: 40px auto;
-}
+    .conteneur {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        margin: 40px auto;
+    }
 
-h1 {
-    align-items: center;
-    font-weight: 600;
-    margin: 0;
-}
+    .setting-button {
+        width: 90%;
+        height: 80px;
+        display: grid;
+        grid-template-columns: 1fr 4fr;
+        align-items: center;
+        border-radius: 20px;
+        background-color: var(--main-buttons-light);
+        box-shadow: var(--rectangle-shadow-light);
+    }
+
+    .dark .setting-button {
+        background-color: var(--main-buttons-dark);
+        color: var(--page-text-dark);
+    }
+
+    .setting-text {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .header {
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    .sub-header {
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dark .icon {
+        filter: invert(1);
+    }
 </style>

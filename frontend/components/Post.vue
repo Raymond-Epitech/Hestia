@@ -1,6 +1,6 @@
 <template>
     <div :class="[isImage ? 'post_image' : 'post', , !props.isImage && color]">
-        <ProfileIcon class="profile-icon" :height="30" :width="30" />
+        <ProfileIcon class="profile-icon" :height="30" :width="30" :linkToPP="props.linkToPP" />
         <button class="delete-button" @click="showPopup" v-if="createdBy == user.id">
             <div class="close"></div>
         </button>
@@ -59,7 +59,6 @@ const confirmDelete = async () => {
     } catch (error) {
         console.error('Failed to delete the post:', error);
     }
-};
 
 const cancelDelete = () => {
     popup_vue.value = false;
@@ -77,7 +76,6 @@ onMounted(() => {
         });
     }
 });
-
 </script>
 
 <style scoped>
@@ -117,6 +115,10 @@ onMounted(() => {
     width: 12px;
     clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%);
     background-color: white;
+}
+
+.dark .close {
+    filter: brightness(0);
 }
 
 .post h1 {
