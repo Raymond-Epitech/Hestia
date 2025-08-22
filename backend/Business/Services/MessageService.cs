@@ -13,7 +13,8 @@ namespace Business.Services;
 public class MessageService(
     ILogger<MessageService> logger,
     IRepository<Message> repository,
-    IRealTimeService realTimeService) : IMessageService
+    IRealTimeService realTimeService,
+    IFirebaseNotificationService notificationService) : IMessageService
 {
     public async Task<List<MessageOutput>> GetAllMessagesAsync(Guid colocationId)
     {
@@ -83,6 +84,12 @@ public class MessageService(
             SendBy = message.SentBy
         };
         await realTimeService.SendToGroupAsync(messageOutput.ColocationId, "NewMessageAdded", messageOutput);
+        await notificationService.SendNotificationToColocationAsync(new NotificationInput {
+            Id = message.ColocationId,
+            Title = $"New message from {message.SentBy} !",
+            Body = messageOutput.Content,
+        },
+        messageOutput.SendBy);
 
         logger.LogInformation($"Sent real-time notification for new message with Id {message.Id}");
 
