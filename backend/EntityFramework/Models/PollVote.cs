@@ -12,7 +12,7 @@ public class PollVote
     public Guid PollReminderId { get; set; }
 
     [Required]
-    [ForeignKey(nameof(PollReminder))]
+    [ForeignKey(nameof(PollReminderId))]
     public PollReminder PollReminder { get; set; } = null!;
 
     [Required]

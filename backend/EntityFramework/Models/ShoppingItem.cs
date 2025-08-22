@@ -17,7 +17,7 @@ public class ShoppingItem
     public Guid ShoppingListReminderId { get; set; }
 
     [Required]
-    [ForeignKey(nameof(ShoppingListReminder))]
+    [ForeignKey(nameof(ShoppingListReminderId))]
     public ShoppingListReminder ShoppingListReminder { get; set; } = null!;
 
     [Required]

@@ -14,7 +14,7 @@ public class Reaction
     public Guid UserId { get; set; }
 
     [Required]
-    [ForeignKey(nameof(User))]
+    [ForeignKey(nameof(UserId))]
     public User User { get; set; } = null!;
 
     [Required]
