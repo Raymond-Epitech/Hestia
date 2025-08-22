@@ -88,6 +88,17 @@ namespace Business.Mappers
             };
         }
 
+        public static ReactionOutput ToOutput(this Reaction reaction)
+        {
+            return new ReactionOutput
+            {
+                Id = reaction.Id,
+                UserId = reaction.UserId,
+                ReminderId = reaction.ReminderId,
+                Type = reaction.Type
+            };
+        }
+
         public static Reminder ToDb(this ReminderInput input)
         {
             Reminder reminder;

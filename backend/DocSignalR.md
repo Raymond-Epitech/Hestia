@@ -10,6 +10,20 @@ Ce document liste les codes d'événements utilisés dans la communication Signa
 | `RemindersUpdated` | Des rappels existants ont été modifié | ReminderOutput |
 | `ReminderDeleted` | Un rappel a été supprimé | Guid |
 
+### ShoppingList
+| Code événement | Description | Payload (données envoyées) |
+|--|--|--|
+| `NewShoppingItem` | Un objet de liste de course a été ajouté | ShoppingItemOutput |
+| `UpdatedShoppingItem` | Un objet de liste de course a été modifié | ShoppingItemOutput |
+| `DeletedShoppingItem` | Un objet de liste de course a été supprimé | GUID |
+
+### Reactions
+| Code événement | Description | Payload (données envoyées) |
+|--|--|--|
+| `NewReaction` | Une reaction a été ajoutée | ReactionOutput |
+| `UpdateReaction` | Une reaction a été modifiée | ReactionOutput |
+| `DeleteReaction` | Une reactiont a été supprimée | GUID |
+
 ### Chores
 | Code événement | Description | Payload (données envoyées) |
 |--|--|--|

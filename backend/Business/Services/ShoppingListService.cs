@@ -1,4 +1,5 @@
 ﻿using Business.Interfaces;
+using Business.Mappers;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,9 @@ using Shared.Models.Update;
 namespace Business.Services;
 
 public class ShoppingListService(ILogger<ShoppingListService> logger,
-    IRepository<ShoppingItem> itemRepository) : IShoppingListService
+    IRepository<ShoppingItem> itemRepository,
+    IRealTimeService realTimeService,
+    IRepository<Reminder> reminderRepository) : IShoppingListService
 {
     public async Task<List<ShoppingItem>> GetAllShoppingItemsAsync(Guid reminderId)
     {
@@ -41,6 +44,9 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
 
         logger.LogInformation($"Succesfully added shopping item {shoppingItem.Id}");
 
+        var colocationId = await reminderRepository.Query().Select(r => r.ColocationId).FirstOrDefaultAsync();
+        await realTimeService.SendToGroupAsync(colocationId, "NewShoppingItem", shoppingItem.ToOutput());
+
         return shoppingItem.Id;
     }
 
@@ -54,7 +60,9 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
     {
         logger.LogInformation($"Update shopping item {shoppingItemUpdate.Id}");
 
-        var shoppingItem = await itemRepository.GetByIdAsync(shoppingItemUpdate.Id);
+        var shoppingItem = await itemRepository.Query()
+            .Include(s => s.ShoppingListReminderId)
+            .FirstOrDefaultAsync(s => s.Id == shoppingItemUpdate.Id);
         
         if (shoppingItem == null)
             throw new NotFoundException("Shopping item not found");
@@ -63,6 +71,8 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
         shoppingItem.IsChecked = shoppingItemUpdate.IsChecked;
         itemRepository.Update(shoppingItem);
         await itemRepository.SaveChangesAsync();
+
+        await realTimeService.SendToGroupAsync(shoppingItem.ShoppingListReminder.ColocationId, "UpdatedShoppingItem", shoppingItem.ToOutput());
 
         logger.LogInformation($"Succesfully updated item {shoppingItemUpdate.Id}");
         
@@ -76,9 +86,20 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
     /// <returns>The id of the deleted item</returns>
     public async Task<Guid> DeleteShoppingItemAsync(Guid shoppingItemId)
     {
-        await itemRepository.DeleteFromIdAsync(shoppingItemId);
+        var toDelete = await itemRepository.Query()
+            .Include(s => s.ShoppingListReminderId)
+            .FirstOrDefaultAsync(s => s.Id == shoppingItemId);
+
+        if ( toDelete == null )
+            throw new NotFoundException("Shopping item not found");
+
+        itemRepository.Delete(toDelete);
         await itemRepository.SaveChangesAsync();
+
         logger.LogInformation($"shopping item {shoppingItemId} deleted");
+
+        await realTimeService.SendToGroupAsync(toDelete.ShoppingListReminder.ColocationId, "DeletedShoppingItem", shoppingItemId);
+
         return shoppingItemId;
     }
 }
