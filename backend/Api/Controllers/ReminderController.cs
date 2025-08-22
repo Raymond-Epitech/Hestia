@@ -14,11 +14,11 @@ namespace Api.Controllers
     public class ReminderController(IReminderService reminderService) : ControllerBase
     {
         [Authorize]
-        [HttpGet("GetByColocation/{colocationId}")]
+        [HttpGet]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<ReminderOutput>>> GetAllReminders(Guid colocationId)
+        public async Task<ActionResult<List<ReminderOutput>>> GetAllReminders([FromQuery] Guid colocationId)
         {
             if (colocationId == Guid.Empty)
                 throw new InvalidEntityException("ColocationId is empty");
@@ -26,7 +26,7 @@ namespace Api.Controllers
             return Ok(await reminderService.GetAllRemindersAsync(colocationId));
         }
 
-        [HttpGet("GetById/{id}")]
+        [HttpGet("{id}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

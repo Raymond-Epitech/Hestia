@@ -34,5 +34,8 @@ namespace EntityFramework.Models
         public ICollection<SplitBetween> SplitBetweens { get; set; } = null!;
         public ICollection<FCMDevice> FCMDevices { get; set; } = null!;
         public ICollection<Reminder> Reminders { get; set; } = null!;
+        public ICollection<Chore> Chores { get; set; } = null!;
+        public ICollection<ChoreMessage> ChoreMessages { get; set; } = null!;
+        public ICollection<Message> Messages { get; set; } = null!;
     }
 }

@@ -14,10 +14,11 @@ public class ShoppingItem
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     [Required]
-    public Guid ShoppingListId { get; set; }
+    public Guid ShoppingListReminderId { get; set; }
 
-    [ForeignKey("ShoppingListId")]
-    public ShoppingList ShoppingList { get; set; } = null!;
+    [Required]
+    [ForeignKey(nameof(ShoppingListReminder))]
+    public ShoppingListReminder ShoppingListReminder { get; set; } = null!;
 
     [Required]
     public string Name { get; set; } = null!;

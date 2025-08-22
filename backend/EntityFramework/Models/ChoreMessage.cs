@@ -11,6 +11,10 @@ namespace EntityFramework.Models
         [Required]
         public Guid CreatedBy { get; set; }
 
+        [Required]
+        [ForeignKey(nameof(CreatedBy))]
+        public User User { get; set; } = null!;
+
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         [Required]

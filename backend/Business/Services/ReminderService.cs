@@ -35,23 +35,14 @@ public class ReminderService(ILogger<ReminderService> logger,
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
             var reminders = await reminderRepository.Query()
             .Where(r => r.ColocationId == colocationId)
-            .Select(r => new ReminderOutput
-            {
-                Id = r.Id,
-                Content = r.Content,
-                Color = r.Color,
-                CreatedBy = r.CreatedBy,
-                CreatedAt = r.CreatedAt,
-                IsImage = r.IsImage,
-                CoordX = r.CoordX,
-                CoordY = r.CoordY,
-                CoordZ = r.CoordZ
-            })
+            .Include(r => r.Reactions)
+            .Include(r => (r as ShoppingListReminder)!.ShoppingItems)
+            .Include(r => (r as PollReminder)!.PollVotes)
             .ToListAsync();
 
             logger.LogInformation("Succes : All reminders found");
 
-            return reminders;
+            return reminders.ToOutput();
         });
     }
 

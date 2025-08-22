@@ -18,6 +18,10 @@ public class Message
     public Guid SentBy { get; set; }
 
     [Required]
+    [ForeignKey(nameof(SentBy))]
+    public User User { get; set; } = null!;
+
+    [Required]
     public DateTime SentAt { get; set; } = DateTime.UtcNow;
 
     [Required]
