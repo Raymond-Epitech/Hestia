@@ -32,19 +32,17 @@ public class ReminderService(ILogger<ReminderService> logger,
     {
         var cacheKey = $"reminders:{colocationId}";
 
-        var reminders = await reminderRepository.Query()
-        .Where(r => r.ColocationId == colocationId)
-        .Include(r => r.Reactions)
-        .Include(r => (r as ShoppingListReminder)!.ShoppingItems)
-        .Include(r => (r as PollReminder)!.PollVotes)
-        .Include(r => r.User)
-        .ToListAsync();
-
         return await cache.GetOrAddAsync(cacheKey, async entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
-            
 
+            var reminders = await reminderRepository.Query()
+                .Where(r => r.ColocationId == colocationId)
+                .Include(r => r.Reactions)
+                .Include(r => (r as ShoppingListReminder)!.ShoppingItems)
+                .Include(r => (r as PollReminder)!.PollVotes)
+                .Include(r => r.User)
+                .ToListAsync();
 
             logger.LogInformation($"Succes : All {reminders.Count} reminders found");
 

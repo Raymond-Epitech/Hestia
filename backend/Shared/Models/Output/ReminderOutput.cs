@@ -20,7 +20,6 @@ public class TextReminderOutput : ReminderOutput
 public class ImageReminderOutput : ReminderOutput
 {
     public string ImageUrl { get; set; } = null!;
-    public string Color { get; set; } = null!;
 }
 
 public class ShoppingListReminderOutput : ReminderOutput

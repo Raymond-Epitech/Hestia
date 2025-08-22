@@ -11,7 +11,8 @@ using Shared.Models.Update;
 namespace Business.Services;
 
 public class PollService(ILogger<PollService> logger,
-    IRepository<PollVote> pollRepository) : IPollService
+    IRepository<PollVote> pollRepository,
+    IRepository<User> userRepository) : IPollService
 {
     public async Task<List<PollVoteOutput>> GetAllPollVoteAsync(Guid pollReminderId)
     {
@@ -30,21 +31,42 @@ public class PollService(ILogger<PollService> logger,
     {
         logger.LogInformation("Add poll vote");
         
-        var pollVote = new PollVote
-        {
-            Id = Guid.NewGuid(),
-            PollReminderId = vote.ReminderId,
-            VotedAt = DateTime.UtcNow,
-            VotedBy = vote.VotedBy,
-            Choice = vote.Choice
-        };
+        Guid guid = Guid.Empty;
 
-        await pollRepository.AddAsync(pollVote);
+        if (await userRepository.Query().AnyAsync(u => u.Id == vote.VotedBy))
+        {
+            var existingVote = await pollRepository.Query()
+                .FirstOrDefaultAsync(v => v.PollReminderId == vote.ReminderId && v.VotedBy == vote.VotedBy);
+
+            if (existingVote is null)
+                throw new Exception("User doesnt exist");
+
+            existingVote.Choice = vote.Choice;
+            existingVote.VotedAt = DateTime.UtcNow;
+            guid = existingVote.Id;
+
+            pollRepository.Update(existingVote);
+        }
+        else
+        {
+            var pollVote = new PollVote
+            {
+                Id = Guid.NewGuid(),
+                PollReminderId = vote.ReminderId,
+                VotedAt = DateTime.UtcNow,
+                VotedBy = vote.VotedBy,
+                Choice = vote.Choice
+            };
+
+            guid = pollVote.Id;
+
+            await pollRepository.AddAsync(pollVote);
+            logger.LogInformation($"Succesfully added poll vote {pollVote.Id}");
+        }
+
         await pollRepository.SaveChangesAsync();
 
-        logger.LogInformation($"Succesfully added poll vote {pollVote.Id}");
-
-        return pollVote.Id;
+        return guid;
     }
 
     public async Task<Guid> UpdatePollVoteAsync(PollVoteUpdate vote)
