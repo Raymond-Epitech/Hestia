@@ -89,7 +89,7 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
     public async Task<Guid> DeleteShoppingItemAsync(Guid shoppingItemId)
     {
         var toDelete = await itemRepository.Query()
-            .Include(s => s.ShoppingListReminderId)
+            .Include(s => s.ShoppingListReminder)
             .FirstOrDefaultAsync(s => s.Id == shoppingItemId);
 
         if ( toDelete == null )
