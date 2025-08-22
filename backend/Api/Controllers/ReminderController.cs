@@ -13,7 +13,8 @@ namespace Api.Controllers
     [Route("api/[controller]")]
     public class ReminderController(IReminderService reminderService,
         IPollService pollService,
-        IShoppingListService shoppingListService) : ControllerBase
+        IShoppingListService shoppingListService,
+        IReactionService reactionService) : ControllerBase
     {
         [Authorize]
         [HttpGet]
@@ -234,7 +235,7 @@ namespace Api.Controllers
             if (reminderId == Guid.Empty)
                 throw new InvalidEntityException("ReminderId is empty");
 
-            return Ok(await reminderService.GetAllReactionsAsync(reminderId));
+            return Ok(await reactionService.GetReactionsByPostIdAsync(reminderId));
         }
 
         [HttpPost("Reactions")]
@@ -247,22 +248,7 @@ namespace Api.Controllers
             if (input.ReminderId == Guid.Empty || input.UserId == Guid.Empty)
                 throw new InvalidEntityException("ReminderId is empty");
 
-            return Ok(await reminderService.AddReactionAsync(input));
-        }
-
-        [HttpPut("Reactions")]
-        [Authorize]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Guid>> UpdateReaction([FromBody] ReactionInput input)
-        {
-            if (input.ReminderId == Guid.Empty)
-                throw new InvalidEntityException("Id is empty");
-
-            return Ok(await reminderService.UpdateReactionAsync(input));
+            return Ok(await reactionService.AddReactionAsync(input));
         }
 
         [HttpDelete("Reactions/{id}")]
@@ -271,12 +257,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Guid>> DeleteReaction(Guid id)
+        public async Task<ActionResult<Guid>> DeleteReaction([FromBody] Guid UserId, Guid ReminderId)
         {
-            if (id == Guid.Empty)
+            if (UserId == Guid.Empty || ReminderId == Guid.Empty)
                 throw new InvalidEntityException("Id is empty");
 
-            return Ok(await reminderService.DeleteReactionAsync(id));
+            return Ok(await reactionService.DeleteReactionAsync(UserId, ReminderId));
         }
     }
 }
