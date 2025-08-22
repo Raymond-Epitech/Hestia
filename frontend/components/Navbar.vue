@@ -96,7 +96,7 @@ const redirect = (page) => {
 
 .fridge {
     display: block;
-    max-width: 6.5rem;
+    max-width: 5.8rem;
     height: 10rem;
     margin-top: -1.5rem;
 }
