@@ -8,7 +8,6 @@ public interface IPollService
 {
     Task<List<PollVoteOutput>> GetAllPollVoteAsync(Guid pollReminderId);
     Task<Guid> AddPollVoteAsync(PollVoteInput vote);
-    Task<Guid> UpdatePollVoteAsync(PollVoteUpdate vote);
     Task<Guid> DeletePollVoteAsync(Guid id);
 
 }

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
 using Shared.Models.Input;
+using Shared.Models.Output;
 using Shared.Models.Update;
 
 namespace Business.Services;
@@ -15,12 +16,13 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
     IRealTimeService realTimeService,
     IRepository<Reminder> reminderRepository) : IShoppingListService
 {
-    public async Task<List<ShoppingItem>> GetAllShoppingItemsAsync(Guid reminderId)
+    public async Task<List<ShoppingItemOutput>> GetAllShoppingItemsAsync(Guid reminderId)
     {
         logger.LogInformation("Get all shopping items");
 
         var items = await itemRepository.Query()
             .Where(i => i.ShoppingListReminderId == reminderId)
+            .Select(i => i.ToOutput())
             .ToListAsync();
 
         logger.LogInformation($"Succes : All {items.Count} shopping items found");

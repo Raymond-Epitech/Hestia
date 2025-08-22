@@ -12,7 +12,8 @@ namespace Business.Services;
 
 public class PollService(ILogger<PollService> logger,
     IRepository<PollVote> pollRepository,
-    IRepository<User> userRepository) : IPollService
+    IRepository<User> userRepository,
+    IRealTimeService realTimeService) : IPollService
 {
     public async Task<List<PollVoteOutput>> GetAllPollVoteAsync(Guid pollReminderId)
     {
@@ -32,24 +33,33 @@ public class PollService(ILogger<PollService> logger,
         logger.LogInformation("Add poll vote");
         
         Guid guid = Guid.Empty;
+        PollVote? pollVote;
 
         if (await userRepository.Query().AnyAsync(u => u.Id == vote.VotedBy))
         {
-            var existingVote = await pollRepository.Query()
+            pollVote = await pollRepository.Query()
+                .Include(v => v.PollReminder)
                 .FirstOrDefaultAsync(v => v.PollReminderId == vote.ReminderId && v.VotedBy == vote.VotedBy);
 
-            if (existingVote is null)
+            if (pollVote is null)
                 throw new Exception("User doesnt exist");
 
-            existingVote.Choice = vote.Choice;
-            existingVote.VotedAt = DateTime.UtcNow;
-            guid = existingVote.Id;
+            pollVote.Choice = vote.Choice;
+            pollVote.VotedAt = DateTime.UtcNow;
+            guid = pollVote.Id;
 
-            pollRepository.Update(existingVote);
+            pollRepository.Update(pollVote);
+            await pollRepository.SaveChangesAsync();
+
+            var colocationId = await pollRepository.Query()
+                .Where(v => v.Id == guid)
+                .Select(v => v.PollReminder.ColocationId)
+                .FirstOrDefaultAsync();
+            await realTimeService.SendToGroupAsync(colocationId, "UpdatePollVote", pollVote.ToOutput());
         }
         else
         {
-            var pollVote = new PollVote
+            pollVote = new PollVote
             {
                 Id = Guid.NewGuid(),
                 PollReminderId = vote.ReminderId,
@@ -62,36 +72,25 @@ public class PollService(ILogger<PollService> logger,
 
             await pollRepository.AddAsync(pollVote);
             logger.LogInformation($"Succesfully added poll vote {pollVote.Id}");
+            await pollRepository.SaveChangesAsync();
+
+            var colocationId = await pollRepository.Query()
+                .Where(v => v.Id == guid)
+                .Select(v => v.PollReminder.ColocationId)
+                .FirstOrDefaultAsync();
+            await realTimeService.SendToGroupAsync(colocationId, "NewPollVote", pollVote.ToOutput());
         }
 
-        await pollRepository.SaveChangesAsync();
+        logger.LogInformation($"Succesfully processed poll vote {guid}");
 
         return guid;
     }
 
-    public async Task<Guid> UpdatePollVoteAsync(PollVoteUpdate vote)
-    {
-        var pollVote = await pollRepository.GetByIdAsync(vote.Id);
-
-        if (pollVote == null)
-            throw new Exception("Poll vote not found");
-
-        logger.LogInformation($"Update poll vote {vote.Id}");
-
-        pollVote.Choice = vote.Choice;
-        pollVote.VotedAt = vote.VotedAt;
-
-        pollRepository.Update(pollVote);
-        await pollRepository.SaveChangesAsync();
-
-        logger.LogInformation($"Succesfully updated poll vote {pollVote.Id}");
-
-        return pollVote.Id;
-    }
-
     public async Task<Guid> DeletePollVoteAsync(Guid id)
     {
-        var pollVote = await pollRepository.GetByIdAsync(id);
+        var pollVote = await pollRepository.Query()
+            .Include(v => v.PollReminder)
+            .FirstOrDefaultAsync(v => v.Id == id);
 
         if (pollVote == null)
             throw new Exception("Poll vote not found");
@@ -100,6 +99,8 @@ public class PollService(ILogger<PollService> logger,
 
         pollRepository.Delete(pollVote);
         await pollRepository.SaveChangesAsync();
+
+        await realTimeService.SendToGroupAsync(pollVote.PollReminder.ColocationId, "DeletePollVote", id);
 
         logger.LogInformation($"Succesfully deleted poll vote {id}");
 

@@ -22,7 +22,14 @@ Ce document liste les codes d'événements utilisés dans la communication Signa
 |--|--|--|
 | `NewReaction` | Une reaction a été ajoutée | ReactionOutput |
 | `UpdateReaction` | Une reaction a été modifiée | ReactionOutput |
-| `DeleteReaction` | Une reactiont a été supprimée | GUID |
+| `DeleteReaction` | Une reaction a été supprimée | GUID |
+
+### PollVote
+| Code événement | Description | Payload (données envoyées) |
+|--|--|--|
+| `NewPollVote` | Une reponse de sondage a été ajoutée | PollVoteOutput |
+| `UpdatePollVote` | Une reponse de sondage a été modifiée | PollVoteOutput |
+| `DeletePollVote` | Une reponse de sondage a été supprimée | GUID |
 
 ### Chores
 | Code événement | Description | Payload (données envoyées) |

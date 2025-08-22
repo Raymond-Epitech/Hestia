@@ -7,7 +7,7 @@ namespace Business.Interfaces;
 
 public interface IShoppingListService
 {
-    Task<List<ShoppingItem>> GetAllShoppingItemsAsync(Guid reminderId);
+    Task<List<ShoppingItemOutput>> GetAllShoppingItemsAsync(Guid reminderId);
     Task<Guid> AddShoppingItemAsync(ShoppingItemInput shoppingItemInput);
     Task<Guid> UpdateShoppingItemAsync(ShoppingItemUpdate shoppingItemUpdate);
     Task<Guid> DeleteShoppingItemAsync(Guid shoppingItemId);

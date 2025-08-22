@@ -116,7 +116,7 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<string>>> GetShoppingList([FromQuery] Guid reminderId)
+        public async Task<ActionResult<List<ShoppingItemOutput>>> GetShoppingList([FromQuery] Guid reminderId)
         {
             if (reminderId == Guid.Empty)
                 throw new InvalidEntityException("ColocationId is empty");
@@ -192,21 +192,6 @@ namespace Api.Controllers
                 throw new InvalidEntityException("ReminderId is empty");
 
             return Ok(await pollService.AddPollVoteAsync(input));
-        }
-
-        [HttpPut("PollVote")]
-        [Authorize]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Guid>> UpdatePollVote([FromBody] PollVoteUpdate input)
-        {
-            if (input.Id == Guid.Empty)
-                throw new InvalidEntityException("Id is empty");
-
-            return Ok(await pollService.UpdatePollVoteAsync(input));
         }
 
         [HttpDelete("PollVote/{id}")]
