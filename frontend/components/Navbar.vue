@@ -70,7 +70,7 @@ const redirect = (page) => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100%;
+    height: 2rem;
     width: 100%;
     padding-top: 0.3rem; /* ~7% of 4.5rem */
     margin-top: 0.2rem;  /* ~5% of 4.5rem */
