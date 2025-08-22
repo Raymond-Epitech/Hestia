@@ -88,7 +88,6 @@ const redirect = (page) => {
 }
 
 .wall-button {
-    max-width: 100%;
     height: 3.5rem; /* ~78% of 4.5rem */
     display: flex;
     justify-content: center;
@@ -96,8 +95,8 @@ const redirect = (page) => {
 
 .fridge {
     display: block;
-    max-width: 100%;
+    max-width: 6.5rem;
     height: 10rem;
-    margin-top: -7rem;
+    margin-top: -1.5rem;
 }
 </style>
