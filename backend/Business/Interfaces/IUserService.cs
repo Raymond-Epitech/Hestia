@@ -14,8 +14,6 @@ namespace Business.Interfaces
         Task<Guid> QuitColocationAsync(Guid id);
         Task<UserInfo> RegisterUserAsync(string googleToken, UserInput userInput);
         Task<UserInfo> LoginUserAsync(string googleToken, LoginInput? loginInput);
-        Task<Guid> SendNotificationToUserAsync(NotificationInput notification);
-        Task<List<Guid>> SendNotificationToColocationAsync(NotificationInput notification);
         Task<string> LogoutUserAsync(LogoutInput input);
     }
 }

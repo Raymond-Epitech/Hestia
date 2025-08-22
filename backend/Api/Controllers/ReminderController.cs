@@ -11,7 +11,9 @@ namespace Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ReminderController(IReminderService reminderService) : ControllerBase
+    public class ReminderController(IReminderService reminderService,
+        IPollService pollService,
+        IShoppingListService shoppingListService) : ControllerBase
     {
         [Authorize]
         [HttpGet]
@@ -50,12 +52,6 @@ namespace Api.Controllers
             if (input.ColocationId == Guid.Empty)
                 throw new InvalidEntityException("ColocationId is empty");
 
-            if (input.IsImage && (input.Image is null || input.Image.Length == 0))
-                throw new InvalidEntityException("Image is empty or invalid");
-
-            if (!input.IsImage && input.Content.IsNullOrEmpty())
-                throw new InvalidEntityException("Content is empty or invalid");
-
             return Ok(await reminderService.AddReminderAsync(input));
         }
 
@@ -72,21 +68,6 @@ namespace Api.Controllers
                 throw new InvalidEntityException("Id is empty");
 
             return Ok(await reminderService.UpdateReminderAsync(input));
-        }
-
-        [HttpPut("Range")]
-        [Authorize]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<int>> UpdateRangeReminder(List<ReminderUpdate> inputs)
-        {
-            if (inputs.Any(x => x.Id == Guid.Empty))
-                throw new InvalidEntityException("Id is empty");
-
-            return Ok(await reminderService.UpdateRangeReminderAsync(inputs));
         }
 
         [HttpDelete("{id}")]
@@ -126,6 +107,119 @@ namespace Api.Controllers
                 throw new InvalidEntityException("File name is empty");
 
             return Ok(reminderService.DeleteImage(fileName));
+        }
+
+        // Shopping list
+        [HttpGet("ShoppingList")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<string>>> GetShoppingList([FromQuery] Guid reminderId)
+        {
+            if (reminderId == Guid.Empty)
+                throw new InvalidEntityException("ColocationId is empty");
+
+            return Ok(await shoppingListService.GetAllShoppingItemsAsync(reminderId));
+        }
+
+        [HttpPost("ShoppingList")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> AddShoppingItem([FromBody] ShoppingItemInput input)
+        {
+            if (input.ReminderId == Guid.Empty)
+                throw new InvalidEntityException("ReminderId is empty");
+
+            return Ok(await shoppingListService.AddShoppingItemAsync(input));
+        }
+
+        [HttpPut("ShoppingList")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> UpdateShoppingItem([FromBody] ShoppingItemUpdate input)
+        {
+            if (input.Id == Guid.Empty)
+                throw new InvalidEntityException("Id is empty");
+
+            return Ok(await shoppingListService.UpdateShoppingItemAsync(input));
+        }
+
+        [HttpDelete("ShoppingList/{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> DeleteShoppingItem(Guid id)
+        {
+            if (id == Guid.Empty)
+                throw new InvalidEntityException("Id is empty");
+
+            return Ok(await shoppingListService.DeleteShoppingItemAsync(id));
+        }
+
+        // PollVotes
+
+        [HttpGet("PollVote")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<PollVoteOutput>>> GetAllPollVotes([FromQuery] Guid reminderId)
+        {
+            if (reminderId == Guid.Empty)
+                throw new InvalidEntityException("ReminderId is empty");
+
+            return Ok(await pollService.GetAllPollVoteAsync(reminderId));
+        }
+
+        [HttpPost("PollVote")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> AddPollVote([FromBody] PollVoteInput input)
+        {
+            if (input.ReminderId == Guid.Empty)
+                throw new InvalidEntityException("ReminderId is empty");
+
+            return Ok(await pollService.AddPollVoteAsync(input));
+        }
+
+        [HttpPut("PollVote")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> UpdatePollVote([FromBody] PollVoteUpdate input)
+        {
+            if (input.Id == Guid.Empty)
+                throw new InvalidEntityException("Id is empty");
+
+            return Ok(await pollService.UpdatePollVoteAsync(input));
+        }
+
+        [HttpDelete("PollVote/{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> DeletePollVote(Guid id)
+        {
+            if (id == Guid.Empty)
+                throw new InvalidEntityException("Id is empty");
+
+            return Ok(await pollService.DeletePollVoteAsync(id));
         }
     }
 }

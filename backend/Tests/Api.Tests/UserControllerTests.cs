@@ -14,12 +14,14 @@ namespace Tests.Hestia.Controller;
 public class UserControllerTests
 {
     private readonly Mock<IUserService> _userServiceMock;
+    private readonly Mock<IFirebaseNotificationService> _notificationService;
     private readonly UserController _controller;
 
     public UserControllerTests()
     {
         _userServiceMock = new Mock<IUserService>();
-        _controller = new UserController(_userServiceMock.Object);
+        _notificationService = new Mock<IFirebaseNotificationService>();
+        _controller = new UserController(_userServiceMock.Object, _notificationService.Object);
     }
 
     // Get all user

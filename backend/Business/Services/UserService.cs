@@ -307,58 +307,6 @@ public class UserService(ILogger<UserService> logger,
     }
 
     /// <summary>
-    /// Send a notification to a user
-    /// </summary>
-    /// <param name="NotificationInput">The id of the user and notification content</param>
-    /// <returns>The id of the User</returns>
-    /// <exception cref="NotFoundException"></exception>
-    public async Task<Guid> SendNotificationToUserAsync(NotificationInput notification)
-    {
-        var user = await userRepository.GetByIdAsync(notification.Id);
-
-        if (user == null)
-            throw new NotFoundException($"User {notification.Id} not found");
-
-        var fcmDevices = user.FCMDevices;
-
-        if (fcmDevices.Count == 0)
-            throw new NotFoundException($"No FCM devices found for user {notification.Id}");
-
-        await notificationService.SendNotificationAsync(fcmDevices.Select(f => f.FCMToken).ToList(), notification.Title, notification.Body);
-
-        logger.LogInformation($"Succes : Notification sent to user {notification.Id}");
-        
-        return notification.Id;
-    }
-
-    /// <summary>
-    /// Send a notification to all users in a colocation
-    /// </summary>
-    /// <param name="ColocationId">The id of the colocation and the notification content</param>
-    /// <returns>The ids of all the user who received a notification</returns>
-    /// <exception cref="NotFoundException"></exception>
-    public async Task<List<Guid>> SendNotificationToColocationAsync(NotificationInput notification)
-    {
-        var users = await userRepository.Query()
-            .Where(u => u.ColocationId == notification.Id && !u.IsDeleted)
-            .ToListAsync();
-
-        if (users.Count == 0)
-            throw new NotFoundException($"No users found in colocation {notification.Id}");
-
-        var fcmDevices = users.SelectMany(u => u.FCMDevices).ToList();
-
-        if (fcmDevices.Count == 0)
-            throw new NotFoundException($"No FCM devices found for colocation {notification.Id}");
-
-        await notificationService.SendNotificationAsync(fcmDevices.Select(f => f.FCMToken).ToList(), notification.Title, notification.Body);
-
-        logger.LogInformation($"Succes : Notification sent to colocation {notification.Id}");
-
-        return users.Select(u => u.Id).ToList();
-    }
-
-    /// <summary>
     /// Delete a fcm device for a user
     /// </summary>
     /// <param name="input">The user id and the fcmToken</param>

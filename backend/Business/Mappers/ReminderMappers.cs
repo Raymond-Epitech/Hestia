@@ -1,4 +1,5 @@
 ﻿using EntityFramework.Models;
+using Shared.Enums;
 using Shared.Models.DTO;
 using Shared.Models.Input;
 using Shared.Models.Output;
@@ -17,7 +18,7 @@ namespace Business.Mappers
                     Id = textReminder.Id,
                     CreatedBy = textReminder.CreatedBy,
                     CreatedAt = textReminder.CreatedAt,
-                    LinkToPP = UserMapper.GetLinkToPP(textReminder.CreatedBy),
+                    LinkToPP = textReminder.User.PathToProfilePicture,
                     Content = textReminder.Content,
                     Color = textReminder.Color,
                     CoordX = textReminder.CoordX,
@@ -29,9 +30,8 @@ namespace Business.Mappers
                     Id = imageReminder.Id,
                     CreatedBy = imageReminder.CreatedBy,
                     CreatedAt = imageReminder.CreatedAt,
-                    LinkToPP = UserMapper.GetLinkToPP(imageReminder.CreatedBy),
+                    LinkToPP = imageReminder.User.PathToProfilePicture,
                     ImageUrl = imageReminder.ImageUrl,
-                    Color = imageReminder.Color,
                     CoordX = imageReminder.CoordX,
                     CoordY = imageReminder.CoordY,
                     CoordZ = imageReminder.CoordZ
@@ -41,8 +41,8 @@ namespace Business.Mappers
                     Id = shoppingListReminder.Id,
                     CreatedBy = shoppingListReminder.CreatedBy,
                     CreatedAt = shoppingListReminder.CreatedAt,
-                    LinkToPP = UserMapper.GetLinkToPP(shoppingListReminder.CreatedBy),
-                    Name = shoppingListReminder.Name,
+                    LinkToPP = shoppingListReminder.User.PathToProfilePicture,
+                    Name = shoppingListReminder.ShoppingListName,
                     Items = shoppingListReminder.ShoppingItems?.Select(si => si.ToOutput()).ToList() ?? new List<ShoppingItemOutput>(),
                     CoordX = shoppingListReminder.CoordX,
                     CoordY = shoppingListReminder.CoordY,
@@ -53,7 +53,7 @@ namespace Business.Mappers
                     Id = pollReminder.Id,
                     CreatedBy = pollReminder.CreatedBy,
                     CreatedAt = pollReminder.CreatedAt,
-                    LinkToPP = UserMapper.GetLinkToPP(pollReminder.CreatedBy),
+                    LinkToPP = pollReminder.User.PathToProfilePicture,
                     Title = pollReminder.Title,
                     Description = pollReminder.Description,
                     ExpirationDate = pollReminder.ExpirationDate,
@@ -64,38 +64,133 @@ namespace Business.Mappers
                     CoordY = pollReminder.CoordY,
                     CoordZ = pollReminder.CoordZ
                 },
+                _ => throw new InvalidDataException(),
+            };
+        }
+
+        public static ShoppingItemOutput ToOutput(this ShoppingItem item)
+        {
+            return new ShoppingItemOutput
+            {
+                Id = item.Id,
+                Name = item.Name,
+                IsChecked = item.IsChecked,
+            };
+        }
+
+        public static PollVoteOutput ToOutput(this PollVote vote)
+        {
+            return new PollVoteOutput
+            {
+                Id = vote.Id,
+                VotedAt = vote.VotedAt,
+                VotedBy = vote.VotedBy,
+                Choice = vote.Choice
+            };
+        }
+
+        public static Reminder ToDb(this ReminderInput input)
+        {
+            Reminder reminder;
+
+            switch (input.ReminderType)
+            {
+                case ReminderType.Text:
+                    if (input.Content is null || input.Color is null)
+                    {
+                        throw new ArgumentException("Content and Color are required for Text reminders");
+                    }
+                    var textReminder = new TextReminder();
+                    textReminder.Content = input.Content;
+                    textReminder.Color = input.Color;
+                    reminder = textReminder;
+                    break;
+
+                case ReminderType.Image:
+                    var imageReminder = new ImageReminder();
+                    imageReminder.ImageUrl = string.Empty;
+                    reminder = imageReminder;
+                    break;
+
+                case ReminderType.Poll:
+                    if (input.PollInput is null)
+                    {
+                        throw new ArgumentException("PollInput is required for Poll reminders");
+                    }
+                    var pollReminder = new PollReminder();
+                    pollReminder.Title = input.PollInput.Title;
+                    pollReminder.Description = input.PollInput.Description;
+                    pollReminder.ExpirationDate = input.PollInput.ExpirationDate;
+                    pollReminder.IsAnonymous = input.PollInput.IsAnonymous;
+                    pollReminder.AllowMultipleChoices = input.PollInput.AllowMultipleChoices;
+                    reminder = pollReminder;
+                    break;
+
+                case ReminderType.ShoppingList:
+                    if (input.ShoppingListName is null || input.ShoppingListName.Length > 50)
+                    {
+                        throw new ArgumentException("ShoppingListName cannot be longer than 50 characters or be null");
+                    }
+                    var shoppingReminder = new ShoppingListReminder();
+                    shoppingReminder.ShoppingListName = input.ShoppingListName;
+                    reminder = shoppingReminder;
+                    break;
+
+                default:
+                    throw new NotSupportedException($"ReminderType '{input.ReminderType}' not supported");
             }
 
-        public static Reminder ToDb(this ReminderInput reminder, string fileName)
-        {
-            var content = "";
-            if (reminder.IsImage)
-                content = fileName;
-            else
-                content = reminder.Content;
+            reminder.ColocationId = input.ColocationId;
+            reminder.CreatedBy = input.CreatedBy;
+            reminder.CoordX = input.CoordX;
+            reminder.CoordY = input.CoordY;
+            reminder.CoordZ = input.CoordZ;
+            reminder.CreatedAt = DateTime.UtcNow;
 
-            return new Reminder
-            {
-                Id = Guid.NewGuid(),
-                ColocationId = reminder.ColocationId,
-                CreatedAt = DateTime.Now.ToUniversalTime(),
-                CreatedBy = reminder.CreatedBy,
-                Content = content!,
-                IsImage = reminder.IsImage,
-                Color = reminder.Color,
-                CoordX = reminder.CoordX,
-                CoordY = reminder.CoordY,
-                CoordZ = reminder.CoordZ
-            };
+            return reminder;
         }
 
         public static Reminder UpdateFromInput(this Reminder reminder, ReminderUpdate input)
         {
-            reminder.Color = input.Color;
-            reminder.Content = input.Content;
             reminder.CoordX = input.CoordX;
             reminder.CoordY = input.CoordY;
             reminder.CoordZ = input.CoordZ;
+
+            switch (reminder)
+            {
+                case TextReminder textReminder:
+                    if (input.Content is not null)
+                    {
+                        textReminder.Content = input.Content;
+                    }
+                    if (input.Color is not null)
+                    {
+                        textReminder.Color = input.Color;
+                    }
+                    break;
+                case ImageReminder imageReminder:
+                    break;
+                case PollReminder pollReminder:
+                    if (input.PollInput is not null)
+                    {
+                        pollReminder.Title = input.PollInput.Title;
+                        pollReminder.Description = input.PollInput.Description;
+                        pollReminder.ExpirationDate = input.PollInput.ExpirationDate;
+                        pollReminder.IsAnonymous = input.PollInput.IsAnonymous;
+                        pollReminder.AllowMultipleChoices = input.PollInput.AllowMultipleChoices;
+                    }
+                    break;
+                case ShoppingListReminder shoppingListReminder:
+                    if (input.ShoppingListName is null || input.ShoppingListName.Length > 50)
+                    {
+                        throw new ArgumentException("ShoppingListName cannot be longer than 50 characters");
+                    }
+                    shoppingListReminder.ShoppingListName = input.ShoppingListName;
+                    break;
+                default:
+                    throw new NotSupportedException($"Reminder type '{reminder.GetType().Name}' not supported for update");
+            }
+
             return reminder;
         }
     }

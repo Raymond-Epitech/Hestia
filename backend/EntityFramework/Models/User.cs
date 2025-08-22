@@ -26,6 +26,9 @@ namespace EntityFramework.Models
         [Required]
         public string PathToProfilePicture { get; set; } = null!;
 
+        [Required]
+        public string Language { get; set; } = "en";
+
         public bool IsDeleted { get; set; } = false;
 
         public ICollection<ChoreEnrollment> ChoreEnrollments { get; set; } = null!;

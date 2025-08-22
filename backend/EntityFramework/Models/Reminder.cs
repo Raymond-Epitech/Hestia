@@ -45,15 +45,12 @@ public class ImageReminder : Reminder
 {
     [Required]
     public string ImageUrl { get; set; } = null!;
-
-    [Required]
-    public string Color { get; set; } = null!;
 }
 
 public class ShoppingListReminder : Reminder
 {
     [Required]
-    public string Name { get; set; } = null!;
+    public string ShoppingListName { get; set; } = null!;
 
     public ICollection<ShoppingItem> ShoppingItems { get; set; } = null!;
 }

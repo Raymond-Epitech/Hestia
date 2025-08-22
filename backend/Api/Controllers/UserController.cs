@@ -11,7 +11,7 @@ namespace Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController(IUserService userService) : ControllerBase
+    public class UserController(IUserService userService, IFirebaseNotificationService notificationService) : ControllerBase
     {
         [HttpGet("GetByColocationId/{colocationId}")]
         [Authorize]
@@ -122,7 +122,7 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Guid>> SendNotificationToUser(NotificationInput notification)
         {
-            await userService.SendNotificationToUserAsync(notification);
+            await notificationService.SendNotificationToUserAsync(notification);
 
             return Ok(notification.Id);
         }
@@ -134,7 +134,7 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<List<Guid>>> SendNotificationToColocation(NotificationInput notification)
         {
-            var users = await userService.SendNotificationToColocationAsync(notification);
+            var users = await notificationService.SendNotificationToColocationAsync(notification, null);
 
             return Ok(users);
         }

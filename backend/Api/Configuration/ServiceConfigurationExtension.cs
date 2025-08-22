@@ -30,6 +30,7 @@ public static class ServiceConfigurationExtension
         services.AddScoped<IRealTimeService, RealTimeService>();
         services.AddScoped<IFirebaseNotificationService, FirebaseNotificationService>();
         services.AddScoped<IMessageService, MessageService>();
+        services.AddScoped<IPollService, PollService>();
 
         // Repositories
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
