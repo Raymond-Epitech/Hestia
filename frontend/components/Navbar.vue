@@ -45,6 +45,7 @@ const redirect = (page) => {
     justify-content: center;
     align-items: center;
     padding: 0;
+    line-height: 0rem;
 }
 
 .dark .navbar {
@@ -53,7 +54,7 @@ const redirect = (page) => {
 
 .icon-subtext {
     font-size: 0.7rem; /* ~65% of base font size */
-    margin-top: 0.2rem;
+    margin-top: 0.8rem;
     font-weight: bold;
     list-style: none;
     text-align: center;
@@ -70,7 +71,7 @@ const redirect = (page) => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 2rem;
+    height: 3rem;
     width: 100%;
     padding-top: 0.3rem; /* ~7% of 4.5rem */
     margin-top: 0.2rem;  /* ~5% of 4.5rem */
@@ -78,7 +79,7 @@ const redirect = (page) => {
 }
 
 .icon {
-    height: 2rem; /* ~60% of 4.5rem */
+    height: 3rem; /* ~60% of 4.5rem */
     filter: brightness(29%);
 }
 
