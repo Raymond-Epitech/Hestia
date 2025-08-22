@@ -53,7 +53,7 @@ const redirect = (page) => {
 }
 
 .icon-subtext {
-    font-size: 0.7rem; /* ~65% of base font size */
+    font-size: 0.65rem;
     margin-top: 0.8rem;
     font-weight: bold;
     list-style: none;
@@ -71,15 +71,15 @@ const redirect = (page) => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 3rem;
+    max-height: 3rem;
     width: 100%;
-    padding-top: 0.3rem; /* ~7% of 4.5rem */
-    margin-top: 0.2rem;  /* ~5% of 4.5rem */
+    padding-top: 0.3rem;
+    margin-top: 0.2rem;
     text-decoration: none;
 }
 
 .icon {
-    height: 3rem; /* ~60% of 4.5rem */
+    height: 3rem;
     filter: brightness(29%);
 }
 
@@ -89,7 +89,7 @@ const redirect = (page) => {
 }
 
 .wall-button {
-    height: 3.5rem; /* ~78% of 4.5rem */
+    height: 3.5rem;
     display: flex;
     justify-content: center;
 }
