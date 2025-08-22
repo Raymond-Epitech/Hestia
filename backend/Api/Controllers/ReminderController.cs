@@ -221,5 +221,62 @@ namespace Api.Controllers
 
             return Ok(await pollService.DeletePollVoteAsync(id));
         }
+
+        // Reactions
+
+        [HttpGet("Reactions")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<string>>> GetAllReactions([FromQuery] Guid reminderId)
+        {
+            if (reminderId == Guid.Empty)
+                throw new InvalidEntityException("ReminderId is empty");
+
+            return Ok(await reminderService.GetAllReactionsAsync(reminderId));
+        }
+
+        [HttpPost("Reactions")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> AddReaction([FromBody] ReactionInput input)
+        {
+            if (input.ReminderId == Guid.Empty || input.UserId == Guid.Empty)
+                throw new InvalidEntityException("ReminderId is empty");
+
+            return Ok(await reminderService.AddReactionAsync(input));
+        }
+
+        [HttpPut("Reactions")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> UpdateReaction([FromBody] ReactionInput input)
+        {
+            if (input.ReminderId == Guid.Empty)
+                throw new InvalidEntityException("Id is empty");
+
+            return Ok(await reminderService.UpdateReactionAsync(input));
+        }
+
+        [HttpDelete("Reactions/{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> DeleteReaction(Guid id)
+        {
+            if (id == Guid.Empty)
+                throw new InvalidEntityException("Id is empty");
+
+            return Ok(await reminderService.DeleteReactionAsync(id));
+        }
     }
 }
