@@ -1,6 +1,5 @@
 ﻿using EntityFramework.Models;
 using Shared.Enums;
-using Shared.Models.DTO;
 using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
@@ -113,16 +112,20 @@ namespace Business.Mappers
                     break;
 
                 case ReminderType.Poll:
-                    if (input.PollInput is null)
+                    if (input.PollInput is not { Title: not null,
+                        Description: not null,
+                        ExpirationDate: not null,
+                        AllowMultipleChoices: not null,
+                        IsAnonymous: not null})
                     {
                         throw new ArgumentException("PollInput is required for Poll reminders");
                     }
                     var pollReminder = new PollReminder();
                     pollReminder.Title = input.PollInput.Title;
                     pollReminder.Description = input.PollInput.Description;
-                    pollReminder.ExpirationDate = input.PollInput.ExpirationDate;
-                    pollReminder.IsAnonymous = input.PollInput.IsAnonymous;
-                    pollReminder.AllowMultipleChoices = input.PollInput.AllowMultipleChoices;
+                    pollReminder.ExpirationDate = input.PollInput.ExpirationDate.Value;
+                    pollReminder.IsAnonymous = input.PollInput.IsAnonymous.Value;
+                    pollReminder.AllowMultipleChoices = input.PollInput.AllowMultipleChoices.Value;
                     reminder = pollReminder;
                     break;
 
@@ -171,13 +174,18 @@ namespace Business.Mappers
                 case ImageReminder imageReminder:
                     break;
                 case PollReminder pollReminder:
-                    if (input.PollInput is not null)
+                    if (input.PollInput is not {
+                            Title: not null,
+                            Description: not null,
+                            ExpirationDate: not null,
+                            AllowMultipleChoices: not null,
+                            IsAnonymous: not null})
                     {
-                        pollReminder.Title = input.PollInput.Title;
+                        pollReminder.Title = input.PollInput!.Title!;
                         pollReminder.Description = input.PollInput.Description;
-                        pollReminder.ExpirationDate = input.PollInput.ExpirationDate;
-                        pollReminder.IsAnonymous = input.PollInput.IsAnonymous;
-                        pollReminder.AllowMultipleChoices = input.PollInput.AllowMultipleChoices;
+                        pollReminder.ExpirationDate = input.PollInput.ExpirationDate!.Value;
+                        pollReminder.IsAnonymous = input.PollInput.IsAnonymous!.Value;
+                        pollReminder.AllowMultipleChoices = input.PollInput.AllowMultipleChoices!.Value;
                     }
                     break;
                 case ShoppingListReminder shoppingListReminder:

@@ -84,7 +84,7 @@ namespace Api.Controllers
             return Ok(await reminderService.DeleteReminderAsync(id));
         }
 
-        [HttpGet("/images/{fileName}")]
+        [HttpGet("images/{fileName}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -96,7 +96,7 @@ namespace Api.Controllers
             return File(file.Content, file.ContentType, file.FileName);
         }
 
-        [HttpDelete("/images/{fileName}")]
+        [HttpDelete("images/{fileName}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

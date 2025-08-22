@@ -18,6 +18,7 @@ public class ReminderService(ILogger<ReminderService> logger,
     IRepository<Reminder> reminderRepository,
     IRealTimeService realTimeService,
     IFirebaseNotificationService notificationService,
+    IRepository<User> userRepository,
     IAppCache cache) : IReminderService
 {
     private string ImageRoute => "wwwroot/uploads/";
@@ -31,16 +32,19 @@ public class ReminderService(ILogger<ReminderService> logger,
     {
         var cacheKey = $"reminders:{colocationId}";
 
+        var reminders = await reminderRepository.Query()
+        .Where(r => r.ColocationId == colocationId)
+        .Include(r => r.Reactions)
+        .Include(r => (r as ShoppingListReminder)!.ShoppingItems)
+        .Include(r => (r as PollReminder)!.PollVotes)
+        .Include(r => r.User)
+        .ToListAsync();
+
         return await cache.GetOrAddAsync(cacheKey, async entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
-            var reminders = await reminderRepository.Query()
-            .Where(r => r.ColocationId == colocationId)
-            .Include(r => r.Reactions)
-            .Include(r => (r as ShoppingListReminder)!.ShoppingItems)
-            .Include(r => (r as PollReminder)!.PollVotes)
-            .Include(r => r.User)
-            .ToListAsync();
+            
+
 
             logger.LogInformation($"Succes : All {reminders.Count} reminders found");
 
@@ -182,6 +186,14 @@ public class ReminderService(ILogger<ReminderService> logger,
         {
             imageReminder.ImageUrl = await SaveImage(input.File);
         }
+
+        var user = await userRepository.GetByIdAsync(reminder.CreatedBy);
+
+        if (user == null)
+        {
+            throw new NotFoundException($"User {reminder.CreatedBy} not found");
+        }
+        reminder.User = user!;
 
         try
         {

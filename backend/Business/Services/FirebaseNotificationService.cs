@@ -102,7 +102,10 @@ public class FirebaseNotificationService : IFirebaseNotificationService
         var fcmDevices = user.FCMDevices;
 
         if (fcmDevices.Count == 0)
-            throw new NotFoundException($"No FCM devices found for user {notification.Id}");
+        {
+            logger.LogInformation($"No fcm device for user {user.Id}");
+            return Guid.Empty;
+        }
 
         await SendNotificationAsync(fcmDevices.Select(f => f.FCMToken).ToList(), notification.Title, notification.Body);
 
@@ -125,7 +128,10 @@ public class FirebaseNotificationService : IFirebaseNotificationService
             .ToListAsync();
 
         if (users.Count == 0)
-            throw new NotFoundException($"No users found in colocation {notification.Id}");
+        {
+            logger.LogInformation($"No users found for colocation {notification.Id}");
+            return new List<Guid>();
+        }
 
         if (UserId is not null)
         {
@@ -136,10 +142,16 @@ public class FirebaseNotificationService : IFirebaseNotificationService
             }
         }
 
-        var fcmDevices = users.SelectMany(u => u.FCMDevices).ToList();
+        var fcmDevices = users
+            .Where(u => u.FCMDevices != null)
+            .SelectMany(u => u.FCMDevices!)
+            .ToList();
 
         if (fcmDevices.Count == 0)
-            throw new NotFoundException($"No FCM devices found for colocation {notification.Id}");
+        {
+            logger.LogInformation($"No user found");
+            return new List<Guid>();
+        }
 
         await SendNotificationAsync(fcmDevices.Select(f => f.FCMToken).ToList(), notification.Title, notification.Body);
 
