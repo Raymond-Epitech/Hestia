@@ -6,6 +6,6 @@ public interface IReactionService
 {
     Task<List<string>> GetReactionsByPostIdAsync(Guid ReminderId);
     Task<Guid> AddReactionAsync(ReactionInput reactionInput);
-    Task<Guid> DeleteReactionAsync(Guid userId, Guid reminderId);
+    Task<Guid> DeleteReactionAsync(ReactionInputForDelete input);
 }
 

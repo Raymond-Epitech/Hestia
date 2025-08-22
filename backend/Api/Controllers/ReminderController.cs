@@ -251,18 +251,18 @@ namespace Api.Controllers
             return Ok(await reactionService.AddReactionAsync(input));
         }
 
-        [HttpDelete("Reactions/{id}")]
+        [HttpDelete("Reactions")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Guid>> DeleteReaction([FromBody] Guid UserId, Guid ReminderId)
+        public async Task<ActionResult<Guid>> DeleteReaction([FromBody] ReactionInputForDelete input)
         {
-            if (UserId == Guid.Empty || ReminderId == Guid.Empty)
+            if (input.UserId == Guid.Empty || input.ReminderId == Guid.Empty)
                 throw new InvalidEntityException("Id is empty");
 
-            return Ok(await reactionService.DeleteReactionAsync(UserId, ReminderId));
+            return Ok(await reactionService.DeleteReactionAsync(input));
         }
     }
 }

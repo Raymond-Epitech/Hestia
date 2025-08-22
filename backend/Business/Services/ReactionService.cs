@@ -49,20 +49,20 @@ public class ReactionService(ILogger<ReactionService> logger,
         return reaction.ReminderId;
     }
 
-    public async Task<Guid> DeleteReactionAsync(Guid userId, Guid reminderId)
+    public async Task<Guid> DeleteReactionAsync(ReactionInputForDelete input)
     {
-        var reaction = await reactionRepository.Query().FirstOrDefaultAsync(r => r.UserId == userId && r.ReminderId == reminderId);
+        var reaction = await reactionRepository.Query().FirstOrDefaultAsync(r => r.UserId == input.UserId && r.ReminderId == input.ReminderId);
 
         if (reaction is null)
         {
-            logger.LogWarning($"No reaction found for UserId: {userId} and ReminderId: {reminderId}");
+            logger.LogWarning($"No reaction found for UserId: {input.UserId} and ReminderId: {input.ReminderId}");
             throw new KeyNotFoundException("Reaction not found");
         }
 
         reactionRepository.Delete(reaction);
         await reactionRepository.SaveChangesAsync();
 
-        logger.LogInformation($"Deleted reaction for UserId: {userId} and ReminderId: {reminderId}");
+        logger.LogInformation($"Deleted reaction for UserId: {input.UserId} and ReminderId: {input.ReminderId}");
 
         return reaction.ReminderId;
     }
