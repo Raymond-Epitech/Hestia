@@ -26,19 +26,21 @@ const props = defineProps({
 <style scoped>
 .box {
     color: #4B4B4B;
-    padding: 10px;
     border-radius: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 0.2rem;
     margin-right: 5%;
     margin-left: 5%;
 }
 .header {
     display: flex;
+    line-height: 0rem;
     align-items: center;
-    margin-bottom: 5px;
+    margin-top: 0.4rem;
+    margin-bottom: 0.5rem;
 }
 
 .header p {
+    margin-bottom: 0;
     margin-left: 10px;
     font-weight: bold;
 }
@@ -48,9 +50,13 @@ const props = defineProps({
     align-content: center;
     max-width: 80%;
     width: fit-content;
+    height: fit-content;
     padding: 10px;
 }
 
+.content p {
+    margin-bottom: 0;
+}
 .content-me {
     font-size: 14px;
     border-radius: 8px 8px 0 8px;

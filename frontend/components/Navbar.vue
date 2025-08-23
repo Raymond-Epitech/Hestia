@@ -13,7 +13,7 @@
         <a class="wall-button" :onClick="() => redirect('/')">
             <img src="../public/navbar/Fridge.png" class="fridge">
         </a>
-        <a class="button" :onClick="() => redirect('/shopping')">
+        <a class="button" :onClick="() => redirect('/message')">
             <img src="../public/navbar/Message.svg" class="icon">
             <br>
             <p class="icon-subtext">{{ $t('nav_messages') }}</p>

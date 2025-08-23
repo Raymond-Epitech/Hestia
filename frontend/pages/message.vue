@@ -111,8 +111,9 @@ form {
 }
 
 .messages-box {
-    margin: 10px 5%;
-    max-height: 50%;
-    overflow-y: auto;
+    padding: 0.2rem;
+    max-height: 46rem;
+    overflow-y: scroll;
+    line-height: 1rem;
 }
 </style>
