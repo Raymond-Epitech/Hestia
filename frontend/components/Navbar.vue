@@ -1,25 +1,25 @@
 <template>
     <div class="navbar">
-        <a class="button" :onClick="() => redirect('/settings')"> <!--change to profile page-->
-            <img src="../public/navbar/Profile.svg" class="icon">
+        <a class="button" @click="select('profile'); redirect('/settings')">
+            <img src="../public/navbar/Profile.svg" class="icon" :class="{ selected: selected === 'profile' }">
             <br>
             <p class="icon-subtext">{{ $t('nav_profile') }}</p>
         </a>
-        <a class="button" :onClick="() => redirect('/tasks')">
-            <img src="../public/navbar/Tasks.svg" class="icon">
+        <a class="button" @click="select('tasks'); redirect('/tasks')">
+            <img src="../public/navbar/Tasks.svg" class="icon" :class="{ selected: selected === 'tasks' }">
             <br>
             <p class="icon-subtext">{{ $t('nav_tasks') }}</p>
         </a>
-        <a class="wall-button" :onClick="() => redirect('/')">
-            <img src="../public/navbar/Fridge.png" class="fridge">
+        <a class="wall-button" @click="select('fridge'); redirect('/')">
+            <img src="../public/navbar/Fridge.png" class="fridge" :class="{ selected: selected === 'fridge' }">
         </a>
-        <a class="button" :onClick="() => redirect('/message')">
-            <img src="../public/navbar/Message.svg" class="icon">
+        <a class="button" @click="select('message'); redirect('/message')">
+            <img src="../public/navbar/Message.svg" class="icon" :class="{ selected: selected === 'message' }">
             <br>
             <p class="icon-subtext">{{ $t('nav_messages') }}</p>
         </a>
-        <a class="button" :onClick="() => redirect('/money')">
-            <img src="../public/navbar/Money.svg" class="icon">
+        <a class="button" @click="select('money'); redirect('/money')">
+            <img src="../public/navbar/Money.svg" class="icon" :class="{ selected: selected === 'money' }">
             <br>
             <p class="icon-subtext">{{ $t('nav_expenses') }}</p>
         </a>
@@ -27,7 +27,14 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 const router = useRouter();
+const selected = ref(null);
+
+const select = (name) => {
+    selected.value = name;
+};
+
 const redirect = (page) => {
     router.push(page);
 }
@@ -38,7 +45,7 @@ const redirect = (page) => {
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: 4.5rem; /* ~8% of a typical 56rem tall viewport */
+    height: 4.5rem;
     background-color: var(--main-buttons-light);
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -82,6 +89,11 @@ const redirect = (page) => {
 .icon {
     height: 3rem;
     filter: brightness(29%);
+    transition: transform 0.2s cubic-bezier(.4,2,.3,1);
+}
+
+.icon.selected {
+    transform: translateY(-0.3rem) scale(1.08);
 }
 
 .dark .icon {
@@ -100,5 +112,10 @@ const redirect = (page) => {
     max-width: 5.8rem;
     height: 10rem;
     margin-top: -1.5rem;
+    transition: transform 0.2s cubic-bezier(.4,2,.3,1);
+}
+
+.fridge.selected {
+    transform: translateY(-12px) scale(1.08);
 }
 </style>
