@@ -1,7 +1,7 @@
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"></meta>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" android:windowOptOutEdgeToEdgeEnforcement="true"></meta>
 <template>
   <div>
-    <div class="body-container" style="padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);">
+    <div class="body-container">
       <slot />
     </div>
     <footer>
@@ -14,12 +14,9 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { useUserStore } from '~/store/user';
-import { StatusBar } from '@capacitor/status-bar';
 
 const userStore = useUserStore();
 const { $signalr, $signalrReady } = useNuxtApp()
-
-StatusBar.setOverlaysWebView({ overlay: false });
 
 onMounted(async () => {
   await $signalrReady
