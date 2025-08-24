@@ -1,7 +1,11 @@
 export type Reminder = {
+    colocationId?: string,
     id: string,
     createdBy: string,
     content: string,
+    isImage: boolean,
+    image?: File | null,
+    linkToPP: string,
     color: string,
     coordX: number,
     coordY: number,
@@ -142,4 +146,16 @@ export type expenses_category_get = {
     id: string,
     name: string,
     totalAmount: number,
+}
+
+export type message = {
+    id?: string,
+    colocationId: string,
+    content: string,
+    sendBy: string,
+    sendAt?: string,
+}
+
+export type SignalRClient = {
+    on(event: string, callback: (data: any) => void): void;
 }

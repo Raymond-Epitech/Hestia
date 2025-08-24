@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shared.Models.Input
 {
@@ -10,8 +11,11 @@ namespace Shared.Models.Input
         [Required]
         public Guid CreatedBy { get; set; }
 
-        [Required]
-        public string Content { get; set; } = null!;
+        public string? Content { get; set; } = null;
+
+        public bool IsImage { get; set; } = false;
+
+        public IFormFile? Image { get; set; } = null;
 
         [Required]
         public string Color { get; set; } = null!;

@@ -22,6 +22,8 @@ public class Reminder
     [Required]
     public string Content { get; set; } = null!;
 
+    public bool IsImage { get; set; } = false;
+
     [Required]
     public string Color { get; set; } = null!;
 

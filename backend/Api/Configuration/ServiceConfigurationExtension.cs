@@ -26,6 +26,10 @@ public static class ServiceConfigurationExtension
         services.AddScoped<IExpenseService, ExpenseService>();
         services.AddScoped<IShoppingListService, ShoppingListService>();
         services.AddScoped<IExpiredChoreRemover, ExpiredChoreRemover>();
+        services.AddScoped<IFileStorageService, LocalFileStorageService>();
+        services.AddScoped<IRealTimeService, RealTimeService>();
+        services.AddScoped<IFirebaseNotificationService, FirebaseNotificationService>();
+        services.AddScoped<IMessageService, MessageService>();
 
         // Repositories
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -38,12 +42,19 @@ public static class ServiceConfigurationExtension
 
     public static IServiceCollection EnableCors(this IServiceCollection services)
     {
-        services.AddCors(opt => opt.AddDefaultPolicy(policy => policy
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowAnyOrigin()));
+        services.AddCors(opt =>
+        {
+            opt.AddPolicy("AllowFrontend", policy => policy
+                .WithOrigins("http://localhost:3000", "https://hestiaapp.org")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+            );
+        });
+
         return services;
     }
+    
 
     private static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
     {

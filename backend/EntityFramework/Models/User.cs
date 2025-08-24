@@ -32,5 +32,7 @@ namespace EntityFramework.Models
         public ICollection<Entry> Entries { get; set; } = null!;
         public ICollection<Expense> Expenses { get; set; } = null!;
         public ICollection<SplitBetween> SplitBetweens { get; set; } = null!;
+        public ICollection<FCMDevice> FCMDevices { get; set; } = null!;
+        public ICollection<Reminder> Reminders { get; set; } = null!;
     }
 }
