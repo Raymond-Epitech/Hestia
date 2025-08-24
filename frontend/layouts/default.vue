@@ -18,8 +18,14 @@ import { useUserStore } from '~/store/user';
 const userStore = useUserStore();
 const { $signalr, $signalrReady } = useNuxtApp()
 
+StatusBar.setOverlaysWebView({ overlay: true });
+
 onMounted(async () => {
   await $signalrReady
+  if ((await StatusBar.getInfo()).visible) {
+    await StatusBar.hide();
+  }
+  await StatusBar.hide();
   if (userStore.user?.colocationId) {
     $signalr.invoke("JoinColocationGroup", userStore.user.colocationId)
       .then(() => console.log("Demande envoyée au hub"))
