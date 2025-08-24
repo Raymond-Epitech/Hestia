@@ -41,7 +41,7 @@ export class bridge {
     // Reminder section: get all reminders, get reminder by ID, add reminder, update reminder, delete reminder
 
     async getAllReminders(id_colloc: string): Promise<Reminder[]> {
-        const response: Response = await fetch(this.url + "/api/Reminder/GetByColocation/" + id_colloc,
+        const response: Response = await fetch(this.url + "/api/Reminder?colocationId=" + id_colloc,
             {
                 method: 'GET',
                 headers: {
