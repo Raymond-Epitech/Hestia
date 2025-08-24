@@ -1,7 +1,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"></meta>
 <template>
   <div>
-    <div class="body-container">
+    <div class="body-container" style="padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);">
       <slot />
     </div>
     <footer>
@@ -31,9 +31,9 @@ onMounted(async () => {
 <style scoped>
 .body-container {
   position: absolute;
-  border-top: 1px solid #f3f3f3;
+  /* border-top: 1px solid #f3f3f3;
   top: 25pt;
-  bottom: 58px;
+  bottom: 58px; */
   left: 0;
   right: 0;
   overflow: auto;
