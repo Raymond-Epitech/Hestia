@@ -127,7 +127,7 @@ form {
     border-top-right-radius: 8px;
     gap: 10px;
     width: 100%;
-    background: var(--main-buttons-light); /* Black background like money page */
+    background: var(--main-buttons-light);
     padding: 0.8rem 0;
     box-shadow: var(--button-shadow-light);
     padding-bottom: 1.2rem;
