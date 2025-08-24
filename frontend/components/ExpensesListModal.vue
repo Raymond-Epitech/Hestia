@@ -7,29 +7,10 @@
                         <div id="return" @click="handleClose">
                             <img src="/Retour.svg" class="icon" alt="Return" width="32" height="32" />
                         </div>
-                        <div id="hisctory" :onClick="() => redirect('/money/RefundHistory')">
-                            <img src="~/public/refund-history.png" class="icon-inverse" alt="Return" width="32"
-                                height="32" />
-                        </div>
                     </div>
                     <Texte_language class="modal-header" source="regularize" />
-                    <div class="center-container">
-                        <div v-for="refund in refund_to" :key="refund.from" class="refund-rectangle from">
-                            <text>{{ refund.fromUsername}} {{ $t('owes_you') }}</text>
-                            <text class="number">
-                                {{ refund.amount}} €
-                            </text>
-                        </div>
-                        <div v-for="refund in refund_from" :key="refund.to">
-                            <balance :refund="refund" @proceed="handleReload()"></balance>
-                        </div>
-                        <div v-for="refund in refund_others" :key="refund.from" class="refund-rectangle others">
-                            <text>{{ $t('from') }} {{ refund.fromUsername }} {{ $t('to') }}
-                                {{refund.toUsername}}</text>
-                            <text class="number">
-                                {{ refund.amount }} €
-                            </text>
-                        </div>
+                     <div>
+                        <ExpenseItem v-for="expense in expenses_list" :key="expense.id" :expense="expense" :paidBy="getUsername(expense.paidBy)" />
                     </div>
                 </div>
             </div>
@@ -38,109 +19,84 @@
 </template>
 
 <script setup lang="ts">
-    import useModal from '~/composables/useModal';
-    import { useUserStore } from '~/store/user';
-    import type { Coloc, UserBalance } from '~/composables/service/type';
+import useModal from '~/composables/useModal';
+import { useUserStore } from '~/store/user';
+import type { Expenseget, Coloc } from '~/composables/service/type';
 
-    const props = withDefaults(
-        defineProps < {
-            name?: string,
-            modelValue?: boolean,
-            header?: boolean,
-            buttons?: boolean,
-            borders?: boolean,
-        } > (),
-        {
-            header: true,
-            buttons: true,
-            borders: true,
+const props = withDefaults(
+    defineProps < {
+        name?: string,
+        modelValue?: boolean,
+        header?: boolean,
+        buttons?: boolean,
+        borders?: boolean,
+        expense: string,
+    } > (),
+    {
+        header: true,
+        buttons: true,
+        borders: true,
+    }
+)
+
+const userStore = useUserStore();
+const user = userStore.user;
+const expenses_list = ref<Expenseget[]>([]);
+const list_coloc = ref<Coloc[]>([]);
+const { $bridge } = useNuxtApp()
+const api = $bridge;
+api.setjwt(useCookie('token').value ?? '');
+
+const { modelValue } = toRefs(props)
+const { open, close, toggle, visible } = useModal(props.name)
+
+const emit = defineEmits < {
+    closed: [], // named tuple syntax
+    proceed: [],
+    'update:modelValue': [value: boolean]
+} > ()
+
+api.getExpensebycategoryId(props.expense).then((response) => {
+    expenses_list.value = response;
+}).catch((error) => {
+    console.error('Error fetching data:', error);
+})
+api.getUserbyCollocId(user.colocationId).then((response) => {
+    list_coloc.value = response;
+}).catch((error) => {
+    console.error('Error fetching data:', error);
+})
+
+const getUsername = (id: string): string => {
+    const user = list_coloc.value.find(coloc => coloc.id === id);
+    return user ? user.username : 'Unknown';
+};
+
+defineExpose({
+    open,
+    close,
+    toggle,
+    visible,
+})
+
+const handleClose = () => {
+    close()
+    emit('closed')
+}
+
+watch(
+    modelValue,
+    (value, oldValue) => {
+        if (value !== oldValue) {
+            toggle(value)
         }
-    )
+    },
+    { immediate: true }
+)
 
-    const userStore = useUserStore();
-    const user = userStore.user;
-    const list_balance = ref < UserBalance > ();
-    const list_coloc = ref < Coloc[] > ([]);
-    const { $bridge } = useNuxtApp()
-    const api = $bridge;
-    api.setjwt(useCookie('token').value ?? '');
-    const collocid = user.colocationId
-    const myid = user.id
-    const refund_to = ref < refund[] > ([]);
-    const refund_from = ref < refund[] > ([]);
-    const refund_others = ref < refund[] > ([]);
-    const router = useRouter();
-    const redirect = (page) => {
-        router.push(page);
-    }
-
-    const { modelValue } = toRefs(props)
-    const { open, close, toggle, visible } = useModal(props.name)
-
-    const emit = defineEmits < {
-        closed: [], // named tuple syntax
-        proceed: [],
-        'update:modelValue': [value: boolean]
-    } > ()
-
-    api.getRefund(user.colocationId)
-        .then((response) => {
-            const data = Array.isArray(response) ? response : [...response];
-
-            const toList = data.filter(item => item.to === user.id);
-            const fromList = data.filter(item => item.from === user.id);
-            const othersList = data.filter(item => item.to !== user.id && item.from !== user.id);
-            refund_to.value = toList;
-            refund_from.value = fromList;
-            refund_others.value = othersList;
-        })
-        .catch((error) => {
-            console.error('Error fetching data:', error);
-        });
-
-    const handleReload = async () => {
-        api.getRefund(user.colocationId)
-            .then((response) => {
-                const data = Array.isArray(response) ? response : [...response];
-
-                const toList = data.filter(item => item.to === user.id);
-                const fromList = data.filter(item => item.from === user.id);
-                const othersList = data.filter(item => item.to !== user.id && item.from !== user.id);
-
-                refund_to.value = toList;
-                refund_from.value = fromList;
-                refund_others.value = othersList;
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-            });
-    }
-
-    defineExpose({
-        open,
-        close,
-        toggle,
-        visible,
-    })
-
-    const handleClose = () => {
-        close()
-        emit('closed')
-    }
-
-    watch(
-        modelValue,
-        (value, oldValue) => {
-            if (value !== oldValue) {
-                toggle(value)
-            }
-        },
-        { immediate: true }
-    )
-
-    watch(visible, (value) => {
-        emit('update:modelValue', value)
-    })
+watch(visible, (value) => {
+    emit('update:modelValue', value)
+})
 </script>
 
 <style scoped>

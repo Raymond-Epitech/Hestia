@@ -11,12 +11,8 @@
             </button>
         </div>
         <div class="center-container">
-            <div v-for="expense in expenses_list" :key="expense.id" class="expense"
-                :onClick="() => redirectto(expense.name, expense.id)">
-                <text class="category">{{ expense.name }}</text>
-                <text class="regularize-text number">
-                    {{ expense.totalAmount }} €
-                </text>
+            <div v-for="expense in expenses_list" :key="expense.id" class="center-container" @click="openExpenseModal">
+                <ExpenseCategoryBox :expense="expense"/>
             </div>
             <div class="global">
                 <Texte_language class="category" source="global" />
@@ -80,6 +76,7 @@
 <style scoped>
     .center-container {
         height: 100%;
+        width: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;

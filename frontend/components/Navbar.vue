@@ -46,6 +46,7 @@ const redirect = (page) => {
     align-items: center;
     padding: 0;
     line-height: 0rem;
+    z-index: 100;
 }
 
 .dark .navbar {
