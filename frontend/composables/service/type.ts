@@ -3,14 +3,51 @@ export type Reminder = {
     id: string,
     createdBy: string,
     content: string,
-    isImage: boolean,
-    image?: File | null,
+    type: string,
     linkToPP: string,
     color: string,
     coordX: number,
     coordY: number,
     coordZ: number
 };
+
+export type ImageReminder = Reminder & {
+    image?: File | null,
+    imageUrl?: string | null,
+};
+
+export type PollVote = {
+    reminderId?: string,
+    id?: string,
+    votedBy: string,
+    votedAt: string,
+    option: string
+};
+
+export type pollReminder = Reminder & {
+    poll: {
+        Title: string;
+        Description: string;
+        ExpirationDate: string;
+        IsAnonymous: boolean;
+        AllowMultipleChoices: boolean;
+    }
+    options: string[],
+    votes: PollVote[]
+};
+
+export type itemReminder = {
+    id?: string,
+    name: string,
+    createdBy?: string,
+    isChecked: boolean,
+    reminderId?: string,
+}
+
+export type shoppinglistReminder = Reminder & {
+    items: itemReminder[],
+    ShoppingListName: string,
+}
 
 export type Coloc = {
     id: string,
