@@ -1,5 +1,5 @@
 <template>
-    <div class="background">
+    <div>
         <div class="messages-box">
             <MessageBox
                 v-for="message in messages"
