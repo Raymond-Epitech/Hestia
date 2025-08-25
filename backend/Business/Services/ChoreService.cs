@@ -137,7 +137,7 @@ public class ChoreService(
         var chore = input.ToDb();
         
         await choreRepository.AddAsync(chore);
-        if (input.Enrolled.Count != 0)
+        if (input.Enrolled is not null && input.Enrolled.Count != 0)
         {
             await choreEnrollmentRepository.AddRangeAsync(
                 input.Enrolled.Select(x => new ChoreEnrollment
@@ -150,9 +150,13 @@ public class ChoreService(
 
         cache.Remove($"chores:{input.ColocationId}");
 
-        var users = await userRepository.Query()
-            .Where(u => input.Enrolled.Contains(u.Id))
-            .ToDictionaryAsync(u => u.Id, u => u.PathToProfilePicture);
+        chore = await choreRepository.Query()
+            .Include(c => c.ChoreEnrollments)
+            .ThenInclude(ce => ce.User)
+            .FirstOrDefaultAsync(c => c.Id == chore.Id);
+
+        if (chore is null)
+            throw new InvalidEntityException("Could get the new chore created");
 
         var choreOutput = new ChoreOutput
         {
