@@ -20,7 +20,7 @@ namespace Api.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<ReminderOutput>), StatusCodes.Status200OK)]
         public async Task<ActionResult<List<ReminderOutput>>> GetAllReminders([FromQuery] Guid colocationId)
         {
             if (colocationId == Guid.Empty)
@@ -34,7 +34,7 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ReminderOutput), StatusCodes.Status200OK)]
         public async Task<ActionResult<ReminderOutput>> GetReminder(Guid id)
         {
             if (id == Guid.Empty)
@@ -215,7 +215,7 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<string>>> GetAllReactions([FromQuery] Guid reminderId)
+        public async Task<ActionResult<List<ReactionOutput>>> GetAllReactions([FromQuery] Guid reminderId)
         {
             if (reminderId == Guid.Empty)
                 throw new InvalidEntityException("ReminderId is empty");

@@ -11,8 +11,7 @@ namespace Business.Services;
 
 public class ReactionService(ILogger<ReactionService> logger,
     IRepository<Reaction> reactionRepository,
-    IRealTimeService realTimeService,
-    IRepository<Reminder> reminderRepository) : IReactionService
+    IRealTimeService realTimeService) : IReactionService
 {
     public async Task<List<ReactionOutput>> GetReactionsByPostIdAsync(Guid ReminderId)
     {

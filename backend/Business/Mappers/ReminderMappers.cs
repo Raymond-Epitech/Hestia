@@ -12,47 +12,51 @@ namespace Business.Mappers
         {
             return reminder switch
             {
-                TextReminder textReminder => new TextReminderOutput
+                TextReminder textReminder => new ReminderOutput
                 {
                     Id = textReminder.Id,
                     CreatedBy = textReminder.CreatedBy,
                     CreatedAt = textReminder.CreatedAt,
                     LinkToPP = textReminder.User.PathToProfilePicture,
+                    ReminderType = ReminderType.Text,
                     Content = textReminder.Content,
                     Color = textReminder.Color,
                     CoordX = textReminder.CoordX,
                     CoordY = textReminder.CoordY,
                     CoordZ = textReminder.CoordZ
                 },
-                ImageReminder imageReminder => new ImageReminderOutput
+                ImageReminder imageReminder => new ReminderOutput
                 {
                     Id = imageReminder.Id,
                     CreatedBy = imageReminder.CreatedBy,
                     CreatedAt = imageReminder.CreatedAt,
                     LinkToPP = imageReminder.User.PathToProfilePicture,
+                    ReminderType = ReminderType.Image,
                     ImageUrl = imageReminder.ImageUrl,
                     CoordX = imageReminder.CoordX,
                     CoordY = imageReminder.CoordY,
                     CoordZ = imageReminder.CoordZ
                 },
-                ShoppingListReminder shoppingListReminder => new ShoppingListReminderOutput
+                ShoppingListReminder shoppingListReminder => new ReminderOutput
                 {
                     Id = shoppingListReminder.Id,
                     CreatedBy = shoppingListReminder.CreatedBy,
                     CreatedAt = shoppingListReminder.CreatedAt,
                     LinkToPP = shoppingListReminder.User.PathToProfilePicture,
-                    Name = shoppingListReminder.ShoppingListName,
+                    ReminderType = ReminderType.ShoppingList,
+                    ShoppingListName = shoppingListReminder.ShoppingListName,
                     Items = shoppingListReminder.ShoppingItems?.Select(si => si.ToOutput()).ToList() ?? new List<ShoppingItemOutput>(),
                     CoordX = shoppingListReminder.CoordX,
                     CoordY = shoppingListReminder.CoordY,
                     CoordZ = shoppingListReminder.CoordZ
                 },
-                PollReminder pollReminder => new PollReminderOutput
+                PollReminder pollReminder => new ReminderOutput
                 {
                     Id = pollReminder.Id,
                     CreatedBy = pollReminder.CreatedBy,
                     CreatedAt = pollReminder.CreatedAt,
                     LinkToPP = pollReminder.User.PathToProfilePicture,
+                    ReminderType = ReminderType.Poll,
                     Title = pollReminder.Title,
                     Description = pollReminder.Description,
                     ExpirationDate = pollReminder.ExpirationDate,

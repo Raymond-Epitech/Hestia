@@ -15,6 +15,7 @@ public class ReminderControllerTests
     private readonly Mock<IReminderService> _reminderServiceMock;
     private readonly Mock<IPollService> _pollServiceMock;
     private readonly Mock<IShoppingListService> _shoppingListServiceMock;
+    private readonly Mock<IReactionService> _reactionServiceMock;
     private readonly ReminderController _controller;
 
     public ReminderControllerTests()
@@ -22,7 +23,8 @@ public class ReminderControllerTests
         _reminderServiceMock = new Mock<IReminderService>();
         _pollServiceMock = new Mock<IPollService>();
         _shoppingListServiceMock = new Mock<IShoppingListService>();
-        _controller = new ReminderController(_reminderServiceMock.Object, _pollServiceMock.Object, _shoppingListServiceMock.Object);
+        _reactionServiceMock = new Mock<IReactionService>();
+        _controller = new ReminderController(_reminderServiceMock.Object, _pollServiceMock.Object, _shoppingListServiceMock.Object, _reactionServiceMock.Object);
     }
 
     // GET ALL REMINDERS BY COLOCATION ID
