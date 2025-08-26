@@ -5,7 +5,7 @@
       <img src="~/public/posts/Post.svg" class="post">
     </button>
     <div v-for="(post, index) in posts" :key="index">
-      <Post :id="post.id" :text="post.content" :color="post.color" :createdBy="post.createdBy" :linkToPP="post.linkToPP" :isImage="post.isImage"
+      <Post :id="post.id" :text="post.content" :color="post.color" :createdBy="post.createdBy" :linkToPP="post.linkToPP" :post="post"
         @delete="getall()" />
     </div>
   </div>
@@ -29,8 +29,8 @@ const { $signalr } = useNuxtApp()
 const signalr = $signalr as SignalRClient;
 signalr.on("NewReminderAdded", async (ReminderOutput) => {
   if (!posts.value.some(post => post.id === ReminderOutput.id)) {
-    if (ReminderOutput.isImage) {
-      await api.getImagetocache(ReminderOutput.content);
+    if (ReminderOutput.reminderType === 1) {
+      await api.getImagetocache(ReminderOutput.imageUrl);
     }
     posts.value.push(ReminderOutput)
   }
@@ -52,8 +52,9 @@ signalr.on("ReminderUpdated", (ReminderOutput) => {
 const getall = async () => {
   const data = await api.getAllReminders(userStore.user.colocationId);
   for (const post of data) {
-    if (post.isImage) {
-      await api.getImagetocache(post.content);
+    if (post.reminderType === 1) {
+      console.log('load image')
+      await api.getImagetocache(post.imageUrl);
     }
   }
   posts.value = data;
