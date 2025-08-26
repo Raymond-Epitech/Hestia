@@ -821,6 +821,9 @@ export class bridge {
 
     async getImagetocache(name: string): Promise<string> {
         const url = `http://91.134.48.124:8081/api/Reminder/images/${name}`;
+        if (this.getImagefromcache(name) != null) {
+            return 'OK';
+        }
         return await fetch(url, {
             method: 'GET',
             headers: {
