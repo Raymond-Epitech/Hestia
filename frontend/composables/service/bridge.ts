@@ -820,8 +820,8 @@ export class bridge {
     }
 
     async getImagetocache(name: string): Promise<string> {
-        const url = `http://91.134.48.124:8081/api/Reminder/images/${name}`;
-        if (this.getImagefromcache(name) != null) {
+        const url = `${this.url}/api/Reminder/images/${name}`;
+        if (await this.getImagefromcache(name) != null) {
             return 'OK';
         }
         return await fetch(url, {
@@ -862,7 +862,7 @@ export class bridge {
     }
 
     async getImagefromcache(name: string): Promise<string | null> {
-        const url = `http://91.134.48.124:8081/api/Reminder/images/${name}`;
+        const url = `${this.url}/api/Reminder/images/${name}`;
         if (isNative()) {
             // Mobile : lecture depuis le disque
             try {

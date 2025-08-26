@@ -53,6 +53,7 @@ const getall = async () => {
   const data = await api.getAllReminders(userStore.user.colocationId);
   for (const post of data) {
     if (post.reminderType === 1) {
+      console.log('load image')
       await api.getImagetocache(post.imageUrl);
     }
   }
