@@ -13,11 +13,11 @@
     </popup>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useUserStore } from '~/store/user';
 import { useI18n } from '#imports';
+import type { Reminder } from '../composables/service/type'
 
-const { t } = useI18n();
 const props = defineProps({
     id: {
         type: String,
@@ -35,9 +35,13 @@ const props = defineProps({
         type: String,
         required: true
     },
-    isImage: {
-        type: Boolean,
-        default: false
+    linkToPP: {
+        type: String,
+        required: false,
+    },
+    post: {
+        type: Object as PropType<Reminder>,
+        required: true
     }
 })
 const popup_vue = ref(false)
@@ -68,9 +72,9 @@ const cancelDelete = () => {
 };
 
 onMounted(() => {
-    if (props.isImage) {
+    if (props.post.reminderType == 1) {
         console.log('Image URL:', props.text);
-        api.getImagefromcache(props.text).then((image) => {
+        api.getImagefromcache(props.post.imageUrl).then((image) => {
             if (image) {
                 imageget.value = image;
             } else {
@@ -102,7 +106,7 @@ onMounted(() => {
     width: 250px;
     margin: 20px;
     position: relative;
-    background-color: transparent; 
+    background-color: transparent;
 }
 
 .delete-button {

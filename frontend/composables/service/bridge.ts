@@ -41,7 +41,7 @@ export class bridge {
     // Reminder section: get all reminders, get reminder by ID, add reminder, update reminder, delete reminder
 
     async getAllReminders(id_colloc: string): Promise<Reminder[]> {
-        const response: Response = await fetch(this.url + "/api/Reminder/GetByColocation/" + id_colloc,
+        const response: Response = await fetch(this.url + "/api/Reminder?colocationId=" + id_colloc,
             {
                 method: 'GET',
                 headers: {
@@ -67,17 +67,23 @@ export class bridge {
         const formData = new FormData();
         formData.append('ColocationId', data.colocationId || '');
         formData.append('CreatedBy', data.createdBy);
-        formData.append('Content', data.content);
-        formData.append('IsImage', String(data.isImage));
-        formData.append('Color', data.color);
         formData.append('CoordX', String(data.coordX));
         formData.append('CoordY', String(data.coordY));
         formData.append('CoordZ', String(data.coordZ));
+        formData.append('ReminderType', String(data.reminderType));
+        formData.append('Content', data.content);
+        formData.append('Color', data.color);
         if (data.image) {
-            formData.append('Image', data.image, data.image.name);
+            formData.append('File', data.image, data.image.name);
         } else {
-            formData.append('Image', '');
+            formData.append('File', '');
         }
+        formData.append('ShoppingListName', data.shoppingListName);
+        formData.append("PollInput.Title", data.pollInput.title);
+        formData.append("PollInput.Description", data.pollInput.description);
+        formData.append("PollInput.ExpirationDate", data.pollInput.expirationdate);
+        formData.append("PollInput.IsAnonymous", String(data.pollInput.isanonymous));
+        formData.append("PollInput.AllowMultipleChoices", String(data.pollInput.allowmultiplechoice));
         return await fetch(this.url + "/api/Reminder", {
             method: 'POST',
             headers: {
@@ -128,6 +134,163 @@ export class bridge {
                 return true;
             }
             return false;
+        });
+    }
+
+    // Shopping list for reminder section:
+
+    async getReminderShoppingList(id: string) {
+        return await fetch(this.url + "/api/Reminder/ShoppingList?reminderId=" + id, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        });
+    }
+
+    async addReminderShoppingListItem(item: any) {
+        return await fetch(this.url + "/api/Reminder/ShoppingList", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(item)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async updateReminderShoppingListItem(item: any) {
+        return await fetch(this.url + "/api/Reminder/ShoppingList", {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(item)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async deleteReminderShoppingListItem(id: string) {
+        return await fetch(this.url + "/api/Reminder/ShoppingList/" + id, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    // Poll for reminder section:
+
+    async getReminderPoll(id: string) {
+        return await fetch(this.url + "/api/Reminder/PollVote?reminderId=" + id, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        });
+    }
+
+    async addReminderPollVote(vote: any) {
+        return await fetch(this.url + "/api/Reminder/PollVote", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(vote)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async deleteReminderPollVote(Id: string, userId: string) {
+        return await fetch(this.url + "/api/Reminder/PollVote/id" + Id, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+
+    // Reaction for reminder section:
+
+    async addReactionReminder(reminderId: string, userId: string, reaction: string) {
+        return await fetch(this.url + "/api/Reminder/Reminder/Reactions", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify({ reminderId: reminderId, userId: userId, type: reaction })
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async deleteReactionReminder(reminderId: string, userId: string) {
+        return await fetch(this.url + "/api/Reminder/Reminder/Reactions", {
+            method: 'DELETE',
+             headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify({ reminderId: reminderId, userId: userId })
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async getReactionsReminder(reminderId: string) {
+        return await fetch(this.url + "/api/Reminder/Reminder/Reactions?reminderId=" + reminderId, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
         });
     }
 
@@ -814,7 +977,10 @@ export class bridge {
     }
 
     async getImagetocache(name: string): Promise<string> {
-        const url = `http://91.134.48.124:8081/images/${name}`;
+        const url = `${this.url}/api/Reminder/images/${name}`;
+        if (await this.getImagefromcache(name) != null) {
+            return 'OK';
+        }
         return await fetch(url, {
             method: 'GET',
             headers: {
@@ -853,7 +1019,7 @@ export class bridge {
     }
 
     async getImagefromcache(name: string): Promise<string | null> {
-        const url = `http://91.134.48.124:8081/images/${name}`;
+        const url = `${this.url}/api/Reminder/images/${name}`;
         if (isNative()) {
             // Mobile : lecture depuis le disque
             try {

@@ -10,24 +10,24 @@
             <div class="post-type-buttons">
               <input
                 class="form-check-input type-choice"
-                v-model="post.isImage"
+                v-model="post.reminderType"
                 type="radio"
                 name="postType"
                 id="postTypeText"
-                :value="false"
+                :value="0"
               />
               <label for="postTypeText">{{ $t('text') }}</label>
               <input
                 class="form-check-input type-choice"
-                v-model="post.isImage"
+                v-model="post.reminderType"
                 type="radio"
                 name="postType"
                 id="postTypeImage"
-                :value="true"
+                :value="1"
               />
               <label for="postTypeImage">{{ $t('image') }}</label>
             </div>
-            <div v-if="!post.isImage" class="modal-body left">
+            <div v-if="post.reminderType === 0" class="modal-body left">
               <textarea class="modal-body-input" rows="3" maxlength="150" v-model="post.content" required></textarea>
             </div>
             <div v-else class="modal-body left">
@@ -40,7 +40,7 @@
               />
               <img v-if="prewiew" :src="prewiew" alt="Image sélectionnée" style="max-width: 10%; margin-top: 1em;" />
             </div>
-            <div v-if="!post.isImage" class="post-colors-buttons">
+            <div v-if="post.reminderType === 0" class="post-colors-buttons">
               <input class="form-check-input color-choice blue" v-model="post.color" type="radio" name="gridRadios"
                 id="gridRadios1" value="blue" required>
               <input class="form-check-input color-choice yellow" v-model="post.color" type="radio" name="gridRadios"
@@ -89,17 +89,25 @@ api.setjwt(useCookie('token').value ?? '');
 const prewiew = ref('');
 
 const post = ref({
+  colocationId: userStore.user.colocationId,
   createdBy: userStore.user.id,
-  content: '',
-  color: '',
-  isImage: false,
-  image: new File([], 'test.jpg'), 
   coordX: 0,
   coordY: 0,
   coordZ: 0,
-  colocationId: userStore.user.colocationId,
+  reminderType: 0,
+  content: '',
+  color: '',
+  image: new File([], 'test.jpg'),
+  shoppinglistName: '',
+  pollInput: {
+    title: '',
+    description: '',
+    expirationdate: '',
+    isanonymous: false,
+    allowmultiplechoice: false,
+  }
 })
-
+console.log(post.value)
 const { modelValue } = toRefs(props)
 
 const { open, close, toggle, visible } = useModal(props.name)
@@ -120,15 +128,23 @@ defineExpose({
 const resetPost = () => {
   prewiew.value = '';
   post.value = {
+    colocationId: userStore.user.colocationId,
     createdBy: userStore.user.id,
-    content: '',
-    color: '',
-    isImage: false,
-    image: new File([], 'test.jpg'),
     coordX: 0,
     coordY: 0,
     coordZ: 0,
-    colocationId: userStore.user.colocationId,
+    reminderType: 0,
+    content: '',
+    color: '',
+    image: new File([], 'test.jpg'),
+    shoppinglistName: '',
+    pollInput: {
+      title: '',
+      description: '',
+      expirationdate: '',
+      isanonymous: false,
+      allowmultiplechoice: false,
+    }
   }
 }
 
@@ -139,7 +155,7 @@ const handleClose = () => {
 }
 
 const handleProceed = async () => {
-  if (post.value.isImage) {
+  if (post.value.reminderType === 1) {
     post.value.content = '';
   }
   const response = await api.addReminder(post.value)
@@ -170,11 +186,11 @@ watch(
 )
 
 watch(
-  () => post.value.isImage,
+  () => post.value.reminderType,
   (newValue, oldValue) => {
     if (newValue !== oldValue) {
       prewiew.value = '';
-      if (post.value.isImage) {
+      if (post.value.reminderType === 1) {
         post.value.content = '';
         post.value.color = 'none'
       } else {
