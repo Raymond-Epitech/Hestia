@@ -29,8 +29,8 @@ const { $signalr } = useNuxtApp()
 const signalr = $signalr as SignalRClient;
 signalr.on("NewReminderAdded", async (ReminderOutput) => {
   if (!posts.value.some(post => post.id === ReminderOutput.id)) {
-    if (ReminderOutput.isImage) {
-      await api.getImagetocache(ReminderOutput.content);
+    if (ReminderOutput.reminderType === 1) {
+      await api.getImagetocache(ReminderOutput.imageUrl);
     }
     posts.value.push(ReminderOutput)
   }

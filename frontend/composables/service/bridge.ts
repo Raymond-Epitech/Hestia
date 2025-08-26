@@ -67,17 +67,23 @@ export class bridge {
         const formData = new FormData();
         formData.append('ColocationId', data.colocationId || '');
         formData.append('CreatedBy', data.createdBy);
-        formData.append('Content', data.content);
-        formData.append('IsImage', String(data.isImage));
-        formData.append('Color', data.color);
         formData.append('CoordX', String(data.coordX));
         formData.append('CoordY', String(data.coordY));
         formData.append('CoordZ', String(data.coordZ));
+        formData.append('ReminderType', String(data.reminderType));
+        formData.append('Content', data.content);
+        formData.append('Color', data.color);
         if (data.image) {
-            formData.append('Image', data.image, data.image.name);
+            formData.append('File', data.image, data.image.name);
         } else {
-            formData.append('Image', '');
+            formData.append('File', '');
         }
+        formData.append('ShoppingListName', data.shoppingListName);
+        formData.append("PollInput.Title", data.pollInput.title);
+        formData.append("PollInput.Description", data.pollInput.description);
+        formData.append("PollInput.ExpirationDate", data.pollInput.expirationdate);
+        formData.append("PollInput.IsAnonymous", String(data.pollInput.isanonymous));
+        formData.append("PollInput.AllowMultipleChoices", String(data.pollInput.allowmultiplechoice));
         return await fetch(this.url + "/api/Reminder", {
             method: 'POST',
             headers: {
@@ -814,7 +820,7 @@ export class bridge {
     }
 
     async getImagetocache(name: string): Promise<string> {
-        const url = `http://91.134.48.124:8081/images/${name}`;
+        const url = `http://91.134.48.124:8081/api/Reminder/images/${name}`;
         return await fetch(url, {
             method: 'GET',
             headers: {
@@ -853,7 +859,7 @@ export class bridge {
     }
 
     async getImagefromcache(name: string): Promise<string | null> {
-        const url = `http://91.134.48.124:8081/images/${name}`;
+        const url = `http://91.134.48.124:8081/api/Reminder/images/${name}`;
         if (isNative()) {
             // Mobile : lecture depuis le disque
             try {
