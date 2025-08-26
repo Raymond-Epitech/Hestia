@@ -249,7 +249,7 @@ export class bridge {
     // Reaction for reminder section:
 
     async addReactionReminder(reminderId: string, userId: string, reaction: string) {
-        return await fetch(this.url + "/api/Reminder/Reminder/Reactions", {
+        return await fetch(this.url + "/api/Reminder/Reactions", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

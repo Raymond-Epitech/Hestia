@@ -1,6 +1,10 @@
 <template>
     <div :class="[post.reminderType == 1 ? 'post_image' : 'post', , post.reminderType != 1 && color]">
         <ProfileIcon class="profile-icon" :height="30" :width="30" :linkToPP="props.linkToPP" />
+        <ReactModal :postId="post.id" v-model="isModalOpen"/>
+        <button class="react-button" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
+            <div class="heart">❤️</div>
+        </button>
         <button class="delete-button" @click="showPopup" v-if="createdBy == user.id">
             <div class="close"></div>
         </button>
@@ -16,6 +20,8 @@ import { useUserStore } from '~/store/user';
 import { useI18n } from '#imports';
 import type { Reminder } from '../composables/service/type'
 
+const isModalOpen = ref(false)
+const openModal = () => (isModalOpen.value = true)
 const props = defineProps({
     id: {
         type: String,
@@ -109,7 +115,7 @@ onMounted(() => {
     position: absolute;
     top: 10px;
     right: 14px;
-    background: #FF6A61;
+    background: var(--basic-red);
     border: none;
     border-radius: 50%;
     width: 30px;
@@ -172,5 +178,31 @@ onMounted(() => {
 .image {
     max-width: 100%;
 
+}
+.react-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 10px;
+    right: 14px;
+    background: var(--main-buttons-light);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+}
+
+.dark .react-button {
+    background: var(--main-buttons-dark);
+}
+
+.heart {
+    height: 30px;
+    width: 30px;
+    padding-top: 2px;
+    padding-left: 1px;
+    text-align: center;
 }
 </style>
