@@ -1,36 +1,36 @@
 export type Reminder = {
-  id: string;
-  createdBy: string;
-  createdAt: string; // format ISO string
-  reminderType: number;
-  linkToPP: string;
-  coordX: number;
-  coordY: number;
-  coordZ: number;
-  content: string;
-  color: string;
-  imageUrl: string;
-  shoppingListName: string;
-  items: ReminderItem[];
-  title: string;
-  description: string;
-  expirationDate: string; // ISO date-time string
-  isAnonymous: boolean;
-  allowMultipleChoices: boolean;
-  votes: ReminderVote[];
+    id: string;
+    createdBy: string;
+    createdAt: string; // format ISO string
+    reminderType: number;
+    linkToPP: string;
+    coordX: number;
+    coordY: number;
+    coordZ: number;
+    content: string;
+    color: string;
+    imageUrl: string;
+    shoppingListName: string;
+    items: ReminderItem[];
+    title: string;
+    description: string;
+    expirationDate: string; // ISO date-time string
+    isAnonymous: boolean;
+    allowMultipleChoices: boolean;
+    votes: ReminderVote[];
 };
 
 export type ReminderItem = {
-  id: string;
-  name: string;
-  isChecked: boolean;
+    id: string;
+    name: string;
+    isChecked: boolean;
 };
 
 export type ReminderVote = {
-  id: string;
-  votedBy: string;
-  votedAt: string; // ISO date-time string
-  choice: string;
+    id: string;
+    votedBy: string;
+    votedAt: string; // ISO date-time string
+    choice: string;
 };
 
 
