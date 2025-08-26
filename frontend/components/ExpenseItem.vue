@@ -1,5 +1,5 @@
 <template>
-  <div class="expense" @click="props.onclick && props.onclick()">
+  <div class="expense">
     <div class="expense-header">
       <span class="expense-name">{{ expense.name }}</span>
       <span class="expense-amount">{{ expense.amount }} €</span>
@@ -24,6 +24,8 @@ const props = defineProps<{
 
 <style scoped>
 .expense {
+  color: var(--overlay-text);
+  text-align: left;
   border-bottom: 2px solid #ddd;
   padding: 10px 0;
 }
