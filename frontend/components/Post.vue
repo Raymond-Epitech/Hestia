@@ -1,11 +1,13 @@
 <template>
-    <div :class="[isImage ? 'post_image' : 'post', , !props.isImage && color]">
-        <ProfileIcon class="profile-icon" :height="30" :width="30" :linkToPP="props.linkToPP" />
-        <button class="delete-button" @click="showPopup" v-if="createdBy == user.id">
-            <div class="close"></div>
-        </button>
-        <p v-if="!isImage">{{ text }}</p>
-        <img v-if="isImage" :src="imageget" alt="Post Image" class="image" />
+    <div class="post-list">
+        <div :class="[post.reminderType == 1 ? 'post_image' : 'post', , post.reminderType != 1 && color]">
+            <ProfileIcon class="profile-icon" :height="30" :width="30" :linkToPP="props.linkToPP" />
+            <button class="delete-button" @click="showPopup" v-if="createdBy == user.id">
+                <div class="close"></div>
+            </button>
+            <p v-if="post.reminderType == 0">{{ text }}</p>
+            <img v-if="post.reminderType == 1" :src="imageget" alt="Post Image" class="image" />
+        </div>
     </div>
     <popup v-if="popup_vue" :text="$t('confirm_delete_reminder')" @confirm="confirmDelete" @close="cancelDelete">
     </popup>
@@ -64,6 +66,7 @@ const confirmDelete = async () => {
 const cancelDelete = () => {
     popup_vue.value = false;
 };
+
 onMounted(() => {
     if (props.isImage) {
         console.log('Image URL:', props.text);
@@ -81,6 +84,11 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.post-list {
+    overflow-y: auto;
+    max-height: calc(100vh - 4.5rem);
+}
+
 .post {
     width: 250px;
     height: 250px;
