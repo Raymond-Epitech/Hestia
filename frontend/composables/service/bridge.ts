@@ -137,6 +137,163 @@ export class bridge {
         });
     }
 
+    // Shopping list for reminder section:
+
+    async getReminderShoppingList(id: string) {
+        return await fetch(this.url + "/api/Reminder/ShoppingList?reminderId=" + id, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        });
+    }
+
+    async addReminderShoppingListItem(item: any) {
+        return await fetch(this.url + "/api/Reminder/ShoppingList", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(item)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async updateReminderShoppingListItem(item: any) {
+        return await fetch(this.url + "/api/Reminder/ShoppingList", {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(item)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async deleteReminderShoppingListItem(id: string) {
+        return await fetch(this.url + "/api/Reminder/ShoppingList/" + id, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    // Poll for reminder section:
+
+    async getReminderPoll(id: string) {
+        return await fetch(this.url + "/api/Reminder/PollVote?reminderId=" + id, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        });
+    }
+
+    async addReminderPollVote(vote: any) {
+        return await fetch(this.url + "/api/Reminder/PollVote", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(vote)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async deleteReminderPollVote(Id: string, userId: string) {
+        return await fetch(this.url + "/api/Reminder/PollVote/id" + Id, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+
+    // Reaction for reminder section:
+
+    async addReactionReminder(reminderId: string, userId: string, reaction: string) {
+        return await fetch(this.url + "/api/Reminder/Reminder/Reactions", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify({ reminderId: reminderId, userId: userId, type: reaction })
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async deleteReactionReminder(reminderId: string, userId: string) {
+        return await fetch(this.url + "/api/Reminder/Reminder/Reactions", {
+            method: 'DELETE',
+             headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify({ reminderId: reminderId, userId: userId })
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async getReactionsReminder(reminderId: string) {
+        return await fetch(this.url + "/api/Reminder/Reminder/Reactions?reminderId=" + reminderId, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        });
+    }
+
     // User section:
 
     async login(google_token: string, fcm_token: string) {
