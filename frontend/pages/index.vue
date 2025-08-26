@@ -5,7 +5,7 @@
       <img src="~/public/posts/Post.svg" class="post">
     </button>
     <div v-for="(post, index) in posts" :key="index">
-      <Post :id="post.id" :text="post.content" :color="post.color" :createdBy="post.createdBy" :linkToPP="post.linkToPP" :isImage="post.isImage"
+      <Post :id="post.id" :text="post.content" :color="post.color" :createdBy="post.createdBy" :linkToPP="post.linkToPP" :post="post"
         @delete="getall()" />
     </div>
   </div>
@@ -52,8 +52,8 @@ signalr.on("ReminderUpdated", (ReminderOutput) => {
 const getall = async () => {
   const data = await api.getAllReminders(userStore.user.colocationId);
   for (const post of data) {
-    if (post.isImage) {
-      await api.getImagetocache(post.content);
+    if (post.reminderType === 1) {
+      await api.getImagetocache(post.imageUrl);
     }
   }
   posts.value = data;

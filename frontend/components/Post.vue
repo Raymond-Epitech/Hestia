@@ -1,21 +1,21 @@
 <template>
-    <div :class="[isImage ? 'post_image' : 'post', , !props.isImage && color]">
+    <div :class="[post.reminderType == 1 ? 'post_image' : 'post', , post.reminderType != 1 && color]">
         <ProfileIcon class="profile-icon" :height="30" :width="30" :linkToPP="props.linkToPP" />
         <button class="delete-button" @click="showPopup" v-if="createdBy == user.id">
             <div class="close"></div>
         </button>
-        <p v-if="!isImage">{{ text }}</p>
-        <img v-if="isImage" :src="imageget" alt="Post Image" class="image" />
+        <p v-if="post.reminderType == 0">{{ text }}</p>
+        <img v-if="post.reminderType == 1" :src="imageget" alt="Post Image" class="image" />
     </div>
     <popup v-if="popup_vue" :text="$t('confirm_delete_reminder')" @confirm="confirmDelete" @close="cancelDelete">
     </popup>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useUserStore } from '~/store/user';
 import { useI18n } from '#imports';
+import type { Reminder } from '../composables/service/type'
 
-const { t } = useI18n();
 const props = defineProps({
     id: {
         type: String,
@@ -33,9 +33,13 @@ const props = defineProps({
         type: String,
         required: true
     },
-    isImage: {
-        type: Boolean,
-        default: false
+    linkToPP: {
+        type: String,
+        required: false,
+    },
+    post: {
+        type: Object as PropType<Reminder>,
+        required: true
     }
 })
 const popup_vue = ref(false)
@@ -65,9 +69,9 @@ const cancelDelete = () => {
     popup_vue.value = false;
 };
 onMounted(() => {
-    if (props.isImage) {
+    if (props.post.reminderType == 1) {
         console.log('Image URL:', props.text);
-        api.getImagefromcache(props.text).then((image) => {
+        api.getImagefromcache(props.post.imageUrl).then((image) => {
             if (image) {
                 imageget.value = image;
             } else {
@@ -94,7 +98,7 @@ onMounted(() => {
     width: 250px;
     margin: 20px;
     position: relative;
-    background-color: transparent; 
+    background-color: transparent;
 }
 
 .delete-button {
