@@ -3,8 +3,7 @@
     <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
         <img src="~/public/plus.png" class="plus">
     </button>
-    <div class="tasks">
-        
+    <div class="tasks"> 
         <div v-for="(task, index) in task_list" :key="index" class="task-list">
             <Task :id="task.id" :title="task.title" :description="task.description" :createdBy="task.createdBy"
                 :createdAt="task.createdAt" :dueDate="task.dueDate" :isDone="task.isDone"
