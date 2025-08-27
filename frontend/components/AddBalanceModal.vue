@@ -250,8 +250,8 @@
 
     .number {
         display: flex;
-        justify-content: center;
-        font-size: 32px;
+        justify-content: right;
+        font-size: 22px;
     }
 
     .modal-no-border {
