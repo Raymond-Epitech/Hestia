@@ -142,7 +142,7 @@ const getDayNumber = (timecode: string) => {
 
 .number {
     display: flex;
-    justify-content: center;
+    justify-content: right;
     font-size: 28px;
 }
 </style>
