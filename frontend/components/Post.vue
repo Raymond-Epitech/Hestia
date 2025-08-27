@@ -5,6 +5,9 @@
         <button class="react-button" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
             <div class="heart">❤️</div>
         </button>
+        <div v-for="reaction in reactions" :key="reaction.userId" class="reaction">
+            {{ reaction.type }}
+        </div>
         <button class="delete-button" @click="showPopup" v-if="createdBy == user.id">
             <div class="close"></div>
         </button>
@@ -18,7 +21,7 @@
 <script setup lang="ts">
 import { useUserStore } from '~/store/user';
 import { useI18n } from '#imports';
-import type { Reminder } from '../composables/service/type'
+import type { Reminder, SignalRClient } from '../composables/service/type'
 
 const isModalOpen = ref(false)
 const openModal = () => (isModalOpen.value = true)
@@ -56,6 +59,9 @@ const userStore = useUserStore();
 const user = userStore.user;
 const imageget = ref('');
 const emit = defineEmits(['delete'])
+const reactions = ref<Array<{ id: string; userId: string; reminderId: string ; type: string }>>([]);
+const { $signalr } = useNuxtApp()
+const signalr = $signalr as SignalRClient;
 
 const showPopup = () => {
     popup_vue.value = true;
@@ -75,7 +81,15 @@ const cancelDelete = () => {
     popup_vue.value = false;
 };
 
-onMounted(() => {
+signalr.on("NewReactionAdded", async () => {
+    reactions.value = [];
+    await getReactions();
+    
+})
+
+onMounted(async () => {
+    reactions.value = [];
+    await getReactions();
     if (props.post.reminderType == 1) {
         console.log('Image URL:', props.text);
         api.getImagefromcache(props.post.imageUrl).then((image) => {
@@ -89,6 +103,19 @@ onMounted(() => {
         });
     }
 });
+
+const getReactions = async () => {
+    try {
+        const data = await api.getReactionsReminder(props.id);
+        if (data && Array.isArray(data)) {
+            reactions.value = data;
+        } else {
+            console.error('Données de réaction invalides reçues:', data);
+        }
+    } catch (error) {
+        console.error('Erreur lors de la récupération des réactions:', error);
+    }
+};
 </script>
 
 <style scoped>
@@ -202,7 +229,18 @@ onMounted(() => {
     height: 30px;
     width: 30px;
     padding-top: 2px;
-    padding-left: 1px;
     text-align: center;
+}
+
+.reaction {
+    position: absolute;
+    bottom: -10px;
+    left: -6px;
+    padding: 2px 6px;
+    font-size: 22px;
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-spacing: -1.2rem;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
 }
 </style>

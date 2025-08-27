@@ -3,7 +3,7 @@
     <div v-if="visible">
       <div class="modal-background" @click="handleClose">
         <div class="modal" @click.stop>
-          <div class="emoticon-list" v-for="emoji in ['❤️', '😂', '😮', '😢', '😡', '👍', '👎', '🎉', '💡', '🔥']" :key="emoji">
+          <div v-for="emoji in ['❤️', '😂', '😮', '😢', '😡', '👍', '👎', '🎉', '💡', '🔥']" :key="emoji">
             <span class="emoticon" @click="handleReaction(emoji)">{{ emoji }}</span>
           </div>
         </div>
@@ -79,9 +79,6 @@ watch(
 </script>
 
 <style scoped>
-
-.emoticon-list {
-}
 
 .emoticon {
     font-size: 26px;
