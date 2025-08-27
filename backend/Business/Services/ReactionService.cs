@@ -52,6 +52,10 @@ public class ReactionService(ILogger<ReactionService> logger,
 
         if (add)
         {
+            var colocationId = await reactionRepository.Query()
+                .Where(r => r.ReminderId == reactionInput.ReminderId)
+                .Select(r => r.Reminder.ColocationId)
+                .FirstOrDefaultAsync();
             await realTimeService.SendToGroupAsync(reaction.Reminder.ColocationId, "NewReaction", reaction.ToOutput());
         }
         else
