@@ -5,8 +5,10 @@
         <button class="react-button" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
             <div class="heart">❤️</div>
         </button>
-        <div v-for="reaction in reactions" :key="reaction.userId" class="reaction">
-            {{ reaction.type }}
+        <div v-if="reactions.length > 0" class="reaction-list">
+            <div v-for="reaction in reactions" :key="reaction.id" class="reaction">
+                {{ reaction.type }}
+            </div>
         </div>
         <button class="delete-button" @click="showPopup" v-if="createdBy == user.id">
             <div class="close"></div>
@@ -20,7 +22,6 @@
 
 <script setup lang="ts">
 import { useUserStore } from '~/store/user';
-import { useI18n } from '#imports';
 import type { Reminder, SignalRClient } from '../composables/service/type'
 
 const isModalOpen = ref(false)
@@ -81,10 +82,26 @@ const cancelDelete = () => {
     popup_vue.value = false;
 };
 
-signalr.on("NewReactionAdded", async () => {
-    reactions.value = [];
-    await getReactions();
-    
+signalr.on("NewReaction", async (SigPostId) => {
+    if (SigPostId === props.post.id) {
+        reactions.value = [];
+        await getReactions();
+    }
+})
+
+signalr.on("DeleteReaction", async (SigPostId) => {
+    if (SigPostId === props.post.id) {
+        reactions.value = [];
+        await getReactions();
+    }
+})
+
+signalr.on("UpdateReaction", async (SigPostId) => {
+    if (SigPostId === props.post.id) {
+        reactions.value = [];
+        await getReactions();
+    }
+    console.log('SignalR UpdateReaction received for postId:', SigPostId);
 })
 
 onMounted(async () => {
@@ -106,16 +123,17 @@ onMounted(async () => {
 
 const getReactions = async () => {
     try {
-        const data = await api.getReactionsReminder(props.id);
+        const data = await api.getReactionsReminder(props.post.id);
         if (data && Array.isArray(data)) {
             reactions.value = data;
+            console.log('Reactions fetched:', reactions.value);
         } else {
             console.error('Données de réaction invalides reçues:', data);
         }
     } catch (error) {
         console.error('Erreur lors de la récupération des réactions:', error);
     }
-};
+}
 </script>
 
 <style scoped>
@@ -233,14 +251,18 @@ const getReactions = async () => {
 }
 
 .reaction {
-    position: absolute;
-    bottom: -10px;
-    left: -6px;
-    padding: 2px 6px;
     font-size: 22px;
-    white-space: nowrap;
-    overflow-wrap: normal;
-    word-spacing: -1.2rem;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+    width: 14px;
+    overflow-x: visible;
+}
+.reaction-list {
+    position: absolute;
+    bottom: -8px;
+    width: 70%;
+    display: flex;
+    white-space: nowrap;
+    /* overflow-x: scroll; */
+    justify-content: left;
 }
 </style>
