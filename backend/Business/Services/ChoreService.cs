@@ -213,10 +213,7 @@ public class ChoreService(
     /// <exception cref="ContextException">An error has occured while adding chore from db</exception>
     public async Task<Guid> UpdateChoreAsync(ChoreUpdate input)
     {
-        var chore = await choreRepository.Query()
-            .Include(c => c.ChoreEnrollments)
-            .ThenInclude(ce => ce.User)
-            .FirstOrDefaultAsync(c => c.Id == input.Id);
+        var chore = await choreRepository.GetByIdAsync(input.Id);
 
         if (chore == null)
         {
@@ -238,10 +235,18 @@ public class ChoreService(
                 }).ToList());
         }
 
-        _ = choreRepository.Update(chore);
+        choreRepository.Update(chore);
         await choreRepository.SaveChangesAsync();
 
         cache.Remove($"chores:{input.ColocationId}");
+
+        chore = await choreRepository.Query()
+            .Include(c => c.ChoreEnrollments)
+            .ThenInclude(ce => ce.User)
+            .FirstOrDefaultAsync(c => c.Id == input.Id);
+
+        if (chore is null)
+            throw new InvalidEntityException("Could get the updated chore");
 
         var choreOutput = new ChoreOutput
         {
@@ -254,7 +259,7 @@ public class ChoreService(
             IsDone = chore.IsDone,
             EnrolledUsers = chore.ChoreEnrollments.ToDictionary(
                 ce => ce.UserId,
-                ce => ce.User.PathToProfilePicture)
+                ce => ce.User.PathToProfilePicture),
         };
         await realTimeService.SendToGroupAsync(chore.ColocationId, "ChoreUpdated", choreOutput);
 
