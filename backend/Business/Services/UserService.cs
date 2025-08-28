@@ -17,8 +17,7 @@ namespace Business.Services;
 public class UserService(ILogger<UserService> logger,
     IRepository<User> userRepository,
     IRepository<FCMDevice> fcmDeviceRepository,
-    IJwtService jwtService,
-    IFirebaseNotificationService notificationService) : IUserService
+    IJwtService jwtService) : IUserService
 {
     /// <summary>
     /// Get all users from a collocation
