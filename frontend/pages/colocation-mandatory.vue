@@ -47,6 +47,8 @@ const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 const router = useRouter();
+const route = useRoute();
+const collocID = route.query.collocID
 
 const colocation = ref({
     name: '',
@@ -56,7 +58,7 @@ const colocation = ref({
 const new_data = ref({
     username: user.username,
     email: user.email,
-    colocationId: '',
+    colocationId: collocID ? collocID : '',
     pathToProfilePicture: 'exempledetest',
     id: user.id,
 })
