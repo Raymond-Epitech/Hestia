@@ -39,7 +39,7 @@ Ce document liste les codes d'événements utilisés dans la communication Signa
 | `ChoreUpdated` | Une tache existante a été modifiée | ChoreOutput |
 | `ChoreDeleted` | Une tache a été supprimée | Guid |
 | `ChoreMessagesDeleted` | Un commentaire de tache a été supprimée | Guid |
-| `ChoreEnrollmentAdded` | Une assignation a une tache a été ajoutée | {ChoreID, UserId} |
+| `ChoreEnrollmentAdded` | Une assignation a une tache a été ajoutée | {ChoreID, UserId, PathToPP} |
 | `ChoreEnrollmentRemoved` | Une assignation a une tache a été supprimée | {ChoreID, UserId} |
 
 ### Expenses

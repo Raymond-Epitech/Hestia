@@ -393,12 +393,17 @@ public class ChoreService(
 
         enroll = await choreEnrollmentRepository.Query()
             .Include(e => e.Chore)
+            .Include(e => e.User)
             .FirstOrDefaultAsync(e => e.UserId == UserId && e.ChoreId == ChoreId);
 
         if (enroll is null)
             throw new InvalidEntityException($"Error in addition of enrollment user : {UserId} and chore : {ChoreId}");
 
-        await realTimeService.SendToGroupAsync(enroll.Chore.ColocationId, "ChoreEnrollmentAdded", enroll);
+        await realTimeService.SendToGroupAsync(enroll.Chore.ColocationId, "ChoreEnrollmentAdded", new ChoreEnrollmentOutput { 
+            UserId = enroll.UserId,
+            ChoreId = enroll.ChoreId,
+            PathToPP = enroll.User.PathToProfilePicture
+        });
 
         logger.LogInformation("Succes : User enrolled to the chore");
 
