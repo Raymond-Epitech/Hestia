@@ -1,15 +1,18 @@
 <template>
     <transition name="modal">
         <div v-if="visible">
+            <AddExpenseModal v-model="isAddExpenseModalOpen" :category-id="expense" @proceed="handleProceed()"/>
             <div class="modal-background" @click="handleClose">
                 <div class="modal" @click.stop>
                     <div class="modal-top-bar">
                         <div id="return" @click="handleClose">
                             <img src="/Retour.svg" class="icon" alt="Return" width="32" height="32" />
                         </div>
+                        <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openAddExpenseModal">
+                            <img src="~/public/plus.png" class="plus">
+                        </button>
                     </div>
-                    <Texte_language class="modal-header" source="regularize" />
-                     <div>
+                    <div>
                         <ExpenseItem v-for="expense in expenses_list" :key="expense.id" :expense="expense" :paidBy="getUsername(expense.paidBy)" />
                     </div>
                 </div>
@@ -50,6 +53,9 @@ api.setjwt(useCookie('token').value ?? '');
 const { modelValue } = toRefs(props)
 const { open, close, toggle, visible } = useModal(props.name)
 
+const isAddExpenseModalOpen = ref(false)
+const openAddExpenseModal = () => (isAddExpenseModalOpen.value = true)
+
 const emit = defineEmits < {
     closed: [], // named tuple syntax
     proceed: [],
@@ -84,6 +90,15 @@ const handleClose = () => {
     emit('closed')
 }
 
+const handleProceed = () => {
+    api.getExpensebycategoryId(props.expense).then((response) => {
+        expenses_list.value = response;
+    }).catch((error) => {
+        console.error('Error fetching data:', error);
+    })
+    emit('proceed')
+}
+
 watch(
     modelValue,
     (value, oldValue) => {
@@ -100,196 +115,171 @@ watch(visible, (value) => {
 </script>
 
 <style scoped>
-    .modal {
-        width: 100%;
-        height: 100vh;
-        overflow-y: auto;
-        margin-top: 0px;
-        padding: 25pt 6%;
-        animation: slideIn 0.4s;
-        background-color: var(--overlay-background-light);
-        backdrop-filter: blur(8px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
-        display: flex;
-        flex-direction: column;
-        position: relative;
+.modal {
+    width: 100%;
+    height: 100vh;
+    overflow-y: auto;
+    margin-top: 0px;
+    padding: 25pt 6%;
+    animation: slideIn 0.4s;
+    background-color: var(--overlay-background-light);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.modal-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.dark .modal {
+    background-color: var(--overlay-background-dark);
+}
+
+.icon {
+    width: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: invert(0);
+}
+
+.icon-inverse {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: invert(1);
+}
+
+.add-post {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    background-color: var(--main-buttons-light);
+    border-radius: 9px;
+    border: none;
+    box-shadow: var(--button-shadow-light);
+}
+
+.dark .add-post {
+    background-color: var(--main-buttons-dark);
+}
+
+.plus {
+    width: 20px;
+    height: 20px;
+}
+
+.dark .plus {
+    filter: invert(1) opacity(1);
+}
+
+.modal-background {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    position: fixed;
+    animation: fadeIn 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.number {
+    display: flex;
+    justify-content: center;
+    font-size: 32px;
+}
+
+.modal-no-border {
+    border: 0;
+}
+
+/** Fallback Buttons */
+.button {
+    width: 136px;
+    height: 66px;
+    border-radius: 16px;
+    border: 0;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+
+button:disabled {
+    opacity: 0.5;
+}
+
+/* Transition */
+.modal-enter-active,
+.modal-leave-active {
+    transition: 0.2s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+    opacity: 1;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
     }
 
-    .modal-top-bar {
-        display: flex;
-        justify-content: space-between;
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateX(600px);
     }
 
-    .dark .modal {
-        background-color: var(--overlay-background-dark);
+    100% {
+        transform: translateX(0px);
+    }
+}
+
+@keyframes slideOut {
+    0% {
+        transform: translateX(0px);
     }
 
-    .icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        filter: invert(0);
+    100% {
+        transform: translateX(600px);
     }
+}
 
-    .icon-inverse {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        filter: invert(1);
+@media screen and (max-width: 768px) {
+
+    /** Slide Out Transition (mobile only) */
+    .modal-enter-from:deep(.modal),
+    .modal-leave-to:deep(.modal) {
+        animation: slideOut 0.4s linear;
     }
+}
 
-
-    .modal-header {
-        display: flex;
-        justify-content: center;
-        padding: 6%;
-        font-weight: 600;
-        border-bottom: none;
-        color: var(--overlay-text);
-        font-size: 32px;
-    }
-
+@media screen and (min-width: 768px) {
     .modal-background {
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 1000;
-        position: fixed;
-        animation: fadeIn 0.2s;
-        display: flex;
-        flex-direction: column;
         justify-content: flex-start;
     }
 
-    .refund-rectangle {
+    .modal {
         width: 100%;
-        height: 100px;
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0% 6%;
-        color: var(--page-text-light);
-        font-size: 20px;
-        font-weight: 600;
-        border-radius: 20px;
-        margin: 10px 0px;
+        margin: 0 0 0 0;
+        max-height: calc(100dvh - 120px);
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
     }
-
-    .from {
-        background-color: var(--sent-message-light);
-    }
-
-    .dark .from {
-        background-color: var(--sent-message-dark);
-        color: var(--page-text-dark);
-    }
-
-    .to {
-        background-color: var(--recieved-message-light);
-    }
-
-    .dark .to {
-        background-color: var(--recieved-message-dark);
-        color: var(--page-text-dark);
-    }
-
-    .others {
-        background-color: var(--recieved-message-light);
-    }
-
-    .dark .others {
-        background-color: var(--recieved-message-dark);
-        color: var(--page-text-dark);
-    }
-
-    .number {
-        display: flex;
-        justify-content: center;
-        font-size: 32px;
-    }
-
-    .modal-no-border {
-        border: 0;
-    }
-
-    /** Fallback Buttons */
-    .button {
-        width: 136px;
-        height: 66px;
-        border-radius: 16px;
-        border: 0;
-        cursor: pointer;
-        font-size: 20px;
-    }
-
-
-    button:disabled {
-        opacity: 0.5;
-    }
-
-    /* Transition */
-    .modal-enter-active,
-    .modal-leave-active {
-        transition: 0.2s ease;
-    }
-
-    .modal-enter-from,
-    .modal-leave-to {
-        opacity: 1;
-    }
-
-    @keyframes fadeIn {
-        0% {
-            opacity: 0;
-        }
-
-        100% {
-            opacity: 1;
-        }
-    }
-
-    @keyframes slideIn {
-        0% {
-            transform: translateX(600px);
-        }
-
-        100% {
-            transform: translateX(0px);
-        }
-    }
-
-    @keyframes slideOut {
-        0% {
-            transform: translateX(0px);
-        }
-
-        100% {
-            transform: translateX(600px);
-        }
-    }
-
-    @media screen and (max-width: 768px) {
-
-        /** Slide Out Transition (mobile only) */
-        .modal-enter-from:deep(.modal),
-        .modal-leave-to:deep(.modal) {
-            animation: slideOut 0.4s linear;
-        }
-    }
-
-    @media screen and (min-width: 768px) {
-        .modal-background {
-            justify-content: flex-start;
-        }
-
-        .modal {
-            width: 100%;
-            margin: 0 0 0 0;
-            max-height: calc(100dvh - 120px);
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-        }
-    }
+}
 </style>

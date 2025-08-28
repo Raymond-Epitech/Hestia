@@ -68,6 +68,7 @@ const confirmDelete = async () => {
 const cancelDelete = () => {
     popup_vue.value = false;
 };
+
 onMounted(() => {
     if (props.post.reminderType == 1) {
         console.log('Image URL:', props.text);

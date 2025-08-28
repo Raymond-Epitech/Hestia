@@ -4,9 +4,11 @@
     <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
       <img src="~/public/posts/Post.svg" class="post">
     </button>
-    <div v-for="(post, index) in posts" :key="index">
-      <Post :id="post.id" :text="post.content" :color="post.color" :createdBy="post.createdBy" :linkToPP="post.linkToPP" :post="post"
-        @delete="getall()" />
+    <div class="post-list">
+      <div v-for="(post, index) in posts" :key="index">
+        <Post :id="post.id" :text="post.content" :color="post.color" :createdBy="post.createdBy" :linkToPP="post.linkToPP" :post="post"
+          @delete="getall()" />
+      </div>
     </div>
   </div>
 </template>
@@ -66,6 +68,11 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+  .post-list {
+    overflow-y: auto;
+    max-height: calc(100vh - 4.5rem);
+  }
+
   .add-post {
     position: fixed;
     top: 6%;

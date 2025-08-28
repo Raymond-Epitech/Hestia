@@ -1,9 +1,9 @@
 <template>
-    <div class="tasks">
-        <AddTaskModal v-model="isModalOpen" @proceed="getall()" />
-        <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
-            <img src="~/public/plus.png" class="plus">
-        </button>
+    <AddTaskModal v-model="isModalOpen" @proceed="getall()" />
+    <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
+        <img src="~/public/plus.png" class="plus">
+    </button>
+    <div class="tasks"> 
         <div v-for="(task, index) in task_list" :key="index" class="task-list">
             <Task :id="task.id" :title="task.title" :description="task.description" :createdBy="task.createdBy"
                 :createdAt="task.createdAt" :dueDate="task.dueDate" :isDone="task.isDone"
@@ -47,6 +47,8 @@ onMounted(async () => {
     border-radius: 9px;
     border: none;
     box-shadow: var(--button-shadow-light);
+    position: fixed;
+    z-index: 10;
 }
 
 .dark .add-post {
@@ -70,7 +72,8 @@ onMounted(async () => {
 }
 
 .tasks {
-    overflow-y: auto;
-    max-height: calc(100vh - 4.5rem);
+    overflow-y: visible;
+    margin-top: 3rem;
+    max-height: calc(100vh - 7.5rem);
 }
 </style>

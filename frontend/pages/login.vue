@@ -252,7 +252,7 @@ const login = async () => {
         justify-content: center;
         align-items: center;
         min-width: 200px;
-        height: 50px;
+        height: fit-content;
         padding: 5px;
         background-color: var(--background-light);
         border-radius: 14px;
