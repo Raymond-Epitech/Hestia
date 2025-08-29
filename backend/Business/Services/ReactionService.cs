@@ -26,7 +26,6 @@ public class ReactionService(ILogger<ReactionService> logger,
     public async Task<Guid> AddReactionAsync(ReactionInput reactionInput)
     {
         var reaction = await reactionRepository.Query()
-            .Include(r => r.Reminder)
             .FirstOrDefaultAsync(r => r.UserId == reactionInput.UserId && r.ReminderId == reactionInput.ReminderId);
         var add = true;
 
@@ -57,7 +56,7 @@ public class ReactionService(ILogger<ReactionService> logger,
                 .Include(r => r.Reminder)
                 .Select(r => r.Reminder.ColocationId)
                 .FirstOrDefaultAsync();
-            await realTimeService.SendToGroupAsync(reaction.Reminder.ColocationId, "NewReaction", reaction.ToOutput());
+            await realTimeService.SendToGroupAsync(colocationId, "NewReaction", reaction.ToOutput());
         }
         else
         {
