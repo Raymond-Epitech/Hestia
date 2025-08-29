@@ -49,18 +49,19 @@ public class ReactionService(ILogger<ReactionService> logger,
 
         await reactionRepository.SaveChangesAsync();
 
-        if (add)
-        {
-            var colocationId = await reactionRepository.Query()
+        var colocationId = await reactionRepository.Query()
                 .Where(r => r.ReminderId == reactionInput.ReminderId)
                 .Include(r => r.Reminder)
                 .Select(r => r.Reminder.ColocationId)
                 .FirstOrDefaultAsync();
+
+        if (add)
+        {
             await realTimeService.SendToGroupAsync(colocationId, "NewReaction", reaction.ToOutput());
         }
         else
         {
-            await realTimeService.SendToGroupAsync(reaction.Reminder.ColocationId, "UpdateReaction", reaction.ToOutput());
+            await realTimeService.SendToGroupAsync(colocationId, "UpdateReaction", reaction.ToOutput());
         }
 
         logger.LogInformation($"Added reaction: {reaction.Type} for ReminderId: {reaction.ReminderId} by UserId: {reaction.UserId}");
