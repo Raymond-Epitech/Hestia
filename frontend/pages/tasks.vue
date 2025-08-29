@@ -12,27 +12,64 @@
     </div>
 </template>
 
-<script setup>
-    import { useUserStore } from '~/store/user';
+<script setup lang="ts">
+import { useUserStore } from '~/store/user';
+import type { Chore, SignalRClient } from '../composables/service/type';
 
-    const isModalOpen = ref(false)
-    const openModal = () => (isModalOpen.value = true)
+const isModalOpen = ref(false)
+const openModal = () => (isModalOpen.value = true)
 
-    const userStore = useUserStore();
-    const { $bridge } = useNuxtApp()
-    const api = $bridge;
-    api.setjwt(useCookie('token').value ?? '');
+const userStore = useUserStore();
+const { $bridge } = useNuxtApp()
+const api = $bridge;
+api.setjwt(useCookie('token').value ?? '');
+const { $signalr } = useNuxtApp()
+const task_list = ref<Chore[]>([]);
+const signalr = $signalr as SignalRClient;
 
-    const task_list = ref([]);
+signalr.on("NewChoreAdded", async (ChoreOutput) => {
+  if (!task_list.value.some(task => task.id === ChoreOutput.id)) {
+    task_list.value.push(ChoreOutput)
+  }
+})
 
-    const getall = async () => {
-        const data = await api.getAllChore(userStore.user.colocationId);
-        task_list.value = data;
-    };
+signalr.on("ChoreDeleted", (ChoreOutput) => {
+  task_list.value = task_list.value.filter(task => task.id !== ChoreOutput)
+})
 
-    onMounted(async () => {
-        await getall();
-    });
+signalr.on("ChoreEnrollmentAdded", async (ChoreOutput) => {
+  task_list.value = task_list.value.map(task => {
+    if (task.id === ChoreOutput.choreId) {
+      const newEnrolled = {...task.enrolledUsers};
+      if (!newEnrolled[ChoreOutput.userId]) {
+        newEnrolled[ChoreOutput.userId] = ChoreOutput.pathToPP;
+      }
+      return {
+        ...task,
+        enrolledUsers: newEnrolled
+      }
+    }
+    return task
+  })
+})
+
+// signalr.on("ChoreEnrollmentRemoved", async (ChoreOutput) => {
+//   console.log("test2")
+//   console.log(ChoreOutput)
+//   if (!task_list.value.some(task => task.id === ChoreOutput.choreId)) {
+//     task_list.value.push(ChoreOutput.chore)
+//     console.log(task_list.value)
+//   }
+// })
+
+const getall = async () => {
+    const data = await api.getAllChore(userStore.user.colocationId);
+    task_list.value = data;
+};
+
+onMounted(async () => {
+    await getall();
+});
 </script>
 
 <style scoped>
