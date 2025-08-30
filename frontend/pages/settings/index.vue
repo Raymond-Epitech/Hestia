@@ -25,12 +25,6 @@
                 <Texte_language class="sub-header" source="Colocation-subtext" />
             </div>
         </div>
-        <div class="setting-button" :onClick="() => redirect('/settings/codeqr')" id="codeqr">
-            
-            <div class="setting-text">
-                <p>lien d'invite</p>
-            </div>
-        </div>
         <!-- <div class="setting-button" :onClick="() => handleComposantClick('notif')" id="notif">
             <img src>
             <Texte_language class="header" source="Notifications" />
