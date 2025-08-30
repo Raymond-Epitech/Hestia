@@ -391,6 +391,8 @@ public class ChoreService(
         await choreEnrollmentRepository.AddAsync(enroll);
         await choreRepository.SaveChangesAsync();
 
+        cache.Remove($"chores:{enroll.Chore.ColocationId}");
+
         enroll = await choreEnrollmentRepository.Query()
             .Include(e => e.Chore)
             .Include(e => e.User)
@@ -398,8 +400,6 @@ public class ChoreService(
 
         if (enroll is null)
             throw new InvalidEntityException($"Error in addition of enrollment user : {UserId} and chore : {ChoreId}");
-
-        cache.Remove($"chores:{enroll.Chore.ColocationId}");
 
         await realTimeService.SendToGroupAsync(enroll.Chore.ColocationId, "ChoreEnrollmentAdded", new ChoreEnrollmentOutput { 
             UserId = enroll.UserId,
@@ -435,7 +435,15 @@ public class ChoreService(
 
         cache.Remove($"chores:{enrollement.Chore.ColocationId}");
 
-        await realTimeService.SendToGroupAsync(enrollement.Chore.ColocationId, "ChoreEnrollmentRemoved", enrollement);
+        enrollement = await choreEnrollmentRepository.Query()
+            .Include(e => e.Chore)
+            .Include(e => e.User)
+            .FirstOrDefaultAsync(e => e.UserId == userId && e.ChoreId == choreId);
+
+        if (enrollement is null)
+            throw new InvalidEntityException($"Error in deletion of enrollment user : {userId} and chore : {choreId}");
+
+        await realTimeService.SendToGroupAsync(enrollement.Chore.ColocationId, "ChoreEnrollmentRemoved", new {enrollement.UserId, enrollement.ChoreId });
 
         logger.LogInformation("Succes : User unenrolled to the chore");
 

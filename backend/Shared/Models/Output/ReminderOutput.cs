@@ -12,6 +12,7 @@ public class ReminderOutput
     public int CoordX { get; set; }
     public int CoordY { get; set; }
     public int CoordZ { get; set; }
+    public List<ReactionOutput> Reactions { get; set; } = new List<ReactionOutput>();
     public string? Content { get; set; } = null;
     public string? Color { get; set; } = null;
     public string? ImageUrl { get; set; } = null;

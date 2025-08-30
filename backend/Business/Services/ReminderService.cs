@@ -42,6 +42,7 @@ public class ReminderService(ILogger<ReminderService> logger,
                 .Include(r => (r as ShoppingListReminder)!.ShoppingItems)
                 .Include(r => (r as PollReminder)!.PollVotes)
                 .Include(r => r.User)
+                .Include(r => r.Reactions)
                 .ToListAsync();
 
             logger.LogInformation($"Succes : All {reminders.Count} reminders found");
@@ -65,6 +66,7 @@ public class ReminderService(ILogger<ReminderService> logger,
             .Include(r => (r as ShoppingListReminder)!.ShoppingItems)
             .Include(r => (r as PollReminder)!.PollVotes)
             .Include(r => r.User)
+            .Include(r => r.Reactions)
             .FirstOrDefaultAsync();
 
         if (reminder == null)

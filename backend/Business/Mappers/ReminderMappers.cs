@@ -23,7 +23,8 @@ namespace Business.Mappers
                     Color = textReminder.Color,
                     CoordX = textReminder.CoordX,
                     CoordY = textReminder.CoordY,
-                    CoordZ = textReminder.CoordZ
+                    CoordZ = textReminder.CoordZ,
+                    Reactions = textReminder.Reactions?.Select(r => r.ToOutput()).ToList() ?? new List<ReactionOutput>()
                 },
                 ImageReminder imageReminder => new ReminderOutput
                 {
@@ -35,7 +36,8 @@ namespace Business.Mappers
                     ImageUrl = imageReminder.ImageUrl,
                     CoordX = imageReminder.CoordX,
                     CoordY = imageReminder.CoordY,
-                    CoordZ = imageReminder.CoordZ
+                    CoordZ = imageReminder.CoordZ,
+                    Reactions = imageReminder.Reactions?.Select(r => r.ToOutput()).ToList() ?? new List<ReactionOutput>()
                 },
                 ShoppingListReminder shoppingListReminder => new ReminderOutput
                 {
@@ -48,7 +50,8 @@ namespace Business.Mappers
                     Items = shoppingListReminder.ShoppingItems?.Select(si => si.ToOutput()).ToList() ?? new List<ShoppingItemOutput>(),
                     CoordX = shoppingListReminder.CoordX,
                     CoordY = shoppingListReminder.CoordY,
-                    CoordZ = shoppingListReminder.CoordZ
+                    CoordZ = shoppingListReminder.CoordZ,
+                    Reactions = shoppingListReminder.Reactions?.Select(r => r.ToOutput()).ToList() ?? new List<ReactionOutput>()
                 },
                 PollReminder pollReminder => new ReminderOutput
                 {
@@ -65,7 +68,8 @@ namespace Business.Mappers
                     Votes = pollReminder.PollVotes?.Select(v => v.ToOutput()).ToList() ?? new List<PollVoteOutput>(),
                     CoordX = pollReminder.CoordX,
                     CoordY = pollReminder.CoordY,
-                    CoordZ = pollReminder.CoordZ
+                    CoordZ = pollReminder.CoordZ,
+                    Reactions = pollReminder.Reactions?.Select(r => r.ToOutput()).ToList() ?? new List<ReactionOutput>()
                 },
                 _ => throw new InvalidDataException(),
             };
