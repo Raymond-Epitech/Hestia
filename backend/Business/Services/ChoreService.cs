@@ -382,6 +382,9 @@ public class ChoreService(
     /// <exception cref="ContextException"></exception>
     public async Task<Guid> EnrollToChore(Guid UserId, Guid ChoreId)
     {
+        if (await choreEnrollmentRepository.Query().AnyAsync(e => e.UserId == UserId && e.ChoreId == ChoreId))
+            throw new InvalidEntityException($"User {UserId} is already enrolled to the chore {ChoreId}");
+
         var enroll = new ChoreEnrollment
         {
             UserId = UserId,
