@@ -91,7 +91,7 @@ signalr.on("NewReaction", async (ReactionOutput) => {
 })
 
 signalr.on("DeleteReaction", async (GUID) => {
-    let input = GUID;
+    const input = GUID as string;
     reactions.value = reactions.value.filter(reaction => reaction.id !== input);
 })
 
