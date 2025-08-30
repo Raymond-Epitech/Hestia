@@ -399,6 +399,8 @@ public class ChoreService(
         if (enroll is null)
             throw new InvalidEntityException($"Error in addition of enrollment user : {UserId} and chore : {ChoreId}");
 
+        cache.Remove($"chores:{enroll.Chore.ColocationId}");
+
         await realTimeService.SendToGroupAsync(enroll.Chore.ColocationId, "ChoreEnrollmentAdded", new ChoreEnrollmentOutput { 
             UserId = enroll.UserId,
             ChoreId = enroll.ChoreId,
@@ -430,6 +432,8 @@ public class ChoreService(
 
         choreEnrollmentRepository.Delete(enrollement);
         await choreEnrollmentRepository.SaveChangesAsync();
+
+        cache.Remove($"chores:{enrollement.Chore.ColocationId}");
 
         await realTimeService.SendToGroupAsync(enrollement.Chore.ColocationId, "ChoreEnrollmentRemoved", enrollement);
 
