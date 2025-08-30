@@ -83,7 +83,6 @@ const cancelDelete = () => {
 };
 
 signalr.on("NewReaction", async (ReactionOutput) => {
-    console.log("InNewReaction");
     const reaction = ReactionOutput as Reaction;
     if ( reaction.reminderId == props.post.id ) {
         reactions.value.push(reaction);
@@ -91,12 +90,12 @@ signalr.on("NewReaction", async (ReactionOutput) => {
     console.log('SignalR NewReaction received:', reactions.value);
 })
 
-signalr.on("DeleteReaction", async () => {
-    console.log("InDeleteReaction");
+signalr.on("DeleteReaction", async (GUID) => {
+    let input = GUID;
+    reactions.value = reactions.value.filter(reaction => reaction.id !== input);
 })
 
 signalr.on("UpdateReaction", async (ReactionOutput) => {
-    console.log("InUpdateReaction");
     const reaction = ReactionOutput as Reaction;
     if ( reaction.reminderId == props.post.id ) {
         for ( let i = 0; i < reactions.value.length; i++ ){
@@ -105,7 +104,6 @@ signalr.on("UpdateReaction", async (ReactionOutput) => {
             }
         }
     }
-    console.log('SignalR UpdateReaction received');
 })
 
 onMounted(async () => {
