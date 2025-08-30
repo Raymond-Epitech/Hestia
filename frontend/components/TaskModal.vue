@@ -33,7 +33,7 @@
                                     <Texte_language source="Enroll" /> !
                                 </button>
                             </div>
-                            <div v-if="done">
+                            <div v-if="isDone">
                                 <text>
                                     <Texte_language source="isDone" />
                                 </text>
@@ -52,7 +52,6 @@
 </template>
 
 <script setup lang="ts">
-    import { onMounted } from 'vue';
     import { useUserStore } from '../store/user';
     import useModal from '../composables/useModal';
     import type { UpdateChore, User } from '../composables/service/type'
@@ -75,8 +74,6 @@
     const isEnrolled = ref(false);
     const enrollees = props.enrolledUsers ? Object.keys(props.enrolledUsers) : [];
     const linkToPP = props.enrolledUsers ? Object.values(props.enrolledUsers) : [];
-
-    var done = props.isDone;
 
     const { modelValue } = toRefs(props)
     const { open, close, toggle, visible } = useModal(props.title)
@@ -105,7 +102,7 @@
 
     const handleQuit = async () => {
         api.deleteChoreUser(props.id, userStore.user.id).then(() => {
-            isEnrolled.value = false;
+            // isEnrolled.value = false;
         }).catch((error) => {
             console.error('Error delete chore user:', error);
         });
@@ -115,7 +112,7 @@
 
     const handleEnroll = async () => {
         api.addChoreUser(props.id, userStore.user.id).then(() => {
-            isEnrolled.value = true;
+            // isEnrolled.value = true;
         }).catch((error) => {
             console.error('Error add chore user:', error);
         });
@@ -133,7 +130,8 @@
             enrolled: enrollees.map(userId => userId),
         }
         api.updateChore(updateChore).then(() => {
-            done = true;
+            console.log('Chore updated successfully');
+            // done = true;
         }).catch((error) => {
             console.error('Error update chore:', error);
         });

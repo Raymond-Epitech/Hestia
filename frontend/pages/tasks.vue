@@ -53,14 +53,29 @@ signalr.on("ChoreEnrollmentAdded", async (ChoreOutput) => {
   })
 })
 
-// signalr.on("ChoreEnrollmentRemoved", async (ChoreOutput) => {
-//   console.log("test2")
-//   console.log(ChoreOutput)
-//   if (!task_list.value.some(task => task.id === ChoreOutput.choreId)) {
-//     task_list.value.push(ChoreOutput.chore)
-//     console.log(task_list.value)
-//   }
-// })
+signalr.on("ChoreEnrollmentRemoved", async (ChoreOutput) => {
+  // console.log("in ze signal")
+  // task_list.value = task_list.value.map(task => {
+  //   if (task.id !== ChoreOutput.choreId) return task;
+  //   const filtered = Object.fromEntries(
+  //     Object.entries(task.enrolledUsers).filter(([uid]) => uid !== ChoreOutput.userId)
+  //   );
+  //   return { ...task, enrolledUsers: filtered };
+  // });
+  // console.log(task_list)
+  getall()
+});
+
+
+signalr.on("ChoreUpdated", async (ChoreOutput) => {
+  console.log(ChoreOutput);
+  getall()
+  // task_list.value = task_list.value.map(task => {
+  //   if (task.id === ChoreOutput.choreId) {
+
+  //   }
+  // })
+})
 
 const getall = async () => {
     const data = await api.getAllChore(userStore.user.colocationId);
