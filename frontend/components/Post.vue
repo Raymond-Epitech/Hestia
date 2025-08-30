@@ -1,6 +1,6 @@
 <template>
-    <div :class="[post.reminderType == 1 ? 'post_image' : 'post', , post.reminderType != 1 && color]">
-        <ProfileIcon class="profile-icon" :height="30" :width="30" :linkToPP="props.linkToPP" />
+    <div :class="[post.reminderType == 1 ? 'post_image' : 'post', , post.reminderType != 1 && post.color]">
+        <ProfileIcon class="profile-icon" :height="30" :width="30" :linkToPP="post.linkToPP" />
         <ReactModal :postId="post.id" v-model="isModalOpen"/>
         <button class="react-button" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
             <div class="heart">❤️</div>
@@ -10,10 +10,10 @@
                 {{ reaction.type }}
             </div>
         </div>
-        <button class="delete-button" @click="showPopup" v-if="createdBy == user.id">
+        <button class="delete-button" @click="showPopup" v-if="post.createdBy == user.id">
             <div class="close"></div>
         </button>
-        <p v-if="post.reminderType == 0">{{ text }}</p>
+        <p v-if="post.reminderType == 0">{{ post.content }}</p>
         <img v-if="post.reminderType == 1" :src="imageget" alt="Post Image" class="image" />
     </div>
     <popup v-if="popup_vue" :text="$t('confirm_delete_reminder')" @confirm="confirmDelete" @close="cancelDelete">
@@ -27,26 +27,6 @@ import type { Reminder, SignalRClient, Reaction } from '../composables/service/t
 const isModalOpen = ref(false);
 const openModal = () => (isModalOpen.value = true);
 const props = defineProps({
-    id: {
-        type: String,
-        required: true,
-    },
-    text: {
-        type: String,
-        required: true
-    },
-    color: {
-        type: String,
-        required: true
-    },
-    createdBy: {
-        type: String,
-        required: true
-    },
-    linkToPP: {
-        type: String,
-        required: false,
-    },
     post: {
         type: Object as PropType<Reminder>,
         required: true
@@ -71,7 +51,7 @@ const showPopup = () => {
 const confirmDelete = async () => {
     popup_vue.value = false;
     try {
-        await api.deleteReminder(props.id);
+        await api.deleteReminder(props.post.id);
         emit('delete');
     } catch (error) {
         console.error('Failed to delete the post:', error);
@@ -110,7 +90,7 @@ onMounted(async () => {
     reactions.value = [];
     await getReactions();
     if (props.post.reminderType == 1) {
-        console.log('Image URL:', props.text);
+        console.log('Image URL:', props.post.id);
         api.getImagefromcache(props.post.imageUrl).then((image) => {
             if (image) {
                 imageget.value = image;

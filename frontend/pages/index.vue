@@ -6,7 +6,7 @@
     </button>
     <div class="post-list">
       <div v-for="(post) in posts" :key="post.id">
-        <Post :id="post.id" :text="post.content" :color="post.color" :createdBy="post.createdBy" :linkToPP="post.linkToPP" :post="post"
+        <Post :post="post"
           @delete="getall()" />
       </div>
     </div>
