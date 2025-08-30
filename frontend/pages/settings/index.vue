@@ -1,4 +1,7 @@
 <template>
+    <button class="back" @click="redirect('/profile')">
+        <img src="~/public/Retour.svg" class="icon">
+    </button>
     <div class="conteneur">
         <div class="setting-button" :onClick="() => redirect('/settings/language')" id="language">
             <div class="icon">
@@ -79,6 +82,8 @@
         align-items: center;
         gap: 10px;
         margin: 40px auto;
+        margin-top: 5rem;
+        max-height: calc(100vh - 5.5rem);
     }
 
     .setting-button {
@@ -121,4 +126,32 @@
     .dark .icon {
         filter: invert(1);
     }
+
+.back {
+    background-color: var(--main-buttons-light);
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 9px;
+    border: none;
+    box-shadow: var(--button-shadow-light);
+    top: 3%;
+    left: 3%;
+}
+
+.back .icon {
+    filter: invert(1);
+    width: 25px;
+}
+
+.dark .back {
+    background-color: var(--main-buttons-dark);
+}
+
+.dark .back .icon {
+    filter: none;
+}
 </style>

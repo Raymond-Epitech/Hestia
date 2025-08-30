@@ -45,12 +45,12 @@ button {
 }
 
 .add-user {
-    top: 6%;
+    top: 3%;
     right: 3%;
 }
 
 .settings {
-    top: 6%;
+    top: 3%;
     left: 3%;
 }
 
