@@ -1,6 +1,6 @@
 <template>
     <div class="qr-code-container">
-        <h2>QR Code:</h2>
+        <h2>{{ $t('add_user_header') }}</h2>
         <p>{{ inviteLink }}</p>
         <canvas ref="qrCanvas"></canvas>
     </div>
@@ -30,6 +30,11 @@ onMounted(() => {
 .qr-code-container {
     margin-top: 20px;
     text-align: center;
+    color: var(--page-text-light);
+}
+
+.dark .qr-code-container {
+    color: var(--page-text-dark)
 }
 
 .qr-code-container canvas {
