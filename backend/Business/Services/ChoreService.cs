@@ -435,11 +435,6 @@ public class ChoreService(
 
         cache.Remove($"chores:{enrollement.Chore.ColocationId}");
 
-        enrollement = await choreEnrollmentRepository.Query()
-            .Include(e => e.Chore)
-            .Include(e => e.User)
-            .FirstOrDefaultAsync(e => e.UserId == userId && e.ChoreId == choreId);
-
         if (enrollement is null)
             throw new InvalidEntityException($"Error in deletion of enrollment user : {userId} and chore : {choreId}");
 
