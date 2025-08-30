@@ -22,10 +22,10 @@
 
 <script setup lang="ts">
 import { useUserStore } from '~/store/user';
-import type { Reminder, SignalRClient } from '../composables/service/type'
+import type { Reminder, SignalRClient, Reaction } from '../composables/service/type';
 
-const isModalOpen = ref(false)
-const openModal = () => (isModalOpen.value = true)
+const isModalOpen = ref(false);
+const openModal = () => (isModalOpen.value = true);
 const props = defineProps({
     id: {
         type: String,
@@ -52,16 +52,16 @@ const props = defineProps({
         required: true
     }
 })
-const popup_vue = ref(false)
-const { $bridge } = useNuxtApp()
+const popup_vue = ref(false);
+const { $bridge } = useNuxtApp();
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 const userStore = useUserStore();
 const user = userStore.user;
 const imageget = ref('');
-const emit = defineEmits(['delete'])
-const reactions = ref<Array<{ id: string; userId: string; reminderId: string ; type: string }>>([]);
-const { $signalr } = useNuxtApp()
+const emit = defineEmits(['delete']);
+const reactions = ref<Reaction[]>([]);
+const { $signalr } = useNuxtApp();
 const signalr = $signalr as SignalRClient;
 
 const showPopup = () => {
@@ -82,26 +82,24 @@ const cancelDelete = () => {
     popup_vue.value = false;
 };
 
-signalr.on("NewReaction", async (SigPostId) => {
-    if (SigPostId === props.post.id) {
-        reactions.value = [];
-        await getReactions();
+signalr.on("NewReaction", async (ReactionOutput) => {
+    reactions.value = [];
+    for (const reaction of ReactionOutput) {
+        reactions.value.push(reaction);
     }
+    console.log('SignalR NewReaction received:', reactions.value);
 })
 
-signalr.on("DeleteReaction", async (SigPostId) => {
-    if (SigPostId === props.post.id) {
-        reactions.value = [];
-        await getReactions();
-    }
+signalr.on("DeleteReaction", async () => {
+    reactions.value = [];
 })
 
-signalr.on("UpdateReaction", async (SigPostId) => {
-    if (SigPostId === props.post.id) {
-        reactions.value = [];
-        await getReactions();
+signalr.on("UpdateReaction", async (ReactionOutput) => {
+    reactions.value = [];
+    for (const reaction of ReactionOutput) {
+        reactions.value.push(reaction);
     }
-    console.log('SignalR UpdateReaction received for postId:', SigPostId);
+    console.log('SignalR UpdateReaction received');
 })
 
 onMounted(async () => {
