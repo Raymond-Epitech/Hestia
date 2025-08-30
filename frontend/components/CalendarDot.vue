@@ -2,7 +2,7 @@
     <TaskModal class="task-modal" v-model="isModalOpen" :key="id" :id="id" :title="title" :description="description"
     :color="color" :dueDate="dueDate" :isDone="isDone" :enrolledUsers="enrolledUsers"
     @proceed="emitProceed()"></TaskModal>
-    <div class="task-dot" :class="color" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
+    <div class="task-dot" :class="[color, { 'done': isDone }]" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
     </div>
 </template>
 
@@ -34,6 +34,10 @@ function emitProceed() {
     height: 12px;
     width: 12px;
     border-radius: 50%;
+}
+
+.done {
+    opacity: 0.5;
 }
 
 .red {
