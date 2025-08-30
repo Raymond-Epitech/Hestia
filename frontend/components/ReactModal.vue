@@ -3,6 +3,7 @@
     <div v-if="visible">
       <div class="modal-background" @click="handleClose">
         <div class="modal" @click.stop>
+          <span class="delete" @click="deleteReaction()">❌</span>
           <div v-for="emoji in ['❤️', '😂', '😮', '😢', '😡', '👍', '👎', '🎉', '💡', '🔥']" :key="emoji">
             <span class="emoticon" @click="handleReaction(emoji)">{{ emoji }}</span>
           </div>
@@ -62,6 +63,12 @@ const handleReaction = async (emoji: string) => {
     });
 }
 
+const deleteReaction = async () => {
+    await api.deleteReactionReminder(props.postId, userStore.user.id);
+    close()
+    emit('closed')
+}
+
 watch(visible, (value) => {
     emit('update:modelValue', value)
 })
@@ -83,6 +90,12 @@ watch(
 .emoticon {
     font-size: 26px;
     /* transition: transform 0.2s; */
+}
+
+.delete {
+    font-size: 26px;
+    border-radius: 20px;
+    background-color: var(--basic-grey);
 }
 
 .modal {
@@ -133,5 +146,12 @@ watch(
 .modal-leave-to {
     opacity: 0;
     /* transform: translateY(10px) scale(0.95); */
+}
+
+.modal-behind {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 </style>
