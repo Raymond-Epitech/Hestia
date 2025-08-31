@@ -371,21 +371,17 @@ public class ChoreService(
             .Where(c => c.Id == enroll.ChoreId)
             .ExecuteUpdateAsync(s => s.SetProperty(c => c.UpdatedAt, DateTime.UtcNow));
 
-        enroll = await choreEnrollmentRepository.Query()
-            .Include(e => e.Chore)
-            .Include(e => e.User)
-            .FirstOrDefaultAsync(e => e.UserId == UserId && e.ChoreId == ChoreId);
+        var chore = await choreRepository.Query()
+            .Include(c => c.ChoreEnrollments)
+            .ThenInclude(ce => ce.User)
+            .FirstOrDefaultAsync(c => c.Id == ChoreId);
 
-        if (enroll is null)
-            throw new InvalidEntityException($"Error in addition of enrollment user : {UserId} and chore : {ChoreId}");
+        if (chore is null)
+            throw new InvalidEntityException($"Could get the chore with id {ChoreId}");
 
-        cache.Remove($"chores:{enroll.Chore.ColocationId}");
+        cache.Remove($"chores:{chore.ColocationId}");
 
-        await realTimeService.SendToGroupAsync(enroll.Chore.ColocationId, "ChoreEnrollmentAdded", new ChoreEnrollmentOutput {
-            UserId = enroll.UserId,
-            ChoreId = enroll.ChoreId,
-            PathToPP = enroll.User.PathToProfilePicture
-        });
+        await realTimeService.SendToGroupAsync(enroll.Chore.ColocationId, "ChoreEnrollmentAdded", chore.ToOutput());
 
         logger.LogInformation("Succes : User enrolled to the chore");
 
