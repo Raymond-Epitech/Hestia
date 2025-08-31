@@ -22,7 +22,9 @@
             </div>
         </div>
         <div class="setting-button" :onClick="() => redirect('/settings/colocation')" id="colocation">
-            <img src>
+            <div class="icon">
+                <img src="~/public/settings/Users.svg">
+            </div>
             <div class="setting-text">
                 <Texte_language class="header" source="Colocation" />
                 <Texte_language class="sub-header" source="Colocation-subtext" />
@@ -49,7 +51,9 @@
             <Texte_language class="header" source="Informations" />
         </div> -->
         <div class="setting-button" color="#FF6A61" @click.passive="logout()" id="logout">
-            <img src>
+            <div class="icon">
+                <img src="~/public/settings/Quitter.svg">
+            </div>
             <Texte_language class="header" source="logout" />
         </div>
     </div>
@@ -121,6 +125,10 @@
 
     .dark .icon {
         filter: invert(1);
+    }
+
+    img {
+        width: 30px;
     }
 
 .back {
