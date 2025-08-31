@@ -95,5 +95,14 @@
   "Due_to": "Debido a",
   "from": "De",
   "to": "a",
-  "refund_history": "Historial de reembolsos"
+  "refund_history": "Historial de reembolsos",
+  "weekdays": {
+    "mon": "Lun",
+    "tue": "Mar",
+    "wed": "Mié",
+    "thu": "Jue",
+    "fri": "Vie",
+    "sat": "Sáb",
+    "sun": "Dom"
+  }
 }

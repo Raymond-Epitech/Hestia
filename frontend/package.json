@@ -29,6 +29,7 @@
     "@vuepic/vue-datepicker": "^11.0.2",
     "bootstrap": "^5.3.3",
     "bootstrap-vue": "^2.23.1",
+    "dayjs": "^1.11.17",
     "json-server": "^1.0.0-beta.3",
     "node": "^20.18.1",
     "nuxi": "^3.22.2",

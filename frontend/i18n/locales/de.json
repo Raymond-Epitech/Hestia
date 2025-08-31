@@ -95,5 +95,14 @@
   "Due_to": "Aufgrund von",
   "from": "Von",
   "to": "an",
-  "refund_history": "Rückerstattungshistorie"
+  "refund_history": "Rückerstattungshistorie",
+  "weekdays": {
+    "mon": "Mo",
+    "tue": "Di",
+    "wed": "Mi",
+    "thu": "Do",
+    "fri": "Fr",
+    "sat": "Sa",
+    "sun": "So"
+  }
 }
