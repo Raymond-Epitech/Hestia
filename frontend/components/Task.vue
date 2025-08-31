@@ -20,6 +20,8 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
+
     const props = defineProps({
         id: {
             type: String,
@@ -58,10 +60,11 @@
             required: true,
         }
     })
-    const isModalOpen = ref(false)
-    const openModal = () => (isModalOpen.value = true)
+    const { locale } = useI18n();
+    const isModalOpen = ref(false);
+    const openModal = () => (isModalOpen.value = true);
 
-    const emit = defineEmits(['proceed', 'get'])
+    const emit = defineEmits(['proceed', 'get']);
 
     function emitProceed() {
         emit('proceed')
@@ -74,7 +77,7 @@
 
     function getMonthAbbreviation() {
         const date = new Date(props.dueDate);
-        return date.toLocaleString('en-US', { month: 'short' });
+        return date.toLocaleString(locale.value, { month: 'short' });
     }
 
     function getColor() {
