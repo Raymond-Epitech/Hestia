@@ -1,10 +1,19 @@
 <template>
-    <div :class="[post.reminderType == 1 ? 'post_image' : 'post', , post.reminderType != 1 && color]">
-        <ProfileIcon class="profile-icon" :height="30" :width="30" :linkToPP="props.linkToPP" />
-        <button class="delete-button" @click="showPopup" v-if="createdBy == user.id">
+    <div :class="[post.reminderType == 1 ? 'post_image' : 'post', , post.reminderType != 1 && post.color]">
+        <ProfileIcon class="profile-icon" :height="30" :width="30" :linkToPP="post.linkToPP" />
+        <ReactModal :postId="post.id" v-model="isModalOpen"/>
+        <button class="react-button" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
+            <div class="heart">❤️</div>
+        </button>
+        <div v-if="reactions.length > 0" class="reaction-list">
+            <div v-for="reaction in reactions" :key="reaction.id" class="reaction">
+                {{ reaction.type }}
+            </div>
+        </div>
+        <button class="delete-button" @click="showPopup" v-if="post.createdBy == user.id">
             <div class="close"></div>
         </button>
-        <p v-if="post.reminderType == 0">{{ text }}</p>
+        <p v-if="post.reminderType == 0">{{ post.content }}</p>
         <img v-if="post.reminderType == 1" :src="imageget" alt="Post Image" class="image" />
     </div>
     <popup v-if="popup_vue" :text="$t('confirm_delete_reminder')" @confirm="confirmDelete" @close="cancelDelete">
@@ -13,43 +22,27 @@
 
 <script setup lang="ts">
 import { useUserStore } from '~/store/user';
-import { useI18n } from '#imports';
-import type { Reminder } from '../composables/service/type'
+import type { Reminder, SignalRClient, Reaction } from '../composables/service/type';
 
+const isModalOpen = ref(false);
+const openModal = () => (isModalOpen.value = true);
 const props = defineProps({
-    id: {
-        type: String,
-        required: true,
-    },
-    text: {
-        type: String,
-        required: true
-    },
-    color: {
-        type: String,
-        required: true
-    },
-    createdBy: {
-        type: String,
-        required: true
-    },
-    linkToPP: {
-        type: String,
-        required: false,
-    },
     post: {
         type: Object as PropType<Reminder>,
         required: true
     }
 })
-const popup_vue = ref(false)
-const { $bridge } = useNuxtApp()
+const popup_vue = ref(false);
+const { $bridge } = useNuxtApp();
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 const userStore = useUserStore();
 const user = userStore.user;
 const imageget = ref('');
-const emit = defineEmits(['delete'])
+const emit = defineEmits(['delete']);
+const reactions = ref<Reaction[]>([]);
+const { $signalr } = useNuxtApp();
+const signalr = $signalr as SignalRClient;
 
 const showPopup = () => {
     popup_vue.value = true;
@@ -58,7 +51,7 @@ const showPopup = () => {
 const confirmDelete = async () => {
     popup_vue.value = false;
     try {
-        await api.deleteReminder(props.id);
+        await api.deleteReminder(props.post.id);
         emit('delete');
     } catch (error) {
         console.error('Failed to delete the post:', error);
@@ -69,9 +62,34 @@ const cancelDelete = () => {
     popup_vue.value = false;
 };
 
-onMounted(() => {
+signalr.on("NewReaction", async (ReactionOutput) => {
+    const reaction = ReactionOutput as Reaction;
+    if ( reaction.reminderId == props.post.id ) {
+        reactions.value.push(reaction);
+    }
+})
+
+signalr.on("DeleteReaction", async (GUID) => {
+    const input = GUID as string;
+    reactions.value = reactions.value.filter(reaction => reaction.id !== input);
+})
+
+signalr.on("UpdateReaction", async (ReactionOutput) => {
+    const reaction = ReactionOutput as Reaction;
+    if ( reaction.reminderId == props.post.id ) {
+        for ( let i = 0; i < reactions.value.length; i++ ){
+            if (reactions.value[i].id == reaction.id) {
+                reactions.value[i] = reaction;
+            }
+        }
+    }
+})
+
+onMounted(async () => {
+    reactions.value = [];
+    await getReactions();
     if (props.post.reminderType == 1) {
-        console.log('Image URL:', props.text);
+        console.log('Image URL:', props.post.id);
         api.getImagefromcache(props.post.imageUrl).then((image) => {
             if (image) {
                 imageget.value = image;
@@ -83,6 +101,20 @@ onMounted(() => {
         });
     }
 });
+
+const getReactions = async () => {
+    try {
+        const data = await api.getReactionsReminder(props.post.id);
+        if (data && Array.isArray(data)) {
+            reactions.value = data;
+            console.log('Reactions fetched:', reactions.value);
+        } else {
+            console.error('Données de réaction invalides reçues:', data);
+        }
+    } catch (error) {
+        console.error('Erreur lors de la récupération des réactions:', error);
+    }
+}
 </script>
 
 <style scoped>
@@ -109,7 +141,7 @@ onMounted(() => {
     position: absolute;
     top: 10px;
     right: 14px;
-    background: #FF6A61;
+    background: var(--basic-red);
     border: none;
     border-radius: 50%;
     width: 30px;
@@ -172,5 +204,46 @@ onMounted(() => {
 .image {
     max-width: 100%;
 
+}
+.react-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 10px;
+    right: 14px;
+    background: var(--main-buttons-light);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+}
+
+.dark .react-button {
+    background: var(--main-buttons-dark);
+}
+
+.heart {
+    height: 30px;
+    width: 30px;
+    padding-top: 2px;
+    text-align: center;
+}
+
+.reaction {
+    font-size: 22px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+    width: 14px;
+    overflow-x: visible;
+}
+.reaction-list {
+    position: absolute;
+    bottom: -8px;
+    width: 70%;
+    display: flex;
+    white-space: nowrap;
+    /* overflow-x: scroll; */
+    justify-content: left;
 }
 </style>

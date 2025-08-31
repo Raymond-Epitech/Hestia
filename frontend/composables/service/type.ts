@@ -33,6 +33,12 @@ export type ReminderVote = {
     choice: string;
 };
 
+export type Reaction = {
+    id: string;
+    userId: string;
+    reminderId: string;
+    type: string;
+}
 
 export type Coloc = {
     id: string,
