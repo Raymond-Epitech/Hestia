@@ -7,6 +7,11 @@
       <span class="expense-name">{{ expense.name }}</span>
       <span class="expense-amount">{{ expense.amount }} €</span>
     </div>
+    <div class="payer">
+      <span>
+        <TexteLanguage source="paidby" /> {{ paidBy }}
+      </span>
+    </div>
   </div>
 </template>
 
