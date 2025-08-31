@@ -20,6 +20,9 @@ namespace EntityFramework.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Required]
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        [Required]
         public Guid ColocationId { get; set; }
 
         [ForeignKey(nameof(ColocationId))]

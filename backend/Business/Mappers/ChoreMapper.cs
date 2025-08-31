@@ -14,11 +14,29 @@ namespace Business.Mappers
                 Id = Guid.NewGuid(),
                 ColocationId = choreInput.ColocationId,
                 CreatedAt = DateTime.Now.ToUniversalTime(),
+                UpdatedAt = DateTime.Now.ToUniversalTime(),
                 DueDate = choreInput.DueDate,
                 CreatedBy = choreInput.CreatedBy,
                 Title = choreInput.Title,
                 Description = choreInput.Description,
                 IsDone = choreInput.IsDone
+            };
+        }
+
+        public static ChoreOutput ToOutput(this Chore c)
+        {
+            return new ChoreOutput
+            {
+                Id = c.Id,
+                CreatedBy = c.CreatedBy,
+                CreatedAt = c.CreatedAt,
+                UpdatedAt = c.UpdatedAt,
+                DueDate = c.DueDate,
+                Title = c.Title,
+                Description = c.Description,
+                IsDone = c.IsDone,
+                EnrolledUsers = c.ChoreEnrollments
+                    .ToDictionary(ce => ce.UserId, ce => ce.User.PathToProfilePicture)
             };
         }
 
@@ -42,6 +60,7 @@ namespace Business.Mappers
             chore.Description = input.Description;
             chore.DueDate = input.DueDate;
             chore.IsDone = input.IsDone;
+            chore.UpdatedAt = DateTime.Now.ToUniversalTime();
             return chore;
         }
     }

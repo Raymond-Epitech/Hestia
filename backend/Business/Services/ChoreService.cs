@@ -42,18 +42,7 @@ public class ChoreService(
                 .ToListAsync();
 
             var choreOutputs = chores
-                .Select(c => new ChoreOutput
-                {
-                    Id = c.Id,
-                    CreatedBy = c.CreatedBy,
-                    CreatedAt = c.CreatedAt,
-                    DueDate = c.DueDate,
-                    Title = c.Title,
-                    Description = c.Description,
-                    IsDone = c.IsDone,
-                    EnrolledUsers = c.ChoreEnrollments
-                        .ToDictionary(ce => ce.UserId, ce => ce.User.PathToProfilePicture)
-                })
+                .Select(c => c.ToOutput())
                 .ToList();
 
             logger.LogInformation($"Succes : All chores from the colocation {colocationId} found");
@@ -80,21 +69,9 @@ public class ChoreService(
         if (choreEntity is null)
             throw new NotFoundException($"Chore with id {id} not found");
 
-        var choreOutput = new ChoreOutput
-        {
-            Id = choreEntity.Id,
-            CreatedBy = choreEntity.CreatedBy,
-            CreatedAt = choreEntity.CreatedAt,
-            DueDate = choreEntity.DueDate,
-            Title = choreEntity.Title,
-            Description = choreEntity.Description,
-            IsDone = choreEntity.IsDone,
-            EnrolledUsers = choreEntity.ChoreEnrollments
-                .ToDictionary(ce => ce.UserId, ce => ce.User.PathToProfilePicture)
-        };
-
         logger.LogInformation("Succes : Chore found");
-        return choreOutput;
+
+        return choreEntity.ToOutput();
     }
 
     /// <summary>
@@ -158,20 +135,7 @@ public class ChoreService(
         if (chore is null)
             throw new InvalidEntityException("Could get the new chore created");
 
-        var choreOutput = new ChoreOutput
-        {
-            Id = chore.Id,
-            CreatedBy = chore.CreatedBy,
-            CreatedAt = chore.CreatedAt,
-            DueDate = chore.DueDate,
-            Title = chore.Title,
-            Description = chore.Description,
-            IsDone = chore.IsDone,
-            EnrolledUsers = chore.ChoreEnrollments.ToDictionary(
-                ce => ce.UserId,
-                ce => ce.User.PathToProfilePicture)
-        };
-        await realTimeService.SendToGroupAsync(chore.ColocationId, "NewChoreAdded", choreOutput);
+        await realTimeService.SendToGroupAsync(chore.ColocationId, "NewChoreAdded", chore.ToOutput());
 
         logger.LogInformation("Succes : Chore added");
             
@@ -248,22 +212,42 @@ public class ChoreService(
         if (chore is null)
             throw new InvalidEntityException("Could get the updated chore");
 
-        var choreOutput = new ChoreOutput
-        {
-            Id = chore.Id,
-            CreatedBy = chore.CreatedBy,
-            CreatedAt = chore.CreatedAt,
-            DueDate = chore.DueDate,
-            Title = chore.Title,
-            Description = chore.Description,
-            IsDone = chore.IsDone,
-            EnrolledUsers = chore.ChoreEnrollments.ToDictionary(
-                ce => ce.UserId,
-                ce => ce.User.PathToProfilePicture),
-        };
-        await realTimeService.SendToGroupAsync(chore.ColocationId, "ChoreUpdated", choreOutput);
+        await realTimeService.SendToGroupAsync(chore.ColocationId, "ChoreUpdated", chore.ToOutput());
 
         logger.LogInformation("Succes : Chore updated");
+
+        return chore.Id;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    /// <exception cref="NotFoundException"></exception>
+    public async Task<Guid> MarkChoreAsDoneAsync(Guid id)
+    {
+        var chore = await choreRepository.Query()
+            .Include(c => c.ChoreEnrollments)
+            .ThenInclude(ce => ce.User)
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        if (chore is null)
+        {
+            throw new NotFoundException($"Chore {id} not found");
+        }
+
+        chore.IsDone = !chore.IsDone;
+        chore.UpdatedAt = DateTime.UtcNow;
+
+        choreRepository.Update(chore);
+        await choreRepository.SaveChangesAsync();
+
+        cache.Remove($"chores:{chore.ColocationId}");
+
+        await realTimeService.SendToGroupAsync(chore.ColocationId, "ChoreUpdated", chore.ToOutput());
+
+        logger.LogInformation("Succes : Chore marked as done/undone");
 
         return chore.Id;
     }
@@ -355,18 +339,7 @@ public class ChoreService(
             .ToListAsync();
 
         var chores = choreEntities
-            .Select(c => new ChoreOutput
-            {
-                Id = c.Id,
-                CreatedBy = c.CreatedBy,
-                CreatedAt = c.CreatedAt,
-                DueDate = c.DueDate,
-                Title = c.Title,
-                Description = c.Description,
-                IsDone = c.IsDone,
-                EnrolledUsers = c.ChoreEnrollments
-                    .ToDictionary(ce => ce.UserId, ce => ce.User.PathToProfilePicture)
-            })
+            .Select(c => c.ToOutput())
             .ToList();
 
         logger.LogInformation("Succes : Chores found");
@@ -393,6 +366,10 @@ public class ChoreService(
 
         await choreEnrollmentRepository.AddAsync(enroll);
         await choreRepository.SaveChangesAsync();
+
+        await choreRepository.Query()
+            .Where(c => c.Id == enroll.ChoreId)
+            .ExecuteUpdateAsync(s => s.SetProperty(c => c.UpdatedAt, DateTime.UtcNow));
 
         enroll = await choreEnrollmentRepository.Query()
             .Include(e => e.Chore)
@@ -436,12 +413,24 @@ public class ChoreService(
         choreEnrollmentRepository.Delete(enrollement);
         await choreEnrollmentRepository.SaveChangesAsync();
 
+        await choreRepository.Query()
+            .Where(c => c.Id == enrollement.ChoreId)
+            .ExecuteUpdateAsync(s => s.SetProperty(c => c.UpdatedAt, DateTime.UtcNow));
+
         cache.Remove($"chores:{enrollement.Chore.ColocationId}");
 
         if (enrollement is null)
             throw new InvalidEntityException($"Error in deletion of enrollment user : {userId} and chore : {choreId}");
 
-        await realTimeService.SendToGroupAsync(enrollement.Chore.ColocationId, "ChoreEnrollmentRemoved", new {enrollement.UserId, enrollement.ChoreId });
+        var chore = await choreRepository.Query()
+            .Include(c => c.ChoreEnrollments)
+            .ThenInclude(ce => ce.User)
+            .FirstOrDefaultAsync(c => c.Id == choreId);
+
+        if (chore is null)
+            throw new InvalidEntityException($"Could get the chore with id {choreId}");
+
+        await realTimeService.SendToGroupAsync(enrollement.Chore.ColocationId, "ChoreEnrollmentRemoved", chore.ToOutput());
 
         logger.LogInformation("Succes : User unenrolled to the chore");
 
