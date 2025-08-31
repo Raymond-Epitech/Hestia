@@ -3,7 +3,7 @@
         <TaskModal v-model="isModalOpen" :key="id" :id="id" :title="title" :description="description"
         :color="getColor()" :dueDate="dueDate" :isDone="isDone" :enrolledUsers="enrolledUsers"
         @proceed="emitProceed()"></TaskModal>
-        <div class="task" :class="[getColor()]" data-toggle="modal" data-target=".bd-example-modal-sm"
+        <div class="task" :class="[getColor(), { 'done': isDone }]" data-toggle="modal" data-target=".bd-example-modal-sm"
         @click="openModal">
             <h1>{{ title }}</h1>
             <div class="due-date">
@@ -125,6 +125,10 @@ function getColor() {
     margin-bottom: 15px;
     border-radius: 20px;
     box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
+}
+
+.done {
+    opacity: 0.5;
 }
 
 h1 {

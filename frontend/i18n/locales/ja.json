@@ -95,5 +95,14 @@
   "Due_to": "～による",
   "from": "～から",
   "to": "～へ",
-  "refund_history": "返金履歴"
+  "refund_history": "返金履歴",
+  "weekdays": {
+    "mon": "月",
+    "tue": "火",
+    "wed": "水",
+    "thu": "木",
+    "fri": "金",
+    "sat": "土",
+    "sun": "日"
+  }
 }
