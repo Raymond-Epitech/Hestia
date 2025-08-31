@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import type { expenses_category_get } from '~/composables/service/type';
+import type { expenses_category_get, SignalRClient } from '~/composables/service/type';
 import { useI18n } from 'vue-i18n';
 import { useUserStore } from '~/store/user';
 
@@ -38,7 +38,9 @@ const { t } = useI18n();
 const router = useRouter();
 const global = ref(0);
 const expenses_list = ref < expenses_category_get[] > ([]);
-const collocid = user.colocationId
+const collocid = user.colocationId;
+const { $signalr } = useNuxtApp();
+const signalr = $signalr as SignalRClient;
 
 const isCategoryModalOpen = ref(false)
 const openCategoryModal = () => (isCategoryModalOpen.value = true)
@@ -46,22 +48,31 @@ const openCategoryModal = () => (isCategoryModalOpen.value = true)
 const isBalanceModalOpen = ref(false)
 const openBalanceModal = () => (isBalanceModalOpen.value = true)
 
-const redirectto = (name: string, id?: string) => {
-    if (name === 'balance') {
-        router.push({ path: '/money/balance' });
-        return;
-    }
-    if (name === 'add_category') {
-        router.push({ path: '/money/addCategory' });
-        return;
-    }
-    router.push({ path: '/money/historical', query: { name, id } });
-}
+signalr.on("NewExpenseCategoryAdded", async (CategoryOutput) => {
+  if (!expenses_list.value.some(expense => expense.id === CategoryOutput.id)) {
+    expenses_list.value.push(CategoryOutput)
+  }
+})
+
+signalr.on("ExpenseCategoryUpdated", (CategoryOutput) => {
+  expenses_list.value = expenses_list.value.filter(expense => expense.id !== CategoryOutput)
+})
+
+signalr.on("NewExpenseAdded", (CategoryOutput) => {
+  getall();
+})
+
+signalr.on("ExpenseUpdated", (CategoryOutput) => {
+  getall();
+})
+
+signalr.on("ExpenseDeleted", (CategoryOutput) => {
+  getall();
+})
 
 const getall = async () => {
     api.getExpenseByColocationId(collocid).then((response) => {
         expenses_list.value = response.filter(item => item.name !== "refund");
-        console.log(expenses_list.value)
         global.value = expenses_list.value.reduce((acc, expense) => acc + expense.totalAmount, 0);
     }).catch((error) => {
         console.error('Error fetching data:', error);

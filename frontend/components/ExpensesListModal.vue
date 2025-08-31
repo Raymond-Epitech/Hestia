@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import useModal from '~/composables/useModal';
 import { useUserStore } from '~/store/user';
-import type { Expenseget, Coloc } from '~/composables/service/type';
+import type { Expenseget, Coloc, SignalRClient } from '~/composables/service/type';
 
 const props = withDefaults(
     defineProps < {
@@ -50,6 +50,8 @@ const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 const forbid_scroll = ref(false);
+const { $signalr } = useNuxtApp()
+const signalr = $signalr as SignalRClient;
 
 const { modelValue } = toRefs(props)
 const { open, close, toggle, visible } = useModal(props.name)
@@ -62,6 +64,30 @@ const emit = defineEmits < {
     proceed: [],
     'update:modelValue': [value: boolean]
 } > ()
+
+signalr.on("NewExpenseAdded", (CategoryOutput) => {
+  api.getExpensebycategoryId(props.expense).then((response) => {
+    expenses_list.value = response;
+    }).catch((error) => {
+        console.error('Error fetching data:', error);
+    })
+})
+
+signalr.on("ExpenseUpdated", (CategoryOutput) => {
+  api.getExpensebycategoryId(props.expense).then((response) => {
+    expenses_list.value = response;
+    }).catch((error) => {
+        console.error('Error fetching data:', error);
+    })
+})
+
+signalr.on("ExpenseDeleted", (CategoryOutput) => {
+  api.getExpensebycategoryId(props.expense).then((response) => {
+    expenses_list.value = response;
+    }).catch((error) => {
+        console.error('Error fetching data:', error);
+    })
+})
 
 api.getExpensebycategoryId(props.expense).then((response) => {
     expenses_list.value = response;
