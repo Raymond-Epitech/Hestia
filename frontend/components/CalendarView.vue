@@ -9,8 +9,8 @@
         </div>
 
         <div class="weekdays-container">
-            <div v-for="d in ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']" :key="d" class="weekdays">
-                {{ d }}
+            <div v-for="d in weekdays" :key="d" class="weekdays">
+                {{ $t(`weekdays.${d}`) }}
             </div>
         </div>
 
@@ -35,10 +35,17 @@
 
 <script setup lang="ts">
 import dayjs from "dayjs";
+import 'dayjs/locale/de';
+import 'dayjs/locale/es';
+import 'dayjs/locale/ja';
+import 'dayjs/locale/zh';
+import 'dayjs/locale/en';
+import 'dayjs/locale/fr';
 import weekday from "dayjs/plugin/weekday";
 import isoWeek from "dayjs/plugin/isoWeek";
 import { useUserStore } from '~/store/user';
 import type { Chore } from '../composables/service/type';
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
     task_list: {
@@ -57,6 +64,8 @@ const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
+const weekdays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+const { locale } = useI18n()
 
 const emit = defineEmits(['proceed', 'get'])
 
@@ -130,6 +139,10 @@ function getColor(dueDate: any) {
         return "red"
     }
 }
+
+watch(locale, (newLocale) => {
+  dayjs.locale(newLocale)
+}, { immediate: true })
 </script>
 
 <style scoped>

@@ -15,7 +15,7 @@
         </div>
     </div>
     <div v-else>
-      <CalendarView class="calendar-container" :task_list="task_list" @proceed="getall()"/>
+      <CalendarView class="calendar-container" :task_list="task_list" @proceed="getall()"></CalendarView>
     </div>
 </template>
 
