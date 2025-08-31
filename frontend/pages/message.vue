@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="messages-box">
+        <div class="messages-box" ref="messagesBox">
             <MessageBox
                 v-for="message in messages"
                 :key="message.id"
@@ -30,6 +30,7 @@ const messages = ref<message[]>([]);
 const list_coloc = ref<Coloc[]>([]);
 const { $signalr } = useNuxtApp()
 const signalr = $signalr as SignalRClient;
+const messagesBox = ref<HTMLDivElement | null>(null);
 
 signalr.on("NewMessageAdded", (messageOutput) => {
     if (!messages.value.some(msg => msg.id === messageOutput.id)) {
@@ -57,7 +58,11 @@ const fetchMessages = async () => {
 };
 
 onMounted(() => {
-    fetchMessages();
+    fetchMessages().then(() => {
+        nextTick(() => {
+            messagesBox.value?.scrollTo(0, messagesBox.value.scrollHeight);
+        });
+    });
     api.getUserbyCollocId(colocationId)
         .then((colocs: Coloc[]) => {
             list_coloc.value = colocs;

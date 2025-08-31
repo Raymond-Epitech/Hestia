@@ -117,9 +117,9 @@ export type User = {
 
 export type Colocation = {
     name: string;
-    addresse: string;
+    address: string;
     createdBy: string;
-    id: string;
+    id?: string;
 }
 
 export type Chore = {

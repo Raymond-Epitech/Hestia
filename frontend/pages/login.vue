@@ -60,6 +60,10 @@ onMounted(() => {
         }
     })
     registerNotifications();
+    colocationID.value = route.query.collocID;
+    if (colocationID.value) {
+        registretion.value = true;
+    }
 
     PushNotifications.addListener('registration', (token) => {
         fcmToken.value = token.value;
