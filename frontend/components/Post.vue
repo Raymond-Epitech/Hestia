@@ -67,7 +67,6 @@ signalr.on("NewReaction", async (ReactionOutput) => {
     if ( reaction.reminderId == props.post.id ) {
         reactions.value.push(reaction);
     }
-    console.log('SignalR NewReaction received:', reactions.value);
 })
 
 signalr.on("DeleteReaction", async (GUID) => {
