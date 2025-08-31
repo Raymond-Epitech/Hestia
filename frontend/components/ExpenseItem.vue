@@ -1,13 +1,11 @@
 <template>
-  <div class="expense" @click="props.onclick && props.onclick()">
+  <div class="expense">
     <div class="expense-header">
+      <div class="dot-container">
+        <div class="dot"/>
+      </div>
       <span class="expense-name">{{ expense.name }}</span>
       <span class="expense-amount">{{ expense.amount }} €</span>
-    </div>
-    <div class="payer">
-      <span>
-        <TexteLanguage source="paidby" /> {{ paidBy }}
-      </span>
     </div>
   </div>
 </template>
@@ -24,17 +22,37 @@ const props = defineProps<{
 
 <style scoped>
 .expense {
-  border-bottom: 2px solid #ddd;
-  padding: 10px 0;
+  color: var(--overlay-text);
+  text-align: left;
+  border-bottom: 1px solid var(--list-lines-light);
+  padding: 4px 0;
+}
+
+.dark .expense {
+  border-bottom: 1px solid var(--list-lines-dark);
 }
 
 .expense-header {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 9fr 2fr;
   font-weight: bold;
+  font-size: 20px;
 }
 
-.payer {
-  color: rgb(214, 207, 207);
+.dot-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dot {
+  width: 6px;
+  background-color: var(--overlay-text);
+  height: 6px;
+  border-radius: 50%;
+}
+
+.expense-amount {
+  text-align: right;
 }
 </style>

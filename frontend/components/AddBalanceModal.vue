@@ -90,11 +90,6 @@
             const toList = data.filter(item => item.to === user.id);
             const fromList = data.filter(item => item.from === user.id);
             const othersList = data.filter(item => item.to !== user.id && item.from !== user.id);
-
-            console.log("toList:", toList);
-            console.log("fromList:", fromList);
-            console.log("othersList:", othersList);
-
             refund_to.value = toList;
             refund_from.value = fromList;
             refund_others.value = othersList;
@@ -111,10 +106,6 @@
                 const toList = data.filter(item => item.to === user.id);
                 const fromList = data.filter(item => item.from === user.id);
                 const othersList = data.filter(item => item.to !== user.id && item.from !== user.id);
-
-                console.log("toList:", toList);
-                console.log("fromList:", fromList);
-                console.log("othersList:", othersList);
 
                 refund_to.value = toList;
                 refund_from.value = fromList;
@@ -207,7 +198,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        z-index: 100;
+        z-index: 1000;
         position: fixed;
         animation: fadeIn 0.2s;
         display: flex;
@@ -259,8 +250,8 @@
 
     .number {
         display: flex;
-        justify-content: center;
-        font-size: 32px;
+        justify-content: right;
+        font-size: 22px;
     }
 
     .modal-no-border {

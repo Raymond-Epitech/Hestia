@@ -33,11 +33,9 @@ const list_coloc = ref<Coloc[]>([]);
 
 await api.getExpenseByColocationId(user.colocationId).then((response) => {
             refund.value = response.find(item => item.name === "refund");
-            console.log(refund.value)
             if (refund.value) {
                 api.getExpensebycategoryId(refund.value.id).then((response) => {
                 refund_list.value = response;
-                console.log(refund_list.value)
                 }).catch((error) => {
                     console.error('Error fetching data:', error);
                 })
@@ -58,7 +56,6 @@ const getUsername = (id: string): string => {
 };
 
 const getDayNumber = (timecode: string) => {
-    console.log(timecode);
     const date = new Date(timecode);
     const yyyy = date.getFullYear();
     let mm = date.getMonth() + 1; // Months start at 0!
@@ -145,7 +142,7 @@ const getDayNumber = (timecode: string) => {
 
 .number {
     display: flex;
-    justify-content: center;
-    font-size: 32px;
+    justify-content: right;
+    font-size: 28px;
 }
 </style>

@@ -29,14 +29,17 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useUserStore } from '~/store/user';
 
+const router = useRouter();
+const route = useRoute();
 const userStore = useUserStore();
 const user = userStore.user;
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
+const collocID = route.query.collocID as string;
 
 const colocation = ref({
     name: '',
@@ -46,7 +49,7 @@ const colocation = ref({
 const new_data = ref({
     username: user.username,
     email: user.email,
-    colocationId: '',
+    colocationId: collocID ? collocID : '',
     pathToProfilePicture: 'exempledetest',
     id: user.id,
 })
