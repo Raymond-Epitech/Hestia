@@ -96,5 +96,14 @@
   "from": "De",
   "to": "a",
   "refund_history": "Historial de reembolsos",
-  "add_user_header": "Agregue usuarios a su colocación"
+  "add_user_header": "Agregue usuarios a su colocación",
+  "weekdays": {
+    "mon": "Lun",
+    "tue": "Mar",
+    "wed": "Mié",
+    "thu": "Jue",
+    "fri": "Vie",
+    "sat": "Sáb",
+    "sun": "Dom"
+  }
 }

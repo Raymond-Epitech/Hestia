@@ -1,9 +1,9 @@
 <template>
     <div class="task-container">
-        <TaskModal v-model="isModalOpen" :key="id" :id="id" :title="title" :description="description"
-        :color="getColor()" :dueDate="dueDate" :isDone="isDone" :enrolledUsers="enrolledUsers"
-        @proceed="emitProceed()"></TaskModal>
-        <div class="task" :class="[getColor()]" data-toggle="modal" data-target=".bd-example-modal-sm"
+        <TaskModal v-model="isModalOpen" :key="updatedAt" :id="id" :title="title" :description="description"
+            :color="getColor()" :dueDate="dueDate" :isDone="isDone" :enrolledUsers="enrolledUsers"
+            @proceed="emitProceed()"></TaskModal>
+        <div class="task" :class="[getColor(), { 'done': isDone }]" data-toggle="modal" data-target=".bd-example-modal-sm"
         @click="openModal">
             <h1>{{ title }}</h1>
             <div class="due-date">
@@ -21,77 +21,85 @@
 </template>
 
 <script setup>
-const isModalOpen = ref(false)
-const openModal = () => (isModalOpen.value = true)
-const emit = defineEmits(['proceed', 'get'])
-const props = defineProps({
-    id: {
-        type: String,
-        required: true,
-    },
-    title: {
-        type: String,
-        required: false,
-    },
-    description: {
-        type: String,
-        required: false,
-    },
-    createdBy: {
-        type: String,
-        required: true,
-    },
-    createdAt: {
-        type: String,
-        required: true,
-    },
-    dueDate: {
-        type: String,
-        required: true,
-    },
-    isDone: {
-        type: Boolean,
-        required: true,
-    },
-    enrolledUsers: {
-        type: Object,
-        required: false,
-    },
-})
+import { useI18n } from 'vue-i18n';
 
-function emitProceed() {
-    emit('proceed')
-}
+    const props = defineProps({
+        id: {
+            type: String,
+            required: true,
+        },
+        title: {
+            type: String,
+            required: false,
+        },
+        description: {
+            type: String,
+            required: false,
+        },
+        createdBy: {
+            type: String,
+            required: true,
+        },
+        createdAt: {
+            type: String,
+            required: true,
+        },
+        dueDate: {
+            type: String,
+            required: true,
+        },
+        isDone: {
+            type: Boolean,
+            required: true,
+        },
+        enrolledUsers: {
+            type: Object,
+            required: false,
+        },
+        updatedAt: {
+            type: String,
+            required: true,
+        }
+    })
+    const { locale } = useI18n();
+    const isModalOpen = ref(false);
+    const openModal = () => (isModalOpen.value = true);
 
-function getDayNumber() {
-    const date = new Date(props.dueDate);
-    return date.getDate();
-}
+    const emit = defineEmits(['proceed', 'get']);
 
-function getMonthAbbreviation() {
-    const date = new Date(props.dueDate);
-    return date.toLocaleString('en-US', { month: 'short' });
-}
-
-function getYearNumber() {
-    const date = new Date(props.dueDate);
-    return date.getFullYear();
-}
-
-function getColor() {
-    const date = new Date(props.dueDate);
-    const today = new Date();
-    const daysDifference = Math.ceil((date - today) / (1000 * 3600 * 24));
-    if (daysDifference < 1) {
-        return "red"
-    } else if (daysDifference < 3) {
-        return "orange"
-    } else if (daysDifference >= 3) {
-        return "green"
-    } else {
-        return "red"
+    function emitProceed() {
+        emit('proceed')
     }
-}
+
+    function getDayNumber() {
+        const date = new Date(props.dueDate);
+        return date.getDate();
+    }
+
+    function getMonthAbbreviation() {
+        const date = new Date(props.dueDate);
+        return date.toLocaleString(locale.value, { month: 'short' });
+    }
+
+    function getYearNumber() {
+        const date = new Date(props.dueDate);
+        return date.getFullYear();
+    }
+
+    function getColor() {
+        const date = new Date(props.dueDate);
+        const today = new Date();
+        const daysDifference = Math.ceil((date - today) / (1000 * 3600 * 24));
+        if (daysDifference < 1) {
+            return "red"
+        } else if (daysDifference < 3) {
+            return "orange"
+        } else if (daysDifference >= 3) {
+            return "green"
+        } else {
+            return "red"
+        }
+    }
 </script>
 
 <style scoped>
@@ -125,6 +133,10 @@ function getColor() {
     margin-bottom: 15px;
     border-radius: 20px;
     box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
+}
+
+.done {
+    opacity: 0.5;
 }
 
 h1 {

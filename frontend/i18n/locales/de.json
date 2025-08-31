@@ -96,5 +96,14 @@
   "from": "Von",
   "to": "an",
   "refund_history": "Rückerstattungshistorie",
-  "add_user_header": "Benutzer hinzufügen"
+  "add_user_header": "Benutzer hinzufügen",
+  "weekdays": {
+    "mon": "Mo",
+    "tue": "Di",
+    "wed": "Mi",
+    "thu": "Do",
+    "fri": "Fr",
+    "sat": "Sa",
+    "sun": "So"
+  }
 }

@@ -93,5 +93,14 @@
   "from": "De",
   "to": "à",
   "refund_history": "Historique des remboursements",
-  "add_user_header": "Ajoutes des utilisateurs à ta colocation"
+  "add_user_header": "Ajoutes des utilisateurs à ta colocation",
+  "weekdays": {
+    "mon": "Lun",
+    "tue": "Mar",
+    "wed": "Mer",
+    "thu": "Jeu",
+    "fri": "Ven",
+    "sat": "Sam",
+    "sun": "Dim"
+  }
 }

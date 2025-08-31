@@ -17,7 +17,7 @@
                     <!-- Buttons -->
                     <div class="modal-buttons">
                         <div class="enrollees-icon-container">
-                            <div v-for="link in linkToPP" :key="linkToPP.id" :value="linkToPP.id"
+                            <div v-for="(link, index) in linkToPP" :key="index" :value="linkToPP"
                                 class="enrollees-icon">
                                 <profile-icon :linkToPP="link" :height="33" :width="33"></profile-icon>
                             </div>
@@ -33,7 +33,7 @@
                                     <Texte_language source="Enroll" /> !
                                 </button>
                             </div>
-                            <div v-if="done">
+                            <div v-if="isDone">
                                 <text>
                                     <Texte_language source="isDone" />
                                 </text>
@@ -52,10 +52,9 @@
 </template>
 
 <script setup lang="ts">
-    import { onMounted } from 'vue';
     import { useUserStore } from '../store/user';
     import useModal from '../composables/useModal';
-    import type { User } from '../composables/service/type'
+    import type { UpdateChore, User } from '../composables/service/type'
 
     const props = defineProps < {
         id: string,
@@ -65,7 +64,7 @@
         color: string,
         dueDate: string,
         isDone: boolean,
-        enrolledUsers: Object,
+        enrolledUsers?: Object,
     } > ();
 
     const userStore = useUserStore();
@@ -73,10 +72,8 @@
     const api = $bridge;
     api.setjwt(useCookie('token').value ?? '');
     const isEnrolled = ref(false);
-    const enrollees = Object.keys(props.enrolledUsers);
-    const linkToPP = Object.values(props.enrolledUsers);
-
-    var done = props.isDone;
+    const enrollees = props.enrolledUsers ? Object.keys(props.enrolledUsers) : [];
+    const linkToPP = props.enrolledUsers ? Object.values(props.enrolledUsers) : [];
 
     const { modelValue } = toRefs(props)
     const { open, close, toggle, visible } = useModal(props.title)
@@ -95,7 +92,6 @@
     })
 
     const getEnroll = async () => {
-        const data = await api.getUserEnrollChore(props.id);
         isEnrolled.value = enrollees.includes(userStore.user.id);
     };
 
@@ -106,7 +102,7 @@
 
     const handleQuit = async () => {
         api.deleteChoreUser(props.id, userStore.user.id).then(() => {
-            isEnrolled.value = false;
+            // isEnrolled.value = false;
         }).catch((error) => {
             console.error('Error delete chore user:', error);
         });
@@ -116,7 +112,7 @@
 
     const handleEnroll = async () => {
         api.addChoreUser(props.id, userStore.user.id).then(() => {
-            isEnrolled.value = true;
+            // isEnrolled.value = true;
         }).catch((error) => {
             console.error('Error add chore user:', error);
         });
@@ -124,17 +120,18 @@
         emit('proceed')
     }
     const handleDone = async () => {
-        const updateChore = {
+        const updateChore: UpdateChore = {
             id: props.id,
             colocationId: userStore.user.colocationId,
             dueDate: props.dueDate,
             title: props.title,
             description: props.description,
             isDone: true,
-            enrolled: enrollees.value.map(user => user.id),
+            enrolled: enrollees.map(userId => userId),
         }
         api.updateChore(updateChore).then(() => {
-            done = true;
+            console.log('Chore updated successfully');
+            // done = true;
         }).catch((error) => {
             console.error('Error update chore:', error);
         });
@@ -221,6 +218,7 @@
         display: flex;
         flex-direction: column;
         line-height: normal;
+        text-align: left;
     }
 
     .title {
@@ -250,7 +248,7 @@
         align-content: center;
         text-align: center;
         height: 40px;
-        font-size: 250%;
+        font-size: 32px;
         margin-bottom: 4px;
         font-weight: 600;
         -webkit-text-size-adjust: none;
@@ -315,7 +313,7 @@
         border-bottom-right-radius: 20px;
         margin-top: auto;
         display: grid;
-        grid-template-columns: 2fr 3fr 3fr;
+        grid-template-columns: 2fr 3fr 2fr;
         align-items: center;
         gap: 1em;
     }
@@ -342,7 +340,7 @@
     /** Fallback Buttons */
     .button {
         min-width: 50%;
-        max-width: fit-content;
+        width: fit-content;
         margin-left: 20px;
         padding: 10px 10px;
         border-radius: 15px;

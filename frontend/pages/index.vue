@@ -5,8 +5,8 @@
       <img src="~/public/posts/Post.svg" class="post">
     </button>
     <div class="post-list">
-      <div v-for="(post, index) in posts" :key="index">
-        <Post :id="post.id" :text="post.content" :color="post.color" :createdBy="post.createdBy" :linkToPP="post.linkToPP" :post="post"
+      <div v-for="(post) in posts" :key="post.id">
+        <Post :post="post"
           @delete="getall()" />
       </div>
     </div>
@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { useUserStore } from '~/store/user';
-import type { Reminder, SignalRClient } from '../composables/service/type'
+import type { Reminder, SignalRClient } from '../composables/service/type';
 
   const isModalOpen = ref(false)
   const openModal = () => (isModalOpen.value = true)
@@ -37,7 +37,7 @@ signalr.on("NewReminderAdded", async (ReminderOutput) => {
     posts.value.push(ReminderOutput)
   }
 })
-signalr.on("reminderdeleted", (ReminderOutput) => {
+signalr.on("ReminderDeleted", (ReminderOutput) => {
   posts.value = posts.value.filter(post => post.id !== ReminderOutput)
 })
 

@@ -33,6 +33,12 @@ export type ReminderVote = {
     choice: string;
 };
 
+export type Reaction = {
+    id: string;
+    userId: string;
+    reminderId: string;
+    type: string;
+}
 
 export type Coloc = {
     id: string,
@@ -123,6 +129,19 @@ export type Colocation = {
 }
 
 export type Chore = {
+    id: string;
+    createdBy: string;
+    createdAt: string;
+    updatedAt: string;
+    colocationId?: string;
+    dueDate: string;
+    title: string;
+    description: string;
+    isDone: boolean;
+    enrolledUsers: string[];
+}
+
+export type UpdateChore = {
     id: string;
     colocationId: string;
     dueDate: string;
