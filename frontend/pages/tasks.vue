@@ -9,9 +9,11 @@
     </button>
     <div v-if="calendar_view === false" class="tasks">
         <div v-for="(task, index) in task_list" :key="index" class="task-list">
-            <Task :id="task.id" :title="task.title" :description="task.description" :createdBy="task.createdBy"
+            <div v-if="shouldDisplay(task)">
+                <Task :id="task.id" :title="task.title" :description="task.description" :createdBy="task.createdBy"
                 :createdAt="task.createdAt" :dueDate="task.dueDate" :isDone="task.isDone"
                 :enrolledUsers="task.enrolledUsers" @proceed="getall()"></Task>
+            </div>
         </div>
     </div>
     <div v-else>
@@ -40,6 +42,18 @@ const getall = async () => {
 
 function triggerCalendar() {
   calendar_view.value = !calendar_view.value;
+}
+
+function shouldDisplay(task) {
+    if (task.isDone) {
+        const date = new Date(task.dueDate);
+        const today = new Date();
+        const daysDifference = Math.ceil((date - today) / (1000 * 3600 * 24));
+        if (daysDifference <= 0) {
+            return false;
+        }
+    }
+    return true;
 }
 
 onMounted(async () => {
