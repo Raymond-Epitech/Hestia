@@ -78,6 +78,11 @@
         return date.toLocaleString('en-US', { month: 'short' });
     }
 
+    function getYearNumber() {
+        const date = new Date(props.dueDate);
+        return date.getFullYear();
+    }
+
     function getColor() {
         const date = new Date(props.dueDate);
         const today = new Date();
