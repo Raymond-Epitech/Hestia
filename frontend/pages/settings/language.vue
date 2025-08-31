@@ -1,9 +1,8 @@
 <template>
+  <button class="back" @click="redirect('/settings')">
+    <img src="~/public/Retour.svg" class="icon">
+  </button>
   <div class="container">
-    <div id="return" :onClick="() => redirect('/settings')">
-      <img src="/Retour.svg" class="icon" alt="Return" width="32" height="32" />
-    </div>
-
     <div class="setting-button" id="fr" @click="setlangue('fr')">
       <div class="flag">
         <img src="/flags/france.png" alt="France" />
@@ -63,10 +62,13 @@
 
 <style scoped>
   .container {
-    display: grid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 10px;
-    width: 90%;
     margin: 40px auto;
+    margin-top: 5rem;
+    max-height: calc(100vh - 5.5rem);
   }
 
   .icon {
@@ -81,7 +83,7 @@
   }
 
   .setting-button {
-    width: 100%;
+    width: 20.2rem;
     height: 80px;
     display: grid;
     grid-template-columns: 1fr 4fr;
@@ -111,4 +113,32 @@
     font-weight: 600;
     font-size: 24px;
   }
+
+  .back {
+    background-color: var(--main-buttons-light);
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 9px;
+    border: none;
+    box-shadow: var(--button-shadow-light);
+    top: 3%;
+    left: 3%;
+}
+
+.back .icon {
+    filter: invert(1);
+    width: 25px;
+}
+
+.dark .back {
+    background-color: var(--main-buttons-dark);
+}
+
+.dark .back .icon {
+    filter: none;
+}
 </style>

@@ -60,10 +60,6 @@
 
     const authenticateUser = useAuthStore();
 
-    const handleComposantClick = (id) => {
-        console.log(`ID du composant cliqué: ${id}`);
-        alert(`ID du composant cliqué: ${id}`);
-    }
     const router = useRouter();
     const redirect = (page) => {
         router.push(page);
@@ -87,7 +83,7 @@
     }
 
     .setting-button {
-        width: 90%;
+        width: 20.2rem;
         height: 80px;
         display: grid;
         grid-template-columns: 1fr 4fr;

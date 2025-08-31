@@ -1,4 +1,7 @@
 <template>
+    <button class="back" @click="redirect('/settings')">
+        <img src="~/public/Retour.svg" class="icon">
+    </button>
     <div class="page-container">
         <div class="colocation-preview-container">
             <div class="colocation-preview">
@@ -113,5 +116,33 @@ const redirect = (page) => {
     color: #000000;
     box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
     font-weight: 600;
+}
+
+.back {
+    background-color: var(--main-buttons-light);
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 9px;
+    border: none;
+    box-shadow: var(--button-shadow-light);
+    top: 3%;
+    left: 3%;
+}
+
+.back .icon {
+    filter: invert(1);
+    width: 25px;
+}
+
+.dark .back {
+    background-color: var(--main-buttons-dark);
+}
+
+.dark .back .icon {
+    filter: none;
 }
 </style>
