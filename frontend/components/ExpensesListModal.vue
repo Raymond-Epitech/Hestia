@@ -12,8 +12,8 @@
                             <img src="~/public/plus.png" class="plus">
                         </button>
                     </div>
-                    <div>
-                        <ExpenseItem v-for="expense in expenses_list" :key="expense.id" :expense="expense" :paidBy="getUsername(expense.paidBy)" />
+                    <div :class="[forbid_scroll === true ? 'forbid-scroll' : '']">
+                        <ExpenseItem v-for="expense in expenses_list" :key="expense.id" :expense="expense" :paidBy="getUsername(expense.paidBy)" @open="forbidScroll()" @proceed="handleProceed()"/>
                     </div>
                 </div>
             </div>
@@ -49,6 +49,7 @@ const list_coloc = ref<Coloc[]>([]);
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
+const forbid_scroll = ref(false);
 
 const { modelValue } = toRefs(props)
 const { open, close, toggle, visible } = useModal(props.name)
@@ -88,6 +89,11 @@ defineExpose({
 const handleClose = () => {
     close()
     emit('closed')
+}
+
+function forbidScroll() {
+    console.log(forbid_scroll.value)
+    forbid_scroll.value = !forbid_scroll.value;
 }
 
 const handleProceed = () => {
@@ -181,6 +187,10 @@ watch(visible, (value) => {
     filter: invert(1) opacity(1);
 }
 
+.forbid-scroll {
+    overflow: hidden;
+}
+
 .modal-background {
     top: 0;
     left: 0;
@@ -192,12 +202,6 @@ watch(visible, (value) => {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-}
-
-.number {
-    display: flex;
-    justify-content: center;
-    font-size: 32px;
 }
 
 .modal-no-border {

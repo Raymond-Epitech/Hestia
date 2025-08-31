@@ -1,5 +1,6 @@
 <template>
-  <div class="expense">
+  <ModifyExpenseModal v-model="isModalOpen" :key="expense.id" :expense="expense" @open="emitOpen()" @proceed="emitProceed()"/>
+  <div class="expense" @click="openModal">
     <div class="expense-header">
       <div class="dot-container">
         <div class="dot"/>
@@ -23,6 +24,19 @@ const props = defineProps<{
   paidBy: string;
   onclick?: () => void;
 }>();
+
+const isModalOpen = ref(false)
+const openModal = () => (isModalOpen.value = true)
+const emit = defineEmits(['proceed', 'get', 'open'])
+
+function emitProceed() {
+    emit('proceed')
+}
+
+function emitOpen() {
+  emit('open')
+}
+
 </script>
 
 <style scoped>
