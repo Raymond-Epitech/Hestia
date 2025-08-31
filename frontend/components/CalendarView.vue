@@ -21,7 +21,7 @@
                 'bg-blue-100': day.isSame(today, 'day')
             }">
                 <div>{{ day.date() }}</div>
-                <div v-if="choresByDay[day.format('YYYY-MM-DD')]">
+                <div v-if="choresByDay[day.format('YYYY-MM-DD')]" class="dot-container">
                     <div v-for="chore in choresByDay[day.format('YYYY-MM-DD')]" :key="chore.id">
                         <CalendarDot :id="chore.id" :title="chore.title" :description="chore.description"
                         :color="getColor(chore.dueDate)" :dueDate="chore.dueDate" :isDone="chore.isDone" :enrolledUsers="chore.enrolledUsers" @proceed="emitProceed()"/>
@@ -227,5 +227,11 @@ watch(locale, (newLocale) => {
 
 .dark .not-current-month {
     color: var(--light-grey);
+}
+
+.dot-container {
+    display: grid;
+    grid-template-columns: repeat(3, 33%);
+    grid-gap: 2px;
 }
 </style>

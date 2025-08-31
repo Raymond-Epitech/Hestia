@@ -115,6 +115,7 @@ const getUsername = (sendById: string): string => {
     font-size: 1.1rem;
     border-radius: 8px;
     padding-left: 12px;
+    outline: none;
 }
 
 .dark .body-input {

@@ -53,9 +53,10 @@ function emitOpen() {
 
 .expense-header {
   display: grid;
-  grid-template-columns: 1fr 9fr 2fr;
+  grid-template-columns: 10% 65% 25%;
   font-weight: bold;
   font-size: 20px;
+  align-items: center;
 }
 
 .dot-container {

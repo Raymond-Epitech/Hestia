@@ -168,15 +168,13 @@ const login = async () => {
         align-items: center;
         background-color: var(--background-light);
         border-radius: 20px;
-        border-color: var(--page-text-light);
-        border-style: solid;
         text-align: center;
-        box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
+        box-shadow: var(--rectangle-shadow-light);
     }
 
     .dark .login {
         background-color: var(--main-buttons-dark);
-        box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
+        box-shadow: var(--rectangle-shadow-light);
     }
 
     .register {
@@ -190,8 +188,7 @@ const login = async () => {
         align-items: center;
         background-color: var(--background-light);
         border-radius: 20px;
-        border-color: var(--page-text-light);
-        border-style: solid;
+        box-shadow: var(--rectangle-shadow-light);
     }
 
     .dark .register {
@@ -264,8 +261,7 @@ const login = async () => {
         font-weight: 600;
         font-size: 20px;
         text-decoration: none;
-        border-color: var(--page-text-light);
-        border-style: solid;
+        box-shadow: var(--button-shadow-light);
     }
 
     .dark .google-button {
