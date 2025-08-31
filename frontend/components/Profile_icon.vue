@@ -2,7 +2,7 @@
     <div v-if="props.linkToPP && props.linkToPP!= 'deleted.jpg' && props.linkToPP!= 'exempledetest' && props.linkToPP!= 'default.jpg'"
         class="profile">
         <img class="profile" :src="$props.linkToPP" alt="profile icon"
-            :style="{height: `${props.height}px`, width: `${props.width}px`}">
+           :style="{ height: `${props.height}px`, width: `${props.width}px` }" @error="onImgError" >
     </div>
     <div v-else class="icon">
         <img class="icon_image" src="../public/profile-icon.svg" alt="profile icon"
@@ -10,7 +10,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
     const props = defineProps({
         linkToPP: {
             type: String,
@@ -25,10 +25,10 @@
             default: 50,
         }
     })
-    function getMonthAbbreviation() {
-        console.log("this is funstion")
-        console.log(props.linkToPP)
-    }
+
+const onImgError = (event: Event) => {
+  (event.target as HTMLImageElement).src = '/profile-icon.svg';
+}
 </script>
 
 <style scoped>
