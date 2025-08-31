@@ -381,7 +381,7 @@ public class ChoreService(
 
         cache.Remove($"chores:{chore.ColocationId}");
 
-        await realTimeService.SendToGroupAsync(enroll.Chore.ColocationId, "ChoreEnrollmentAdded", chore.ToOutput());
+        await realTimeService.SendToGroupAsync(chore.ColocationId, "ChoreEnrollmentAdded", chore.ToOutput());
 
         logger.LogInformation("Succes : User enrolled to the chore");
 
