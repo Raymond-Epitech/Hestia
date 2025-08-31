@@ -57,7 +57,7 @@
   "header_add_shoppingitem": "Agregue un artículo a la lista de compras",
   "shoppingitem_name": "Nombre del artículo",
   "flatInfo": "Su compañero de piso actual",
-  "roomates": "compañeros de piso",
+  "roomates": "Compañeros de piso",
   "changeFlat": "Modificación de cuotas planas",
   "Assignee": "Cesionario",
   "newTask": "Agregar una nueva tarea",
@@ -96,6 +96,7 @@
   "from": "De",
   "to": "a",
   "refund_history": "Historial de reembolsos",
+  "add_user_header": "Agregue usuarios a su colocación",
   "weekdays": {
     "mon": "Lun",
     "tue": "Mar",

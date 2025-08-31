@@ -1,6 +1,6 @@
 <template>
     <div class="navbar">
-        <a class="button" @click="select('profile'); redirect('/settings')">
+        <a class="button" @click="select('profile'); redirect('/profile')">
             <img src="../public/navbar/Profile.svg" class="icon" :class="{ selected: selected === 'profile' }">
             <br>
             <p class="icon-subtext">{{ $t('nav_profile') }}</p>

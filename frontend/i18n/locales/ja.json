@@ -96,6 +96,7 @@
   "from": "～から",
   "to": "～へ",
   "refund_history": "返金履歴",
+  "add_user_header": "ユーザを追加します",
   "weekdays": {
     "mon": "月",
     "tue": "火",

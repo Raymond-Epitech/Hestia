@@ -1,4 +1,7 @@
 <template>
+    <button class="back" @click="redirect('/profile')">
+        <img src="~/public/Retour.svg" class="icon">
+    </button>
     <div class="conteneur">
         <div class="setting-button" :onClick="() => redirect('/settings/language')" id="language">
             <div class="icon">
@@ -19,7 +22,9 @@
             </div>
         </div>
         <div class="setting-button" :onClick="() => redirect('/settings/colocation')" id="colocation">
-            <img src>
+            <div class="icon">
+                <img src="~/public/settings/Users.svg">
+            </div>
             <div class="setting-text">
                 <Texte_language class="header" source="Colocation" />
                 <Texte_language class="sub-header" source="Colocation-subtext" />
@@ -46,7 +51,9 @@
             <Texte_language class="header" source="Informations" />
         </div> -->
         <div class="setting-button" color="#FF6A61" @click.passive="logout()" id="logout">
-            <img src>
+            <div class="icon">
+                <img src="~/public/settings/Quitter.svg">
+            </div>
             <Texte_language class="header" source="logout" />
         </div>
     </div>
@@ -57,10 +64,6 @@
 
     const authenticateUser = useAuthStore();
 
-    const handleComposantClick = (id) => {
-        console.log(`ID du composant cliqué: ${id}`);
-        alert(`ID du composant cliqué: ${id}`);
-    }
     const router = useRouter();
     const redirect = (page) => {
         router.push(page);
@@ -79,10 +82,12 @@
         align-items: center;
         gap: 10px;
         margin: 40px auto;
+        margin-top: 5rem;
+        max-height: calc(100vh - 5.5rem);
     }
 
     .setting-button {
-        width: 90%;
+        width: 20.2rem;
         height: 80px;
         display: grid;
         grid-template-columns: 1fr 4fr;
@@ -121,4 +126,36 @@
     .dark .icon {
         filter: invert(1);
     }
+
+    img {
+        width: 30px;
+    }
+
+.back {
+    background-color: var(--main-buttons-light);
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 9px;
+    border: none;
+    box-shadow: var(--button-shadow-light);
+    top: 3%;
+    left: 3%;
+}
+
+.back .icon {
+    filter: invert(1);
+    width: 25px;
+}
+
+.dark .back {
+    background-color: var(--main-buttons-dark);
+}
+
+.dark .back .icon {
+    filter: none;
+}
 </style>
