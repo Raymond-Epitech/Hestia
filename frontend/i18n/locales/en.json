@@ -95,5 +95,14 @@
   "Due_to": "Due to",
   "from": "From",
   "to": "an",
-  "refund_history": "Refund history"
+  "refund_history": "Refund history",
+  "weekdays": {
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri",
+    "sat": "Sat",
+    "sun": "Sun"
+  }
 }

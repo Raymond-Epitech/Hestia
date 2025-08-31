@@ -1,14 +1,23 @@
 <template>
-    <div>
-        <AddTaskModal v-model="isModalOpen" @proceed="getall()" />
+    <AddTaskModal v-model="isModalOpen" @proceed="getall()" />
+    <div class="buttons-list">
         <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
             <img src="~/public/plus.png" class="plus">
         </button>
+        <button class="calendar-view" @click="triggerCalendar()">
+            <img v-if="calendar_view === true" src="~/public/order.svg" class="calendar">
+            <img v-else src="~public/calendar.svg" class="calendar"/>
+        </button>
+    </div>
+    <div v-if="calendar_view === false" class="tasks">
         <div v-for="(task) in task_list" :key="task.id" class="task-list">
             <Task :key="task.id" :id="task.id" :title="task.title" :description="task.description" :createdBy="task.createdBy"
                 :createdAt="task.createdAt" :dueDate="task.dueDate" :isDone="task.isDone"
                 :enrolledUsers="task.enrolledUsers" :updatedAt="task.updatedAt" @proceed="getall()"></Task>
         </div>
+    </div>
+    <div v-else>
+      <CalendarView class="calendar-container" :task_list="task_list" @proceed="getall()"></CalendarView>
     </div>
 </template>
 
@@ -25,6 +34,7 @@ const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 const { $signalr } = useNuxtApp()
 const task_list = ref<Chore[]>([]);
+const calendar_view = ref(false);
 const signalr = $signalr as SignalRClient;
 
 signalr.on("NewChoreAdded", async (ChoreOutput) => {
@@ -66,29 +76,16 @@ const getall = async () => {
     task_list.value = data;
 };
 
+function triggerCalendar() {
+  calendar_view.value = !calendar_view.value;
+}
+
 onMounted(async () => {
     await getall();
 });
 </script>
 
 <style scoped>
-    .add-post {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 30px;
-        height: 30px;
-        margin: 8px 5%;
-        background-color: var(--main-buttons-light);
-        border-radius: 9px;
-        border: none;
-        box-shadow: var(--button-shadow-light);
-    }
-
-    .dark .add-post {
-        background-color: var(--main-buttons-dark);
-    }
-
     .plus {
         width: 20px;
         height: 20px;
@@ -98,10 +95,60 @@ onMounted(async () => {
         filter: invert(1) opacity(1);
     }
 
-    .task-list {
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        align-content: center;
-    }
+button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    margin: 8px 5%;
+    background-color: var(--main-buttons-light);
+    border-radius: 9px;
+    border: none;
+    box-shadow: var(--button-shadow-light);
+}
+
+.dark button {
+  background-color: var(--main-buttons-dark);
+}
+
+.buttons-list{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 30%;
+    position: fixed;
+    padding-left: 0.8rem;
+    top: 0;
+    background-color: var(--page-background-light);
+    z-index: 1;
+}
+
+.calendar {
+   filter: invert(1) opacity(1);
+}
+
+.dark .calendar {
+   filter: invert(0) opacity(1);
+}
+
+.task-list {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-content: center;
+}
+
+.tasks {
+    overflow-y: visible;
+    margin-top: 3rem;
+    max-height: calc(100vh - 7.5rem);
+  }
+
+.calendar-container {
+    padding: 0% 1%;
+    overflow-y: visible;
+    max-height: calc(100vh - 7.5rem);
+    margin-top: 3rem;
+}
 </style>

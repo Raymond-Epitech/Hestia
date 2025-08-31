@@ -218,6 +218,7 @@
         display: flex;
         flex-direction: column;
         line-height: normal;
+        text-align: left;
     }
 
     .title {
@@ -247,7 +248,7 @@
         align-content: center;
         text-align: center;
         height: 40px;
-        font-size: 250%;
+        font-size: 32px;
         margin-bottom: 4px;
         font-weight: 600;
         -webkit-text-size-adjust: none;

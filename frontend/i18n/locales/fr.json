@@ -92,5 +92,14 @@
   "Due_to": "Dû à",
   "from": "De",
   "to": "à",
-  "refund_history": "Historique des remboursements"
+  "refund_history": "Historique des remboursements",
+  "weekdays": {
+    "mon": "Lun",
+    "tue": "Mar",
+    "wed": "Mer",
+    "thu": "Jeu",
+    "fri": "Ven",
+    "sat": "Sam",
+    "sun": "Dim"
+  }
 }
