@@ -10,11 +10,11 @@
         </button>
     </div>
     <div v-if="calendar_view === false" class="tasks">
-        <div v-for="(task, index) in task_list" :key="index" class="task-list">
+        <div v-for="(task) in task_list" :key="task.id" class="task-list">
             <div v-if="shouldDisplay(task)">
-                <Task :id="task.id" :title="task.title" :description="task.description" :createdBy="task.createdBy"
+                <Task :key="task.id" :id="task.id" :title="task.title" :description="task.description" :createdBy="task.createdBy"
                 :createdAt="task.createdAt" :dueDate="task.dueDate" :isDone="task.isDone"
-                :enrolledUsers="task.enrolledUsers" @proceed="getall()"></Task>
+                :enrolledUsers="task.enrolledUsers" :updatedAt="task.updatedAt" @proceed="getall()"></Task>
             </div>
         </div>
     </div>
