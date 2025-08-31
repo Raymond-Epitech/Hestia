@@ -22,16 +22,16 @@ const { $signalr, $signalrReady } = useNuxtApp()
 StatusBar.setOverlaysWebView({ overlay: true });
 
 onMounted(async () => {
-  await $signalrReady
+  await $signalrReady;
+  if (userStore.user?.colocationId) {
+    $signalr.invoke("JoinColocationGroup", userStore.user.colocationId)
+    .then(() => console.log("Demande envoyée au hub"))
+    .catch(err => console.error("Erreur lors de l'envoi", err))
+  }
   if ((await StatusBar.getInfo()).visible) {
     await StatusBar.hide();
   }
   await StatusBar.hide();
-  if (userStore.user?.colocationId) {
-    $signalr.invoke("JoinColocationGroup", userStore.user.colocationId)
-      .then(() => console.log("Demande envoyée au hub"))
-      .catch(err => console.error("Erreur lors de l'envoi", err))
-  }
 })
 </script>
 
