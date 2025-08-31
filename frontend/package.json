@@ -46,5 +46,9 @@
     "@types/qrcode": "^1.5.5",
     "nuxt-modal": "^1.0.2",
     "sass": "1.77.6"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.9.5",
+    "@rollup/rollup-linux-arm64-gnu": "4.9.5"
   }
 }
