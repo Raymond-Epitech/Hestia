@@ -1,17 +1,19 @@
 <template>
     <AddTaskModal v-model="isModalOpen" @proceed="getall()" />
-    <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
-        <img src="~/public/plus.png" class="plus">
-    </button>
-    <button class="calendar-view" @click="triggerCalendar()">
-        <img v-if="calendar_view === true" src="~/public/order.svg" class="calendar">
-        <img v-else src="~public/calendar.svg" class="calendar"/>
-    </button>
+    <div class="buttons-list">
+        <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
+            <img src="~/public/plus.png" class="plus">
+        </button>
+        <button class="calendar-view" @click="triggerCalendar()">
+            <img v-if="calendar_view === true" src="~/public/order.svg" class="calendar">
+            <img v-else src="~public/calendar.svg" class="calendar"/>
+        </button>
+    </div>
     <div v-if="calendar_view === false" class="tasks">
-        <div v-for="(task, index) in task_list" :key="index" class="task-list">
-            <Task :id="task.id" :title="task.title" :description="task.description" :createdBy="task.createdBy"
+        <div v-for="(task) in task_list" :key="task.id" class="task-list">
+            <Task :key="task.id" :id="task.id" :title="task.title" :description="task.description" :createdBy="task.createdBy"
                 :createdAt="task.createdAt" :dueDate="task.dueDate" :isDone="task.isDone"
-                :enrolledUsers="task.enrolledUsers" @proceed="getall()"></Task>
+                :enrolledUsers="task.enrolledUsers" :updatedAt="task.updatedAt" @proceed="getall()"></Task>
         </div>
     </div>
     <div v-else>
@@ -19,8 +21,9 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useUserStore } from '~/store/user';
+import type { Chore, SignalRClient } from '../composables/service/type';
 
 const isModalOpen = ref(false)
 const openModal = () => (isModalOpen.value = true)
@@ -29,9 +32,44 @@ const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
-
-const task_list = ref([]);
+const { $signalr } = useNuxtApp()
+const task_list = ref<Chore[]>([]);
 const calendar_view = ref(false);
+const signalr = $signalr as SignalRClient;
+
+signalr.on("NewChoreAdded", async (ChoreOutput) => {
+  if (!task_list.value.some(task => task.id === ChoreOutput.id)) {
+    task_list.value.push(ChoreOutput)
+  }
+})
+
+signalr.on("ChoreDeleted", (ChoreOutput) => {
+  task_list.value = task_list.value.filter(task => task.id !== ChoreOutput)
+})
+
+signalr.on("ChoreEnrollmentAdded", async (ChoreOutput) => {
+  // const index = task_list.value.findIndex(task => task.id === ChoreOutput.id);
+  //   if (index !== -1) {
+  //     task_list.value[index] = ChoreOutput;
+  //   }
+  getall()
+})
+
+signalr.on("ChoreEnrollmentRemoved", async (ChoreOutput) => {
+  // const index = task_list.value.findIndex(task => task.id === ChoreOutput.id);
+  // if (index !== -1) {
+    // task_list.value[index] = ChoreOutput;
+  // }
+  getall()
+});
+
+
+signalr.on("ChoreUpdated", async (ChoreOutput) => {
+  const index = task_list.value.findIndex(task => task.id === ChoreOutput.id);
+    if (index !== -1) {
+      task_list.value[index] = ChoreOutput;
+    }
+})
 
 const getall = async () => {
     const data = await api.getAllChore(userStore.user.colocationId);
@@ -48,7 +86,16 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.add-post {
+    .plus {
+        width: 20px;
+        height: 20px;
+    }
+
+    .dark .plus {
+        filter: invert(1) opacity(1);
+    }
+
+button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -59,40 +106,22 @@ onMounted(async () => {
     border-radius: 9px;
     border: none;
     box-shadow: var(--button-shadow-light);
-    position: fixed;
-    z-index: 10;
 }
 
-.dark .add-post {
-    background-color: var(--main-buttons-dark);
+.dark button {
+  background-color: var(--main-buttons-dark);
 }
 
-.plus {
-    width: 20px;
-    height: 20px;
-}
-
-.dark .plus {
-    filter: invert(1) opacity(1);
-}
-
-.calendar-view {
+.buttons-list{
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    width: 30px;
-    height: 30px;
-    margin: 8px 16%;
-    background-color: var(--main-buttons-light);
-    border-radius: 9px;
-    border: none;
-    box-shadow: var(--button-shadow-light);
+    width: 30%;
     position: fixed;
-    z-index: 10;
-}
-
-.dark .calendar-view {
-    background-color: var(--main-buttons-dark);
+    padding-left: 0.8rem;
+    top: 0;
+    background-color: var(--page-background-light);
+    z-index: 1;
 }
 
 .calendar {

@@ -1,5 +1,5 @@
 import { json } from "stream/consumers";
-import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif, refund, shoppinglist, shoppinglist_item, expenses_category, expenses_category_get, message } from "./type";
+import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif, refund, shoppinglist, shoppinglist_item, expenses_category, expenses_category_get, message, UpdateChore } from "./type";
 import { Capacitor } from '@capacitor/core'
 import { Filesystem, Directory } from '@capacitor/filesystem';
 
@@ -368,8 +368,8 @@ export class bridge {
         return await fetch(this.url + "/api/User", {
             method: 'PUT',
             headers: {
-                'Authorization': 'Bearer ' + 
-                this.jwt,
+                'Authorization': 'Bearer ' +
+                    this.jwt,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(user)
@@ -504,7 +504,7 @@ export class bridge {
         })
     }
 
-    async updateChore(chore: Chore) {
+    async updateChore(chore: UpdateChore) {
         return await fetch(this.url + "/api/Chore", {
             method: 'PUT',
             headers: {
@@ -1104,7 +1104,7 @@ export class bridge {
         return await fetch(`${this.url}/api/Message`, {
             method: 'PUT',
             headers: {
-               'Authorization': 'Bearer ' + this.jwt
+                'Authorization': 'Bearer ' + this.jwt
             },
             body: JSON.stringify(data)
         }).then(response => {

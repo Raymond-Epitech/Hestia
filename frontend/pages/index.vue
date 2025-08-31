@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { useUserStore } from '~/store/user';
-import type { Reminder, SignalRClient } from '../composables/service/type'
+import type { Reminder, SignalRClient } from '../composables/service/type';
 
   const isModalOpen = ref(false)
   const openModal = () => (isModalOpen.value = true)
@@ -37,7 +37,7 @@ signalr.on("NewReminderAdded", async (ReminderOutput) => {
     posts.value.push(ReminderOutput)
   }
 })
-signalr.on("reminderdeleted", (ReminderOutput) => {
+signalr.on("ReminderDeleted", (ReminderOutput) => {
   posts.value = posts.value.filter(post => post.id !== ReminderOutput)
 })
 

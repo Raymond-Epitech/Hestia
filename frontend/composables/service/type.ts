@@ -130,6 +130,19 @@ export type Colocation = {
 
 export type Chore = {
     id: string;
+    createdBy: string;
+    createdAt: string;
+    updatedAt: string;
+    colocationId?: string;
+    dueDate: string;
+    title: string;
+    description: string;
+    isDone: boolean;
+    enrolledUsers: string[];
+}
+
+export type UpdateChore = {
+    id: string;
     colocationId: string;
     dueDate: string;
     title: string;
