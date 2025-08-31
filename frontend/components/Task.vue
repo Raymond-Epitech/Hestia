@@ -1,6 +1,6 @@
 <template>
     <div class="task-container">
-        <TaskModal v-model="isModalOpen" :key="id" :id="id" :title="title" :description="description"
+        <TaskModal v-model="isModalOpen" :key="updatedAt" :id="id" :title="title" :description="description"
             :color="getColor()" :dueDate="dueDate" :isDone="isDone" :enrolledUsers="enrolledUsers"
             @proceed="emitProceed()"></TaskModal>
         <div class="task" :class="[getColor()]" data-toggle="modal" data-target=".bd-example-modal-sm"
@@ -53,6 +53,10 @@
             type: Object,
             required: false,
         },
+        updatedAt: {
+            type: String,
+            required: true,
+        }
     })
     const isModalOpen = ref(false)
     const openModal = () => (isModalOpen.value = true)

@@ -4,10 +4,10 @@
         <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
             <img src="~/public/plus.png" class="plus">
         </button>
-        <div v-for="(task, index) in task_list" :key="index" class="task-list">
-            <Task :id="task.id" :title="task.title" :description="task.description" :createdBy="task.createdBy"
+        <div v-for="(task) in task_list" :key="task.id" class="task-list">
+            <Task :key="task.id" :id="task.id" :title="task.title" :description="task.description" :createdBy="task.createdBy"
                 :createdAt="task.createdAt" :dueDate="task.dueDate" :isDone="task.isDone"
-                :enrolledUsers="task.enrolledUsers" @proceed="getall()"></Task>
+                :enrolledUsers="task.enrolledUsers" :updatedAt="task.updatedAt" @proceed="getall()"></Task>
         </div>
     </div>
 </template>
@@ -38,43 +38,27 @@ signalr.on("ChoreDeleted", (ChoreOutput) => {
 })
 
 signalr.on("ChoreEnrollmentAdded", async (ChoreOutput) => {
-  task_list.value = task_list.value.map(task => {
-    if (task.id === ChoreOutput.choreId) {
-      const newEnrolled = {...task.enrolledUsers};
-      if (!newEnrolled[ChoreOutput.userId]) {
-        newEnrolled[ChoreOutput.userId] = ChoreOutput.pathToPP;
-      }
-      return {
-        ...task,
-        enrolledUsers: newEnrolled
-      }
-    }
-    return task
-  })
+  // const index = task_list.value.findIndex(task => task.id === ChoreOutput.id);
+  //   if (index !== -1) {
+  //     task_list.value[index] = ChoreOutput;
+  //   }
+  getall()
 })
 
 signalr.on("ChoreEnrollmentRemoved", async (ChoreOutput) => {
-  // console.log("in ze signal")
-  // task_list.value = task_list.value.map(task => {
-  //   if (task.id !== ChoreOutput.choreId) return task;
-  //   const filtered = Object.fromEntries(
-  //     Object.entries(task.enrolledUsers).filter(([uid]) => uid !== ChoreOutput.userId)
-  //   );
-  //   return { ...task, enrolledUsers: filtered };
-  // });
-  // console.log(task_list)
+  // const index = task_list.value.findIndex(task => task.id === ChoreOutput.id);
+  // if (index !== -1) {
+    // task_list.value[index] = ChoreOutput;
+  // }
   getall()
 });
 
 
 signalr.on("ChoreUpdated", async (ChoreOutput) => {
-  console.log(ChoreOutput);
-  getall()
-  // task_list.value = task_list.value.map(task => {
-  //   if (task.id === ChoreOutput.choreId) {
-
-  //   }
-  // })
+  const index = task_list.value.findIndex(task => task.id === ChoreOutput.id);
+    if (index !== -1) {
+      task_list.value[index] = ChoreOutput;
+    }
 })
 
 const getall = async () => {

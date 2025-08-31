@@ -104,7 +104,8 @@ export type Chore = {
     id: string;
     createdBy: string;
     createdAt: string;
-    colocationId: string;
+    updatedAt: string;
+    colocationId?: string;
     dueDate: string;
     title: string;
     description: string;
