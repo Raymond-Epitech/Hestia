@@ -9,9 +9,9 @@
                     <form class="form-container" method="post" action="">
                         <div>
                             <div class="name-expense-container">
-                                <input class="name-input" maxlength="40" v-model="expense.name"  :placeholder="$t('expense_name')" required />
+                                <input class="name-input" maxlength="40" v-model="modified_expense.name"  :placeholder="$t('expense_name')" required />
                                 <div class="expense-container">
-                                    <input class="expense-input" type="number" v-model="expense.amount"
+                                    <input class="expense-input" type="number" v-model="modified_expense.amount"
                                         @input="filterNumericInput" min="0" required />
                                     <text>€</text>
                                 </div>
@@ -19,7 +19,7 @@
                             <h3 class="subtext">
                                 <Texte_language source="expense_paid_by" /> :
                             </h3>
-                            <select v-model="expense.paidBy" class="drop-down-input name">
+                            <select v-model="modified_expense.paidBy" class="drop-down-input name">
                                 <option v-for="coloc in list_coloc" :key="coloc.id" :value="coloc.id">
                                     {{ coloc.username }}
                                 </option>
@@ -27,33 +27,33 @@
                             <h3 class="subtext">
                                 <Texte_language source="split_type" /> :
                             </h3>
-                            <select v-model="expense.splitType" class="drop-down-input type">
+                            <select v-model="modified_expense.splitType" class="drop-down-input type">
                                 <option v-for="type in splitTypes" :key="type.value" :value="type.value">
                                     <Texte_language :source=type.label />
                                 </option>
                             </select>
-                            <div v-if="expense.splitType == 0">
+                            <div v-if="modified_expense.splitType == 0">
                                 <div class="checkbox-list">
                                     <label v-for="coloc in list_coloc" :key="coloc.id" class="checkbox-item">
-                                        <input type="checkbox" :value="coloc.id" v-model="expense.splitBetween" />
+                                        <input type="checkbox" :value="coloc.id" v-model="modified_expense.splitBetween" />
                                         {{ coloc.username }}
                                         <input type="number" class="split-value-input"
-                                            :value="expense.splitBetween.includes(coloc.id) ? calculatedSplitValue : 0"
+                                            :value="modified_expense.splitBetween.includes(coloc.id) ? calculatedSplitValue : 0"
                                             readonly />
                                     </label>
                                 </div>
                             </div>
-                            <div v-if="expense.splitType == 1">
+                            <div v-if="modified_expense.splitType == 1">
                                 <div class="checkbox-list">
                                     <label v-for="coloc in list_coloc" :key="coloc.id" class="checkbox-item">
                                         <input type="checkbox" :value="coloc.id" />
                                         {{ coloc.username }}
                                         <input type="number" class="split-value-input"
-                                            v-model.number="expense.splitValues[coloc.id]" placeholder="0.00" min="0" />
+                                            v-model.number="modified_expense.splitValues[coloc.id]" placeholder="0.00" min="0" />
                                     </label>
                                 </div>
                             </div>
-                            <div v-if="expense.splitType == 2">
+                            <div v-if="modified_expense.splitType == 2">
                                 <div class="checkbox-list">
                                     <label v-for="coloc in list_coloc" :key="coloc.id"
                                         class="checkbox-item-pourcentage">
@@ -61,7 +61,7 @@
                                         {{ coloc.username }}
                                         <div class="split-value-container">
                                             <input type="number" class="split-value-input"
-                                                v-model.number="expense.splitPercentages[coloc.id]" placeholder="0"
+                                                v-model.number="modified_expense.splitPercentages[coloc.id]" placeholder="0"
                                                 min="0" max="100" />
                                             <span class="percentage-symbol">%</span>
                                         </div>
@@ -72,13 +72,18 @@
                             </div>
                         </div>
                         <div class="modal-buttons">
-                             <button class="button-proceed" @click.prevent="handleProceed">
-                                <img src="../public/submit.png" class="submit">
+                            <button class="button button-proceed" @click.prevent="handleProceed('modify')">
+                              <Texte_language source="modify" />
+                            </button>
+                            <button class="button button-proceed" @click.prevent="showPopup">
+                              <Texte_language source="delete" />
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
+            <popup v-if="popup_vue" :text="$t('confirm_delete_expense')" @confirm="handleProceed('delete')" @close="cancelDelete">
+            </popup>
         </div>
     </transition>
 </template>
@@ -86,58 +91,29 @@
 <script setup lang="ts">
 import useModal from '~/composables/useModal';
 import { useUserStore } from '~/store/user';
-import type { Expense, Coloc } from '~/composables/service/type';
+import type { Expenseget, Expense_Modif, Expense, Coloc } from '~/composables/service/type';
 
-const props = withDefaults(
-    defineProps < {
-        name?: string,
-        modelValue?: boolean,
-        header?: boolean,
-        buttons?: boolean,
-        borders?: boolean,
-        categoryId: string,
-    } > (),
-    {
-        header: true,
-        buttons: true,
-        borders: true,
-    }
-)
-const { $bridge } = useNuxtApp()
-const api = $bridge;
+const props = defineProps < {
+    modelValue?: boolean,
+    name?: string,
+    expense: Expenseget;
+} >();
+
 const userStore = useUserStore();
 const user = userStore.user;
+const { $bridge } = useNuxtApp()
+const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 const date = new Date();
-const list_coloc = ref<Coloc[]>([]);
-const splitTypes = [
-  { value: 0, label: 'split_type0' },
-  { value: 1, label: 'split_type1' },
-  { value: 2, label: 'split_type2' },
-];
-
-const expense = ref<Expense>({
-  colocationId: user.colocationId,
-  expenseCategoryId: props.categoryId,
-  createdBy: '',
-  name: '',
-  description: '',
-  amount: 0,
-  category: '',
-  paidBy: list_coloc.value[0]?.id || '',
-  splitType: 0,
-  splitBetween: [],
-  splitValues: {},
-  splitPercentages: {},
-  dateOfPayment: date.toISOString(),
-})
-
+const popup_vue = ref(false);
+const collocid = user.colocationId
 const { modelValue } = toRefs(props)
 const { open, close, toggle, visible } = useModal(props.name)
 
 const emit = defineEmits < {
     closed: [], // named tuple syntax
     proceed: [],
+    open: [],
     'update:modelValue': [value: boolean]
 } > ()
 
@@ -148,63 +124,62 @@ defineExpose({
     visible,
 })
 
-api.getUserbyCollocId(user.colocationId).then((response) => {
-  list_coloc.value = response;
-  Object.assign(expense.value, {
-    colocationId: user.colocationId,
-    expenseCategoryId: props.categoryId,
-    createdBy: user.id,
-    description: '',
-    category: name,
-    name: '',
-    amount: 0,
-    paidBy: list_coloc.value[0]?.id || '',
-    splitType: 0,
-    splitBetween: [],
-    splitValues: {},
-    splitPercentages: {},
-    dateOfPayment: date.toISOString(),
-  });
-}).catch((error) => {
-  console.error('Error fetching data:', error);
-});
+const list_coloc = ref<Coloc[]>([]);
+const splitTypes = [
+  { value: 0, label: 'split_type0' },
+  { value: 1, label: 'split_type1' },
+  { value: 2, label: 'split_type2' },
+];
+
+const modified_expense = ref<Expense_Modif>({
+  id: props.expense.id,
+  colocationId: collocid,
+  expenseCategoryId: '',
+  description: '',
+  name: '',
+  amount: 0,
+  paidBy: list_coloc.value[0]?.id || '',
+  splitType: 0,
+  splitBetween: [],
+  splitValues: {},
+  splitPercentages: {},
+  dateOfPayment: date.toISOString(),
+})
 
 const calculateValueFromPercentage = (colocId: string) => {
-  const percentage = expense.value.splitPercentages[colocId] || 0;
-  return ((percentage / 100) * expense.value.amount).toFixed(2);
+  const percentage = modified_expense.value.splitPercentages[colocId] || 0;
+  return ((percentage / 100) * modified_expense.value.amount).toFixed(2);
 };
 
 const calculatedSplitValue = computed(() => {
-  const numPeople = expense.value.splitBetween.length;
-  return numPeople > 0 ? (expense.value.amount / numPeople).toFixed(2) : 0;
+  const numPeople = modified_expense.value.splitBetween.length;
+  return numPeople > 0 ? (modified_expense.value.amount / numPeople).toFixed(2) : 0;
 });
 
-const handleProceed = async () => {
-  console.log(expense.value);
-  api.addExpense(expense.value).then((response) => {
-    if (response === true) {
-      console.log("Expense added successfully!");
+const showPopup = () => {
+  popup_vue.value = true;
+};
+
+const cancelDelete = () => {
+  popup_vue.value = false;
+};
+
+const handleProceed = async (action: string) => {
+  if (action === 'modify') {
+    console.log(modified_expense.value);
+    const response = await api.updateExpense(modified_expense.value);
+    if (response) {
+      console.log('Expense modified successfully');
       close()
       emit('proceed')
-       Object.assign(expense.value, {
-        colocationId: user.colocationId,
-        expenseCategoryId: props.categoryId,
-        createdBy: user.id,
-        description: '',
-        category: props.name,
-        name: '',
-        amount: 0,
-        paidBy: list_coloc.value[0]?.id || '',
-        splitType: 0,
-        splitBetween: [],
-        splitValues: {},
-        splitPercentages: {},
-        dateOfPayment: date.toISOString(),
-      });
+    } else {
+      console.error('Error modifying expense');
     }
-  }).catch((error) => {
-    console.error('Error adding expense:', error);
-  });
+  } else if (action === 'delete') {
+    await api.deleteExpense(props.expense.id);
+    close()
+    emit('proceed')
+  }
 }
 
 const filterNumericInput = (event: Event) => {
@@ -216,9 +191,9 @@ const filterNumericInput = (event: Event) => {
     target.value = filteredValue;
   }
   if (!isNaN(parseFloat(filteredValue))) {
-    expense.value.amount = parseFloat(filteredValue);
+    modified_expense.value.amount = parseFloat(filteredValue);
   } else {
-    expense.value.amount = 0;
+    modified_expense.value.amount = 0;
   }
 };
 
@@ -232,14 +207,61 @@ watch(
     (value, oldValue) => {
         if (value !== oldValue) {
             toggle(value)
+            emit('open')
         }
     },
-    { immediate: true }
+    { immediate: false }
 )
 
-watch(visible, (value) => {
-    emit('update:modelValue', value)
+watch(visible, async (value) => {
+  emit('update:modelValue', value)
+
+  if (value) {
+    try {
+      // fetch coloc members
+      list_coloc.value = await api.getUserbyCollocId(collocid)
+
+      // set defaults
+      Object.assign(modified_expense.value, {
+        colocationId: collocid,
+        expenseCategoryId: '',
+        description: '',
+        name: '',
+        amount: 0,
+        paidBy: list_coloc.value[0]?.id || '',
+        splitType: 0,
+        splitBetween: [],
+        splitValues: {},
+        splitPercentages: {},
+        dateOfPayment: date.toISOString(),
+      })
+
+      // fetch expense details
+      const expenseData = await api.getExpenseById(props.expense.id)
+      Object.assign(modified_expense.value, {
+        id: expenseData.id,
+        expenseCategoryId: expenseData.expenseCategoryId,
+        description: expenseData.description,
+        name: expenseData.name,
+        amount: expenseData.amount,
+        paidBy: expenseData.paidBy,
+        splitType: expenseData.splitType,
+        dateOfPayment: date.toISOString(),
+      })
+
+      if (expenseData.splitType === 0) {
+        modified_expense.value.splitBetween = Object.keys(expenseData.splitBetween)
+      } else if (expenseData.splitType === 1) {
+        modified_expense.value.splitValues = expenseData.splitBetween
+      } else if (expenseData.splitType === 2) {
+        modified_expense.value.splitPercentages = expenseData.splitBetween
+      }
+    } catch (error) {
+      console.error("Error fetching expense:", error)
+    }
+  }
 })
+
 </script>
 
 <style scoped>
@@ -261,6 +283,7 @@ watch(visible, (value) => {
     flex-direction: column;
     justify-content: center;
     position: relative;
+    overflow-y: hidden;
 }
 
 .modal-header {
@@ -272,7 +295,7 @@ watch(visible, (value) => {
 }
 
 .modal-background {
-    top: 0;
+    bottom: 0;
     left: 0;
     width: 100%;
     height: 100%;
@@ -282,6 +305,8 @@ watch(visible, (value) => {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    backdrop-filter: blur(8px);
+    overflow-y: hidden;
 }
 
 h3 {
@@ -505,14 +530,10 @@ input[type="checkbox"]:checked {
 }
 
 .modal-buttons {
-  height: 48px;
-  padding: 12px 4px;
-  border-top: 0px;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
+  height: 100px;
   display: flex;
-  justify-content: right;
-  gap: 1em;
+  justify-content: space-evenly;
+  align-items: center;
 }
 
 /** Fallback Buttons */
@@ -522,8 +543,16 @@ input[type="checkbox"]:checked {
   align-items: center;
   border: none;
   background: none;
-  height: 22px;
-  width: 22px;
+  padding: 18px;
+  border-radius: 16px;
+  background-color: var(--main-buttons-light);
+  color: var(--page-text-light);
+  font-weight: 600;
+}
+
+.dark .button-proceed {
+  background-color: var(--main-buttons-dark);
+  color: var(--page-text-dark);
 }
 
 .button-proceed:hover {
