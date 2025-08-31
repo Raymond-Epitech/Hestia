@@ -25,42 +25,66 @@ const props = defineProps({
 
 <style scoped>
 .box {
-    color: #4B4B4B;
-    padding: 10px;
+    color: var(--basic-grey);
     border-radius: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 0.2rem;
     margin-right: 5%;
     margin-left: 5%;
 }
+
+.dark .box {
+    color: var(--light-grey);
+}
+
 .header {
     display: flex;
+    line-height: 0rem;
     align-items: center;
-    margin-bottom: 5px;
+    margin-top: 0.4rem;
+    margin-bottom: 0.5rem;
 }
 
 .header p {
+    margin-bottom: 0;
     margin-left: 10px;
     font-weight: bold;
 }
 
 .content {
-    color: black;
+    color: var(--page-text-light);
     align-content: center;
     max-width: 80%;
     width: fit-content;
+    height: fit-content;
     padding: 10px;
 }
 
+.dark .content {
+    color: var(--page-text-dark);
+}
+
+.content p {
+    margin-bottom: 0;
+}
 .content-me {
     font-size: 14px;
     border-radius: 8px 8px 0 8px;
-    background-color: #BDD4F6;
+    background-color: var(--sent-message-light);
     margin-left: auto;
 }
+
+.dark .content-me {
+    background-color: var(--sent-message-dark);
+}
+
 .content-other {
     font-size: 14px;
     border-radius: 8px 8px 8px 0;
-    background-color: #C1E0B9;
+    background-color: var(--recieved-message-light);
     margin-right: auto;
+}
+
+.dark .content-other {
+    background-color: var(--recieved-message-dark);
 }
 </style>

@@ -60,6 +60,10 @@ onMounted(() => {
         }
     })
     registerNotifications();
+    colocationID.value = route.query.collocID;
+    if (colocationID.value) {
+        registretion.value = true;
+    }
 
     PushNotifications.addListener('registration', (token) => {
         fcmToken.value = token.value;
@@ -252,7 +256,7 @@ const login = async () => {
         justify-content: center;
         align-items: center;
         min-width: 200px;
-        height: 50px;
+        height: fit-content;
         padding: 5px;
         background-color: var(--background-light);
         border-radius: 14px;

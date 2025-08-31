@@ -1,5 +1,5 @@
 <template>
-    <div class="background">
+    <div>
         <div class="messages-box">
             <MessageBox
                 v-for="message in messages"
@@ -91,28 +91,62 @@ const getUsername = (sendById: string): string => {
     height: 24px;
     display: inline-block;
     vertical-align: middle;
+    background: transparent;
 }
+
+.dark .svg-icon {
+    filter: invert(1);
+}
+
 
 .body-input {
     width: 80%;
     padding-right: 40px;
     border: none;
-    border-bottom: 2px solid #BDD4F6;
+    border-bottom: 2px solid var(--list-lines-light);
+    height: 2.8rem;
+    background: transparent;
+    color: var(--page-text-light);
+    font-size: 1.1rem;
+    border-radius: 8px;
+    padding-left: 12px;
+}
+
+.dark .body-input {
+    border-bottom: 2px solid var(--list-lines-dark);
+    color: var(--page-text-dark);
 }
 
 form {
     position: fixed;
-    bottom: 10%;
+    bottom: 4.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
     gap: 10px;
     width: 100%;
+    background: var(--main-buttons-light);
+    padding: 0.8rem 0;
+    box-shadow: var(--button-shadow-light);
+    padding-bottom: 1.2rem;
+}
+
+.dark form {
+    background: var(--main-buttons-dark);
 }
 
 .messages-box {
-    margin: 10px 5%;
-    max-height: 50%;
+    padding: 0.2rem;
+    padding-bottom: 6rem;
+    max-height: calc(100vh - 7rem);
     overflow-y: auto;
+    line-height: 1rem;
+}
+
+button {
+    background: transparent;
+    border: none;
 }
 </style>

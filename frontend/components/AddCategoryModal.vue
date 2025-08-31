@@ -67,7 +67,6 @@
     } > ()
 
     const handleProceed = async () => {
-        console.log(newcategory.value);
         api.addexpensecategory(newcategory.value).then(() => {
             console.log('Expense category added successfully');
             resetPost()
