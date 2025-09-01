@@ -92,6 +92,12 @@ try
     builder.Logging.SetMinimumLevel(LogLevel.Debug);
     builder.Services.AddHangfireServer();
 
+    builder.WebHost.UseSentry(o =>
+    {
+        o.Dsn = builder.Configuration["Sentry"];
+        o.Debug = true;
+    });
+
     var app = builder.Build();
 
     app.UseRouting();
