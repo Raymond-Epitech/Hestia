@@ -268,7 +268,9 @@ public class UserService(ILogger<UserService> logger,
 
         userRepository.Update(user);
 
-        if (loginInput is not null && await fcmDeviceRepository.Query().AnyAsync(f => f.FCMToken != loginInput.FCMToken))
+        var fcmDevices = user.FCMDevices;
+
+        if (loginInput is not null && !fcmDevices.Any(f => f.FCMToken == loginInput.FCMToken))
         {
             var fmcDevice = new FCMDevice
             {

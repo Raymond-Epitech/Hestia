@@ -4,6 +4,7 @@ using EntityFramework.Models;
 using EntityFramework.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Shared.Exceptions;
 using Shared.Models.Input;
 using Shared.Models.Output;
 
@@ -78,7 +79,7 @@ public class ReactionService(ILogger<ReactionService> logger,
         if (reaction is null)
         {
             logger.LogWarning($"No reaction found for UserId: {input.UserId} and ReminderId: {input.ReminderId}");
-            throw new KeyNotFoundException("Reaction not found");
+            throw new NotFoundException("Reaction not found");
         }
 
         reactionRepository.Delete(reaction);
