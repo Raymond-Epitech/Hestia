@@ -8,17 +8,14 @@
           </div>
           <form method="post" action="">
             <div class="modal-body left">
-              <textarea class="modal-body-input" rows="3" maxlength="150" v-model="post.content" required></textarea>
-            </div>
-            <div class="post-colors-buttons">
-              <input class="form-check-input color-choice blue" v-model="post.color" type="radio" name="gridRadios"
-                id="gridRadios1" value="blue" required>
-              <input class="form-check-input color-choice yellow" v-model="post.color" type="radio" name="gridRadios"
-                id="gridRadios2" value="yellow">
-              <input class="form-check-input color-choice pink" v-model="post.color" type="radio" name="gridRadios"
-                id="gridRadios3" value="pink">
-              <input class="form-check-input color-choice green" v-model="post.color" type="radio" name="gridRadios"
-                id="gridRadios4" value="green">
+              <input
+                type="file"
+                class="modal-body-input"
+                @change="handleImageUpload"
+                accept="image/*"
+                required
+              />
+              <img v-if="prewiew" :src="prewiew" alt="Image sélectionnée" style="max-width: 10%; margin-top: 1em;" />
             </div>
             <div v-if="post.color && post.content" class="modal-buttons">
               <button class="button button-proceed" @click.prevent="handleProceed">{{ $t('poster') }}</button>
@@ -64,7 +61,7 @@ const post = ref({
   coordX: 0,
   coordY: 0,
   coordZ: 0,
-  reminderType: 0,
+  reminderType: 1,
   content: '',
   color: '',
   image: new File([], 'test.jpg'),
