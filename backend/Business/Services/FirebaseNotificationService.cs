@@ -125,6 +125,7 @@ public class FirebaseNotificationService : IFirebaseNotificationService
     {
         var users = await userRepository.Query()
             .Where(u => u.ColocationId == notification.Id && !u.IsDeleted)
+            .Include(u => u.FCMDevices)
             .ToListAsync();
 
         if (users.Count == 0)
