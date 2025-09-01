@@ -277,6 +277,7 @@ public class UserService(ILogger<UserService> logger,
             };
 
             await fcmDeviceRepository.AddAsync(fmcDevice);
+            user.FCMDevices.Add(fmcDevice);
 
             logger.LogInformation($"Succes : FCM Device {fmcDevice.FCMToken} added for user {user.Id}");
         }

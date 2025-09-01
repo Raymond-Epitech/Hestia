@@ -143,6 +143,13 @@ public class FirebaseNotificationService : IFirebaseNotificationService
             }
         }
 
+        logger.LogInformation($"Found {users.Count} users for colocation {notification.Id}");
+
+        foreach (var u in users)
+        {
+            logger.LogInformation($"User {u.Id} has {u.FCMDevices?.Count ?? 0} fcm devices");
+        }
+
         var fcmDevices = users
             .Where(u => u.FCMDevices != null)
             .SelectMany(u => u.FCMDevices!)
