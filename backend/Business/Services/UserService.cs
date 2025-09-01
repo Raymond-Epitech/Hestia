@@ -187,6 +187,20 @@ public class UserService(ILogger<UserService> logger,
             PathToProfilePicture = validPayload.Picture ?? "default.jpg"
         };
 
+        await userRepository.AddAsync(newUser);
+
+        await userRepository.SaveChangesAsync();
+
+        logger.LogInformation($"Succes : User {newUser.Id} added");
+
+        var user = await userRepository.Query()
+            .Where(u => u.Id == newUser.Id)
+            .Include(u => u.FCMDevices)
+            .FirstOrDefaultAsync();
+
+        if (user is null)
+            throw new NotFoundException("User not found after creation");
+
         if (userInput.FCMToken is not null)
         {
             var existingDevice = await fcmDeviceRepository.Query()
@@ -203,17 +217,12 @@ public class UserService(ILogger<UserService> logger,
                 logger.LogInformation($"Succes : FCM Device {existingDevice.FCMToken} created");
             }
 
-            newUser.FCMDevices = new List<FCMDevice>();
-            newUser.FCMDevices.Add(existingDevice);
-
-            logger.LogInformation($"Succes : FCM Device {existingDevice.FCMToken} linked to user {newUser.Id}");
+            if (!user.FCMDevices.Any(f => f.FCMToken == existingDevice.FCMToken))
+            {
+                user.FCMDevices.Add(existingDevice);
+                logger.LogInformation($"Succes : FCM Device {existingDevice.FCMToken} linked to user {user.Id}");
+            }
         }
-
-        await userRepository.AddAsync(newUser);
-
-        await userRepository.SaveChangesAsync();
-
-        logger.LogInformation($"Succes : User {newUser.Id} added");
 
         // Generate and return JWT
 
