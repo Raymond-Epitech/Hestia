@@ -202,7 +202,10 @@ public class UserService(ILogger<UserService> logger,
                 await fcmDeviceRepository.AddAsync(existingDevice);
                 logger.LogInformation($"Succes : FCM Device {existingDevice.FCMToken} created");
             }
+
+            newUser.FCMDevices = new List<FCMDevice>();
             newUser.FCMDevices.Add(existingDevice);
+
             logger.LogInformation($"Succes : FCM Device {existingDevice.FCMToken} linked to user {newUser.Id}");
         }
 
