@@ -257,6 +257,7 @@ public class UserService(ILogger<UserService> logger,
 
         var user = await userRepository.Query()
             .Where(u => u.Email == validPayload.Email)
+            .Include(u => u.FCMDevices)
             .FirstOrDefaultAsync();
 
         if (user is null)
