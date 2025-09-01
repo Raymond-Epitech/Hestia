@@ -63,7 +63,7 @@ export class bridge {
         return {};
     }
 
-    async addReminder(data: any) {
+    async addReminder(data: any): Promise<string> {
         const formData = new FormData();
         formData.append('ColocationId', data.colocationId || '');
         formData.append('CreatedBy', data.createdBy);
@@ -92,9 +92,9 @@ export class bridge {
             body: formData
         }).then(response => {
             if (response.status == 200) {
-                return true;
+                return response.json();
             }
-            return false;
+            return '';
         });
     }
 

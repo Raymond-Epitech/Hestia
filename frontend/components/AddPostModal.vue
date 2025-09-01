@@ -129,7 +129,7 @@ const handleProceed = async () => {
     post.value.content = '';
   }
   const response = await api.addReminder(post.value)
-  if (response) {
+  if (response != '') {
     resetPost()
     close()
     emit('closed')

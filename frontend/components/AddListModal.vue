@@ -4,20 +4,24 @@
       <div class="modal-background" @click="handleClose">
         <div class="modal" @click.stop>
           <div class="modal-header left">
-            <h1 class="modal-header-text">{{ $t('post-content') }} :</h1>
+            <h1 class="modal-header-text">{{ $t('shopping-list-name') }} :</h1>
           </div>
           <form method="post" action="">
             <div class="modal-body left">
-              <input
-                type="file"
-                class="modal-body-input"
-                @change="handleImageUpload"
-                accept="image/*"
-                required
-              />
-              <img v-if="prewiew" :src="prewiew" alt="Image sélectionnée" style="max-width: 10%; margin-top: 1em;" />
+              <input class="modal-body-input" rows="1" maxlength="50" v-model="post.shoppinglistName"></input>
             </div>
-            <div v-if="post.color && post.content" class="modal-buttons">
+            <div ref="itemList">
+              <div v-for="(item, index) in item_list" :key="index" >
+                {{ item.name }}
+              </div>
+            </div>
+            <div @click.prevent="handleAddItem">
+              <input v-model="newitemList.name" type="text" placeholder="Message" class="body-input"/>
+              <button type="submit" class="button">
+                  <img src="/Submit.svg" alt="Submit Icon" class="svg-icon" />
+              </button>
+            </div>
+            <div v-if="post.shoppinglistName" class="modal-buttons">
               <button class="button button-proceed" @click.prevent="handleProceed">{{ $t('poster') }}</button>
             </div>
             <div v-else class="modal-buttons">
@@ -31,12 +35,13 @@
 </template>
 
 <script setup lang="ts">
-  import useModal from '~/composables/useModal';
-  import { useUserStore } from '~/store/user';
+import type { ReminderItem } from '~/composables/service/type';
+import useModal from '~/composables/useModal';
+import { useUserStore } from '~/store/user';
 
-  const props = withDefaults(
-    defineProps < {
-      name?: string
+const props = withDefaults(
+  defineProps<{
+    name?: string
     modelValue?: boolean
     header?: boolean
     buttons?: boolean
@@ -54,6 +59,14 @@ const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 const prewiew = ref('');
+const item_list = ref<ReminderItem[]>([]);
+const newitemList = ref<ReminderItem>({
+  name: '',
+  reminderId: '',
+  createdBy: userStore.user.id,
+  isChecked: false
+})
+
 
 const post = ref({
   colocationId: userStore.user.colocationId,
@@ -61,7 +74,7 @@ const post = ref({
   coordX: 0,
   coordY: 0,
   coordZ: 0,
-  reminderType: 1,
+  reminderType: 2,
   content: '',
   color: '',
   image: new File([], 'test.jpg'),
@@ -79,11 +92,11 @@ const { modelValue } = toRefs(props)
 
 const { open, close, toggle, visible } = useModal(props.name)
 
-const emit = defineEmits < {
+const emit = defineEmits<{
   closed: [], // named tuple syntax
   proceed: [],
   'update:modelValue': [value: boolean]
-} > ()
+}>()
 
 defineExpose({
   open,
@@ -121,26 +134,27 @@ const handleClose = () => {
   emit('closed')
 }
 
-const handleProceed = async () => {
-  if (post.value.reminderType === 1) {
-    post.value.content = '';
+const handleAddItem = () => {
+  if (newitemList.value.name.trim() !== '') {
+    item_list.value.push({ ...newitemList.value });
+    newitemList.value.name = '';
   }
+}
+
+const handleProceed = async () => {
   const response = await api.addReminder(post.value)
-  if (response) {
+  if (response != '') {
+    console.log(response)
+    item_list.value.forEach(async (item) => {
+      item.reminderId = response;
+      await api.addReminderShoppingListItem(item);
+    });
     resetPost()
     close()
     emit('closed')
   }
 }
 
-const handleImageUpload = (event: Event) => {
-  const file = (event.target as HTMLInputElement).files?.[0];
-  if (file) {
-    post.value.image = file;
-    prewiew.value = URL.createObjectURL(file);
-    post.value.content = 'none';
-  }
-};
 
 watch(
   modelValue,
@@ -152,22 +166,6 @@ watch(
   }
 )
 
-watch(
-  () => post.value.reminderType,
-  (newValue, oldValue) => {
-    if (newValue !== oldValue) {
-      prewiew.value = '';
-      if (post.value.reminderType === 1) {
-        post.value.content = '';
-        post.value.color = 'none'
-      } else {
-        post.value.image = new File([], 'test.jpg');
-        post.value.color = '';
-      }
-    }
-  }
-);
-
 watch(visible, (value) => {
   emit('update:modelValue', value)
 })
@@ -175,222 +173,222 @@ watch(visible, (value) => {
 </script>
 
 <style scoped>
-  .modal {
-    width: 100%;
-    height: fit-content;
-    overflow-y: auto;
-    margin-top: 0px;
-    padding-top: 25pt;
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-    animation: slideIn 0.4s;
-    background-color: #1e1e1eda;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    position: relative;
-  }
+.modal {
+  width: 100%;
+  height: fit-content;
+  overflow-y: auto;
+  margin-top: 0px;
+  padding-top: 25pt;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  animation: slideIn 0.4s;
+  background-color: #1e1e1eda;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
 
-  .modal-header {
-    padding: 0px 16px;
-    font-weight: 600;
-    border-bottom: none;
-    color: var(--overlay-text);
-  }
+.modal-header {
+  padding: 0px 16px;
+  font-weight: 600;
+  border-bottom: none;
+  color: var(--overlay-text);
+}
 
-  .modal-header-text {
-    font-size: 20px;
-  }
+.modal-header-text {
+  font-size: 20px;
+}
 
-  .modal-body {
-    padding: 0px 12px 12px 12px;
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-    gap: 16px;
-  }
+.modal-body {
+  padding: 0px 12px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  gap: 16px;
+}
 
-  .modal-body:deep(p) {
-    margin: 0;
-    font-size: 18px;
-    line-height: 23px;
-  }
+.modal-body:deep(p) {
+  margin: 0;
+  font-size: 18px;
+  line-height: 23px;
+}
 
-  .modal-body-input {
-    width: 100%;
-    background-color: #1e1e1e00;
-    outline: none;
-    border: none;
-    line-height: 3ch;
-    background-image: linear-gradient(transparent, transparent calc(3ch - 1px), #E7EFF8 0px);
-    background-size: 100% 3ch;
-    color: var(--overlay-text);
-    font-size: 18px;
-    margin-bottom: 12px;
-  }
+.modal-body-input {
+  width: 100%;
+  background-color: #1e1e1e00;
+  outline: none;
+  border: none;
+  line-height: 3ch;
+  background-image: linear-gradient(transparent, transparent calc(3ch - 1px), #E7EFF8 0px);
+  background-size: 100% 3ch;
+  color: var(--overlay-text);
+  font-size: 18px;
+  margin-bottom: 12px;
+}
 
-  .post-colors-buttons {
-    padding: 8px;
-    display: flex;
-    justify-content: space-evenly;
-  }
+.post-colors-buttons {
+  padding: 8px;
+  display: flex;
+  justify-content: space-evenly;
+}
 
-  .color-choice {
-    width: 24px;
-    height: 24px;
-    border: none;
-  }
+.color-choice {
+  width: 24px;
+  height: 24px;
+  border: none;
+}
 
-  .color-choice:focus {
-    box-shadow: none;
-  }
+.color-choice:focus {
+  box-shadow: none;
+}
 
-  .blue {
-    background-color: #A8CBFF;
-  }
+.blue {
+  background-color: #A8CBFF;
+}
 
-  .blue:checked {
-    background-color: #A8CBFF;
-  }
+.blue:checked {
+  background-color: #A8CBFF;
+}
 
-  .yellow {
-    background-color: #FFF973;
-  }
+.yellow {
+  background-color: #FFF973;
+}
 
-  .yellow:checked {
-    background-color: #FFF973;
-  }
+.yellow:checked {
+  background-color: #FFF973;
+}
 
-  .pink {
-    background-color: #FFA3EB;
-  }
+.pink {
+  background-color: #FFA3EB;
+}
 
-  .pink:checked {
-    background-color: #FFA3EB;
-  }
+.pink:checked {
+  background-color: #FFA3EB;
+}
 
-  .green {
-    background-color: #9CFFB2;
-  }
+.green {
+  background-color: #9CFFB2;
+}
 
-  .green:checked {
-    background-color: #9CFFB2;
-  }
+.green:checked {
+  background-color: #9CFFB2;
+}
 
-  .modal-background {
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 100;
-    position: fixed;
-    animation: fadeIn 0.2s;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-  }
+.modal-background {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  position: fixed;
+  animation: fadeIn 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
 
-  .modal-buttons {
-    padding: 14px;
-    border-top: 0px;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-    margin-top: auto;
-    display: flex;
-    justify-content: center;
-    gap: 1em;
-  }
+.modal-buttons {
+  padding: 14px;
+  border-top: 0px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+}
 
-  .modal-buttons:deep(button) {
-    border-radius: 7px;
-  }
+.modal-buttons:deep(button) {
+  border-radius: 7px;
+}
 
-  .modal-no-border {
-    border: 0;
-  }
+.modal-no-border {
+  border: 0;
+}
 
-  /** Fallback Buttons */
-  .button {
-    padding: 10px 20px;
-    border-radius: 15px;
-    border: 0;
-    cursor: pointer;
-  }
+/** Fallback Buttons */
+.button {
+  padding: 10px 20px;
+  border-radius: 15px;
+  border: 0;
+  cursor: pointer;
+}
 
-  .button-proceed {
-    background: #00000088;
-    color: var(--overlay-text);
-  }
+.button-proceed {
+  background: #00000088;
+  color: var(--overlay-text);
+}
 
-  button:disabled {
-    opacity: 0.5;
-  }
+button:disabled {
+  opacity: 0.5;
+}
 
-  /* Transition */
-  .modal-enter-active,
-  .modal-leave-active {
-    transition: opacity 0.2s ease;
-  }
+/* Transition */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.2s ease;
+}
 
-  .modal-enter-from,
-  .modal-leave-to {
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  0% {
     opacity: 0;
   }
 
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-    }
+  100% {
+    opacity: 1;
+  }
+}
 
-    100% {
-      opacity: 1;
-    }
+@keyframes slideIn {
+  0% {
+    transform: translateY(-600px);
   }
 
-  @keyframes slideIn {
-    0% {
-      transform: translateY(-600px);
-    }
+  100% {
+    transform: translateY(0px);
+  }
+}
 
-    100% {
-      transform: translateY(0px);
-    }
+@keyframes slideOut {
+  0% {
+    transform: translateY(0px);
   }
 
-  @keyframes slideOut {
-    0% {
-      transform: translateY(0px);
-    }
+  100% {
+    transform: translateY(-600px);
+  }
+}
 
-    100% {
-      transform: translateY(-600px);
-    }
+@media screen and (max-width: 768px) {
+
+  /** Slide Out Transition (mobile only) */
+  .modal-enter-from:deep(.modal),
+  .modal-leave-to:deep(.modal) {
+    animation: slideOut 0.4s linear;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .modal-background {
+    justify-content: flex-start;
   }
 
-  @media screen and (max-width: 768px) {
-
-    /** Slide Out Transition (mobile only) */
-    .modal-enter-from:deep(.modal),
-    .modal-leave-to:deep(.modal) {
-      animation: slideOut 0.4s linear;
-    }
+  .modal {
+    width: 100%;
+    margin: 0 0 0 0;
+    max-height: calc(100dvh - 120px);
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
   }
-
-  @media screen and (min-width: 768px) {
-    .modal-background {
-      justify-content: flex-start;
-    }
-
-    .modal {
-      width: 100%;
-      margin: 0 0 0 0;
-      max-height: calc(100dvh - 120px);
-      border-bottom-left-radius: 20px;
-      border-bottom-right-radius: 20px;
-    }
-  }
+}
 </style>
