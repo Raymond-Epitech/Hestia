@@ -5,7 +5,7 @@
             <div v-if="registretion" class="register">
                 <h2 class="login-font">{{ $t('register') }}</h2>
                 <h2 class="register-font">{{ $t('user_name') }} :</h2>
-                <input class="input" type="text" :placeholder="$t('user_name')" v-model="username" />
+                <input class="input" type="text" :placeholder="$t('user_name')" maxlength="12" v-model="username" />
                 <h2 v-if="alert" class="alert">{{ $t('error_register') }}</h2>
                 <h2 class="register-font">{{ $t('colocation_id') }} :</h2>
                 <input class="input" type="text" :placeholder="$t('optional')" v-model="colocationID" />
