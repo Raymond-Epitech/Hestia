@@ -5,6 +5,7 @@ using EntityFramework.Repositories;
 using Google.Apis.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Shared.Enums;
 using Shared.Exceptions;
 using Shared.Models.Input;
 using Shared.Models.Output;
@@ -188,15 +189,25 @@ public class UserService(ILogger<UserService> logger,
 
         if (userInput.FCMToken is not null)
         {
-            var fmcDevice = new FCMDevice
+            var existingDevice = await fcmDeviceRepository.Query()
+                .FirstOrDefaultAsync(d => d.FCMToken == userInput.FCMToken);
+
+            if (existingDevice is null)
             {
-                FCMToken = userInput.FCMToken
-            };
+                existingDevice = new FCMDevice
+                {
+                    FCMToken = userInput.FCMToken
+                };
 
-            await fcmDeviceRepository.AddAsync(fmcDevice);
-            newUser.FCMDevices.Add(fmcDevice);
+                await fcmDeviceRepository.AddAsync(existingDevice);
+                logger.LogInformation($"Succes : FCM Device {existingDevice.FCMToken} created");
+            }
 
-            logger.LogInformation($"Succes : FCM Device {fmcDevice.FCMToken} added for user {newUser.Id}");
+            if (!newUser.FCMDevices.Any(f => f.FCMToken == existingDevice.FCMToken))
+            {
+                newUser.FCMDevices.Add(existingDevice);
+                logger.LogInformation($"Succes : FCM Device {existingDevice.FCMToken} linked to user {newUser.Id}");
+            }
         }
 
         await userRepository.AddAsync(newUser);
@@ -270,17 +281,27 @@ public class UserService(ILogger<UserService> logger,
 
         userRepository.Update(user);
 
-        if (loginInput is not null && !user.FCMDevices.Any(f => f.FCMToken == loginInput.FCMToken))
+        if (loginInput is not null)
         {
-            var fmcDevice = new FCMDevice
+            var existingDevice = await fcmDeviceRepository.Query()
+                .FirstOrDefaultAsync(d => d.FCMToken == loginInput.FCMToken);
+
+            if (existingDevice is null)
             {
-                FCMToken = loginInput.FCMToken
-            };
+                existingDevice = new FCMDevice
+                {
+                    FCMToken = loginInput.FCMToken
+                };
 
-            await fcmDeviceRepository.AddAsync(fmcDevice);
-            user.FCMDevices.Add(fmcDevice);
+                await fcmDeviceRepository.AddAsync(existingDevice);
+                logger.LogInformation($"Succes : FCM Device {existingDevice.FCMToken} created");
+            }
 
-            logger.LogInformation($"Succes : FCM Device {fmcDevice.FCMToken} added for user {user.Id}");
+            if (!user.FCMDevices.Any(f => f.FCMToken == existingDevice.FCMToken))
+            {
+                user.FCMDevices.Add(existingDevice);
+                logger.LogInformation($"Succes : FCM Device {existingDevice.FCMToken} linked to user {user.Id}");
+            }
         }
 
         await userRepository.SaveChangesAsync();
@@ -327,5 +348,36 @@ public class UserService(ILogger<UserService> logger,
 
         logger.LogInformation($"Succes : FCM Device {input.FCMToken} deleted for user {input.UserId}");
         return fcmDevice.FCMToken;
+    }
+
+    public async Task<Languages> GetLanguageAsync(Guid id)
+    {
+        var language = await userRepository.Query()
+            .Where(u => u.Id == id)
+            .Select(u => u.Language)
+            .FirstOrDefaultAsync();
+
+        if (language == null)
+            throw new NotFoundException($"User {id} not found");
+
+        logger.LogInformation($"Succes : Language {language} found for user {id}");
+
+        return Enum.Parse<Languages>(language);
+    }
+
+    public async Task<Guid> SetLanguageAsync(LanguageInput input)
+    {
+        var user = await userRepository.GetByIdAsync(input.UserId);
+
+        if (user == null)
+            throw new NotFoundException($"User {input.UserId} not found");
+
+        user.Language = input.Language.ToString();
+
+        userRepository.Update(user);
+        await userRepository.SaveChangesAsync();
+        logger.LogInformation($"Succes : User {user.Id} set language to {user.Language}");
+
+        return user.Id;
     }
 }

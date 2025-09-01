@@ -40,6 +40,5 @@ namespace EntityFramework.Models
         public bool IsDone { get; set; } = false;
 
         public ICollection<ChoreEnrollment> ChoreEnrollments { get; set; } = null!;
-        public ICollection<ChoreMessage> ChoreMessages { get; set; } = null!;
     }
 }

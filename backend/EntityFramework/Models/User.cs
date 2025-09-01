@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Shared.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EntityFramework.Models
@@ -27,7 +28,7 @@ namespace EntityFramework.Models
         public string PathToProfilePicture { get; set; } = null!;
 
         [Required]
-        public string Language { get; set; } = "en";
+        public string Language { get; set; } = Languages.English.ToString();
 
         public bool IsDeleted { get; set; } = false;
 
@@ -38,7 +39,6 @@ namespace EntityFramework.Models
         public ICollection<FCMDevice> FCMDevices { get; set; } = null!;
         public ICollection<Reminder> Reminders { get; set; } = null!;
         public ICollection<Chore> Chores { get; set; } = null!;
-        public ICollection<ChoreMessage> ChoreMessages { get; set; } = null!;
         public ICollection<Message> Messages { get; set; } = null!;
     }
 }

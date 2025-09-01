@@ -35,7 +35,7 @@ public class ReminderControllerTests
         var colocationId = Guid.NewGuid();
         var reminders = new List<ReminderOutput>
         {
-            new TextReminderOutput
+            new ReminderOutput
             {
                 Id = Guid.NewGuid(),
                 Content = "Reminder 1"
@@ -68,7 +68,7 @@ public class ReminderControllerTests
     public async Task GetReminder_ReturnsOk_WhenReminderExists()
     {
         var reminderId = Guid.NewGuid();
-        var reminder = new TextReminderOutput
+        var reminder = new ReminderOutput
         {
             Id = reminderId,
             Content = "Test Reminder"

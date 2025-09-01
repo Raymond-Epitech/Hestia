@@ -39,20 +39,6 @@ namespace Api.Controllers
             return Ok(await choreService.GetChoreAsync(id));
         }
 
-        [HttpGet("Message/{choreId}")]
-        [Authorize]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<ChoreMessageOutput>>> GetChoreMessageFromChore(Guid choreId)
-        {
-            if (choreId == Guid.Empty)
-                throw new InvalidEntityException("Chore Id is empty");
-
-            return Ok(await choreService.GetChoreMessageFromChoreAsync(choreId));
-        }
-
         [HttpPost]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -60,15 +46,6 @@ namespace Api.Controllers
         public async Task<ActionResult<Guid>> AddChore(ChoreInput input)
         {
             return Ok(await choreService.AddChoreAsync(input));
-        }
-
-        [HttpPost("Message/")]
-        [Authorize]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Guid>> AddChoreMessage(ChoreMessageInput input)
-        {
-            return Ok(await choreService.AddChoreMessageAsync(input));
         }
 
         [HttpPut]
@@ -111,20 +88,6 @@ namespace Api.Controllers
                 throw new InvalidEntityException("Chore Id is empty");
 
             return Ok(await choreService.DeleteChoreAsync(id));
-        }
-
-        [HttpDelete("Message/{choreId}")]
-        [Authorize]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Guid>> DeleteChoreMessageByChoreMessageId(ChoreMessageToDelete choreMessage)
-        {
-            if (choreMessage.ChoreMessageId == Guid.Empty || choreMessage.ColocationId == Guid.Empty)
-                throw new InvalidEntityException("One of the Id is empty");
-
-            return Ok(await choreService.DeleteChoreMessageByChoreMessageIdAsync(choreMessage));
         }
 
         [HttpGet("Enroll/ByUser")]

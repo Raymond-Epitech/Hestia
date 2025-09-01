@@ -1,5 +1,4 @@
 ﻿using EntityFramework.Models;
-using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
 
@@ -37,18 +36,6 @@ namespace Business.Mappers
                 IsDone = c.IsDone,
                 EnrolledUsers = c.ChoreEnrollments
                     .ToDictionary(ce => ce.UserId, ce => ce.User.PathToProfilePicture)
-            };
-        }
-
-        public static ChoreMessage ToDb(this ChoreMessageInput choreInput)
-        {
-            return new ChoreMessage
-            {
-                Id = Guid.NewGuid(),
-                CreatedAt = DateTime.Now.ToUniversalTime(),
-                Content = choreInput.Content,
-                ChoreId = choreInput.ChoreId,
-                CreatedBy = choreInput.CreatedBy,
             };
         }
 

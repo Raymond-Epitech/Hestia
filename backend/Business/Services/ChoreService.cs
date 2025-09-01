@@ -15,7 +15,6 @@ namespace Business.Services;
 public class ChoreService(
     ILogger<ChoreService> logger,
     IRepository<Chore> choreRepository,
-    IRepository<ChoreMessage> choreMessageRepository,
     IRepository<User> userRepository,
     IRepository<ChoreEnrollment> choreEnrollmentRepository,
     IAppCache cache,
@@ -75,36 +74,6 @@ public class ChoreService(
     }
 
     /// <summary>
-    /// Get all chore messages from a chore
-    /// </summary>
-    /// <param name="choreId">The chore you want the message from</param>
-    /// <returns>The list of the chore messages attaches to the chore</returns>
-    /// <exception cref="NotFoundException">The chore was not found</exception>
-    public async Task<List<ChoreMessageOutput>> GetChoreMessageFromChoreAsync(Guid choreId)
-    {
-        var choreMessages = await choreMessageRepository.Query()
-            .Where(c => c.ChoreId == choreId)
-            .Select(c => new ChoreMessageOutput
-            {
-                Id = c.Id,
-                CreatedBy = c.CreatedBy,
-                CreatedAt = c.CreatedAt,
-                Content = c.Content
-            })
-            .OrderBy(c => c.CreatedAt)
-            .ToListAsync();
-
-        if (choreMessages == null)
-        {
-            throw new NotFoundException("No chore messages found");
-        }
-
-        logger.LogInformation("Succes : Chore messages found");
-
-        return choreMessages;
-    }
-
-    /// <summary>
     /// Add a chore
     /// </summary>
     /// <param name="input">The chore class with all info of a chore</param>
@@ -140,32 +109,6 @@ public class ChoreService(
         logger.LogInformation("Succes : Chore added");
             
         return chore.Id;
-    }
-
-    /// <summary>
-    /// Add a chore message
-    /// </summary>
-    /// <param name="input">The chore message class with all info of a chore message</param>
-    /// <exception cref="ContextException">An error has occured while adding chore message from db</exception>
-    public async Task<Guid> AddChoreMessageAsync(ChoreMessageInput input)
-    {
-        var choreMessage = input.ToDb();
-        
-        await choreMessageRepository.AddAsync(choreMessage);
-        await choreRepository.SaveChangesAsync();
-
-        var choreMessageOutput = new ChoreMessageOutput
-        {
-            Id = choreMessage.Id,
-            CreatedBy = choreMessage.CreatedBy,
-            CreatedAt = choreMessage.CreatedAt,
-            Content = choreMessage.Content
-        };
-        await realTimeService.SendToGroupAsync(input.ColocationId, "NewChoreMessageAdded", choreMessageOutput);
-
-        logger.LogInformation("Succes : Chore message added");
-            
-        return choreMessage.Id;
     }
 
     /// <summary>
@@ -277,26 +220,6 @@ public class ChoreService(
         logger.LogInformation("Succes : Chore deleted");
 
         return id;
-    }
-
-    /// <summary>
-    /// Delete all chore message linked to a chore
-    /// </summary>
-    /// <param name="id">The id of the chore to be deleted</param>
-    /// <exception cref="NotFoundException">No chore where found with this id</exception>
-    /// <exception cref="ContextException">An error has occured while adding chore from db</exception>
-    public async Task<Guid> DeleteChoreMessageByChoreMessageIdAsync(ChoreMessageToDelete choreMessage)
-    {
-        await choreMessageRepository.Query()
-            .Where(c => c.Id == choreMessage.ChoreMessageId)
-            .ExecuteDeleteAsync();
-        await choreRepository.SaveChangesAsync();
-
-        await realTimeService.SendToGroupAsync(choreMessage.ColocationId, "ChoreMessagesDeleted", choreMessage.ChoreMessageId);
-
-        logger.LogInformation("Succes : Chore message deleted");
-
-        return choreMessage.ChoreMessageId;
     }
 
     /// <summary>

@@ -138,5 +138,33 @@ namespace Api.Controllers
 
             return Ok(users);
         }
+
+        [HttpGet("Language/{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<string>> GetLanguage(Guid id)
+        {
+            if (id == Guid.Empty)
+                throw new InvalidEntityException("User Id is empty");
+
+            return Ok(await userService.GetLanguageAsync(id));
+        }
+
+        [HttpPost("Language")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> SetLanguage(LanguageInput input)
+        {
+            if (input.UserId == Guid.Empty)
+                throw new InvalidEntityException("User Id is empty");
+
+            return Ok(await userService.SetLanguageAsync(input));
+        }
     }
 }

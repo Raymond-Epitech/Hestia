@@ -8,7 +8,6 @@ namespace EntityFramework.Context
         public virtual DbSet<Colocation> Colocations { get; set; }
         public virtual DbSet<Reminder> Reminders { get; set; } = null!;
         public virtual DbSet<Chore> Chores { get; set; } = null!;
-        public virtual DbSet<ChoreMessage> ChoreMessages { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
         public virtual DbSet<ChoreEnrollment> ChoreEnrollments { get; set; } = null!;
         public virtual DbSet<Expense> Expenses { get; set; } = null!;
@@ -56,11 +55,6 @@ namespace EntityFramework.Context
 
             modelBuilder.Entity<Chore>(c =>
             {
-                c.HasMany(x => x.ChoreMessages)
-                    .WithOne(x => x.Chore)
-                    .HasForeignKey(x => x.ChoreId)
-                    .OnDelete(DeleteBehavior.Cascade);
-
                 c.HasMany(x => x.ChoreEnrollments)
                     .WithOne(x => x.Chore)
                     .HasForeignKey(x => x.ChoreId)
@@ -93,11 +87,6 @@ namespace EntityFramework.Context
                     .WithOne(x => x.User)
                     .HasForeignKey(x => x.CreatedBy)
                     .OnDelete(DeleteBehavior.NoAction);
-
-                c.HasMany(x => x.ChoreMessages)
-                    .WithOne(x => x.User)
-                    .HasForeignKey(x => x.CreatedBy)
-                    .OnDelete(DeleteBehavior.SetNull);
 
                 c.HasMany(u => u.FCMDevices)
                     .WithMany(d => d.Users)
