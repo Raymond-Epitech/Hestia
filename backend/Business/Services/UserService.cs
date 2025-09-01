@@ -269,9 +269,7 @@ public class UserService(ILogger<UserService> logger,
 
         userRepository.Update(user);
 
-        var fcmDevices = user.FCMDevices;
-
-        if (loginInput is not null && !fcmDevices.Any(f => f.FCMToken == loginInput.FCMToken))
+        if (loginInput is not null && !user.FCMDevices.Any(f => f.FCMToken == loginInput.FCMToken))
         {
             var fmcDevice = new FCMDevice
             {
