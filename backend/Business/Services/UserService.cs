@@ -89,7 +89,9 @@ public class UserService(ILogger<UserService> logger,
 
         userToUpdate.Username = user.Username;
         userToUpdate.ColocationId = user.ColocationId;
-        userToUpdate.PathToProfilePicture = user.PathToProfilePicture;
+
+        if( user.PathToProfilePicture is not null)
+            userToUpdate.PathToProfilePicture = user.PathToProfilePicture;
 
         await userRepository.SaveChangesAsync();
 
@@ -291,24 +293,29 @@ public class UserService(ILogger<UserService> logger,
 
         if (loginInput is not null)
         {
+            logger.LogInformation($"FCM Token received : {loginInput.FCMToken}");
+
             var existingDevice = await fcmDeviceRepository.Query()
                 .FirstOrDefaultAsync(d => d.FCMToken == loginInput.FCMToken);
 
             if (existingDevice is null)
             {
+                logger.LogInformation("FCM Device not found, creating new one");
                 existingDevice = new FCMDevice
                 {
                     FCMToken = loginInput.FCMToken
                 };
 
                 await fcmDeviceRepository.AddAsync(existingDevice);
-                logger.LogInformation($"Succes : FCM Device {existingDevice.FCMToken} created");
+                logger.LogInformation($"Success: FCM Device {existingDevice.FCMToken} created");
             }
 
             if (!user.FCMDevices.Any(f => f.FCMToken == existingDevice.FCMToken))
             {
+                logger.LogInformation("Linking FCM Device to user");
+                user.FCMDevices ??= new List<FCMDevice>();
                 user.FCMDevices.Add(existingDevice);
-                logger.LogInformation($"Succes : FCM Device {existingDevice.FCMToken} linked to user {user.Id}");
+                logger.LogInformation($"Success: FCM Device {existingDevice.FCMToken} linked to user {user.Id}");
             }
         }
 
