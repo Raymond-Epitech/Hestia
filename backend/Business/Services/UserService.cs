@@ -204,28 +204,65 @@ public class UserService(ILogger<UserService> logger,
         if (user is null)
             throw new NotFoundException("User not found after creation");
 
-        if (userInput.FCMToken is not null)
+        if (userInput.FCMToken is not null && !string.IsNullOrEmpty(userInput.FCMToken))
         {
+
+            user = await userRepository.Query()
+                .Where(u => u.Email == validPayload.Email)
+                .Include(u => u.FCMDevices)
+                .FirstOrDefaultAsync();
+
+            if (user is null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            user.LastConnection = DateTime.UtcNow;
+
+            logger.LogInformation($"FCM Token received : {userInput.FCMToken}");
+
             var existingDevice = await fcmDeviceRepository.Query()
                 .FirstOrDefaultAsync(d => d.FCMToken == userInput.FCMToken);
 
             if (existingDevice is null)
             {
+                logger.LogInformation("FCM Device not found, creating new one");
                 existingDevice = new FCMDevice
                 {
                     FCMToken = userInput.FCMToken
                 };
 
                 await fcmDeviceRepository.AddAsync(existingDevice);
-                logger.LogInformation($"Succes : FCM Device {existingDevice.FCMToken} created");
+                logger.LogInformation($"Success: FCM Device {existingDevice.FCMToken} created");
             }
 
             if (!user.FCMDevices.Any(f => f.FCMToken == existingDevice.FCMToken))
             {
+                logger.LogInformation("Linking FCM Device to user");
+                user.FCMDevices ??= new List<FCMDevice>();
                 user.FCMDevices.Add(existingDevice);
-                logger.LogInformation($"Succes : FCM Device {existingDevice.FCMToken} linked to user {user.Id}");
+                logger.LogInformation($"Success: FCM Device {existingDevice.FCMToken} linked to user {user.Id}");
             }
+
+            userRepository.Update(user);
         }
+        else
+        {
+            user = await userRepository.Query()
+                .Where(u => u.Email == validPayload.Email)
+                .FirstOrDefaultAsync();
+
+            if (user is null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            user.LastConnection = DateTime.UtcNow;
+
+            userRepository.Update(user);
+        }
+
+        await userRepository.SaveChangesAsync();
 
         // Generate and return JWT
 
@@ -338,7 +375,7 @@ public class UserService(ILogger<UserService> logger,
             userRepository.Update(user);
         }
 
-            await userRepository.SaveChangesAsync();
+        await userRepository.SaveChangesAsync();
 
         logger.LogInformation($"Succes : User {user.Id}'s last connexion updated");
 

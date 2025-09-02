@@ -89,9 +89,9 @@ namespace EntityFramework.Context
                     .OnDelete(DeleteBehavior.NoAction);
 
                 c.HasMany(u => u.FCMDevices)
-                    .WithMany(d => d.Users)
-                    .UsingEntity(j => j.ToTable("UserFCMDevices"));
-
+                    .WithOne(d => d.User)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<ChoreEnrollment>(c =>
