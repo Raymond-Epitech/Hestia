@@ -50,7 +50,7 @@ const new_data = ref({
     username: user.username,
     email: user.email,
     colocationId: collocID ? collocID : '',
-    pathToProfilePicture: 'exempledetest',
+    pathToProfilePicture: null,
     id: user.id,
 })
 const joinColocation = async () => {
