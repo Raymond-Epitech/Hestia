@@ -328,7 +328,7 @@ public class UserService(ILogger<UserService> logger,
     public async Task<string> LogoutUserAsync(LogoutInput input)
     {
         var fcmDevice = await fcmDeviceRepository.Query()
-            .Where(f => f.FCMToken == input.FCMToken && f.Users.Any(u => u.Id == input.UserId))
+            .Where(f => f.FCMToken == input.FCMToken && f.UserId == input.UserId)
             .FirstOrDefaultAsync();
 
         if (fcmDevice == null)
