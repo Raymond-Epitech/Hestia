@@ -11,6 +11,9 @@ using Shared.Models.DTO;
 using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Formats.Webp;
 
 namespace Business.Services;
 
@@ -132,6 +135,28 @@ public class ReminderService(ILogger<ReminderService> logger,
     }
 
     /// <summary>
+    /// Compress an image to jpeg format
+    /// </summary>
+    /// <param name="imageStream">The byte stream of the image</param>
+    /// <param name="quality">The quality (default is 75%)</param>
+    /// <returns>A new byte stream</returns>
+    public async Task<byte[]> CompressImageAsync(Stream imageStream, int quality = 50)
+    {
+        using var image = await Image.LoadAsync(imageStream);
+
+        using var outputStream = new MemoryStream();
+
+        var encoder = new JpegEncoder
+        {
+            Quality = quality
+        };
+
+        await image.SaveAsync(outputStream, encoder);
+
+        return outputStream.ToArray();
+    }
+
+    /// <summary>
     /// Save an image to the server
     /// </summary>
     /// <param name="file">The file</param>
@@ -147,10 +172,13 @@ public class ReminderService(ILogger<ReminderService> logger,
 
         var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-        using (var stream = new FileStream(filePath, FileMode.Create))
+        byte[] compressedImage;
+        using (var inputStream = file.OpenReadStream())
         {
-            await file.CopyToAsync(stream);
+            compressedImage = await CompressImageAsync(inputStream, quality: 75);
         }
+
+        await File.WriteAllBytesAsync(filePath, compressedImage);
 
         return uniqueFileName;
     }
