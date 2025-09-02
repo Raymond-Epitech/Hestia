@@ -9,7 +9,7 @@
             />
         </div>
         <form @submit.prevent="handleSendMessage" class="form">
-            <input v-model="newMessage.content" type="text" placeholder="Message" class="body-input" required />
+            <input v-model="newMessage.content" type="text" placeholder="Message" maxlength="6000" class="body-input" required />
             <button type="submit" class="button">
                 <img src="/Submit.svg" alt="Submit Icon" class="svg-icon" />
             </button>
