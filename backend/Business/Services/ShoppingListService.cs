@@ -63,7 +63,7 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
         logger.LogInformation($"Update shopping item {shoppingItemUpdate.Id}");
 
         var shoppingItem = await itemRepository.Query()
-            .Include(s => s.ShoppingListReminderId)
+            .Include(s => s.ShoppingListReminder)
             .FirstOrDefaultAsync(s => s.Id == shoppingItemUpdate.Id);
         
         if (shoppingItem == null)

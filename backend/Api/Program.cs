@@ -98,11 +98,6 @@ try
         o.Debug = true;
     });
 
-    builder.WebHost.ConfigureKestrel(options =>
-    {
-        options.Limits.MaxRequestBodySize = 104_857_600; // 100 MB
-    });
-
     var app = builder.Build();
 
     app.UseRouting();
