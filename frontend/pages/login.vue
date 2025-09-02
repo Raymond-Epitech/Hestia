@@ -36,6 +36,7 @@ import { useAuthStore } from '~/store/auth';
 import { useUserStore } from '~/store/user';
 import { PushNotifications } from '@capacitor/push-notifications';
 import { addListeners, registerNotifications } from '~/store/push';
+import { Capacitor } from '@capacitor/core';
 
 definePageMeta({
     layout: false
@@ -64,10 +65,13 @@ onMounted(() => {
     if (colocationID.value) {
         registretion.value = true;
     }
-
-    PushNotifications.addListener('registration', (token) => {
-        fcmToken.value = token.value;
-    });
+    if (Capacitor.isNativePlatform()) {
+        PushNotifications.addListener('registration', (token) => {
+            fcmToken.value = token.value;
+        });
+    } else {
+        fcmToken.value = "";
+    }
 })
 
 addListeners();
