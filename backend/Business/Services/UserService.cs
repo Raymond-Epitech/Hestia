@@ -5,6 +5,7 @@ using EntityFramework.Repositories;
 using Google.Apis.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Npgsql.TypeMapping;
 using Shared.Enums;
 using Shared.Exceptions;
 using Shared.Models.Input;
@@ -275,24 +276,25 @@ public class UserService(ILogger<UserService> logger,
             new Claim(JwtRegisteredClaimNames.Email, validPayload.Email),
             new Claim(JwtRegisteredClaimNames.Name, validPayload.Name),
             new Claim("picture", validPayload.Picture ?? ""),
-        };
+        };;
 
-        var user = await userRepository.Query()
-            .Where(u => u.Email == validPayload.Email)
-            .Include(u => u.FCMDevices)
-            .FirstOrDefaultAsync();
-
-        if (user is null)
-        {
-            throw new NotFoundException("User not found");
-        }
-
-        user.LastConnection = DateTime.UtcNow;
-
-        userRepository.Update(user);
+        User? user;
 
         if (loginInput is not null && !string.IsNullOrEmpty(loginInput.FCMToken))
         {
+
+            user = await userRepository.Query()
+                .Where(u => u.Email == validPayload.Email)
+                .Include(u => u.FCMDevices)
+                .FirstOrDefaultAsync();
+
+            if (user is null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            user.LastConnection = DateTime.UtcNow;
+
             logger.LogInformation($"FCM Token received : {loginInput.FCMToken}");
 
             var existingDevice = await fcmDeviceRepository.Query()
@@ -317,9 +319,26 @@ public class UserService(ILogger<UserService> logger,
                 user.FCMDevices.Add(existingDevice);
                 logger.LogInformation($"Success: FCM Device {existingDevice.FCMToken} linked to user {user.Id}");
             }
+
+            userRepository.Update(user);
+        }
+        else
+        {
+            user = await userRepository.Query()
+                .Where(u => u.Email == validPayload.Email)
+                .FirstOrDefaultAsync();
+
+            if (user is null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            user.LastConnection = DateTime.UtcNow;
+
+            userRepository.Update(user);
         }
 
-        await userRepository.SaveChangesAsync();
+            await userRepository.SaveChangesAsync();
 
         logger.LogInformation($"Succes : User {user.Id}'s last connexion updated");
 
