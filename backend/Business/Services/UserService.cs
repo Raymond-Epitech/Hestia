@@ -192,74 +192,20 @@ public class UserService(ILogger<UserService> logger,
 
         await userRepository.AddAsync(newUser);
 
-        await userRepository.SaveChangesAsync();
-
         logger.LogInformation($"Succes : User {newUser.Id} added");
 
-        var user = await userRepository.Query()
-            .Where(u => u.Id == newUser.Id)
-            .Include(u => u.FCMDevices)
-            .FirstOrDefaultAsync();
-
-        if (user is null)
-            throw new NotFoundException("User not found after creation");
-
-        if (userInput.FCMToken is not null && !string.IsNullOrEmpty(userInput.FCMToken))
+        if (!string.IsNullOrEmpty(userInput.FCMToken))
         {
+            logger.LogInformation($"FCM Token received : {userInput.FCMToken}, Creating a new FCM Device linked to user");
 
-            user = await userRepository.Query()
-                .Where(u => u.Email == validPayload.Email)
-                .Include(u => u.FCMDevices)
-                .FirstOrDefaultAsync();
-
-            if (user is null)
+            await fcmDeviceRepository.AddAsync(new FCMDevice
             {
-                throw new NotFoundException("User not found");
-            }
+                Id = Guid.NewGuid(),
+                FCMToken = userInput.FCMToken,
+                UserId = newUser.Id
+            });
 
-            user.LastConnection = DateTime.UtcNow;
-
-            logger.LogInformation($"FCM Token received : {userInput.FCMToken}");
-
-            var existingDevice = await fcmDeviceRepository.Query()
-                .FirstOrDefaultAsync(d => d.FCMToken == userInput.FCMToken);
-
-            if (existingDevice is null)
-            {
-                logger.LogInformation("FCM Device not found, creating new one");
-                existingDevice = new FCMDevice
-                {
-                    FCMToken = userInput.FCMToken
-                };
-
-                await fcmDeviceRepository.AddAsync(existingDevice);
-                logger.LogInformation($"Success: FCM Device {existingDevice.FCMToken} created");
-            }
-
-            if (!user.FCMDevices.Any(f => f.FCMToken == existingDevice.FCMToken))
-            {
-                logger.LogInformation("Linking FCM Device to user");
-                user.FCMDevices ??= new List<FCMDevice>();
-                user.FCMDevices.Add(existingDevice);
-                logger.LogInformation($"Success: FCM Device {existingDevice.FCMToken} linked to user {user.Id}");
-            }
-
-            userRepository.Update(user);
-        }
-        else
-        {
-            user = await userRepository.Query()
-                .Where(u => u.Email == validPayload.Email)
-                .FirstOrDefaultAsync();
-
-            if (user is null)
-            {
-                throw new NotFoundException("User not found");
-            }
-
-            user.LastConnection = DateTime.UtcNow;
-
-            userRepository.Update(user);
+            logger.LogInformation($"Success: FCM Device {userInput.FCMToken} linked to user {newUser.Id}");
         }
 
         await userRepository.SaveChangesAsync();
@@ -315,64 +261,37 @@ public class UserService(ILogger<UserService> logger,
             new Claim("picture", validPayload.Picture ?? ""),
         };;
 
-        User? user;
+        var user = await userRepository.Query()
+            .Where(u => u.Email == validPayload.Email)
+            .Include(u => u.FCMDevices)
+            .FirstOrDefaultAsync();
+
+        if (user is null)
+        {
+            throw new NotFoundException("User not found");
+        }
+
+        user.LastConnection = DateTime.UtcNow;
+
+        userRepository.Update(user);
 
         if (loginInput is not null && !string.IsNullOrEmpty(loginInput.FCMToken))
         {
-
-            user = await userRepository.Query()
-                .Where(u => u.Email == validPayload.Email)
-                .Include(u => u.FCMDevices)
-                .FirstOrDefaultAsync();
-
-            if (user is null)
-            {
-                throw new NotFoundException("User not found");
-            }
-
-            user.LastConnection = DateTime.UtcNow;
-
             logger.LogInformation($"FCM Token received : {loginInput.FCMToken}");
 
-            var existingDevice = await fcmDeviceRepository.Query()
-                .FirstOrDefaultAsync(d => d.FCMToken == loginInput.FCMToken);
-
-            if (existingDevice is null)
-            {
-                logger.LogInformation("FCM Device not found, creating new one");
-                existingDevice = new FCMDevice
-                {
-                    FCMToken = loginInput.FCMToken
-                };
-
-                await fcmDeviceRepository.AddAsync(existingDevice);
-                logger.LogInformation($"Success: FCM Device {existingDevice.FCMToken} created");
-            }
-
-            if (!user.FCMDevices.Any(f => f.FCMToken == existingDevice.FCMToken))
+            if (!user.FCMDevices.Any(f => f.FCMToken == loginInput.FCMToken))
             {
                 logger.LogInformation("Linking FCM Device to user");
-                user.FCMDevices ??= new List<FCMDevice>();
-                user.FCMDevices.Add(existingDevice);
-                logger.LogInformation($"Success: FCM Device {existingDevice.FCMToken} linked to user {user.Id}");
+                
+                await fcmDeviceRepository.AddAsync(new FCMDevice
+                {
+                    Id = Guid.NewGuid(),
+                    FCMToken = loginInput.FCMToken,
+                    UserId = user.Id
+                });
+
+                logger.LogInformation($"Success: FCM Device {loginInput.FCMToken} linked to user {user.Id}");
             }
-
-            userRepository.Update(user);
-        }
-        else
-        {
-            user = await userRepository.Query()
-                .Where(u => u.Email == validPayload.Email)
-                .FirstOrDefaultAsync();
-
-            if (user is null)
-            {
-                throw new NotFoundException("User not found");
-            }
-
-            user.LastConnection = DateTime.UtcNow;
-
-            userRepository.Update(user);
         }
 
         await userRepository.SaveChangesAsync();
