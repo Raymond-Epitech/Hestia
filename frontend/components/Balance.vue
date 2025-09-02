@@ -35,7 +35,7 @@ const handleProceed = () => {
         justify-content: space-between;
         align-items: center;
         padding: 0% 6%;
-        color: var(--page-text-light);
+        color: var(--page-text);
         font-size: 20px;
         font-weight: 600;
         border-radius: 20px;
@@ -43,12 +43,8 @@ const handleProceed = () => {
     }
 
     .to {
-        background-color: var(--recieved-message-light);
-    }
-
-    .dark .to {
-        background-color: var(--recieved-message-dark);
-        color: var(--page-text-dark);
+        background-color: var(--recieved-message);
+        color: var(--page-text);
     }
 
     .number {

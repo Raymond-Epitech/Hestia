@@ -119,7 +119,7 @@ const redirect = (page) => {
 }
 
 .back {
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     position: fixed;
     display: flex;
     justify-content: center;
@@ -136,10 +136,6 @@ const redirect = (page) => {
 .back .icon {
     filter: invert(1);
     width: 25px;
-}
-
-.dark .back {
-    background-color: var(--main-buttons-dark);
 }
 
 .dark .back .icon {

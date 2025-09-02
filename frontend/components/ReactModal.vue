@@ -119,17 +119,12 @@ watch(
     width: 100%;
     height: 3rem;
     background-clip:content-box;
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     box-shadow: var(--box-shadow-light);
     border-radius: 20px 20px 20px 20px;
     display: flex;
     justify-content: center;
     z-index: 1000;
-}
-
-.dark .modal-background {
-    background-color: var(--main-buttons-dark);
-    /* box-shadow: var(--box-shadow-dark); */
 }
 
 .modal-enter-active,

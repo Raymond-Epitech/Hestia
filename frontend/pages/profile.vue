@@ -54,7 +54,7 @@ const redirect = (page) => {
 <style scoped>
 
 button {
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     position: fixed;
     display: flex;
     justify-content: center;
@@ -64,10 +64,6 @@ button {
     border-radius: 9px;
     border: none;
     box-shadow: var(--button-shadow-light);
-}
-
-.dark button {
-    background-color: var(--main-buttons-dark);
 }
 
 .icon {
@@ -96,7 +92,7 @@ button {
     bottom: 4.5rem;
     max-height: (100rem - 4.5rem);
     grid-template-rows: 1fr;
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     justify-content: center;
     align-items: center;
     text-align: center;
@@ -105,24 +101,15 @@ button {
     box-shadow: var(--button-shadow-light)
 }
 
-.dark .colocation-preview {
-    background-color: var(--main-buttons-dark);
-}
-
 .header {
     padding: 13px;
     padding-bottom: 16px;
     font-size: 26px;
     font-weight: 600;
     border-radius: 20px;
-    background-color: var(--sent-message-light);
+    background-color: var(--sent-message);
     /* box-shadow: var(--button-shadow-light); */
-    color: var(--page-text-light);
-}
-
-.dark .header {
-    background-color: var(--sent-message-dark);
-    color: var(--page-text-dark);
+    color: var(--page-text);
 }
 
 sub {
@@ -130,11 +117,7 @@ sub {
     font-size: 18px;
     line-height: 1.4rem;
     font-weight: 600;
-    color: var(--page-text-light);
-}
-
-.dark sub {
-    color: var(--page-text-dark);
+    color: var(--page-text);
 }
 
 .roommates-list {
@@ -147,15 +130,10 @@ sub {
     /* width: fit-content; */
     /* max-width: 90%; */
     border-radius: 20px;
-    background-color: var(--recieved-message-light);
+    background-color: var(--recieved-message);
     /* box-shadow: var(--button-shadow-light); */
-    color: var(--page-text-light);
+    color: var(--page-text);
     /* align-items: center; */
-}
-
-.dark .roommates-list {
-    background-color: var(--recieved-message-dark);
-    color: var(--page-text-dark);
 }
 
 .colocation-name {
@@ -164,15 +142,11 @@ sub {
     padding-bottom: 1rem;
     stroke: var(basic-grey);
     stroke-width: 2px;
-    background-color: var(--recieved-message-light);
+    background-color: var(--recieved-message);
     /* box-shadow: var(--button-shadow-light); */
     border-radius: 20px;
     line-height: 2.2rem;
-}
-
-.dark .colocation-name {
-    background-color: var(--recieved-message-dark);
-    color: var(--page-text-dark);
+    color: var(--page-text);
 }
 
 </style>

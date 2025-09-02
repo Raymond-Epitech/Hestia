@@ -212,16 +212,12 @@ const getReactions = async () => {
     position: absolute;
     bottom: 10px;
     right: 14px;
-    background: var(--main-buttons-light);
+    background: var(--main-buttons);
     border: none;
     border-radius: 50%;
     width: 30px;
     height: 30px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
-}
-
-.dark .react-button {
-    background: var(--main-buttons-dark);
 }
 
 .heart {

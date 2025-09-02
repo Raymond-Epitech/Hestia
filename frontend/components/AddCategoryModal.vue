@@ -124,17 +124,13 @@
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
         animation: slideIn 0.4s;
-        background-color: var(--overlay-background-light);
+        background-color: var(--overlay-background);
         backdrop-filter: blur(8px);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
         display: flex;
         flex-direction: column;
         justify-content: center;
         position: relative;
-    }
-
-    .dark .modal {
-        background-color: var(--overlay-background-dark);
     }
 
     .modal-header {
@@ -170,15 +166,11 @@
         outline: none;
         border: none;
         line-height: 3ch;
-        background-image: linear-gradient(transparent, transparent calc(3ch - 1px), var(--list-lines-light) 0px);
+        background-image: linear-gradient(transparent, transparent calc(3ch - 1px), var(--list-lines) 0px);
         background-size: 100% 3ch;
         color: var(--overlay-text);
         font-size: 18px;
         margin-bottom: 12px;
-    }
-
-    .dark .body-input {
-        background-image: linear-gradient(transparent, transparent calc(3ch - 1px), var(--list-lines-dark) 0px);
     }
 
     .modal-background {
@@ -218,14 +210,9 @@
     }
 
     .button-proceed {
-        background: var(--main-buttons-light);
-        color: var(--page-text-light);
+        background: var(--main-buttons);
+        color: var(--page-text);
         font-weight: 600;
-    }
-
-    .dark .button-proceed {
-        background: var(--main-buttons-dark);
-        color: var(--page-text-dark);
     }
 
     button:disabled {

@@ -51,16 +51,12 @@ const props = defineProps({
 }
 
 .content {
-    color: var(--page-text-light);
+    color: var(--page-text);
     align-content: center;
     max-width: 80%;
     width: fit-content;
     height: fit-content;
     padding: 10px;
-}
-
-.dark .content {
-    color: var(--page-text-dark);
 }
 
 .content p {
@@ -69,22 +65,15 @@ const props = defineProps({
 .content-me {
     font-size: 14px;
     border-radius: 8px 8px 0 8px;
-    background-color: var(--sent-message-light);
+    background-color: var(--sent-message);
     margin-left: auto;
-}
-
-.dark .content-me {
-    background-color: var(--sent-message-dark);
 }
 
 .content-other {
     font-size: 14px;
     border-radius: 8px 8px 8px 0;
-    background-color: var(--recieved-message-light);
+    background-color: var(--recieved-message);
     margin-right: auto;
 }
 
-.dark .content-other {
-    background-color: var(--recieved-message-dark);
-}
 </style>

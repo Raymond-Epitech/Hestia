@@ -36,17 +36,11 @@ const handleProceed = () => {
     align-items: center;
     grid-template-columns: 1fr 1fr;
     justify-content: space-between;
-    background-color: var(--recieved-message-light);
+    background-color: var(--recieved-message);
     border-radius: 20px;
     box-shadow: var(--rectangle-shadow-light);
-    color: var(--page-text-light);
+    color: var(--page-text);
 }
-
-.dark .expense {
-    background-color: var(--recieved-message-dark);
-    color: var(--page-text-dark);
-}
-
 
 .regularize-text {
     font-size: 24px;

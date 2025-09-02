@@ -30,11 +30,7 @@ onMounted(() => {
 .qr-code-container {
     margin-top: 20px;
     text-align: center;
-    color: var(--page-text-light);
-}
-
-.dark .qr-code-container {
-    color: var(--page-text-dark)
+    color: var(--page-text);
 }
 
 .qr-code-container canvas {

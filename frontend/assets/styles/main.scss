@@ -1,21 +1,14 @@
 @import "bootstrap/scss/bootstrap";
 
 :root {
-    --main-buttons-light: #FFFFFF;
-    --main-buttons-dark: #000000;
-    --background-light: #FFFCF7;
-    --background-dark: #1D1B20;
-    --page-text-light: #000000;
-    --page-text-dark: #FFFFFF;
+    --main-buttons: #FFFFFF;
+    --background: #FFFCF7;
+    --page-text: #000000;
     --overlay-text: #FFFFFF;
-    --overlay-background-light: #1d1b20a6;
-    --overlay-background-dark: #1d1b2099;
-    --list-lines-light: #BDD4F6;
-    --list-lines-dark: #727C8C;
-    --recieved-message-light: #C1E0B9;
-    --recieved-message-dark: #4D4D4C;
-    --sent-message-light: #BDD4F6;
-    --sent-message-dark: #526074;
+    --overlay-background: #1d1b20a6;
+    --list-lines: #BDD4F6;
+    --recieved-message: #C1E0B9;
+    --sent-message: #BDD4F6;
 
     --basic-grey: #4B4B4B;
     --light-grey: #D6D6D6;
@@ -28,12 +21,22 @@
     --rectangle-shadow-light: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
 }
 
+.dark {
+    --main-buttons: #000000;
+    --background: #1D1B20;
+    --page-text: #FFFFFF;
+    --overlay-background: #1d1b2099;
+    --list-lines: #727C8C;
+    --recieved-message: #4D4D4C;
+    --sent-message: #526074;
+}
+
 body {
-    background-color: var(--background-light);
+    background-color: var(--background);
     padding-bottom: 70px;
     font-family: 'Inter-Variable', sans-serif;
 }
 
 .dark body {
-    background-color: var(--background-dark);
+    background-color: var(--background);
 }

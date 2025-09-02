@@ -170,14 +170,14 @@ const login = async () => {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        background-color: var(--background-light);
+        background-color: var(--background);
         border-radius: 20px;
         text-align: center;
         box-shadow: var(--rectangle-shadow-light);
     }
 
     .dark .login {
-        background-color: var(--main-buttons-dark);
+        background-color: #000000;
         box-shadow: var(--rectangle-shadow-light);
     }
 
@@ -190,29 +190,25 @@ const login = async () => {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        background-color: var(--background-light);
+        background-color: var(--background);
         border-radius: 20px;
         box-shadow: var(--rectangle-shadow-light);
     }
 
     .dark .register {
-        background-color: var(--main-buttons-dark);
+        background-color: #000000;
         box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
     }
 
     h2 {
-        color: var(--page-text-light);
+        color: var(--page-text);
         font-weight: 600;
-    }
-
-    .dark h2 {
-        color: var(--page-text-dark);
     }
 
     .input {
         margin-bottom: 10px;
         outline: none;
-        background-color: var(--main-buttons-light);
+        background-color: var(--background);
         border-radius: 8px;
         border: none;
         text-align: center;
@@ -221,8 +217,7 @@ const login = async () => {
     }
 
     .dark .input {
-        background-color: var(--background-dark);
-        color: var(--page-text-dark);
+        color: var(--page-text);
     }
 
     .register-font {
@@ -240,16 +235,16 @@ const login = async () => {
         margin-top: 14px;
         padding: 0px 5px;
         border-radius: 8px;
-        color: var(--background-light);
-        background-color: var(--main-buttons-dark);
+        color: var(--background);
+        background-color: var(--page-text);
         font-weight: 600;
         border: none;
         text-align: center;
     }
 
     .dark .register-button {
-        background-color: var(--background-light);
-        color: var(--background-dark);
+        background-color: var(--background);
+        color: var(--page-text);
     }
 
     .google-button {
@@ -259,18 +254,13 @@ const login = async () => {
         min-width: 200px;
         height: fit-content;
         padding: 5px;
-        background-color: var(--background-light);
+        background-color: var(--background);
         border-radius: 14px;
-        color: var(--page-text-light);
+        color: var(--page-text);
         font-weight: 600;
         font-size: 20px;
         text-decoration: none;
         box-shadow: var(--button-shadow-light);
-    }
-
-    .dark .google-button {
-        background-color: var(--background-dark);
-        color: var(--page-text-dark);
     }
 
     .alert {

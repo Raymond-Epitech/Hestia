@@ -46,7 +46,7 @@ const redirect = (page) => {
     bottom: 0;
     width: 100%;
     height: 4.5rem;
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     justify-content: center;
@@ -56,9 +56,6 @@ const redirect = (page) => {
     z-index: 100;
 }
 
-.dark .navbar {
-    background-color: var(--main-buttons-dark);
-}
 
 .icon-subtext {
     font-size: 0.65rem;
@@ -97,7 +94,7 @@ const redirect = (page) => {
 }
 
 .dark .icon {
-    color: var(--page-text-dark);
+    color: var(--page-text);
     filter: none;
 }
 

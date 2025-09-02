@@ -184,14 +184,9 @@ watch(visible, (value) => {
         border: 0;
         cursor: pointer;
         font-size: 20px;
-        background: var(--main-buttons-light);
-        color: var(--page-text-light);
+        background: var(--main-buttons);
+        color: var(--page-text);
         font-weight: 600;
-    }
-
-    .dark .button {
-        background: var(--main-buttons-dark);
-        color: var(--page-text-dark);
     }
 
     button:disabled {

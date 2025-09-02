@@ -108,19 +108,14 @@ const getUsername = (sendById: string): string => {
     width: 80%;
     padding-right: 40px;
     border: none;
-    border-bottom: 2px solid var(--list-lines-light);
+    border-bottom: 2px solid var(--list-lines);
     height: 2.8rem;
     background: transparent;
-    color: var(--page-text-light);
+    color: var(--page-text);
     font-size: 1.1rem;
     border-radius: 8px;
     padding-left: 12px;
     outline: none;
-}
-
-.dark .body-input {
-    border-bottom: 2px solid var(--list-lines-dark);
-    color: var(--page-text-dark);
 }
 
 form {
@@ -133,14 +128,10 @@ form {
     border-top-right-radius: 8px;
     gap: 10px;
     width: 100%;
-    background: var(--main-buttons-light);
+    background: var(--main-buttons);
     padding: 0.8rem 0;
     box-shadow: var(--button-shadow-light);
     padding-bottom: 1.2rem;
-}
-
-.dark form {
-    background: var(--main-buttons-dark);
 }
 
 .messages-box {

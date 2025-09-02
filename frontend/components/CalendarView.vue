@@ -152,23 +152,14 @@ watch(locale, (newLocale) => {
     font-size: 20px;
     font-weight: 600;
     margin-bottom: 4px;
-    color: var(--page-text-light);
-}
-
-.dark .month-picker {
-    color: var(--page-text-dark);
+    color: var(--page-text);
 }
 
 .month-picker-button {
     width: 25px;
-    background-color: var(--sent-message-light);
-    color: var(--page-text-light);
+    background-color: var(--sent-message);
+    color: var(--page-text);
     border-radius: 7px;
-}
-
-.dark .month-picker-button {
-    background-color: var(--sent-message-dark);
-    color: var(--page-text-dark);
 }
 
 .weekdays-container {
@@ -186,16 +177,11 @@ watch(locale, (newLocale) => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--sent-message-light);
-    color: var(--page-text-light);
+    background-color: var(--sent-message);
+    color: var(--page-text);
     border-radius: 7px;
     font-weight: 600;
     font-size: 20px;
-}
-
-.dark .weekdays {
-    background-color: var(--sent-message-dark);
-    color: var(--page-text-dark);
 }
 
 .days-container {
@@ -206,19 +192,14 @@ watch(locale, (newLocale) => {
 
 .days {
     height: 90px;
-    background-color: var(--recieved-message-light);
+    background-color: var(--recieved-message);
     border-radius: 7px;
     font-weight: 600;
     font-size: 20px;
     text-align: center;
     padding: 4px 10%;
     overflow: scroll;
-    color: var(--page-text-light);
-}
-
-.dark .days {
-    background-color: var(--recieved-message-dark);
-    color: var(--page-text-dark);
+    color: var(--page-text);
 }
 
 .not-current-month {

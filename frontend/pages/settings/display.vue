@@ -30,8 +30,8 @@
 
 <style scoped>
 .container {
-    background-color: var(--background-light);
-    color: var(--page-text-light);
+    background-color: var(--background);
+    color: var(--page-text);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -41,11 +41,6 @@
     max-height: calc(100vh - 5.5rem);
 }
 
-.dark .container {
-    background-color: var(--background-dark);
-    color: var(--page-text-dark);
-}
-
 .select-theme {
     background-color: var(--main-buttons-light);
     width: 13rem;
@@ -53,13 +48,12 @@
     border-radius: 9px;
     border-style: hidden;
     padding-left: 0.5rem;
-    color: var(--page-text-light);
+    color: var(--page-text);
     box-shadow: var(--rectangle-shadow-light);
 }
 
 .dark .select-theme {
     background-color: var(--main-buttons-dark);
-    color: var(--page-text-dark);
 }
 
 .back {

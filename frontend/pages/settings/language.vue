@@ -89,13 +89,9 @@
     grid-template-columns: 1fr 4fr;
     align-items: center;
     border-radius: 20px;
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     box-shadow: var(--rectangle-shadow-light);
-  }
-
-  .dark .setting-button {
-    background-color: var(--main-buttons-dark);
-    color: var(--page-text-dark);
+    color: var(--page-text);
   }
 
   .flag {
@@ -115,7 +111,7 @@
   }
 
   .back {
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     position: fixed;
     display: flex;
     justify-content: center;
@@ -132,10 +128,6 @@
 .back .icon {
     filter: invert(1);
     width: 25px;
-}
-
-.dark .back {
-    background-color: var(--main-buttons-dark);
 }
 
 .dark .back .icon {

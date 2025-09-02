@@ -151,7 +151,7 @@
         margin-top: 0px;
         padding: 25pt 6%;
         animation: slideIn 0.4s;
-        background-color: var(--overlay-background-light);
+        background-color: var(--overlay-background);
         backdrop-filter: blur(8px);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
         display: flex;
@@ -162,10 +162,6 @@
     .modal-top-bar {
         display: flex;
         justify-content: space-between;
-    }
-
-    .dark .modal {
-        background-color: var(--overlay-background-dark);
     }
 
     .icon {
@@ -214,7 +210,7 @@
         justify-content: space-between;
         align-items: center;
         padding: 0% 6%;
-        color: var(--page-text-light);
+        color: var(--page-text);
         font-size: 20px;
         font-weight: 600;
         border-radius: 20px;
@@ -222,30 +218,26 @@
     }
 
     .from {
-        background-color: var(--sent-message-light);
-    }
-
-    .dark .from {
-        background-color: var(--sent-message-dark);
-        color: var(--page-text-dark);
+        background-color: var(--sent-message);
+        color: var(--page-text);
     }
 
     .to {
         background-color: var(--recieved-message-light);
+        color: var(--page-text);
     }
 
     .dark .to {
         background-color: var(--recieved-message-dark);
-        color: var(--page-text-dark);
     }
 
     .others {
         background-color: var(--recieved-message-light);
+        color: var(--page-text);
     }
 
     .dark .others {
         background-color: var(--recieved-message-dark);
-        color: var(--page-text-dark);
     }
 
     .number {

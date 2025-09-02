@@ -202,7 +202,7 @@
 
     .modal-header {
         height: fit-content;
-        color: var(--page-text-light);
+        color: var(--page-text);
         display: grid;
         grid-template-columns: 80% 20%;
         align-items: start;

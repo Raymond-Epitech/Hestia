@@ -116,14 +116,10 @@ button {
     width: 30px;
     height: 30px;
     margin: 8px 5%;
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     border-radius: 9px;
     border: none;
     box-shadow: var(--button-shadow-light);
-}
-
-.dark button {
-  background-color: var(--main-buttons-dark);
 }
 
 .buttons-list{

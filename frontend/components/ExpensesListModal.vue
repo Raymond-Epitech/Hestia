@@ -154,7 +154,7 @@ watch(visible, (value) => {
     margin-top: 0px;
     padding: 25pt 6%;
     animation: slideIn 0.4s;
-    background-color: var(--overlay-background-light);
+    background-color: var(--overlay-background);
     backdrop-filter: blur(8px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
     display: flex;
@@ -167,10 +167,6 @@ watch(visible, (value) => {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
-}
-
-.dark .modal {
-    background-color: var(--overlay-background-dark);
 }
 
 .icon {
@@ -194,14 +190,10 @@ watch(visible, (value) => {
     align-items: center;
     width: 30px;
     height: 30px;
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     border-radius: 9px;
     border: none;
     box-shadow: var(--button-shadow-light);
-}
-
-.dark .add-post {
-    background-color: var(--main-buttons-dark);
 }
 
 .plus {

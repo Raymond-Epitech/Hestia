@@ -91,15 +91,10 @@ const getDayNumber = (timecode: string) => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    color: var(--page-text-light);
+    color: var(--page-text);
     font-weight: 600;
     text-align: center;
 }
-
-.dark .page-container{
-    color: var(--page-text-dark);
-}
-
 
 .header-name {
     width: 100%;
@@ -115,17 +110,12 @@ const getDayNumber = (timecode: string) => {
     justify-content: space-between;
     align-items: center;
     padding: 0% 6%;
-    color: var(--page-text-light);
+    color: var(--page-text);
     font-size: 20px;
     font-weight: 600;
     border-radius: 20px;
     margin: 10px 0px;
-    background-color: var(--sent-message-light);
-}
-
-.dark .refund-rectangle {
-    background-color: var(--sent-message-dark);
-    color: var(--page-text-dark);
+    background-color: var(--sent-message);
 }
 
 .refund-text {
