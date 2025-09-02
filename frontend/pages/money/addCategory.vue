@@ -45,9 +45,7 @@ const newcategory = ref<expenses_category>({
   name: '',
 });
 const handleProceed = async () => {
-  console.log(newcategory.value);
   api.addexpensecategory(newcategory.value).then(() => {
-    console.log('Expense category added successfully');
     router.back()
   }).catch((error) => {
     console.error('Error adding expense category:', error);

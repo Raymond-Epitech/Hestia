@@ -77,7 +77,6 @@ const post = ref({
     allowmultiplechoice: false,
   }
 })
-console.log(post.value)
 const { modelValue } = toRefs(props)
 
 const { open, close, toggle, visible } = useModal(props.name)

@@ -17,7 +17,7 @@
               />
               <img v-if="prewiew" :src="prewiew" alt="Image sélectionnée" style="max-width: 10%; margin-top: 1em;" />
             </div>
-            <div v-if="post.color && post.content" class="modal-buttons">
+            <div v-if="post.content" class="modal-buttons">
               <button class="button button-proceed" @click.prevent="handleProceed">{{ $t('poster') }}</button>
             </div>
             <div v-else class="modal-buttons">
@@ -74,7 +74,6 @@ const post = ref({
     allowmultiplechoice: false,
   }
 })
-console.log(post.value)
 const { modelValue } = toRefs(props)
 
 const { open, close, toggle, visible } = useModal(props.name)

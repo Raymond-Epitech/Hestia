@@ -1,7 +1,7 @@
 <template>
     <div :class="[post.reminderType == 1 ? 'post_image' : 'post', , post.reminderType != 1 && post.color]">
         <ProfileIcon class="profile-icon" :height="30" :width="30" :linkToPP="post.linkToPP" />
-        <ReactModal :postId="post.id" v-model="isModalOpen"/>
+        <ReactModal :postId="post.id" v-model="isModalOpen" />
         <button class="react-button" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
             <div class="heart">❤️</div>
         </button>
@@ -15,6 +15,17 @@
         </button>
         <p v-if="post.reminderType == 0">{{ post.content }}</p>
         <img v-if="post.reminderType == 1" :src="imageget" alt="Post Image" class="image" />
+        <div v-if="post.reminderType == 2" class="expense">
+            <div v-for="item in post.items" :key="item.id" class="expense-header">
+                <span class="expense-name">{{ item.name }} <span>
+                        <img src="../public/edit.png" width="20" height="20" @click="modif = !modif" class="edit" />
+                    </span>
+                </span>
+                <div class="check-zone" :class="{ checked: item.isChecked }"
+                    @click.stop="toggleCheck(item)">
+                </div>
+            </div>
+        </div>
     </div>
     <popup v-if="popup_vue" :text="$t('confirm_delete_reminder')" @confirm="confirmDelete" @close="cancelDelete">
     </popup>
@@ -64,7 +75,7 @@ const cancelDelete = () => {
 
 signalr.on("NewReaction", async (ReactionOutput) => {
     const reaction = ReactionOutput as Reaction;
-    if ( reaction.reminderId == props.post.id ) {
+    if (reaction.reminderId == props.post.id) {
         reactions.value.push(reaction);
     }
 })
@@ -76,8 +87,8 @@ signalr.on("DeleteReaction", async (GUID) => {
 
 signalr.on("UpdateReaction", async (ReactionOutput) => {
     const reaction = ReactionOutput as Reaction;
-    if ( reaction.reminderId == props.post.id ) {
-        for ( let i = 0; i < reactions.value.length; i++ ){
+    if (reaction.reminderId == props.post.id) {
+        for (let i = 0; i < reactions.value.length; i++) {
             if (reactions.value[i].id == reaction.id) {
                 reactions.value[i] = reaction;
             }
@@ -89,7 +100,6 @@ onMounted(async () => {
     reactions.value = [];
     await getReactions();
     if (props.post.reminderType == 1) {
-        console.log('Image URL:', props.post.id);
         api.getImagefromcache(props.post.imageUrl).then((image) => {
             if (image) {
                 imageget.value = image;
@@ -107,13 +117,21 @@ const getReactions = async () => {
         const data = await api.getReactionsReminder(props.post.id);
         if (data && Array.isArray(data)) {
             reactions.value = data;
-            console.log('Reactions fetched:', reactions.value);
         } else {
             console.error('Données de réaction invalides reçues:', data);
         }
     } catch (error) {
         console.error('Erreur lors de la récupération des réactions:', error);
     }
+}
+
+const toggleCheck = (item: any) => {
+    item.isChecked = !item.isChecked;
+    item.createdBy = user.id;
+    api.updateReminderShoppingListItem(item).then(() => {
+    }).catch((error) => {
+        console.error('Error updating item:', error);
+    });
 }
 </script>
 
@@ -205,6 +223,7 @@ const getReactions = async () => {
     max-width: 100%;
 
 }
+
 .react-button {
     display: flex;
     justify-content: center;
@@ -237,6 +256,7 @@ const getReactions = async () => {
     width: 14px;
     overflow-x: visible;
 }
+
 .reaction-list {
     position: absolute;
     bottom: -8px;
@@ -245,5 +265,54 @@ const getReactions = async () => {
     white-space: nowrap;
     /* overflow-x: scroll; */
     justify-content: left;
+}
+
+.check-zone {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.check-zone.checked {
+    background-color: #85AD7B;
+    border-color: #85AD7B;
+}
+
+.check-zone:not(.checked) {
+    border-color: #8D90D6;
+}
+
+.expense-name {
+    display: grid;
+    grid-template-columns: 9fr 1fr 1fr;
+    align-items: center;
+    margin-right: 10px;
+    padding-left: 2px;
+}
+
+.edit {
+    margin-bottom: 2px;
+}
+
+.modify-input {
+    border: none;
+    border-radius: 5px;
+    background-color: #393a40;
+    outline: none;
+}
+
+.expense-header {
+    display: grid;
+    grid-template-columns: 10fr 1fr;
+    font-weight: bold;
+    align-items: center;
+}
+
+.expense {
+    border-bottom: 2px dotted #dddddd94;
+    padding: 10px 0;
 }
 </style>

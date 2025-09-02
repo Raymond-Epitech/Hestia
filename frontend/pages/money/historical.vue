@@ -54,7 +54,6 @@ const getUsername = (id: string): string => {
 };
 
 const redirectto = () => {
-    console.log(name);
     router.push({ path: '/money/addExpense', query: { name, categoryId } });
 }
 

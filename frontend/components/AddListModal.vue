@@ -87,7 +87,6 @@ const post = ref({
     allowmultiplechoice: false,
   }
 })
-console.log(post.value)
 const { modelValue } = toRefs(props)
 
 const { open, close, toggle, visible } = useModal(props.name)
@@ -144,7 +143,6 @@ const handleAddItem = () => {
 const handleProceed = async () => {
   const response = await api.addReminder(post.value)
   if (response != '') {
-    console.log(response)
     item_list.value.forEach(async (item) => {
       item.reminderId = response;
       await api.addReminderShoppingListItem(item);

@@ -4,7 +4,6 @@ import { Capacitor } from '@capacitor/core'
 import { Filesystem, Directory } from '@capacitor/filesystem';
 
 function isNative() {
-    console.log("Capacitor.isNativePlatform():", Capacitor.isNativePlatform());
     return Capacitor.isNativePlatform()
 }
 
@@ -24,7 +23,6 @@ export class bridge {
     }
 
     getjwt() {
-        console.log("jwt:", this.jwt);
         return this.jwt;
     }
 
@@ -78,7 +76,7 @@ export class bridge {
         } else {
             formData.append('File', '');
         }
-        formData.append('ShoppingListName', data.shoppingListName);
+        formData.append('ShoppingListName', data.shoppinglistName);
         formData.append("PollInput.Title", data.pollInput.title);
         formData.append("PollInput.Description", data.pollInput.description);
         formData.append("PollInput.ExpirationDate", data.pollInput.expirationdate);
