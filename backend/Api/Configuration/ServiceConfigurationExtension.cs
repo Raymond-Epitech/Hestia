@@ -2,6 +2,7 @@
 using Business.Services;
 using EntityFramework.Context;
 using EntityFramework.Repositories;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Configuration;
@@ -39,6 +40,17 @@ public static class ServiceConfigurationExtension
         // Others
         services.AddHttpContextAccessor();
         services.AddScoped<RecurringJobsConfigurator>();
+        services.ConfigurePictureSize();
+        return services;
+    }
+
+    public static IServiceCollection ConfigurePictureSize(this IServiceCollection services)
+    {
+        services.Configure<FormOptions>(options =>
+        {
+            options.MultipartBodyLengthLimit = 104_857_600; // 100 MB
+        });
+
         return services;
     }
 

@@ -291,7 +291,7 @@ public class UserService(ILogger<UserService> logger,
 
         userRepository.Update(user);
 
-        if (loginInput is not null)
+        if (loginInput is not null && !string.IsNullOrEmpty(loginInput.FCMToken))
         {
             logger.LogInformation($"FCM Token received : {loginInput.FCMToken}");
 
