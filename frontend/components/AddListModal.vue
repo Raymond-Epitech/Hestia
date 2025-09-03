@@ -5,8 +5,9 @@
         <div class="modal" @click.stop>
           <div class="modal-header left">
             <h1 class="modal-header-text">{{ $t('shopping-list-name') }} :</h1>
+            <img src="/Trash.svg" alt="Delete Icon" class="svg-icon" @click="showPopup" />
           </div>
-          <form method="post" action="">
+          <form method="post" action="" @submit.prevent="handleSubmit">
             <div class="modal-body left">
               <input class="modal-body-input" rows="1" maxlength="50" v-model="post.shoppinglistName"></input>
             </div>
@@ -31,6 +32,12 @@
           </form>
         </div>
       </div>
+      <popup
+        v-if="popup_vue"
+        :text="$t('confirm_delete_shoppinglist')"
+        @confirm="confirmDelete"
+        @close="cancelDelete"
+    />
     </div>
   </transition>
 </template>
@@ -55,7 +62,7 @@ const props = withDefaults(
     borders: true,
   }
 )
-
+const popup_vue = ref(false)
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
@@ -249,6 +256,31 @@ const deleteItem = (id: string) => {
       item_list.value = item_list.value?.filter((item) => item.id !== id);
     });
   }
+};
+
+const handleSubmit = () => {
+  console.log('Form submitted');
+};
+
+const showPopup = () => {
+    popup_vue.value = true;
+};
+
+const confirmDelete = async () => {
+    popup_vue.value = false;
+    api.deleteReminder(Id.value).then((response) => {
+      if (!response) {
+        console.error(`Failed to delete reminder ${Id.value}`);
+        return;
+      }
+      resetPost()
+      close()
+      emit('closed')
+    });
+};
+
+const cancelDelete = () => {
+    popup_vue.value = false;
 };
 
 </script>
