@@ -19,7 +19,7 @@
         <p v-if="post.reminderType == 0">{{ post.content }}</p>
         <img v-if="post.reminderType == 1" :src="imageget" alt="Post Image" class="image" />
         <div v-if="post.reminderType == 2" class="expense">
-            <h2>{{ post.shoppingListName }}</h2>
+            <h3>{{ post.shoppingListName }}</h3>
             <div v-for="item in post.items" :key="item.id" class="expense-header">
                 <span class="expense-name">
                     {{ item.name }}
@@ -216,6 +216,12 @@ const toggleCheck = (item: any) => {
     color: rgb(10, 10, 10);
     overflow-wrap: anywhere;
     text-align: center;
+}
+
+.post h3 {
+    text-align: center;
+    margin: 0 auto;
+    width: 100%;
 }
 
 .profile-icon {
