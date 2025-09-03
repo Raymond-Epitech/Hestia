@@ -97,34 +97,14 @@ export class bridge {
     }
 
     async updateReminder(data: any, id: string) {
-        const formData = new FormData();
-        formData.append('Id', id);
-        formData.append('ColocationId', data.colocationId || '');
-        formData.append('CreatedBy', data.createdBy);
-        formData.append('CoordX', String(data.coordX));
-        formData.append('CoordY', String(data.coordY));
-        formData.append('CoordZ', String(data.coordZ));
-        formData.append('ReminderType', String(data.reminderType));
-        formData.append('Content', data.content);
-        formData.append('Color', data.color);
-        if (data.image) {
-            formData.append('File', data.image, data.image.name);
-        } else {
-            formData.append('File', '');
-        }
-        formData.append('ShoppingListName', data.shoppinglistName);
-        formData.append("PollInput.Title", data.pollInput.title);
-        formData.append("PollInput.Description", data.pollInput.description);
-        formData.append("PollInput.ExpirationDate", data.pollInput.expirationdate);
-        formData.append("PollInput.IsAnonymous", String(data.pollInput.isanonymous));
-        formData.append("PollInput.AllowMultipleChoices", String(data.pollInput.allowmultiplechoice));
+        data.Id = id;
         return await fetch(this.url + "/api/Reminder/", {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + this.jwt
             },
-            body: formData
+            body: JSON.stringify(data)
         }).then(response => {
             if (response.status == 200) {
                 return true;
