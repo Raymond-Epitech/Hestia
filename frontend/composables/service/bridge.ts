@@ -97,7 +97,7 @@ export class bridge {
     }
 
     async updateReminder(data: any, id: string) {
-        data.Id = id;
+        data.id = id;
         return await fetch(this.url + "/api/Reminder/", {
             method: 'PUT',
             headers: {
