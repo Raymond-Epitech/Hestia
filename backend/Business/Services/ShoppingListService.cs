@@ -2,6 +2,7 @@
 using Business.Mappers;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
+using LazyCache;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Exceptions;
@@ -14,7 +15,8 @@ namespace Business.Services;
 public class ShoppingListService(ILogger<ShoppingListService> logger,
     IRepository<ShoppingItem> itemRepository,
     IRealTimeService realTimeService,
-    IRepository<Reminder> reminderRepository) : IShoppingListService
+    IRepository<Reminder> reminderRepository,
+    IAppCache cache) : IShoppingListService
 {
     public async Task<List<ShoppingItemOutput>> GetAllShoppingItemsAsync(Guid reminderId)
     {
@@ -47,6 +49,9 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
         logger.LogInformation($"Succesfully added shopping item {shoppingItem.Id}");
 
         var colocationId = await reminderRepository.Query().Select(r => r.ColocationId).FirstOrDefaultAsync();
+
+        cache.Remove($"reminders:{colocationId}");
+
         await realTimeService.SendToGroupAsync(colocationId, "NewShoppingItem", shoppingItem.ToOutput());
 
         return shoppingItem.Id;
@@ -74,6 +79,8 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
         itemRepository.Update(shoppingItem);
         await itemRepository.SaveChangesAsync();
 
+        cache.Remove($"reminders:{shoppingItem.ShoppingListReminder.ColocationId}");
+
         await realTimeService.SendToGroupAsync(shoppingItem.ShoppingListReminder.ColocationId, "UpdatedShoppingItem", shoppingItem.ToOutput());
 
         logger.LogInformation($"Succesfully updated item {shoppingItemUpdate.Id}");
@@ -99,6 +106,8 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
         await itemRepository.SaveChangesAsync();
 
         logger.LogInformation($"shopping item {shoppingItemId} deleted");
+
+        cache.Remove($"reminders:{toDelete.ShoppingListReminder.ColocationId}");
 
         await realTimeService.SendToGroupAsync(toDelete.ShoppingListReminder.ColocationId, "DeletedShoppingItem", shoppingItemId);
 
