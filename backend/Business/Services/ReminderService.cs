@@ -268,19 +268,18 @@ public class ReminderService(ILogger<ReminderService> logger,
             case ReminderType.Text:
                 reminder = await reminderRepository.Query()
                     .Where(r => r.Id == input.Id && r is TextReminder)
+                    .Include(r => r.Reactions)
+                    .Include(r => r.User)
                     .FirstOrDefaultAsync();
                 break;
             case ReminderType.Image:
-                reminder = await reminderRepository.Query()
-                    .Where(r => r.Id == input.Id && r is ImageReminder)
-                    .Include(r => r.Reactions)
-                    .FirstOrDefaultAsync();
-                break;
+                throw new InvalidDataException("Cannot update image reminder");
             case ReminderType.ShoppingList:
                 reminder = await reminderRepository.Query()
                     .Where(r => r.Id == input.Id && r is ShoppingListReminder)
                     .Include(r => (r as ShoppingListReminder)!.ShoppingItems)
                     .Include(r => r.Reactions)
+                    .Include(r => r.User)
                     .FirstOrDefaultAsync();
                 break;
             case ReminderType.Poll:
@@ -288,6 +287,7 @@ public class ReminderService(ILogger<ReminderService> logger,
                     .Where(r => r.Id == input.Id && r is PollReminder)
                     .Include(r => (r as PollReminder)!.PollVotes)
                     .Include(r => r.Reactions)
+                    .Include(r => r.User)
                     .FirstOrDefaultAsync();
                 break;
             default:
@@ -301,15 +301,6 @@ public class ReminderService(ILogger<ReminderService> logger,
 
         reminder.UpdateFromInput(input);
         reminderRepository.Update(reminder);
-
-        if (reminder is ImageReminder imageReminder && input.File is not null)
-        {
-            if (!string.IsNullOrEmpty(imageReminder.ImageUrl))
-            {
-                DeleteImage(imageReminder.ImageUrl);
-            }
-            imageReminder.ImageUrl = await SaveImage(input.File);
-        }
 
         await reminderRepository.SaveChangesAsync();
 

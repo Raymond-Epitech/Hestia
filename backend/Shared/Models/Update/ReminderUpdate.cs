@@ -23,8 +23,6 @@ namespace Shared.Models.Update
 
         public string? Color { get; set; } = null;
 
-        public IFormFile? File { get; set; } = null;
-
         public string? ShoppingListName { get; set; } = null;
 
         public PollInput? PollInput { get; set; } = null;
