@@ -10,16 +10,18 @@
                 {{ reaction.type }}
             </div>
         </div>
-        <button class="delete-button" @click="showPopup" v-if="post.createdBy == user.id">
+        <button class="delete-button" @click="showPopup" v-if="post.createdBy == user.id && post.reminderType != 2">
             <div class="close"></div>
+        </button>
+        <button class="edit-button" @click="handleModify" v-if="post.reminderType == 2">
+            <img src="/edit.svg" class="edit-icon"/>
         </button>
         <p v-if="post.reminderType == 0">{{ post.content }}</p>
         <img v-if="post.reminderType == 1" :src="imageget" alt="Post Image" class="image" />
         <div v-if="post.reminderType == 2" class="expense">
             <div v-for="item in post.items" :key="item.id" class="expense-header">
-                <span class="expense-name">{{ item.name }} <span>
-                        <img src="../public/edit.png" width="20" height="20" @click="modif = !modif" class="edit" />
-                    </span>
+                <span class="expense-name">
+                    {{ item.name }}
                 </span>
                 <div class="check-zone" :class="{ checked: item.isChecked }"
                     @click.stop="toggleCheck(item)">
@@ -50,7 +52,7 @@ api.setjwt(useCookie('token').value ?? '');
 const userStore = useUserStore();
 const user = userStore.user;
 const imageget = ref('');
-const emit = defineEmits(['delete']);
+const emit = defineEmits(['delete', 'modify']);
 const reactions = ref<Reaction[]>([]);
 const { $signalr } = useNuxtApp();
 const signalr = $signalr as SignalRClient;
@@ -67,6 +69,10 @@ const confirmDelete = async () => {
     } catch (error) {
         console.error('Failed to delete the post:', error);
     }
+};
+
+const handleModify = () => {
+    emit('modify');
 };
 
 const cancelDelete = () => {
@@ -150,6 +156,27 @@ const toggleCheck = (item: any) => {
     margin: 20px;
     position: relative;
     background-color: transparent;
+}
+
+.edit-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    background: var(--light-grey);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+}
+
+.edit-icon {
+    height: 16px;
+    width: 16px;
+    filter: invert(0);
 }
 
 .delete-button {

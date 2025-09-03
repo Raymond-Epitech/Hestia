@@ -11,14 +11,15 @@
               <input class="modal-body-input" rows="1" maxlength="50" v-model="post.shoppinglistName"></input>
             </div>
             <div ref="itemList">
-              <div v-for="(item, index) in item_list" :key="index" >
-                {{ item.name }}
+              <div v-for="(item, index) in item_list" :key="index">
+                <shopping-item :item="item" @update:isChecked="updateIsChecked(item.id ?? '', $event)"
+                  @update:name="updateName(item.id ?? '', $event)" @delete="deleteItem(item.id ?? '')" />
               </div>
             </div>
             <div @click.prevent="handleAddItem">
-              <input v-model="newitemList.name" type="text" placeholder="Message" class="body-input"/>
+              <input v-model="newitemList.name" type="text" placeholder="Message" class="body-input" />
               <button type="submit" class="button">
-                  <img src="/Submit.svg" alt="Submit Icon" class="svg-icon" />
+                <img src="/Submit.svg" alt="Submit Icon" class="svg-icon" />
               </button>
             </div>
             <div v-if="post.shoppinglistName" class="modal-buttons">
@@ -35,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ReminderItem } from '~/composables/service/type';
+import type { Reminder, ReminderItem } from '~/composables/service/type';
 import useModal from '~/composables/useModal';
 import { useUserStore } from '~/store/user';
 
@@ -46,6 +47,7 @@ const props = withDefaults(
     header?: boolean
     buttons?: boolean
     borders?: boolean
+    post?: Reminder
   }>(),
   {
     header: true,
@@ -60,6 +62,8 @@ const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 const prewiew = ref('');
 const item_list = ref<ReminderItem[]>([]);
+const Id = ref('');
+const modify = ref(false);
 const newitemList = ref<ReminderItem>({
   name: '',
   reminderId: '',
@@ -92,7 +96,7 @@ const { modelValue } = toRefs(props)
 const { open, close, toggle, visible } = useModal(props.name)
 
 const emit = defineEmits<{
-  closed: [], // named tuple syntax
+  closed: [],
   proceed: [],
   'update:modelValue': [value: boolean]
 }>()
@@ -167,6 +171,72 @@ watch(
 watch(visible, (value) => {
   emit('update:modelValue', value)
 })
+
+watch(() => props.post, (newPost, oldPost) => {
+  if (newPost) {
+    if (newPost) {
+      console.log("post to modify", newPost);
+      console.log("post avant modif", post.value);
+      post.value.shoppinglistName = newPost.shoppingListName;
+      Id.value = newPost.id;
+      item_list.value = newPost.items;
+      modify.value = true;
+    }
+  }
+});
+
+const updateIsChecked = (id: string, value: boolean) => {
+  const item = item_list.value?.find((item) => item.id === id);
+  if (!modify && item) {
+    item.isChecked = value;
+  }
+  if (item && modify) {
+    item.isChecked = value;
+    api.updateReminderShoppingListItem(item).then((response) => {
+      if (!response) {
+        console.error(`Failed to update item ${id}`);
+        item.isChecked = !value;
+        return;
+      }
+    }).catch((error) => {
+      console.error(`Error updating item ${id}:`, error);
+    });
+  }
+};
+
+const updateName = (id: string, value: string) => {
+  const item = item_list.value?.find((item) => item.id === id);
+  if (!modify && item) {
+    item.name = value;
+  }
+  if (item && modify) {
+    item.name = value;
+    api.updateReminderShoppingListItem(item).then((response) => {
+      if (!response) {
+        console.error(`Failed to update item ${id}`);
+        window.location.reload();
+        return;
+      }
+    }).catch((error) => {
+      console.error(`Error updating item ${id}:`, error);
+    });
+  }
+};
+
+const deleteItem = (id: string) => {
+  if (!modify) {
+    item_list.value = item_list.value?.filter((item) => item.id !== id);
+    return;
+  } else {
+    api.deleteReminderShoppingListItem(id).then((response) => {
+      if (!response) {
+        console.error(`Failed to delete item ${id}`);
+        return;
+      }
+      item_list.value = item_list.value?.filter((item) => item.id !== id);
+    });
+  }
+};
 
 </script>
 

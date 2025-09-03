@@ -25,12 +25,12 @@
 </template>
 
 <script setup lang="ts">
-import type { shoppinglist_item } from '~/composables/service/type';
+import type { ReminderItem, } from '~/composables/service/type';
 
 const popup_vue = ref(false)
 const modif = ref(false);
 const props = defineProps<{
-    item: shoppinglist_item;
+    item: ReminderItem;
     onclick?: () => void;
 }>();
 const emit = defineEmits<{

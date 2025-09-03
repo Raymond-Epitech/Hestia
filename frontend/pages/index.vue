@@ -2,7 +2,7 @@
   <div>
     <AddPostModal v-model="isModalOpen" @proceed="getall()" />
     <AddImageModal v-model="isModalImageOpen" @proceed="getall()" />
-    <AddListModal v-model="isModalListOpen" @proceed="getall()" />
+    <AddListModal v-model="isModalListOpen" @proceed="getall()" :post="remindermodif" />
     <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
       <img src="~/public/posts/Post.svg" class="post">
     </button>
@@ -15,7 +15,8 @@
     <div class="post-list">
       <div v-for="(post) in posts" :key="post.id">
         <Post :post="post"
-          @delete="getall()" />
+          @delete="getall()" 
+          @modify="handleModify(post)"/>
       </div>
     </div>
   </div>
@@ -30,6 +31,7 @@ import type { Reminder, SignalRClient } from '../composables/service/type';
   const isModalImageOpen = ref(false)
   const openImageModal = () => (isModalImageOpen.value = true)
   const isModalListOpen = ref(false)
+  const remindermodif = ref<Reminder>();
   const openListModal = () => (isModalListOpen.value = true)
 
   const userStore = useUserStore();
@@ -71,6 +73,12 @@ const getall = async () => {
     }
   }
   posts.value = data;
+};
+
+const handleModify = (post: Reminder) => {
+  console.log("post a modifier dans index.vue", post);
+  remindermodif.value = post;
+  openListModal();
 };
 
 onMounted(async () => {
