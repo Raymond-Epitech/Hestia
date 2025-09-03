@@ -105,5 +105,7 @@
     "fri": "Vie",
     "sat": "Sáb",
     "sun": "Dom"
-  }
+  },
+  "confirm_delete_shoppinglist": "¿Estás seguro de que quieres eliminar esta lista de compras?",
+  "shopping-list-name": "Nombre de la lista de compras"
 }
