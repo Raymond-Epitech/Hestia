@@ -6,6 +6,7 @@ using LazyCache;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Shared.Enums;
 using Shared.Exceptions;
 using Shared.Models.DTO;
 using Shared.Models.Input;
@@ -260,8 +261,39 @@ public class ReminderService(ILogger<ReminderService> logger,
     /// <exception cref="ContextException">An error has occured while adding reminder from db</exception>
     public async Task<Guid> UpdateReminderAsync(ReminderUpdate input)
     {
-        var reminder = await reminderRepository.GetByIdAsync(input.Id);
-            
+        Reminder? reminder;
+
+        switch (input.ReminderType)
+        {
+            case ReminderType.Text:
+                reminder = await reminderRepository.Query()
+                    .Where(r => r.Id == input.Id && r is TextReminder)
+                    .FirstOrDefaultAsync();
+                break;
+            case ReminderType.Image:
+                reminder = await reminderRepository.Query()
+                    .Where(r => r.Id == input.Id && r is ImageReminder)
+                    .Include(r => r.Reactions)
+                    .FirstOrDefaultAsync();
+                break;
+            case ReminderType.ShoppingList:
+                reminder = await reminderRepository.Query()
+                    .Where(r => r.Id == input.Id && r is ShoppingListReminder)
+                    .Include(r => (r as ShoppingListReminder)!.ShoppingItems)
+                    .Include(r => r.Reactions)
+                    .FirstOrDefaultAsync();
+                break;
+            case ReminderType.Poll:
+                reminder = await reminderRepository.Query()
+                    .Where(r => r.Id == input.Id && r is PollReminder)
+                    .Include(r => (r as PollReminder)!.PollVotes)
+                    .Include(r => r.Reactions)
+                    .FirstOrDefaultAsync();
+                break;
+            default:
+                throw new MissingArgumentException("Type is invalid or missing");
+        }
+
         if (reminder == null)
         {
             throw new NotFoundException($"Reminder {input.Id} not found");

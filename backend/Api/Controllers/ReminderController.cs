@@ -63,7 +63,7 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Guid>> UpdateReminder(ReminderUpdate input)
+        public async Task<ActionResult<Guid>> UpdateReminder([FromBody] ReminderUpdate input)
         {
             if (input.Id == Guid.Empty)
                 throw new InvalidEntityException("Id is empty");

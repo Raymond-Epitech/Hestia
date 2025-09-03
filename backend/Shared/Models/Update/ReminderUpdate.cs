@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Shared.Enums;
 using Shared.Models.Input;
 using System.ComponentModel.DataAnnotations;
 
@@ -14,6 +15,9 @@ namespace Shared.Models.Update
         public int CoordY { get; set; } = 0;
 
         public int CoordZ { get; set; } = 0;
+        
+        [Required]
+        public ReminderType ReminderType { get; set; }
 
         public string? Content { get; set; } = null;
 
