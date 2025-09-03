@@ -145,6 +145,18 @@ const handleAddItem = () => {
 }
 
 const handleProceed = async () => {
+  if (modify) {
+    api.updateReminder(post.value, Id.value).then((response) => {
+      if (!response) {
+        console.error(`Failed to update reminder ${Id.value}`);
+        return;
+      }
+    });
+    resetPost()
+    close()
+    emit('closed')
+    return
+  }
   const response = await api.addReminder(post.value)
   if (response != '') {
     item_list.value.forEach(async (item) => {
@@ -181,6 +193,7 @@ watch(() => props.post, (newPost, oldPost) => {
       Id.value = newPost.id;
       item_list.value = newPost.items;
       modify.value = true;
+      console.log("id", Id.value)
     }
   }
 });

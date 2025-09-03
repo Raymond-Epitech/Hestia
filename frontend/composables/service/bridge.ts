@@ -121,7 +121,8 @@ export class bridge {
         return await fetch(this.url + "/api/Reminder/", {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
             },
             body: formData
         }).then(response => {
