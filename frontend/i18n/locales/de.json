@@ -85,9 +85,10 @@
   "nav_expenses": "Ausgaben",
   "nav_messages": "Nachrichten",
   "Display": "Anzeige",
-  "system": "system",
-  "dark": "dunkel",
-  "light": "hell",
+  "system": "System",
+  "dark": "Dunkel",
+  "light": "Hell",
+  "hestia": "Hestia",
   "Language-subtext": "Sprache der Anwendung ändern",
   "Display-subtext": "Sprache der Anwendung ändern",
   "Colocation-subtext": "Anzeigeeinstellungen ändern",
@@ -105,5 +106,6 @@
     "fri": "Fr",
     "sat": "Sa",
     "sun": "So"
-  }
+  },
+  "theme": "Thema"
 }

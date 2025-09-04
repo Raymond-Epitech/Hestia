@@ -85,9 +85,10 @@
   "nav_expenses": "Expenses",
   "nav_messages": "Messages",
   "Display": "Display",
-  "system": "system",
-  "dark": "dark",
-  "light": "light",
+  "system": "System",
+  "dark": "Dark",
+  "light": "Light",
+  "hestia": "Hestia",
   "Language-subtext": "Change the application language",
   "Display-subtext": "Change display settings",
   "Colocation-subtext": "Change display settings",
@@ -105,5 +106,6 @@
     "fri": "Fri",
     "sat": "Sat",
     "sun": "Sun"
-  }
+  },
+  "theme": "Theme"
 }

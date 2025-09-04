@@ -85,9 +85,10 @@
   "nav_expenses": "Gastos",
   "nav_messages": "Mensajes",
   "Display": "Visualización",
-  "system": "sistema",
-  "dark": "oscuro",
-  "light": "claro",
+  "system": "Sistema",
+  "dark": "Oscuro",
+  "light": "Claro",
+  "hestia": "Hestia",
   "Language-subtext": "Cambiar el idioma de la aplicación",
   "Display-subtext": "Modificar los parámetros de visualización",
   "Colocation-subtext": "Parámetros de tu piso compartido",
@@ -105,5 +106,6 @@
     "fri": "Vie",
     "sat": "Sáb",
     "sun": "Dom"
-  }
+  },
+  "theme": "Tema"
 }

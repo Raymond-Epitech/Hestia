@@ -82,9 +82,10 @@
   "nav_expenses": "Dépenses",
   "nav_messages": "Messages",
   "Display": "Affichage",
-  "system": "système",
-  "dark": "sombre",
-  "light": "clair",
+  "system": "Système",
+  "dark": "Sombre",
+  "light": "Clair",
+  "hestia": "Hestia",
   "Language-subtext": "Changer la langue de l’application",
   "Display-subtext": "Modifier les paramètres d’affichage",
   "Colocation-subtext": "Paramètres de ta colocation",
@@ -102,5 +103,6 @@
     "fri": "Ven",
     "sat": "Sam",
     "sun": "Dim"
-  }
+  },
+  "theme": "Thème"
 }

@@ -3,23 +3,24 @@
         <img src="~/public/Retour.svg" class="icon">
     </button>
     <div class="container">
-        <h1>Color mode: {{ $colorMode.value }}</h1>
-        <select v-model="$colorMode.preference" class="select-theme">
-            <option value="system">
-                <Texte_language source="system" />
-            </option>
-            <option value="light">
-                <Texte_language source="light" />
-            </option>
-            <option value="dark">
-                <Texte_language source="dark" />
-            </option>
-            <option value="hestia">
-                <Texte_language source="hestia" />
-            </option>
-            <!-- <option value="sepia">Sepia</option> -->
-        </select>
+        <h1>{{ $t('theme')}} : {{ $t($colorMode.preference) }}</h1>
+        <div class="themes-container">
+            <div class="theme-box" :class="{selected: $colorMode.preference === 'system'}" @click="$colorMode.preference = 'system'">
+            <img src="~/public/settings/system.svg" class="icon"></img>
+            </div>
+            <div class="theme-box" :class="{selected: $colorMode.preference === 'light'}" @click="$colorMode.preference = 'light'">
+                <img src="~/public/settings/sun.svg" class="icon"></img>
+            </div>
+            <div class="theme-box" :class="{selected: $colorMode.preference === 'dark'}" @click="$colorMode.preference = 'dark'">
+                <img src="~/public/settings/moon.svg" class="icon"></img>
+            </div>
+            <div class="theme-box" :class="{selected: $colorMode.preference === 'hestia'}" @click="$colorMode.preference = 'hestia'">
+                <img src="~/public/settings/fridge.svg" class="icon"></img>
+            </div>
+        </div>
     </div>
+    <div>
+  </div>
 </template>
 
 <script setup>
@@ -32,6 +33,46 @@
 </script>
 
 <style scoped>
+
+.themes-container {
+    display: grid;
+    grid-template-columns: repeat(4, 50px);
+    margin-top: 20px;
+    grid-gap: 22px;
+}
+
+.hestia .container {
+    color: var(--main-buttons);
+}
+
+.theme-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 62px;
+    height: 62px;
+    border-radius: 10px;
+    background-color: var(--main-buttons);
+    box-shadow: var(--button-shadow-light);
+}
+
+.icon {
+    width: 48px;
+    height: 48px;
+}
+
+.dark .icon {
+    filter: invert(1);
+}
+
+.hestia .icon {
+    filter: invert(1);
+}
+
+.selected {
+    transform: scale(1.18);
+}
+
 .container {
     background-color: var(--background);
     color: var(--page-text);
