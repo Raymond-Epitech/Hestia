@@ -160,7 +160,7 @@ const handleProceed = async () => {
       }
     });
     item_list.value.forEach(async (item) => {
-      item.reminderId = response;
+      item.reminderId = Id.value;
       await api.addReminderShoppingListItem(item);
     });
     resetPost()
