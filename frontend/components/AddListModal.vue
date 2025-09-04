@@ -123,7 +123,7 @@ const resetPost = () => {
     coordX: 0,
     coordY: 0,
     coordZ: 0,
-    reminderType: 0,
+    reminderType: 2,
     content: '',
     color: '',
     image: new File([], 'test.jpg'),
