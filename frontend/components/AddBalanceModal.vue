@@ -40,7 +40,7 @@
 <script setup lang="ts">
     import useModal from '~/composables/useModal';
     import { useUserStore } from '~/store/user';
-    import type { Coloc, UserBalance } from '~/composables/service/type';
+    import type { Coloc, UserBalance, refund } from '~/composables/service/type';
 
     const props = withDefaults(
         defineProps < {
@@ -82,21 +82,6 @@
         proceed: [],
         'update:modelValue': [value: boolean]
     } > ()
-
-    api.getRefund(user.colocationId)
-        .then((response) => {
-            const data = Array.isArray(response) ? response : [...response];
-
-            const toList = data.filter(item => item.to === user.id);
-            const fromList = data.filter(item => item.from === user.id);
-            const othersList = data.filter(item => item.to !== user.id && item.from !== user.id);
-            refund_to.value = toList;
-            refund_from.value = fromList;
-            refund_others.value = othersList;
-        })
-        .catch((error) => {
-            console.error('Error fetching data:', error);
-        });
 
     const handleReload = async () => {
         api.getRefund(user.colocationId)
@@ -140,6 +125,21 @@
 
     watch(visible, (value) => {
         emit('update:modelValue', value)
+
+        if (value) {
+            api.getRefund(user.colocationId).then((response) => {
+            const data = Array.isArray(response) ? response : [...response];
+            const toList = data.filter(item => item.to === user.id);
+            const fromList = data.filter(item => item.from === user.id);
+            const othersList = data.filter(item => item.to !== user.id && item.from !== user.id);
+            refund_to.value = toList;
+            refund_from.value = fromList;
+            refund_others.value = othersList;
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+        }
     })
 </script>
 
@@ -223,21 +223,13 @@
     }
 
     .to {
-        background-color: var(--recieved-message-light);
+        background-color: var(--recieved-message);
         color: var(--page-text);
-    }
-
-    .dark .to {
-        background-color: var(--recieved-message-dark);
     }
 
     .others {
-        background-color: var(--recieved-message-light);
+        background-color: var(--recieved-message);
         color: var(--page-text);
-    }
-
-    .dark .others {
-        background-color: var(--recieved-message-dark);
     }
 
     .number {

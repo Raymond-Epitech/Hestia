@@ -210,6 +210,10 @@ watch(locale, (newLocale) => {
     color: var(--light-grey);
 }
 
+.hestia .not-current-month {
+    color: var(--light-grey);
+}
+
 .dot-container {
     display: grid;
     grid-template-columns: repeat(3, 33%);

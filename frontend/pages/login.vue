@@ -177,7 +177,12 @@ const login = async () => {
     }
 
     .dark .login {
-        background-color: #000000;
+        background-color: var(--main-buttons);
+        box-shadow: var(--rectangle-shadow-light);
+    }
+
+    .hestia .login {
+        background-color: var(--main-buttons);
         box-shadow: var(--rectangle-shadow-light);
     }
 
@@ -196,7 +201,12 @@ const login = async () => {
     }
 
     .dark .register {
-        background-color: #000000;
+        background-color: var(--main-buttons);
+        box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
+    }
+
+    .hestia .register {
+        background-color: var(--main-buttons);
         box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
     }
 
@@ -218,6 +228,10 @@ const login = async () => {
 
     .dark .input {
         color: var(--page-text);
+    }
+
+    .hestia .input {
+        color: var(--main-buttons);
     }
 
     .register-font {
@@ -247,6 +261,11 @@ const login = async () => {
         color: var(--page-text);
     }
 
+    .hestia .register-button {
+        background-color: var(--background);
+        color: var(--main-buttons);
+    }
+
     .google-button {
         display: flex;
         justify-content: center;
@@ -261,6 +280,10 @@ const login = async () => {
         font-size: 20px;
         text-decoration: none;
         box-shadow: var(--button-shadow-light);
+    }
+
+    .hestia .google-button {
+        background-color: var(--main-buttons);
     }
 
     .alert {

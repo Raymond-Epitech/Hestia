@@ -74,6 +74,10 @@ button {
     filter: none;
 }
 
+.hestia .icon {
+    filter: none;
+}
+
 .add-user {
     top: 3%;
     right: 3%;

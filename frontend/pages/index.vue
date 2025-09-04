@@ -82,14 +82,10 @@ onMounted(async () => {
     align-items: center;
     width: 40px;
     height: 40px;
-    background-color: #FFFFFF;
+    background-color: var(--main-buttons);
     border-radius: 9px;
     border: none;
     box-shadow: var(--button-shadow-light);
-  }
-
-  .dark .add-post {
-    background-color: #000000;
   }
 
   .post {
@@ -99,6 +95,10 @@ onMounted(async () => {
   }
 
   .dark .post {
+    filter: none;
+  }
+
+  .hestia .post {
     filter: none;
   }
 </style>

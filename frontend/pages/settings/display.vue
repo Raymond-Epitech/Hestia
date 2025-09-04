@@ -14,6 +14,9 @@
             <option value="dark">
                 <Texte_language source="dark" />
             </option>
+            <option value="hestia">
+                <Texte_language source="hestia" />
+            </option>
             <!-- <option value="sepia">Sepia</option> -->
         </select>
     </div>
@@ -42,7 +45,7 @@
 }
 
 .select-theme {
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     width: 13rem;
     height: 2.2rem;
     border-radius: 9px;
@@ -52,12 +55,8 @@
     box-shadow: var(--rectangle-shadow-light);
 }
 
-.dark .select-theme {
-    background-color: var(--main-buttons-dark);
-}
-
 .back {
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     position: fixed;
     display: flex;
     justify-content: center;
@@ -76,11 +75,11 @@
     width: 25px;
 }
 
-.dark .back {
-    background-color: var(--main-buttons-dark);
+.dark .back .icon {
+    filter: none;
 }
 
-.dark .back .icon {
+.hestia .back .icon {
     filter: none;
 }
 </style>

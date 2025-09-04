@@ -205,6 +205,10 @@ watch(visible, (value) => {
     filter: invert(1) opacity(1);
 }
 
+.hestia .plus {
+    filter: invert(1) opacity(1);
+}
+
 .forbid-scroll {
     overflow: hidden;
 }

@@ -109,6 +109,10 @@ onMounted(async () => {
         filter: invert(1) opacity(1);
     }
 
+    .hestia .plus {
+        filter: invert(1) opacity(1);
+    }
+
 button {
     display: flex;
     justify-content: center;
@@ -139,6 +143,10 @@ button {
 }
 
 .dark .calendar {
+   filter: invert(0) opacity(1);
+}
+
+.hestia .calendar {
    filter: invert(0) opacity(1);
 }
 

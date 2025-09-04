@@ -55,7 +55,7 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background-color: var(--background);
+        background-color: var(--list-overlay-bg);
         padding: 4%;
         border-radius: 8px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -96,19 +96,18 @@
     .cancel-button {
         background-color: var(--main-buttons);
         color: var(--page-text);
-        width: 120px;
+        padding: 10px 20px;
         box-shadow: var(--button-shadow-light);
     }
 
     .confirm-button {
         background-color: var(--basic-red);
         color: var(--page-text);
-        width: 120px;
+        padding: 10px 20px;
         box-shadow: var(--button-shadow-light);
     }
 
     .dark .confirm-button {
         background-color: var(--sent-message);
-        width: 120px;
     }
 </style>

@@ -82,6 +82,10 @@
     filter: invert(0);
   }
 
+  .hestia .icon {
+    filter: invert(0);
+  }
+
   .setting-button {
     width: 20.2rem;
     height: 80px;
@@ -131,6 +135,10 @@
 }
 
 .dark .back .icon {
+    filter: none;
+}
+
+.hestia .back .icon {
     filter: none;
 }
 </style>

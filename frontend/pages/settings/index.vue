@@ -123,12 +123,16 @@
         filter: invert(1);
     }
 
+    .hestia .icon {
+        filter: invert(1);
+    }
+
     img {
         width: 30px;
     }
 
 .back {
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     position: fixed;
     display: flex;
     justify-content: center;
@@ -147,11 +151,11 @@
     width: 25px;
 }
 
-.dark .back {
-    background-color: var(--main-buttons-dark);
+.dark .back .icon {
+    filter: none;
 }
 
-.dark .back .icon {
+.hestia .back .icon {
     filter: none;
 }
 </style>

@@ -43,7 +43,4 @@ onMounted(async () => {
   overflow: auto;
 }
 
-.dark .body-container {
-  border-top: 1px solid #333333;
-}
 </style>

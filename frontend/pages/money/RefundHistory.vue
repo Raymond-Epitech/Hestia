@@ -32,7 +32,7 @@ api.setjwt(useCookie('token').value ?? '');
 const list_coloc = ref<Coloc[]>([]);
 
 await api.getExpenseByColocationId(user.colocationId).then((response) => {
-            refund.value = response.find(item => item.name === "refund");
+            refund.value = response.find(item => item.name === "Refund");
             if (refund.value) {
                 api.getExpensebycategoryId(refund.value.id).then((response) => {
                 refund_list.value = response;
@@ -100,6 +100,10 @@ const getDayNumber = (timecode: string) => {
     width: 100%;
     font-size: 32px;
     margin: 10px 0px;
+}
+
+.hestia .header-name {
+    color: var(--main-buttons);
 }
 
 .refund-rectangle {

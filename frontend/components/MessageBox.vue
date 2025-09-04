@@ -36,6 +36,10 @@ const props = defineProps({
     color: var(--light-grey);
 }
 
+.hestia .box {
+    color: var(--light-grey);
+}
+
 .header {
     display: flex;
     line-height: 0rem;

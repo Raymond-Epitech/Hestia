@@ -71,6 +71,10 @@ const redirect = (page) => {
     color: var(--light-grey);
 }
 
+.hestia .icon-subtext {
+    color: var(--light-grey);
+}
+
 .button {
     display: flex;
     flex-direction: column;
@@ -94,6 +98,11 @@ const redirect = (page) => {
 }
 
 .dark .icon {
+    color: var(--page-text);
+    filter: none;
+}
+
+.hestia .icon {
     color: var(--page-text);
     filter: none;
 }

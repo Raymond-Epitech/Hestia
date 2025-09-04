@@ -103,6 +103,9 @@ const getUsername = (sendById: string): string => {
     filter: invert(1);
 }
 
+.hestia .svg-icon {
+    filter: invert(1);
+}
 
 .body-input {
     width: 80%;

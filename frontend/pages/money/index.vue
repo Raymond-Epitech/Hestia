@@ -72,7 +72,7 @@ signalr.on("ExpenseDeleted", (CategoryOutput) => {
 
 const getall = async () => {
     api.getExpenseByColocationId(collocid).then((response) => {
-        expenses_list.value = response.filter(item => item.name !== "refund");
+        expenses_list.value = response.filter(item => item.name !== "Refund");
         global.value = expenses_list.value.reduce((acc, expense) => acc + expense.totalAmount, 0);
     }).catch((error) => {
         console.error('Error fetching data:', error);
@@ -119,6 +119,10 @@ onMounted(async () => {
 }
 
 .dark .plus {
+    filter: invert(1) opacity(1);
+}
+
+.hestia .plus {
     filter: invert(1) opacity(1);
 }
 
