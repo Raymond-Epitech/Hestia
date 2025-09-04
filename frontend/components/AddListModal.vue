@@ -43,6 +43,7 @@
 </template>
 
 <script setup lang="ts">
+import { I } from '~/android/app/src/main/assets/public/_nuxt/BwVoh6cR';
 import type { Reminder, ReminderItem } from '~/composables/service/type';
 import useModal from '~/composables/useModal';
 import { useUserStore } from '~/store/user';
@@ -144,10 +145,12 @@ const handleClose = () => {
   emit('closed')
 }
 
-const handleAddItem = () => {
+const handleAddItem = async () => {
   if (newitemList.value.name.trim() !== '') {
     item_list.value.push({ ...newitemList.value });
     newitemList.value.name = '';
+    if (Id.value != '') {
+      await api.addReminderShoppingListItem(newitemList.value);
   }
 }
 
@@ -158,10 +161,6 @@ const handleProceed = async () => {
         console.error(`Failed to update reminder ${Id.value}`);
         return;
       }
-    });
-    item_list.value.forEach(async (item) => {
-      item.reminderId = Id.value;
-      await api.addReminderShoppingListItem(item);
     });
     resetPost()
     close()
