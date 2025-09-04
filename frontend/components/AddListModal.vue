@@ -157,6 +157,8 @@ const handleProceed = async () => {
       if (!response) {
         console.error(`Failed to update reminder ${Id.value}`);
         return;
+      } else {
+        console.log(`Successfully updated reminder ${Id.value}`);
       }
     });
     resetPost()
