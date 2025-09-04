@@ -123,7 +123,7 @@ const resetPost = () => {
     coordX: 0,
     coordY: 0,
     coordZ: 0,
-    reminderType: 0,
+    reminderType: 2,
     content: '',
     color: '',
     image: new File([], 'test.jpg'),
@@ -159,6 +159,12 @@ const handleProceed = async () => {
         return;
       }
     });
+    for (const item of item_list.value) {
+      if (!item.id) {
+        item.reminderId = Id.value;
+        await api.addReminderShoppingListItem(item);
+      }
+    }
     resetPost()
     close()
     emit('closed')
