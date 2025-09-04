@@ -136,6 +136,9 @@ const resetPost = () => {
       allowmultiplechoice: false,
     }
   }
+  item_list.value = [];
+  Id.value = '';
+  modify.value = false;
 }
 
 const handleClose = () => {
