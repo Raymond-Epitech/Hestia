@@ -15,7 +15,7 @@
                 accept="image/*"
                 required
               />
-              <img v-if="prewiew" :src="prewiew" alt="Image sélectionnée" style="max-width: 10%; margin-top: 1em;" />
+              <img v-if="prewiew" :src="prewiew" alt="Image sélectionnée"  class="image-preview" />
             </div>
             <div v-if="post.content" class="modal-buttons">
               <button class="button button-proceed" @click.prevent="handleProceed">{{ $t('poster') }}</button>
@@ -232,54 +232,6 @@ watch(visible, (value) => {
     margin-bottom: 12px;
   }
 
-  .post-colors-buttons {
-    padding: 8px;
-    display: flex;
-    justify-content: space-evenly;
-  }
-
-  .color-choice {
-    width: 24px;
-    height: 24px;
-    border: none;
-  }
-
-  .color-choice:focus {
-    box-shadow: none;
-  }
-
-  .blue {
-    background-color: #A8CBFF;
-  }
-
-  .blue:checked {
-    background-color: #A8CBFF;
-  }
-
-  .yellow {
-    background-color: #FFF973;
-  }
-
-  .yellow:checked {
-    background-color: #FFF973;
-  }
-
-  .pink {
-    background-color: #FFA3EB;
-  }
-
-  .pink:checked {
-    background-color: #FFA3EB;
-  }
-
-  .green {
-    background-color: #9CFFB2;
-  }
-
-  .green:checked {
-    background-color: #9CFFB2;
-  }
-
   .modal-background {
     top: 0;
     left: 0;
@@ -310,6 +262,13 @@ watch(visible, (value) => {
 
   .modal-no-border {
     border: 0;
+  }
+
+  .image-preview {
+    max-width: 10%;
+    max-height: 15%;
+    border-radius: 10px;
+    margin-top: 1em;
   }
 
   /** Fallback Buttons */

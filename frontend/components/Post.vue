@@ -18,10 +18,10 @@
         </button>
         <p v-if="post.reminderType == 0">{{ post.content }}</p>
         <img v-if="post.reminderType == 1" :src="imageget" alt="Post Image" class="image" />
-        <div v-if="post.reminderType == 2" class="expense">
+        <div v-if="post.reminderType == 2" class="shopping">
             <h3>{{ post.shoppingListName }}</h3>
-            <div v-for="item in post.items" :key="item.id" class="expense-header">
-                <span class="expense-name">
+            <div v-for="item in post.items" :key="item.id" class="shopping-header">
+                <span class="shopping-name">
                     {{ item.name }}
                 </span>
                 <div class="check-zone" :class="{ checked: item.isChecked }"
@@ -312,7 +312,7 @@ const toggleCheck = (item: any) => {
     border-color: #8D90D6;
 }
 
-.expense-name {
+.shopping-name {
     display: grid;
     grid-template-columns: 9fr 1fr 1fr;
     align-items: center;
@@ -331,14 +331,14 @@ const toggleCheck = (item: any) => {
     outline: none;
 }
 
-.expense-header {
+.shopping-header {
     display: grid;
     grid-template-columns: 10fr 1fr;
     font-weight: bold;
     align-items: center;
 }
 
-.expense {
+.shopping {
     border-bottom: 2px dotted #dddddd94;
     padding: 10px 0;
 }
