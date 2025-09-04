@@ -152,7 +152,7 @@ const handleAddItem = () => {
 }
 
 const handleProceed = async () => {
-  if (modify) {
+  if (modify.value) {
     api.updateReminder(post.value, Id.value).then((response) => {
       if (!response) {
         console.error(`Failed to update reminder ${Id.value}`);
@@ -207,10 +207,10 @@ watch(() => props.post, (newPost, oldPost) => {
 
 const updateIsChecked = (id: string, value: boolean) => {
   const item = item_list.value?.find((item) => item.id === id);
-  if (!modify && item) {
+  if (!modify.value && item) {
     item.isChecked = value;
   }
-  if (item && modify) {
+  if (item && modify.value) {
     item.isChecked = value;
     api.updateReminderShoppingListItem(item).then((response) => {
       if (!response) {
@@ -226,10 +226,10 @@ const updateIsChecked = (id: string, value: boolean) => {
 
 const updateName = (id: string, value: string) => {
   const item = item_list.value?.find((item) => item.id === id);
-  if (!modify && item) {
+  if (!modify.value && item) {
     item.name = value;
   }
-  if (item && modify) {
+  if (item && modify.value) {
     item.name = value;
     api.updateReminderShoppingListItem(item).then((response) => {
       if (!response) {
@@ -244,7 +244,7 @@ const updateName = (id: string, value: string) => {
 };
 
 const deleteItem = (id: string) => {
-  if (!modify) {
+  if (!modify.value) {
     item_list.value = item_list.value?.filter((item) => item.id !== id);
     return;
   } else {
