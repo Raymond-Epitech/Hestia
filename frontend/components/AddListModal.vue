@@ -43,7 +43,6 @@
 </template>
 
 <script setup lang="ts">
-import { I } from '~/android/app/src/main/assets/public/_nuxt/BwVoh6cR';
 import type { Reminder, ReminderItem } from '~/composables/service/type';
 import useModal from '~/composables/useModal';
 import { useUserStore } from '~/store/user';
