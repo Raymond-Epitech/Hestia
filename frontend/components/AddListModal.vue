@@ -151,6 +151,7 @@ const handleAddItem = async () => {
     newitemList.value.name = '';
     if (Id.value != '') {
       await api.addReminderShoppingListItem(newitemList.value);
+    }
   }
 }
 
