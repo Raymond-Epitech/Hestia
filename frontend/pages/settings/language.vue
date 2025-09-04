@@ -68,7 +68,7 @@
     gap: 10px;
     margin: 40px auto;
     margin-top: 5rem;
-    max-height: calc(100vh - 5.5rem);
+    max-height: calc(100vh - 12rem);
   }
 
   .icon {
