@@ -148,11 +148,11 @@ const handleClose = () => {
 const handleAddItem = async () => {
   if (newitemList.value.name.trim() !== '') {
     item_list.value.push({ ...newitemList.value });
-    newitemList.value.name = '';
     if (Id.value != '') {
       newitemList.value.reminderId = Id.value;
       await api.addReminderShoppingListItem(newitemList.value);
     }
+    newitemList.value.name = '';
   }
 }
 
