@@ -1,13 +1,22 @@
 <template>
   <div>
     <AddPostModal v-model="isModalOpen" @proceed="getall()" />
+    <AddImageModal v-model="isModalImageOpen" @proceed="getall()" />
+    <AddListModal v-model="isModalListOpen" @proceed="getall()" :post="remindermodif" />
     <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
       <img src="~/public/posts/Post.svg" class="post">
+    </button>
+    <button class="add-image" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openImageModal">
+      <img src="~/public/posts/Camera.svg" class="post">
+    </button>
+    <button class="add-list" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openListModal">
+      <img src="~/public/posts/List.svg" class="post">
     </button>
     <div class="post-list">
       <div v-for="(post) in posts" :key="post.id">
         <Post :post="post"
-          @delete="getall()" />
+          @delete="getall()" 
+          @modify="handleModify(post)"/>
       </div>
     </div>
   </div>
@@ -19,6 +28,11 @@ import type { Reminder, SignalRClient } from '../composables/service/type';
 
   const isModalOpen = ref(false)
   const openModal = () => (isModalOpen.value = true)
+  const isModalImageOpen = ref(false)
+  const openImageModal = () => (isModalImageOpen.value = true)
+  const isModalListOpen = ref(false)
+  const remindermodif = ref<Reminder>();
+  const openListModal = () => (isModalListOpen.value = true)
 
   const userStore = useUserStore();
   const { $bridge } = useNuxtApp()
@@ -55,11 +69,16 @@ const getall = async () => {
   const data = await api.getAllReminders(userStore.user.colocationId);
   for (const post of data) {
     if (post.reminderType === 1) {
-      console.log('load image')
       await api.getImagetocache(post.imageUrl);
     }
   }
   posts.value = data;
+};
+
+const handleModify = (post: Reminder) => {
+  console.log("post a modifier dans index.vue", post);
+  remindermodif.value = post;
+  openListModal();
 };
 
 onMounted(async () => {
@@ -76,6 +95,36 @@ onMounted(async () => {
   .add-post {
     position: fixed;
     top: 6%;
+    right: 3%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    background-color: #FFFFFF;
+    border-radius: 9px;
+    border: none;
+    box-shadow: var(--button-shadow-light);
+  }
+
+  .add-image {
+    position: fixed;
+    top: 15%;
+    right: 3%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    background-color: #FFFFFF;
+    border-radius: 9px;
+    border: none;
+    box-shadow: var(--button-shadow-light);
+  }
+
+  .add-list {
+    position: fixed;
+    top: 24%;
     right: 3%;
     display: flex;
     justify-content: center;

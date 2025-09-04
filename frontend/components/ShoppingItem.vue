@@ -1,10 +1,10 @@
 <template>
-    <div class="expense" @click="props.onclick && props.onclick()">
-        <div class="expense-header">
-            <span v-if="!modif" class="expense-name">{{ item.name }} <span>
+    <div class="shopping" @click="props.onclick && props.onclick()">
+        <div class="shopping-header">
+            <span v-if="!modif" class="shopping-name">{{ item.name }} <span>
                     <img src="../public/edit.png" width="20" height="20" @click="modif = !modif" class="edit" />
                 </span></span>
-            <span v-if="modif" class="expense-name">
+            <span v-if="modif" class="shopping-name">
                 <input class="modify-input" v-model="item.name" maxlength="42" required />
                 <button class="ok-button" @click="modifname">
                     <Texte_language source="confirm" />
@@ -25,12 +25,12 @@
 </template>
 
 <script setup lang="ts">
-import type { shoppinglist_item } from '~/composables/service/type';
+import type { ReminderItem, } from '~/composables/service/type';
 
 const popup_vue = ref(false)
 const modif = ref(false);
 const props = defineProps<{
-    item: shoppinglist_item;
+    item: ReminderItem;
     onclick?: () => void;
 }>();
 const emit = defineEmits<{
@@ -63,12 +63,12 @@ const modifname = () => {
 </script>
 
 <style scoped>
-.expense {
+.shopping {
     border-bottom: 2px dotted #dddddd94;
     padding: 10px 0;
 }
 
-.expense-header {
+.shopping-header {
     display: grid;
     grid-template-columns: 10fr 1fr;
     font-weight: bold;
@@ -93,7 +93,7 @@ const modifname = () => {
     border-color: #8D90D6;
 }
 
-.expense-name {
+.shopping-name {
     display: grid;
     grid-template-columns: 9fr 1fr 1fr;
     align-items: center;

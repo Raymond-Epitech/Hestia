@@ -105,5 +105,7 @@
     "fri": "周五",
     "sat": "周六",
     "sun": "周日"
-  }
+  },
+  "confirm_delete_shoppinglist": "您确定要删除此购物清单吗？",
+  "shopping-list-name": "购物清单的名称"
 }

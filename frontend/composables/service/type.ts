@@ -21,8 +21,10 @@ export type Reminder = {
 };
 
 export type ReminderItem = {
-    id: string;
+    id?: string;
     name: string;
+    createdBy: string;
+    reminderId: string;
     isChecked: boolean;
 };
 

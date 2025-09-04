@@ -105,5 +105,7 @@
     "fri": "Fr",
     "sat": "Sa",
     "sun": "So"
-  }
+  },
+  "confirm_delete_shoppinglist": "Sind Sie sicher, dass Sie diese Einkaufsliste löschen möchten?",
+  "shopping-list-name": "Name der Einkaufsliste"
 }
