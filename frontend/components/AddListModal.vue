@@ -157,9 +157,11 @@ const handleProceed = async () => {
       if (!response) {
         console.error(`Failed to update reminder ${Id.value}`);
         return;
-      } else {
-        console.log(`Successfully updated reminder ${Id.value}`);
       }
+    });
+    item_list.value.forEach(async (item) => {
+      item.reminderId = response;
+      await api.addReminderShoppingListItem(item);
     });
     resetPost()
     close()
