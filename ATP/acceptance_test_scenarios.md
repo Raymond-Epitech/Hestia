@@ -7,13 +7,26 @@
 - **Prerequisites:** Google account.
 - **Steps:**
    1. Open the registration page.
-   2. Fill in the required fields (name, *colocationID*).
+   2. Fill in the required fields (name).
    3. Submit the registration form.
 - **Expected result:** User is registered and logged in.
 
 ---
 
-## 2. User Authentication & Colocation Management
+## 2. User Registration with Colocation ID
+
+- **Functionality:** Register new users.
+- **Objective:** Ensure new users can create accounts with a colocation ID.
+- **Prerequisites:** Google account.
+- **Steps:**
+   1. Open the registration page.
+   2. Fill in the required fields (name, colocation ID).
+   3. Submit the registration form.
+- **Expected result:** User is registered, logged in and in the colocation of the specified ID.
+
+---
+
+## 3. User Authentication & Colocation Management
 
 - **Functionality:** Secure login, join/create colocation, manage membership, exit group.
 - **Objective:** Test authentication and group management.
@@ -27,7 +40,7 @@
 
 ---
 
-## 3. Page Navigation
+## 4. Page Navigation
 
 - **Functionality:** Page navigation via navbar and menu buttons.
 - **Objective:** Ensure users can access all pages and contents.
@@ -40,7 +53,7 @@
 
 ---
 
-## 4. Chore Management
+## 5. Chore Management
 
 - **Functionality:** Assign, track, and remind household tasks.
 - **Objective:** Verify users can manage chores.
@@ -54,7 +67,7 @@
 
 ---
 
-## 5. Budget Tracking
+## 6. Budget Tracking
 
 - **Functionality:** Manage shared expenses and monitor payments.
 - **Objective:** Ensure users can add and track expenses.
@@ -68,9 +81,9 @@
 
 ---
 
-## 6. Debt calculation
+## 7. Debt calculation
 
-- **Functionality:** Calculate the lowest ammount of reimbursement across all expenses.
+- **Functionality:** Calculate the lowest amount of reimbursement across all expenses.
 - **Objective:** Ensure all debts are paid after all reimbursements.
 - **Prerequisites:** At least three users in the same colocation.
 - **Steps:**
@@ -84,7 +97,7 @@
 
 ---
 
-## 7. Communication Tools
+## 8. Communication Tools
 
 - **Functionality:** Send and receive messages between roommates.
 - **Objective:** Ensure messaging works in real time.
@@ -97,7 +110,7 @@
 
 ---
 
-## 8. Reminders
+## 9. Reminders
 
 - **Functionality:** Set reminders for important information.
 - **Objective:** Verify reminders can be created and trigger notifications.
@@ -108,7 +121,7 @@
 
 ---
 
-## 9. Languages
+## 10. Languages
 
 - **Functionality:** Choose application language.
 - **Objective:** Ensure all text fields update to the selected language.
@@ -122,7 +135,7 @@
 
 ---
 
-## 10. Notifications
+## 11. Notifications
 
 - **Functionality:** Push notifications for updates, messages, and reminders.
 - **Objective:** Confirm notifications are sent and received.
@@ -134,7 +147,7 @@
 
 ---
 
-## 11. Live Updates
+## 12. Live Updates
 
 - **Functionality:** Live content updates across devices.
 - **Objective:** Ensure changes are reflected in real time.
@@ -146,7 +159,7 @@
 
 ---
 
-## 12. Reactions
+## 13. Reactions
 
 - **Functionality:** React to reminders with emojis/icons.
 - **Objective:** Test reaction feature.
@@ -158,7 +171,7 @@
 
 ---
 
-## 13. Image Sharing
+## 14. Image Sharing
 
 - **Functionality:** Send images to colocation members.
 - **Objective:** Verify image upload and display.
@@ -170,7 +183,7 @@
 
 ---
 
-## 14. Groceries Lists
+## 15. Groceries Lists
 
 - **Functionality:** Create groceries lists as checklists.
 - **Objective:** Ensure users can manage shared grocery lists.
@@ -183,7 +196,7 @@
 
 ---
 
-## 15. Multiple Tasks Views
+## 16. Multiple Tasks Views
 
 - **Functionality:** Display tasks in list or calendar view.
 - **Objective:** Test switching between task views.
@@ -195,7 +208,7 @@
 
 ---
 
-## 16. Display Theme
+## 17. Display Theme
 
 - **Functionality:** Set color theme (light/dark/system).
 - **Objective:** Ensure theme changes are applied.
@@ -207,7 +220,7 @@
 
 ---
 
-## 17. Responsiveness
+## 18. Responsiveness
 
 - **Functionality:** Layout adapts to different screen sizes.
 - **Objective:** Test responsiveness and animation display.
@@ -219,7 +232,7 @@
 
 ---
 
-## 18. Browser Support
+## 19. Browser Support
 
 - **Functionality:** Works on Chrome, Firefox, Safari, Edge.
 - **Objective:** Ensure cross-browser compatibility.
@@ -231,7 +244,7 @@
 
 ---
 
-## 19. Operating Systems
+## 20. Operating Systems
 
 - **Functionality:** Compatible with Android, iOS, and desktop OS.
 - **Objective:** Test OS compatibility.
@@ -243,7 +256,7 @@
 
 ---
 
-## 20. Device Types
+## 21. Device Types
 
 - **Functionality:** Functional on smartphones, tablets, and desktops.
 - **Objective:** Ensure device compatibility.
