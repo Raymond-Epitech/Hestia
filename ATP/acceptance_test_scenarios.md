@@ -1,8 +1,33 @@
 # Hestia Acceptance Test Scenarios
 
+## 1. User Registration
+
+- **Functionality:** Register new users.
+- **Objective:** Ensure new users can create accounts.
+- **Prerequisites:** Google account.
+- **Steps:**
+   1. Open the registration page.
+   2. Fill in the required fields (name, *colocationID*).
+   3. Submit the registration form.
+- **Expected result:** User is registered and logged in.
+
 ---
 
-## 1. Page Navigation
+## 2. User Authentication & Colocation Management
+
+- **Functionality:** Secure login, join/create colocation, manage membership, exit group.
+- **Objective:** Test authentication and group management.
+- **Prerequisites:** Google account; hestia account; application connected to authentication provider.
+- **Steps:**
+   1. Log in using Google.
+   2. Create a new colocation or join an existing one.
+   3. Invite another user.
+   4. Exit the colocation.
+- **Expected result:** Authentication succeeds and users can join/leave as expected.
+
+---
+
+## 3. Page Navigation
 
 - **Functionality:** Page navigation via navbar and menu buttons.
 - **Objective:** Ensure users can access all pages and contents.
@@ -15,7 +40,7 @@
 
 ---
 
-## 2. Chore Management
+## 4. Chore Management
 
 - **Functionality:** Assign, track, and remind household tasks.
 - **Objective:** Verify users can manage chores.
@@ -29,7 +54,7 @@
 
 ---
 
-## 3. Budget Tracking
+## 5. Budget Tracking
 
 - **Functionality:** Manage shared expenses and monitor payments.
 - **Objective:** Ensure users can add and track expenses.
@@ -43,7 +68,7 @@
 
 ---
 
-## 4. Debt calculation
+## 6. Debt calculation
 
 - **Functionality:** Calculate the lowest ammount of reimbursement across all expenses.
 - **Objective:** Ensure all debts are paid after all reimbursements.
@@ -56,33 +81,6 @@
    5. Calculate the total amount owed by each user.
    6. Make reimbursements between users.
 - **Expected result:** All debts are settled, and no user has an outstanding balance.
-
----
-
-## 5. User Registration
-
-- **Functionality:** Register new users.
-- **Objective:** Ensure new users can create accounts.
-- **Prerequisites:** Google account.
-- **Steps:**
-   1. Open the registration page.
-   2. Fill in the required fields (name, *colocationID*).
-   3. Submit the registration form.
-- **Expected result:** User is registered and logged in.
-
----
-
-## 6. User Authentication & Colocation Management
-
-- **Functionality:** Secure login, join/create colocation, manage membership, exit group.
-- **Objective:** Test authentication and group management.
-- **Prerequisites:** Google account; hestia account; application connected to authentication provider.
-- **Steps:**
-   1. Log in using Google.
-   2. Create a new colocation or join an existing one.
-   3. Invite another user.
-   4. Exit the colocation.
-- **Expected result:** Authentication succeeds and users can join/leave as expected.
 
 ---
 
@@ -245,7 +243,7 @@
 
 ---
 
-## 2. Device Types
+## 20. Device Types
 
 - **Functionality:** Functional on smartphones, tablets, and desktops.
 - **Objective:** Ensure device compatibility.
