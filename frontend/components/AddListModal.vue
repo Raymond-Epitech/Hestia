@@ -4,30 +4,27 @@
       <div class="modal-background" @click="handleClose">
         <div class="modal" @click.stop>
           <div class="modal-header left">
-            <h1 class="modal-header-text">{{ $t('shopping-list-name') }} :</h1>
+            <input class="modal-body-input" rows="1" maxlength="50" v-model="post.shoppinglistName" :placeholder="$t('shopping-list-name')"></input>
             <img src="/Trash.svg" alt="Delete Icon" class="svg-icon" @click="showPopup" />
           </div>
           <form method="post" action="" @submit.prevent="handleSubmit">
-            <div class="modal-body left">
-              <input class="modal-body-input" rows="1" maxlength="50" v-model="post.shoppinglistName"></input>
-            </div>
-            <div ref="itemList">
+            <div ref="itemList" class="item-list">
               <div v-for="(item, index) in item_list" :key="index">
                 <shopping-item :item="item" @update:isChecked="updateIsChecked(item.id ?? '', $event)"
                   @update:name="updateName(item.id ?? '', $event)" @delete="deleteItem(item.id ?? '')" />
               </div>
             </div>
-            <div @click.prevent="handleAddItem">
-              <input v-model="newitemList.name" type="text" placeholder="Message" class="body-input" />
-              <button type="submit" class="button">
+            <div @click.prevent="handleAddItem" class="form-add-item">
+              <input v-model="newitemList.name" type="text" placeholder="Item" class="modal-body-input" /><!-- !!!! add locale !!! -->
+              <button type="submit">
                 <img src="/Submit.svg" alt="Submit Icon" class="svg-icon" />
               </button>
             </div>
-            <div v-if="post.shoppinglistName" class="modal-buttons">
-              <button class="button button-proceed" @click.prevent="handleProceed">{{ $t('poster') }}</button>
+            <div v-if="post.shoppinglistName">
+              <button class="button-proceed" @click.prevent="handleProceed">{{ $t('poster') }}</button>
             </div>
-            <div v-else class="modal-buttons">
-              <button class="button button-proceed" @click.prevent="handleProceed" disabled>{{ $t('poster') }}</button>
+            <div v-else>
+              <button class="button-proceed" @click.prevent="handleProceed" disabled>{{ $t('poster') }}</button>
             </div>
           </form>
         </div>
@@ -301,66 +298,69 @@ const cancelDelete = () => {
 <style scoped>
 .modal {
   width: 100%;
+  font-weight: 600;
   height: fit-content;
+  max-height: 30rem;
   overflow-y: auto;
-  margin-top: 0px;
-  padding-top: 25pt;
-  border-top-left-radius: 0px;
-  border-top-right-radius: 0px;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
+  padding-top: 1.5rem;
+  padding-bottom: 1.2rem;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
   animation: slideIn 0.4s;
-  background-color: var(--background-dark);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+  background-color: var(--main-buttons-light);
+  box-shadow: var(--rectangle-shadow-light);
   display: flex;
   flex-direction: column;
-  justify-content: center;
   position: relative;
+  top: -4.5rem;
+}
+
+.dark .modal {
+  background-color: var(--main-buttons-dark);
 }
 
 .modal-header {
-  padding: 0px 16px;
-  font-weight: 600;
+  font-size: 10px;
+  padding: 0;
   border-bottom: none;
-  color: var(--overlay-text);
+  color: var(--page-text-light);
 }
 
-.modal-header-text {
-  font-size: 20px;
+.dark .modal-header {
+  color: var(--page-text-dark);
 }
 
 .modal-body {
-  padding: 0px 12px 12px 12px;
+  padding: 0px;
   display: flex;
   flex-direction: column;
   overflow: auto;
   gap: 16px;
 }
 
-.modal-body:deep(p) {
-  margin: 0;
-  font-size: 18px;
-  line-height: 23px;
-}
-
 .modal-body-input {
-  width: 100%;
-  background-color: var(--background-dark);
+  background-color: var(--main-buttons-light);
+  width: 13rem;
+  height: 2.2rem;
+  border-radius: 9px;
+  border-style: hidden;
+  padding: 0.5rem;
+  /* add space all arround input field */
+  margin: 0.5rem;
+  color: var(--page-text-light);
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); */
   outline: none;
   border: none;
   line-height: 3ch;
-  background-image: linear-gradient(transparent, transparent calc(3ch - 1px), #E7EFF8 0px);
+  background-image: linear-gradient(transparent, transparent calc(3ch - 1px), var(--list-lines-light) 0px);
   background-size: 100% 3ch;
-  color: var(--overlay-text);
-  font-size: 18px;
-  margin-bottom: 12px;
+  font-size: 14px;
 }
 
-.post-colors-buttons {
-  padding: 8px;
-  display: flex;
-  justify-content: space-evenly;
+.dark .modal-body-input {
+  background-color: var(--main-buttons-dark);
+  color: var(--page-text-dark);
+  background-image: linear-gradient(transparent, transparent calc(3ch - 1px), var(--list-lines-dark) 0px);
 }
 
 .modal-background {
@@ -369,43 +369,46 @@ const cancelDelete = () => {
   width: 100%;
   height: 100%;
   z-index: 100;
+  display: flex;
   position: fixed;
-  animation: fadeIn 0.2s;
+  align-items: flex-end;
+  flex-direction: column-reverse;
+
+}
+
+.item-list {
+  max-height: 13rem;
+  overflow-y: scroll;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.form-add-item {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  align-items: center;
+  padding: 0.5rem 0;
 }
 
-.modal-buttons {
-  padding: 14px;
-  border-top: 0px;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
-  margin-top: auto;
-  display: flex;
-  justify-content: center;
-  gap: 1em;
-}
-
-.modal-buttons:deep(button) {
-  border-radius: 7px;
-}
-
-.modal-no-border {
-  border: 0;
-}
-
-/** Fallback Buttons */
-.button {
+button {
   padding: 10px 20px;
   border-radius: 15px;
   border: 0;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  padding: 14px;
+  border-top: 0px;
+  gap: 1em;
+  margin: 0.5rem;
+  background: var(--main-buttons-light);
+  color: var(--page-text-light);
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.button-proceed {
-  background: #00000088;
-  color: var(--overlay-text);
+.dark button {
+  background: var(--main-buttons-dark);
+  color: var(--page-text-dark);
 }
 
 button:disabled {
@@ -435,7 +438,7 @@ button:disabled {
 
 @keyframes slideIn {
   0% {
-    transform: translateY(-600px);
+    transform: translateY(600px);
   }
 
   100% {
@@ -449,7 +452,7 @@ button:disabled {
   }
 
   100% {
-    transform: translateY(-600px);
+    transform: translateY(600px);
   }
 }
 
@@ -459,20 +462,6 @@ button:disabled {
   .modal-enter-from:deep(.modal),
   .modal-leave-to:deep(.modal) {
     animation: slideOut 0.4s linear;
-  }
-}
-
-@media screen and (min-width: 768px) {
-  .modal-background {
-    justify-content: flex-start;
-  }
-
-  .modal {
-    width: 100%;
-    margin: 0 0 0 0;
-    max-height: calc(100dvh - 120px);
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
   }
 }
 </style>

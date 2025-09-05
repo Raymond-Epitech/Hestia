@@ -4,13 +4,13 @@
     <AddImageModal v-model="isModalImageOpen" @proceed="getall()" />
     <AddListModal v-model="isModalListOpen" @proceed="getall()" :post="remindermodif" />
     <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
-      <img src="~/public/posts/Post.svg" class="post">
+      <img src="~/public/posts/Post.svg" class="icon">
     </button>
     <button class="add-image" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openImageModal">
-      <img src="~/public/posts/Camera.svg" class="post">
+      <img src="~/public/posts/Camera.svg" class="icon">
     </button>
     <button class="add-list" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openListModal">
-      <img src="~/public/posts/List.svg" class="post">
+      <img src="~/public/posts/List.svg" class="icon">
     </button>
     <div class="post-list">
       <div v-for="(post) in posts" :key="post.id">
@@ -92,10 +92,8 @@ onMounted(async () => {
     max-height: calc(100vh - 4.5rem);
   }
 
-  .add-post {
+  button {
     position: fixed;
-    top: 6%;
-    right: 3%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -107,47 +105,32 @@ onMounted(async () => {
     box-shadow: var(--button-shadow-light);
   }
 
-  .add-image {
-    position: fixed;
-    top: 15%;
-    right: 3%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 40px;
-    height: 40px;
-    background-color: #FFFFFF;
-    border-radius: 9px;
-    border: none;
-    box-shadow: var(--button-shadow-light);
-  }
-
-  .add-list {
-    position: fixed;
-    top: 24%;
-    right: 3%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 40px;
-    height: 40px;
-    background-color: #FFFFFF;
-    border-radius: 9px;
-    border: none;
-    box-shadow: var(--button-shadow-light);
-  }
-
-  .dark .add-post {
+  .dark button {
     background-color: #000000;
   }
 
-  .post {
+  .add-post {
+    top: 6%;
+    right: 3%;
+  }
+
+  .add-image {
+    top: 15%;
+    right: 3%;
+  }
+
+  .add-list {
+    top: 24%;
+    right: 3%;
+  }
+
+  .icon {
     width: 72%;
     padding-top: 5%;
     filter: brightness(29%);
   }
 
-  .dark .post {
+  .dark .icon {
     filter: none;
   }
 </style>

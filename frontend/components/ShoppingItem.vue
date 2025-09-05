@@ -64,8 +64,14 @@ const modifname = () => {
 
 <style scoped>
 .shopping {
-    border-bottom: 2px dotted #dddddd94;
+    border-bottom: 2px dotted var(--list-lines-light);
+    color: var(--page-text-light);
     padding: 10px 0;
+}
+
+.dark .shopping {
+    border-bottom: 2px dotted var(--list-lines-dark);
+    color: var(--page-text-dark);
 }
 
 .shopping-header {
