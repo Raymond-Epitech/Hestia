@@ -208,7 +208,46 @@
 
 ---
 
-## 17. Display Theme
+## 17. Invite without an account
+
+- **Functionality:** Display/scan invitation QR code without a Hestia account.
+- **Objective:** Test the registering process.
+- **Prerequisites:** One user without an account, and another user with an account in a colocation group.
+- **Steps:**
+   1. User A opens the profile page.
+   2. User A opens the invitation page and displays the QR code.
+   3. User B scans the QR code and is redirected to the registration page.
+- **Expected result:** User B is redirected to the registration page with the *colocationID* pre-filled.
+
+---
+
+## 18. Invite with an account
+
+- **Functionality:** Display/scan invitation QR code with a Hestia account.
+- **Objective:** Test the invitation process.
+- **Prerequisites:** One user with an account, and another user with an account in a colocation group.
+- **Steps:**
+   1. User A opens the profile page.
+   2. User A opens the invitation page and displays the QR code.
+   3. User B scans the QR code and is redirected to the join colocation page.
+- **Expected result:** User B is redirected to the join colocation page with the *colocationID* pre-filled.
+
+---
+
+## 19. Invite with an account in a colocation
+
+- **Functionality:** Display/scan invitation QR code with a Hestia account.
+- **Objective:** Test the invitation process.
+- **Prerequisites:** Two users with an account, each in a different colocation group.
+- **Steps:**
+   1. User A opens the profile page.
+   2. User A opens the invitation page and displays the QR code.
+   3. User B scans the QR code.
+- **Expected result:** User B is prompted to exit their current colocation and is redirected to the join colocation page with the *colocationID* pre-filled.
+
+---
+
+## 20. Display Theme
 
 - **Functionality:** Set color theme (light/dark/system).
 - **Objective:** Ensure theme changes are applied.
@@ -220,7 +259,7 @@
 
 ---
 
-## 18. Responsiveness
+## 21. Responsiveness
 
 - **Functionality:** Layout adapts to different screen sizes.
 - **Objective:** Test responsiveness and animation display.
@@ -232,7 +271,7 @@
 
 ---
 
-## 19. Browser Support
+## 22. Browser Support
 
 - **Functionality:** Works on Chrome, Firefox, Safari, Edge.
 - **Objective:** Ensure cross-browser compatibility.
@@ -244,7 +283,7 @@
 
 ---
 
-## 20. Operating Systems
+## 23. Operating Systems
 
 - **Functionality:** Compatible with Android, iOS, and desktop OS.
 - **Objective:** Test OS compatibility.
@@ -256,7 +295,7 @@
 
 ---
 
-## 21. Device Types
+## 24. Device Types
 
 - **Functionality:** Functional on smartphones, tablets, and desktops.
 - **Objective:** Ensure device compatibility.
