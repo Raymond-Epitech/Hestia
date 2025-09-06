@@ -307,7 +307,7 @@ const cancelDelete = () => {
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   animation: slideIn 0.4s;
-  background-color: var(--main-buttons-light);
+  background-color: var(--main-buttons);
   box-shadow: var(--rectangle-shadow-light);
   display: flex;
   flex-direction: column;
@@ -315,19 +315,11 @@ const cancelDelete = () => {
   top: -4.5rem;
 }
 
-.dark .modal {
-  background-color: var(--main-buttons-dark);
-}
-
 .modal-header {
   font-size: 10px;
   padding: 0;
   border-bottom: none;
-  color: var(--page-text-light);
-}
-
-.dark .modal-header {
-  color: var(--page-text-dark);
+  color: var(--page-text);
 }
 
 .modal-body {
@@ -339,7 +331,7 @@ const cancelDelete = () => {
 }
 
 .modal-body-input {
-  background-color: var(--main-buttons-light);
+  background-color: var(--main-buttons);
   width: 13rem;
   height: 2.2rem;
   border-radius: 9px;
@@ -347,20 +339,14 @@ const cancelDelete = () => {
   padding: 0.5rem;
   /* add space all arround input field */
   margin: 0.5rem;
-  color: var(--page-text-light);
+  color: var(--page-text);
   /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); */
   outline: none;
   border: none;
   line-height: 3ch;
-  background-image: linear-gradient(transparent, transparent calc(3ch - 1px), var(--list-lines-light) 0px);
+  background-image: linear-gradient(transparent, transparent calc(3ch - 1px), var(--list-lines) 0px);
   background-size: 100% 3ch;
   font-size: 14px;
-}
-
-.dark .modal-body-input {
-  background-color: var(--main-buttons-dark);
-  color: var(--page-text-dark);
-  background-image: linear-gradient(transparent, transparent calc(3ch - 1px), var(--list-lines-dark) 0px);
 }
 
 .modal-background {
@@ -400,15 +386,10 @@ button {
   border-top: 0px;
   gap: 1em;
   margin: 0.5rem;
-  background: var(--main-buttons-light);
-  color: var(--page-text-light);
+  background: var(--main-buttons);
+  color: var(--page-text);
   font-weight: 600;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.dark button {
-  background: var(--main-buttons-dark);
-  color: var(--page-text-dark);
 }
 
 button:disabled {
