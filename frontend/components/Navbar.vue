@@ -89,22 +89,12 @@ const redirect = (page) => {
 
 .icon {
     height: 3rem;
-    filter: brightness(29%);
+    filter: var(--icon-filter);
     transition: transform 0.2s cubic-bezier(.4,2,.3,1);
 }
 
 .icon.selected {
     transform: translateY(-0.3rem) scale(1.08);
-}
-
-.dark .icon {
-    color: var(--page-text);
-    filter: none;
-}
-
-.hestia .icon {
-    color: var(--page-text);
-    filter: none;
 }
 
 .wall-button {

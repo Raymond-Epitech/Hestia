@@ -2,7 +2,7 @@
     <AddTaskModal v-model="isModalOpen" @proceed="getall()" />
     <div class="buttons-list">
         <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
-            <img src="~/public/tasks/Plus.svg" class="icon">
+            <img src="~/public/tasks/Plus.svg" class="icon plus">
         </button>
         <button class="calendar-view" @click="triggerCalendar()">
             <img v-if="calendar_view === true" src="~/public/tasks/Order.svg" class="icon">
@@ -100,11 +100,16 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-    .icon {
-        width: 20px;
-        height: 20px;
-        filter: var(--icon-filter);
-    }
+.icon {
+    width: 20px;
+    height: 20px;
+    filter: var(--icon-filter);
+}
+
+.icon.plus {
+    width: 15px;
+    height: 15px;
+}
 
 button {
     display: flex;
