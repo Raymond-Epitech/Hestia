@@ -117,14 +117,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-    }
-
-    .dark .icon {
-        filter: invert(1);
-    }
-
-    .hestia .icon {
-        filter: invert(1);
+        filter: var(--icon-filter);
     }
 
     img {
@@ -147,15 +140,7 @@
 }
 
 .back .icon {
-    filter: invert(1);
+    filter: var(--icon-filter);
     width: 25px;
-}
-
-.dark .back .icon {
-    filter: none;
-}
-
-.hestia .back .icon {
-    filter: none;
 }
 </style>

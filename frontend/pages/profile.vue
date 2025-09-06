@@ -67,15 +67,7 @@ button {
 }
 
 .icon {
-    filter: brightness(0%);
-}
-
-.dark .icon {
-    filter: none;
-}
-
-.hestia .icon {
-    filter: none;
+    filter: var(--icon-filter);
 }
 
 .add-user {

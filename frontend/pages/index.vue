@@ -105,10 +105,6 @@ onMounted(async () => {
     box-shadow: var(--button-shadow-light);
   }
 
-  .dark button {
-    background-color: #000000;
-  }
-
   .add-post {
     top: 6%;
     right: 3%;
@@ -127,11 +123,7 @@ onMounted(async () => {
   .icon {
     width: 72%;
     padding-top: 5%;
-    filter: brightness(29%);
-  }
-
-  .dark .icon {
-    filter: none;
+    filter: var(--icon-filter);
   }
 
   .hestia .post {

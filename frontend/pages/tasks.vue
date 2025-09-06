@@ -2,11 +2,11 @@
     <AddTaskModal v-model="isModalOpen" @proceed="getall()" />
     <div class="buttons-list">
         <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
-            <img src="~/public/plus.png" class="plus">
+            <img src="~/public/tasks/Plus.svg" class="icon">
         </button>
         <button class="calendar-view" @click="triggerCalendar()">
-            <img v-if="calendar_view === true" src="~/public/order.svg" class="calendar">
-            <img v-else src="~public/calendar.svg" class="calendar"/>
+            <img v-if="calendar_view === true" src="~/public/tasks/Order.svg" class="icon">
+            <img v-else src="~/public/tasks/Calendar.svg" class="icon"/>
         </button>
     </div>
     <div v-if="calendar_view === false" class="tasks">
@@ -100,17 +100,10 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-    .plus {
+    .icon {
         width: 20px;
         height: 20px;
-    }
-
-    .dark .plus {
-        filter: invert(1) opacity(1);
-    }
-
-    .hestia .plus {
-        filter: invert(1) opacity(1);
+        filter: var(--icon-filter);
     }
 
 button {
@@ -136,18 +129,6 @@ button {
     top: 0;
     background-color: var(--page-background-light);
     z-index: 1;
-}
-
-.calendar {
-   filter: invert(1) opacity(1);
-}
-
-.dark .calendar {
-   filter: invert(0) opacity(1);
-}
-
-.hestia .calendar {
-   filter: invert(0) opacity(1);
 }
 
 .task-list {

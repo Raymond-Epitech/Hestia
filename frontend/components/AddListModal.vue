@@ -5,7 +5,9 @@
         <div class="modal" @click.stop>
           <div class="modal-header left">
             <input class="modal-body-input" rows="1" maxlength="50" v-model="post.shoppinglistName" :placeholder="$t('shopping-list-name')"></input>
-            <img src="/Trash.svg" alt="Delete Icon" class="svg-icon" @click="showPopup" />
+            <button src="/Trash.svg" alt="Delete Icon" @click="showPopup">
+              <img src="/Trash.svg" alt="Delete Icon" class="svg-icon" />
+            </button>
           </div>
           <form method="post" action="" @submit.prevent="handleSubmit">
             <div ref="itemList" class="item-list">
@@ -17,7 +19,7 @@
             <div @click.prevent="handleAddItem" class="form-add-item">
               <input v-model="newitemList.name" type="text" placeholder="Item" class="modal-body-input" /><!-- !!!! add locale !!! -->
               <button type="submit">
-                <img src="/Submit.svg" alt="Submit Icon" class="svg-icon" />
+                <img src="/Submit.svg" alt="Submit Icon" class="svg-icon submit" />
               </button>
             </div>
             <div v-if="post.shoppinglistName">
@@ -374,6 +376,16 @@ const cancelDelete = () => {
   align-items: center;
   padding: 0.5rem 0;
 }
+
+.svg-icon {
+  width: 25px;
+  height: 25px;
+}
+
+.svg-icon.submit {
+  filter: var(--icon-filter);
+}
+
 
 button {
   padding: 10px 20px;

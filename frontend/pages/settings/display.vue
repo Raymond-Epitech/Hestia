@@ -59,14 +59,7 @@
 .icon {
     width: 48px;
     height: 48px;
-}
-
-.dark .icon {
-    filter: invert(1);
-}
-
-.hestia .icon {
-    filter: invert(1);
+    filter: var(--icon-filter);
 }
 
 .selected {
@@ -112,15 +105,7 @@
 }
 
 .back .icon {
-    filter: invert(1);
     width: 25px;
 }
 
-.dark .back .icon {
-    filter: none;
-}
-
-.hestia .back .icon {
-    filter: none;
-}
 </style>

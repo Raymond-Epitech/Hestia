@@ -75,15 +75,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    filter: invert(1);
-  }
-
-  .dark .icon {
-    filter: invert(0);
-  }
-
-  .hestia .icon {
-    filter: invert(0);
+    filter: var(--icon-filter);
   }
 
   .setting-button {
@@ -130,15 +122,6 @@
 }
 
 .back .icon {
-    filter: invert(1);
     width: 25px;
-}
-
-.dark .back .icon {
-    filter: none;
-}
-
-.hestia .back .icon {
-    filter: none;
 }
 </style>

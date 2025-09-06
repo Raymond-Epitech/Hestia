@@ -10,6 +10,7 @@
     --recieved-message: #C1E0B9;
     --sent-message: #BDD4F6;
     --list-overlay-bg: #FFFFFF;
+    --icon-filter: none;
 
     --basic-grey: #4B4B4B;
     --light-grey: #D6D6D6;
@@ -31,6 +32,7 @@
     --recieved-message: #4D4D4C;
     --sent-message: #526074;
     --list-overlay-bg: #1D1B20;
+    --icon-filter: brightness(0) invert(1);
 }
 
 .hestia {
@@ -43,6 +45,7 @@
     --recieved-message: #084338;
     --sent-message: #526074;
     --list-overlay-bg: #084338;
+    --icon-filter: brightness(0) invert(1);
 }
 
 body {
