@@ -1,7 +1,7 @@
 <template>
     <div :class="[post.reminderType == 1 ? 'post_image' : 'post', , post.reminderType != 1 && post.color]">
         <ProfileIcon class="profile-icon" :height="30" :width="30" :linkToPP="post.linkToPP" />
-        <ReactModal :postId="post.id" v-model="isModalOpen"/>
+        <ReactModal :postId="post.id" v-model="isModalOpen" />
         <button class="react-button" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
             <div class="heart">❤️</div>
         </button>
@@ -10,11 +10,25 @@
                 {{ reaction.type }}
             </div>
         </div>
-        <button class="delete-button" @click="showPopup" v-if="post.createdBy == user.id">
+        <button class="delete-button" @click="showPopup" v-if="post.createdBy == user.id && post.reminderType != 2">
             <div class="close"></div>
+        </button>
+        <button class="edit-button" @click="handleModify" v-if="post.reminderType == 2">
+            <img src="/edit.svg" class="edit-icon"/>
         </button>
         <p v-if="post.reminderType == 0">{{ post.content }}</p>
         <img v-if="post.reminderType == 1" :src="imageget" alt="Post Image" class="image" />
+        <div v-if="post.reminderType == 2" class="shopping">
+            <h3>{{ post.shoppingListName }}</h3>
+            <div v-for="item in post.items" :key="item.id" class="shopping-header">
+                <span class="shopping-name">
+                    {{ item.name }}
+                </span>
+                <div class="check-zone" :class="{ checked: item.isChecked }"
+                    @click.stop="toggleCheck(item)">
+                </div>
+            </div>
+        </div>
     </div>
     <popup v-if="popup_vue" :text="$t('confirm_delete_reminder')" @confirm="confirmDelete" @close="cancelDelete">
     </popup>
@@ -39,7 +53,7 @@ api.setjwt(useCookie('token').value ?? '');
 const userStore = useUserStore();
 const user = userStore.user;
 const imageget = ref('');
-const emit = defineEmits(['delete']);
+const emit = defineEmits(['delete', 'modify']);
 const reactions = ref<Reaction[]>([]);
 const { $signalr } = useNuxtApp();
 const signalr = $signalr as SignalRClient;
@@ -58,13 +72,17 @@ const confirmDelete = async () => {
     }
 };
 
+const handleModify = () => {
+    emit('modify');
+};
+
 const cancelDelete = () => {
     popup_vue.value = false;
 };
 
 signalr.on("NewReaction", async (ReactionOutput) => {
     const reaction = ReactionOutput as Reaction;
-    if ( reaction.reminderId == props.post.id ) {
+    if (reaction.reminderId == props.post.id) {
         reactions.value.push(reaction);
     }
 })
@@ -76,8 +94,8 @@ signalr.on("DeleteReaction", async (GUID) => {
 
 signalr.on("UpdateReaction", async (ReactionOutput) => {
     const reaction = ReactionOutput as Reaction;
-    if ( reaction.reminderId == props.post.id ) {
-        for ( let i = 0; i < reactions.value.length; i++ ){
+    if (reaction.reminderId == props.post.id) {
+        for (let i = 0; i < reactions.value.length; i++) {
             if (reactions.value[i].id == reaction.id) {
                 reactions.value[i] = reaction;
             }
@@ -89,7 +107,6 @@ onMounted(async () => {
     reactions.value = [];
     await getReactions();
     if (props.post.reminderType == 1) {
-        console.log('Image URL:', props.post.id);
         api.getImagefromcache(props.post.imageUrl).then((image) => {
             if (image) {
                 imageget.value = image;
@@ -107,13 +124,21 @@ const getReactions = async () => {
         const data = await api.getReactionsReminder(props.post.id);
         if (data && Array.isArray(data)) {
             reactions.value = data;
-            console.log('Reactions fetched:', reactions.value);
         } else {
             console.error('Données de réaction invalides reçues:', data);
         }
     } catch (error) {
         console.error('Erreur lors de la récupération des réactions:', error);
     }
+}
+
+const toggleCheck = (item: any) => {
+    item.isChecked = !item.isChecked;
+    item.createdBy = user.id;
+    api.updateReminderShoppingListItem(item).then(() => {
+    }).catch((error) => {
+        console.error('Error updating item:', error);
+    });
 }
 </script>
 
@@ -132,6 +157,27 @@ const getReactions = async () => {
     margin: 20px;
     position: relative;
     background-color: transparent;
+}
+
+.edit-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    background: var(--light-grey);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+}
+
+.edit-icon {
+    height: 16px;
+    width: 16px;
+    filter: invert(0);
 }
 
 .delete-button {
@@ -160,13 +206,6 @@ const getReactions = async () => {
     filter: brightness(0);
 }
 
-.post h1 {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0%);
-    color: rgb(10, 10, 10);
-}
-
 .post p {
     position: absolute;
     top: 50%;
@@ -177,6 +216,12 @@ const getReactions = async () => {
     color: rgb(10, 10, 10);
     overflow-wrap: anywhere;
     text-align: center;
+}
+
+.post h3 {
+    text-align: center;
+    margin: 0 auto;
+    width: 100%;
 }
 
 .profile-icon {
@@ -205,6 +250,7 @@ const getReactions = async () => {
     max-width: 100%;
 
 }
+
 .react-button {
     display: flex;
     justify-content: center;
@@ -233,6 +279,7 @@ const getReactions = async () => {
     width: 14px;
     overflow-x: visible;
 }
+
 .reaction-list {
     position: absolute;
     bottom: -8px;
@@ -241,5 +288,54 @@ const getReactions = async () => {
     white-space: nowrap;
     /* overflow-x: scroll; */
     justify-content: left;
+}
+
+.check-zone {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.check-zone.checked {
+    background-color: #85AD7B;
+    border-color: #85AD7B;
+}
+
+.check-zone:not(.checked) {
+    border-color: #8D90D6;
+}
+
+.shopping-name {
+    display: grid;
+    grid-template-columns: 9fr 1fr 1fr;
+    align-items: center;
+    margin-right: 10px;
+    padding-left: 2px;
+}
+
+.edit {
+    margin-bottom: 2px;
+}
+
+.modify-input {
+    border: none;
+    border-radius: 5px;
+    background-color: #393a40;
+    outline: none;
+}
+
+.shopping-header {
+    display: grid;
+    grid-template-columns: 10fr 1fr;
+    font-weight: bold;
+    align-items: center;
+}
+
+.shopping {
+    border-bottom: 2px dotted #dddddd94;
+    padding: 10px 0;
 }
 </style>

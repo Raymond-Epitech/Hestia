@@ -54,14 +54,12 @@ const updateIsChecked = (id: string, value: boolean) => {
     if (item) {
         item.isChecked = value;
         item.shoppinglistId = listId;
-        console.log(item);
         api.updateShoppingListItem(item).then((response) => {
             if (!response) {
                 console.error(`Failed to update item ${id}`);
                 item.isChecked = !value;
                 return;
             }
-            console.log(`Item ${id} updated successfully`);
         }).catch((error) => {
             console.error(`Error updating item ${id}:`, error);
         });
@@ -72,14 +70,12 @@ const updateName = (id: string, value: string) => {
     if (item) {
         item.name = value;
         item.shoppinglistId = listId;
-        console.log(item);
         api.updateShoppingListItem(item).then((response) => {
             if (!response) {
                 console.error(`Failed to update item ${id}`);
                 window.location.reload();
                 return;
             }
-            console.log(`Item ${id} updated successfully`);
         }).catch((error) => {
             console.error(`Error updating item ${id}:`, error);
         });
@@ -92,7 +88,6 @@ const deleteItem = (id: string) => {
             console.error(`Failed to delete item ${id}`);
             return;
         }
-        console.log(`Item ${id} deleted successfully`);
         shopping_list.value.shoppingItems = shopping_list.value.shoppingItems?.filter((item) => item.id !== id);
     }).catch((error) => {
         console.error(`Error deleting item ${id}:`, error);

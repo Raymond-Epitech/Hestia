@@ -107,5 +107,7 @@
     "sat": "Sa",
     "sun": "So"
   },
-  "theme": "Thema"
+  "theme": "Thema",
+  "confirm_delete_shoppinglist": "Sind Sie sicher, dass Sie diese Einkaufsliste löschen möchten?",
+  "shopping-list-name": "Name der Einkaufsliste"
 }

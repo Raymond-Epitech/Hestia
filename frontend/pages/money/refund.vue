@@ -65,7 +65,6 @@ onMounted(() => {
     }
     api.getRefund(user.colocationId).then((response) => {
         refund_list.value = response;
-        console.log(refund_list.value);
     }).catch((error) => {
         console.error('Error fetching data:', error);
     });
@@ -98,7 +97,6 @@ const refund_prosess = (refund: refund) => {
         expenseCategoryId: rufendcategoryId,
     }
     api.addExpense(data).then((response) => {
-        console.log(response);
         if (response === true) {
             window.location.reload();
         }

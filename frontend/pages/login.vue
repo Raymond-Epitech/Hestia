@@ -86,7 +86,6 @@ function goRegister() {
 
 const register = async () => {
     if (!username.value) {
-        console.log("no username")
         alert.value = true;
         return;
     }

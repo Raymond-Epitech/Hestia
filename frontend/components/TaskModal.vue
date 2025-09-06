@@ -130,7 +130,6 @@
             enrolled: enrollees.map(userId => userId),
         }
         api.updateChore(updateChore).then(() => {
-            console.log('Chore updated successfully');
             // done = true;
         }).catch((error) => {
             console.error('Error update chore:', error);

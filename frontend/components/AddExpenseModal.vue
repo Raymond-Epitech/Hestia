@@ -180,10 +180,8 @@ const calculatedSplitValue = computed(() => {
 });
 
 const handleProceed = async () => {
-  console.log(expense.value);
   api.addExpense(expense.value).then((response) => {
     if (response === true) {
-      console.log("Expense added successfully!");
       close()
       emit('proceed')
        Object.assign(expense.value, {

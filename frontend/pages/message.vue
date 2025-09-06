@@ -38,7 +38,6 @@ signalr.on("NewMessageAdded", (messageOutput) => {
     }
 });
 signalr.on("MessageDeleted", (messageId) => {
-    console.log("Message deleted:", messageId);
     messages.value = messages.value.filter(msg => msg.id !== messageId);
 });
 signalr.on("MessageUpdated", (messageOutput) => {

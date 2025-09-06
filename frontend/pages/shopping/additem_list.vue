@@ -53,13 +53,11 @@ const item = ref<shoppinglist_item>({
 })
 
 const handleProceed = async () => {
-    console.log(item.value);
     api.addShoppingListItem(item.value).then((response) => {
         if (!response) {
             console.error('Failed to add item');
             return;
         }
-        console.log('item added successfully');
         router.back()
     }).catch((error) => {
         console.error('Error adding expense:', error);

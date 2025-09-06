@@ -49,7 +49,7 @@
   const { setLocale } = useI18n();
   const { $locally } = useNuxtApp()
   const router = useRouter();
-  const redirect = (page) => {
+  const redirect = (page: string) => {
     router.push(page);
   }
 

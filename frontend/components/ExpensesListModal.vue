@@ -118,7 +118,6 @@ const handleClose = () => {
 }
 
 function forbidScroll() {
-    console.log(forbid_scroll.value)
     forbid_scroll.value = !forbid_scroll.value;
 }
 

@@ -107,5 +107,7 @@
     "sat": "土",
     "sun": "日"
   },
-  "theme": "テーマ"
+  "theme": "テーマ",
+  "confirm_delete_shoppinglist": "この買い物リストを削除したいですか？",
+  "shopping-list-name": "買い物リストの名前"
 }

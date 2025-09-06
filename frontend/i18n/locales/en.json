@@ -107,5 +107,7 @@
     "sat": "Sat",
     "sun": "Sun"
   },
-  "theme": "Theme"
+  "theme": "Theme",
+  "confirm_delete_shoppinglist": "Are you sure you want to delete this shopping list?",
+  "shopping-list-name": "Name of the shopping list"
 }

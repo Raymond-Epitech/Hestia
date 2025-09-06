@@ -107,5 +107,7 @@
     "sat": "Sáb",
     "sun": "Dom"
   },
-  "theme": "Tema"
+  "theme": "Tema",
+  "confirm_delete_shoppinglist": "¿Estás seguro de que quieres eliminar esta lista de compras?",
+  "shopping-list-name": "Nombre de la lista de compras"
 }

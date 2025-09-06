@@ -166,10 +166,8 @@ const cancelDelete = () => {
 
 const handleProceed = async (action: string) => {
   if (action === 'modify') {
-    console.log(modified_expense.value);
     const response = await api.updateExpense(modified_expense.value);
     if (response) {
-      console.log('Expense modified successfully');
       close()
       emit('proceed')
     } else {
