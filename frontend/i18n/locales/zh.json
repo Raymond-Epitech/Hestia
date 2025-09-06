@@ -109,5 +109,7 @@
   },
   "theme": "主题",
   "confirm_delete_shoppinglist": "您确定要删除此购物清单吗？",
-  "shopping-list-name": "购物清单的名称"
+  "shopping-list-name": "购物清单的名称",
+  "newFlateshare": "创建新的合租公寓",
+  "ChangeColocation": "加入其他合租公寓"
 }

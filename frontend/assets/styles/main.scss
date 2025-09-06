@@ -11,6 +11,9 @@
     --sent-message: #BDD4F6;
     --list-overlay-bg: #FFFFFF;
     --icon-filter: none;
+    --login-box-bg: #FFFCF7;
+    --secondary-button: #D6D6D6;
+    --secondary-page-text: #000000;
 
     --basic-grey: #4B4B4B;
     --light-grey: #D6D6D6;
@@ -33,6 +36,9 @@
     --sent-message: #526074;
     --list-overlay-bg: #1D1B20;
     --icon-filter: brightness(0) invert(1);
+    --login-box-bg: #000000;
+    --secondary-button: #1D1B20;
+    --secondary-page-text: #FFFFFF;
 }
 
 .hestia {
@@ -46,6 +52,9 @@
     --sent-message: #526074;
     --list-overlay-bg: #084338;
     --icon-filter: brightness(0) invert(1);
+    --login-box-bg: #084338;
+    --secondary-button: #E9FFE3;
+    --secondary-page-text: #000000;
 }
 
 body {

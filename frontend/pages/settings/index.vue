@@ -21,7 +21,7 @@
                 <Texte_language class="sub-header" source="Display-subtext" />
             </div>
         </div>
-        <div class="setting-button" :onClick="() => redirect('/settings/colocation')" id="colocation">
+        <div class="setting-button" :onClick="() => redirect('/settings/change-colocation')" id="colocation">
             <div class="icon">
                 <img src="~/public/settings/Users.svg">
             </div>

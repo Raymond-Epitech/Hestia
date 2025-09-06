@@ -106,5 +106,7 @@
   },
   "theme": "Thème",
   "confirm_delete_shoppinglist": "Etes-vous sûr de vouloir supprimer cette liste de courses ?",
-  "shopping-list-name": "Nom de la liste de courses"
+  "shopping-list-name": "Nom de la liste de courses",
+  "newFlateshare": "Créer une nouvelle colocation",
+  "ChangeColocation": "Rejoindre une autre colocation"
 }

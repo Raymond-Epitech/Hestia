@@ -109,5 +109,7 @@
   },
   "theme": "Thema",
   "confirm_delete_shoppinglist": "Sind Sie sicher, dass Sie diese Einkaufsliste löschen möchten?",
-  "shopping-list-name": "Name der Einkaufsliste"
+  "shopping-list-name": "Name der Einkaufsliste",
+  "newFlateshare": "Neue Wohngemeinschaft gründen",
+  "ChangeColocation": "Einer anderen Wohngemeinschaft beitreten"
 }

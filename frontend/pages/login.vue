@@ -169,19 +169,9 @@ const login = async () => {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        background-color: var(--background);
+        background-color: var(--login-box-bg);
         border-radius: 20px;
         text-align: center;
-        box-shadow: var(--rectangle-shadow-light);
-    }
-
-    .dark .login {
-        background-color: var(--main-buttons);
-        box-shadow: var(--rectangle-shadow-light);
-    }
-
-    .hestia .login {
-        background-color: var(--main-buttons);
         box-shadow: var(--rectangle-shadow-light);
     }
 
@@ -194,19 +184,9 @@ const login = async () => {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        background-color: var(--background);
+        background-color: var(--login-box-bg);
         border-radius: 20px;
         box-shadow: var(--rectangle-shadow-light);
-    }
-
-    .dark .register {
-        background-color: var(--main-buttons);
-        box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
-    }
-
-    .hestia .register {
-        background-color: var(--main-buttons);
-        box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
     }
 
     h2 {
