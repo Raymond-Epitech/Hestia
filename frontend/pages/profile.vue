@@ -1,11 +1,15 @@
 <template>
-    <div>
-        <button class="settings" @click="redirect('/settings')">
-            <img src="~/public/profile/settings.svg" class="icon">
-        </button>
-        <button class="add-user" @click="redirect('/add-user')">
-            <img src="~/public/profile/addUser.svg" class="icon">
-        </button>
+    <button class="settings" @click="redirect('/settings')">
+        <img src="~/public/profile/settings.svg" class="icon">
+    </button>
+    <button class="add-user" @click="redirect('/add-user')">
+        <img src="~/public/profile/addUser.svg" class="icon">
+    </button>
+    <div class="page-container">
+        <div class="user">
+            <div class="username">{{ userStore.user.username }}</div>
+            <ProfileIcon :height="200" :width="200" :linkToPP="user.profilePictureUrl"/>
+        </div>
         <div class="colocation-preview">
             <text class="header">
                 <Texte_language source="flatInfo" />
@@ -26,7 +30,6 @@
 <script setup>
 import { useUserStore } from '~/store/user';
 const userStore = useUserStore();
-const user = userStore.user;
 const router = useRouter();
 const { $bridge } = useNuxtApp();
 const api = $bridge;
@@ -42,9 +45,12 @@ api.getColocationById(userStore.user.colocationId).then((response) => {
 
 api.getUserbyCollocId(userStore.user.colocationId).then((response) => {
     list_coloc.value = response;
+    console.log(list_coloc)
 }).catch((error) => {
     console.error('Error fetching data:', error);
 });
+
+const user = colocationData.value.filter(user => user.id === userStore.user.id)
 
 const redirect = (page) => {
     router.push(page);
@@ -52,6 +58,11 @@ const redirect = (page) => {
 </script>
 
 <style scoped>
+.page-container {
+    margin-bottom: 4.5rem;
+    height: calc(100vh - 4.5rem);
+    display: grid;
+}
 
 button {
     background-color: var(--main-buttons);
@@ -80,26 +91,40 @@ button {
     left: 3%;
 }
 
+.user {
+    margin-top: 80px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: none;
+}
+
+.username {
+    font-size: 24px;
+    color: var(--secondary-page-text);
+    font-weight: 600;
+}
+
 .colocation-preview {
+    bottom: 4.5rem;
     padding: 1rem;
     display: grid;
-    position: fixed;
-    width: 100%;
-    bottom: 4.5rem;
-    max-height: (100rem - 4.5rem);
-    grid-template-rows: 1fr;
+    grid-template-rows: repeat(4,1fr);
+    gap: 10px;
     background-color: var(--main-buttons);
-    justify-content: center;
     align-items: center;
     text-align: center;
     border-top-left-radius: 30px;
     border-top-right-radius: 30px;
-    box-shadow: var(--button-shadow-light)
+    box-shadow: var(--button-shadow-light);
+    overflow: scroll;
+    scrollbar-width: none;
 }
 
 .header {
     padding: 13px;
-    padding-bottom: 16px;
     font-size: 26px;
     font-weight: 600;
     border-radius: 20px;
@@ -109,33 +134,25 @@ button {
 }
 
 sub {
-    margin-bottom: 1rem;
     font-size: 18px;
-    line-height: 1.4rem;
     font-weight: 600;
     color: var(--page-text);
 }
 
 .roommates-list {
-    max-height: 20rem;
-    overflow-y: auto;
-    margin-top: 5px;
-    padding: 0 1rem;
-    /* text-align: left; */
+    margin-top: 6px;
+    height: fit-content;
+    padding: 13px;
     font-weight: 600;
-    /* width: fit-content; */
-    /* max-width: 90%; */
     border-radius: 20px;
     background-color: var(--recieved-message);
-    /* box-shadow: var(--button-shadow-light); */
     color: var(--page-text);
-    /* align-items: center; */
 }
 
 .colocation-name {
+    margin-bottom: 12px;
     font-size: 22px;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    padding: 13px;
     stroke: var(basic-grey);
     stroke-width: 2px;
     background-color: var(--recieved-message);

@@ -92,16 +92,8 @@ const createColocation = async () => {
 }
 
 .back .icon {
-    filter: invert(1);
+    filter: var(--icon-filter);
     width: 25px;
-}
-
-.dark .back .icon {
-    filter: none;
-}
-
-.hestia .back .icon {
-    filter: none;
 }
 
 .colocation-container {

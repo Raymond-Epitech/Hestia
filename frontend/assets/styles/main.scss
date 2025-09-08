@@ -10,10 +10,11 @@
     --recieved-message: #C1E0B9;
     --sent-message: #BDD4F6;
     --list-overlay-bg: #FFFFFF;
-    --icon-filter: none;
+    --icon-filter: invert(0);
     --login-box-bg: #FFFCF7;
     --secondary-button: #D6D6D6;
     --secondary-page-text: #000000;
+    --icon-background: #FFFFFF;
 
     --basic-grey: #4B4B4B;
     --light-grey: #D6D6D6;
@@ -39,6 +40,7 @@
     --login-box-bg: #000000;
     --secondary-button: #1D1B20;
     --secondary-page-text: #FFFFFF;
+    --icon-background: #000000;
 }
 
 .hestia {
@@ -55,6 +57,7 @@
     --login-box-bg: #084338;
     --secondary-button: #E9FFE3;
     --secondary-page-text: #000000;
+    --icon-background: #000000;
 }
 
 body {
