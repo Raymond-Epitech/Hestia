@@ -163,7 +163,7 @@ export class bridge {
             body: JSON.stringify(item)
         }).then(response => {
             if (response.status == 200) {
-                return response.text();
+                return response.json();
             }
             return '';
         });
