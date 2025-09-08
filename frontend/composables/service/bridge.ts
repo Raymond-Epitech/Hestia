@@ -652,6 +652,39 @@ export class bridge {
         })
     }
 
+    async getLanguage(id: string) {
+        return await fetch(`${this.url}/api/User/Language/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.text();;
+            }
+            return '';
+        })
+    }
+
+    async updateLanguage(lang: string, id: string) {
+        return await fetch(`${this.url}/api/User/Language`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json-patch+json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify({
+                userId: id,
+                language: lang
+            })
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
     // Expense section:
 
     async getExpenseByColocationId(colocationId: string): Promise<expenses_category_get[]> {

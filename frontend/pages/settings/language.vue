@@ -43,82 +43,86 @@
 </template>
 
 <script setup lang="ts">
-  import { useI18n } from 'vue-i18n';
-  import Texte_language from '~/components/texte_language.vue';
-  import type { Locale } from '~/composables/service/type';
-  const { setLocale } = useI18n();
-  const { $locally } = useNuxtApp()
-  const router = useRouter();
-  const redirect = (page: string) => {
-    router.push(page);
-  }
+import { useI18n } from 'vue-i18n';
+import Texte_language from '~/components/texte_language.vue';
+import type { Locale } from '~/composables/service/type';
+import { useUserStore } from '~/store/user';
+const { setLocale } = useI18n();
+const { $locally } = useNuxtApp()
+const userStore = useUserStore();
+const router = useRouter();
+const { $bridge } = useNuxtApp()
+const api = $bridge;
+const redirect = (page: string) => {
+  router.push(page);
+}
 
-
-  const setlangue = (lang: Locale) => {
-    setLocale(lang);
-    $locally.setItem('locale', lang);
-  }
+const setlangue = (lang: Locale) => {
+  setLocale(lang);
+  $locally.setItem('locale', lang);
+  api.updateLanguage(lang, userStore.user.id);
+}
 </script>
 
 <style scoped>
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    margin: 40px auto;
-    margin-top: 5rem;
-    max-height: calc(100vh - 12rem);
-  }
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 40px auto;
+  margin-top: 5rem;
+  max-height: calc(100vh - 12rem);
+}
 
-  .icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    filter: var(--icon-filter);
-  }
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: var(--icon-filter);
+}
 
-  .setting-button {
-    width: 20.2rem;
-    height: 80px;
-    display: grid;
-    grid-template-columns: 1fr 4fr;
-    align-items: center;
-    border-radius: 20px;
-    background-color: var(--main-buttons);
-    box-shadow: var(--rectangle-shadow-light);
-    color: var(--page-text);
-  }
+.setting-button {
+  width: 20.2rem;
+  height: 80px;
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  align-items: center;
+  border-radius: 20px;
+  background-color: var(--main-buttons);
+  box-shadow: var(--rectangle-shadow-light);
+  color: var(--page-text);
+}
 
-  .flag {
-    margin-left: 30%;
-    height: 60px;
-    width: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.flag {
+  margin-left: 30%;
+  height: 60px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  }
+}
 
-  .language-text {
-    margin-left: 8%;
-    font-weight: 600;
-    font-size: 24px;
-  }
+.language-text {
+  margin-left: 8%;
+  font-weight: 600;
+  font-size: 24px;
+}
 
-  .back {
-    background-color: var(--main-buttons);
-    position: fixed;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 9px;
-    border: none;
-    box-shadow: var(--button-shadow-light);
-    top: 3%;
-    left: 3%;
+.back {
+  background-color: var(--main-buttons);
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  border: none;
+  box-shadow: var(--button-shadow-light);
+  top: 3%;
+  left: 3%;
 }
 
 .back .icon {
