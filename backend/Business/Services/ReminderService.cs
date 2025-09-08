@@ -14,7 +14,6 @@ using Shared.Models.Output;
 using Shared.Models.Update;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Formats.Webp;
 
 namespace Business.Services;
 

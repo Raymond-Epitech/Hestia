@@ -49,8 +49,7 @@ public class ImageReminder : Reminder
 
 public class ShoppingListReminder : Reminder
 {
-    [Required]
-    public string ShoppingListName { get; set; } = null!;
+    public string? ShoppingListName { get; set; } = null;
 
     public ICollection<ShoppingItem> ShoppingItems { get; set; } = null!;
 }

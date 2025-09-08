@@ -149,10 +149,6 @@ namespace Business.Mappers
                     break;
 
                 case ReminderType.ShoppingList:
-                    if (input.ShoppingListName is null || input.ShoppingListName.Length > 50)
-                    {
-                        throw new ArgumentException("ShoppingListName cannot be longer than 50 characters or be null");
-                    }
                     var shoppingReminder = new ShoppingListReminder();
                     shoppingReminder.ShoppingListName = input.ShoppingListName;
                     reminder = shoppingReminder;
@@ -208,10 +204,6 @@ namespace Business.Mappers
                     }
                     break;
                 case ShoppingListReminder shoppingListReminder:
-                    if (input.ShoppingListName is null || input.ShoppingListName.Length > 50)
-                    {
-                        throw new ArgumentException("ShoppingListName cannot be longer than 50 characters");
-                    }
                     shoppingListReminder.ShoppingListName = input.ShoppingListName;
                     break;
                 default:
