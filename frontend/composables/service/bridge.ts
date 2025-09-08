@@ -660,7 +660,7 @@ export class bridge {
             }
         }).then(response => {
             if (response.status == 200) {
-                return response.json();
+                return response.text();;
             }
             return '';
         })
@@ -668,13 +668,14 @@ export class bridge {
 
     async updateLanguage(lang: string, id: string) {
         return await fetch(`${this.url}/api/User/Language`, {
-            method: 'PUT',
+            method: 'POST',
             headers: {
+                'Content-Type': 'application/json-patch+json',
                 'Authorization': 'Bearer ' + this.jwt
             },
             body: JSON.stringify({
-                language: lang,
-                userId: id
+                userId: id,
+                language: lang
             })
         }).then(response => {
             if (response.status == 200) {

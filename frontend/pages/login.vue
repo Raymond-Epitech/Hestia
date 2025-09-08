@@ -42,6 +42,8 @@ definePageMeta({
     layout: false
 })
 
+const { setLocale } = useI18n();
+const { $locally } = useNuxtApp()
 const { authenticateUser } = useAuthStore();
 const { authenticated } = storeToRefs(useAuthStore());
 const userStore = useUserStore();
@@ -106,16 +108,16 @@ const register = async () => {
             if (data) {
                 $bridge.setjwt(data.jwt);
                 userStore.setUser(data.user);
+                $bridge.getLanguage(userStore.user.id).then((lang) => {
+                    if (lang != '') {
+                        setLocale(lang);
+                        $locally.setItem('locale', lang);
+                    }
+                })
                 await authenticateUser(data.jwt);
             }
             if (authenticated) {
                 router.push('/');
-                $bridge.getLanguage(userStore.user.id).then((lang) => {
-                    if (lang != '')
-                        $locally.setItem('locale', lang);
-                    else
-                        $locally.setItem('locale', 'en');
-                })
             }
         }
     }
@@ -133,16 +135,16 @@ const login = async () => {
         if (data) {
             $bridge.setjwt(data.jwt);
             userStore.setUser(data.user);
+            $bridge.getLanguage(userStore.user.id).then((lang) => {
+                if (lang != '') {
+                    setLocale(lang);
+                    $locally.setItem('locale', lang);
+                }
+            })
             await authenticateUser(data.jwt);
         }
         if (authenticated) {
             router.push('/');
-            $bridge.getLanguage(userStore.user.id).then((lang) => {
-                if (lang != '')
-                    $locally.setItem('locale', lang);
-                else
-                    $locally.setItem('locale', 'en');
-            })
         }
     }
 }
