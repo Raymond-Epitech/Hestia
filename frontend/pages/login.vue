@@ -275,6 +275,10 @@ h2 {
     box-shadow: var(--button-shadow-light);
 }
 
+.hestia .google-button {
+    background-color: var(--main-buttons);
+}
+
 .alert {
     padding: 0;
     margin: 0;
