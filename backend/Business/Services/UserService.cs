@@ -340,7 +340,7 @@ public class UserService(ILogger<UserService> logger,
         return fcmDevice.FCMToken;
     }
 
-    public async Task<Languages> GetLanguageAsync(Guid id)
+    public async Task<string> GetLanguageAsync(Guid id)
     {
         var language = await userRepository.Query()
             .Where(u => u.Id == id)
@@ -352,7 +352,7 @@ public class UserService(ILogger<UserService> logger,
 
         logger.LogInformation($"Succes : Language {language} found for user {id}");
 
-        return Enum.Parse<Languages>(language);
+        return language;
     }
 
     public async Task<Guid> SetLanguageAsync(LanguageInput input)
@@ -362,7 +362,7 @@ public class UserService(ILogger<UserService> logger,
         if (user == null)
             throw new NotFoundException($"User {input.UserId} not found");
 
-        user.Language = input.Language.ToString();
+        user.Language = input.Language;
 
         userRepository.Update(user);
         await userRepository.SaveChangesAsync();

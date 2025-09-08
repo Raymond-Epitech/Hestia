@@ -28,7 +28,7 @@ namespace EntityFramework.Models
         public string PathToProfilePicture { get; set; } = null!;
 
         [Required]
-        public string Language { get; set; } = Languages.English.ToString();
+        public string Language { get; set; } = "fr";
 
         public bool IsDeleted { get; set; } = false;
 
