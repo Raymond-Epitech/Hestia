@@ -19,7 +19,7 @@ public class Repository<T>(
         return asNoTracking ? query.AsNoTracking() : query;
     }
 
-    public async Task<List<T>> GetAll(Guid colocationId)
+    public async Task<List<T>> GetAllAsync(Guid colocationId)
     {
         logger.LogInformation($"Getting all entities of type {typeof(T).Name} for colocation {colocationId}");
         return await context.Set<T>()

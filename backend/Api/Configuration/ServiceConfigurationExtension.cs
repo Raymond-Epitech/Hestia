@@ -2,6 +2,7 @@
 using Business.Services;
 using EntityFramework.Context;
 using EntityFramework.Repositories;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Configuration;
@@ -30,6 +31,8 @@ public static class ServiceConfigurationExtension
         services.AddScoped<IRealTimeService, RealTimeService>();
         services.AddScoped<IFirebaseNotificationService, FirebaseNotificationService>();
         services.AddScoped<IMessageService, MessageService>();
+        services.AddScoped<IPollService, PollService>();
+        services.AddScoped<IReactionService, ReactionService>();
 
         // Repositories
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

@@ -14,9 +14,6 @@ public class ShoppingItemUpdate
     public Guid CreatedBy { get; set; }
 
     [Required]
-    public Guid ShoppingListId { get; set; }
-
-    [Required]
     public bool IsChecked { get; set; } = false;
 }
 

@@ -13,12 +13,18 @@ namespace Tests.Hestia.Controller;
 public class ReminderControllerTests
 {
     private readonly Mock<IReminderService> _reminderServiceMock;
+    private readonly Mock<IPollService> _pollServiceMock;
+    private readonly Mock<IShoppingListService> _shoppingListServiceMock;
+    private readonly Mock<IReactionService> _reactionServiceMock;
     private readonly ReminderController _controller;
 
     public ReminderControllerTests()
     {
         _reminderServiceMock = new Mock<IReminderService>();
-        _controller = new ReminderController(_reminderServiceMock.Object);
+        _pollServiceMock = new Mock<IPollService>();
+        _shoppingListServiceMock = new Mock<IShoppingListService>();
+        _reactionServiceMock = new Mock<IReactionService>();
+        _controller = new ReminderController(_reminderServiceMock.Object, _pollServiceMock.Object, _shoppingListServiceMock.Object, _reactionServiceMock.Object);
     }
 
     // GET ALL REMINDERS BY COLOCATION ID
@@ -171,28 +177,6 @@ public class ReminderControllerTests
         await Assert.ThrowsAsync<ContextException>(() => _controller.UpdateReminder(reminderUpdate));
 
         _reminderServiceMock.Verify(service => service.UpdateReminderAsync(reminderUpdate), Times.Once);
-    }
-
-    // UPDATE RANGE REMINDERS
-
-    [Fact]
-    public async Task UpdateRangeReminder_ReturnsOk_WhenSuccessful()
-    {
-        var remindersToUpdate = new List<ReminderUpdate>
-        {
-            new ReminderUpdate
-            {
-                Id = Guid.NewGuid(),
-                Content = "Updated Reminder"
-            }
-        };
-
-        _reminderServiceMock.Setup(service => service.UpdateRangeReminderAsync(remindersToUpdate)).ReturnsAsync(remindersToUpdate.Count);
-
-        var actionResult = await _controller.UpdateRangeReminder(remindersToUpdate);
-
-        actionResult.Result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(remindersToUpdate.Count);
-        _reminderServiceMock.Verify(service => service.UpdateRangeReminderAsync(remindersToUpdate), Times.Once);
     }
 
     // DELETE REMINDER

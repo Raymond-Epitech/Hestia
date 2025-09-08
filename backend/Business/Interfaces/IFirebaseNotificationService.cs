@@ -1,7 +1,10 @@
-﻿namespace Business.Interfaces;
+﻿using Shared.Models.Input;
+
+namespace Business.Interfaces;
 
 public interface IFirebaseNotificationService
 {
-    Task SendNotificationAsync(List<string> fcmDevices, string title, string body);
+    Task<Guid> SendNotificationToUserAsync(NotificationInput notification);
+    Task<List<Guid>> SendNotificationToColocationAsync(NotificationInput notification, Guid? UserId);
 }
 

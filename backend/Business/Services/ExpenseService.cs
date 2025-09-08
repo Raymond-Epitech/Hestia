@@ -511,7 +511,9 @@ namespace Business.Services
         /// <returns>The Guid of the updated expense</returns>
         public async Task<Guid> UpdateExpenseAsync(ExpenseUpdate input)
         {
-            var expense = await expenseRepository.GetByIdAsync(input.Id);
+            var expense = await expenseRepository.Query()
+                .Include(e => e.ExpenseCategory)
+                .FirstOrDefaultAsync(e => e.Id == input.Id);
 
             if (expense is null)
                 throw new NotFoundException($"The expense with id {input.Id} was not found");

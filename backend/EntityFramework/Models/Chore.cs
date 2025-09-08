@@ -13,7 +13,14 @@ namespace EntityFramework.Models
         public Guid CreatedBy { get; set; }
 
         [Required]
+        [ForeignKey(nameof(CreatedBy))]
+        public User User { get; set; } = null!;
+
+        [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Required]
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         [Required]
         public Guid ColocationId { get; set; }
@@ -33,6 +40,5 @@ namespace EntityFramework.Models
         public bool IsDone { get; set; } = false;
 
         public ICollection<ChoreEnrollment> ChoreEnrollments { get; set; } = null!;
-        public ICollection<ChoreMessage> ChoreMessages { get; set; } = null!;
     }
 }
