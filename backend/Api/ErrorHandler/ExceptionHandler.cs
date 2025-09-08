@@ -38,11 +38,6 @@ public class ExceptionHandler(ILogger<ExceptionHandler> logger) : IExceptionHand
 
         logger.LogError(exception, $"Handled exception with status {status}");
 
-        if (status == StatusCodes.Status500InternalServerError)
-        {
-            SentrySdk.CaptureException(exception);
-        }
-
         context.Response.StatusCode = status;
 
         if (!context.Response.HasStarted)

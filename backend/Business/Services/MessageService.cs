@@ -6,13 +6,13 @@ using Microsoft.Extensions.Logging;
 using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
-using System;
 
 namespace Business.Services;
 
 public class MessageService(
     ILogger<MessageService> logger,
     IRepository<Message> repository,
+    IRepository<User> userRepository,
     IRealTimeService realTimeService,
     IFirebaseNotificationService notificationService) : IMessageService
 {
@@ -84,9 +84,13 @@ public class MessageService(
             SendBy = message.SentBy
         };
         await realTimeService.SendToGroupAsync(messageOutput.ColocationId, "NewMessageAdded", messageOutput);
+        var name = userRepository.Query()
+            .Where(u => u.Id == message.SentBy)
+            .Select(u => u.Username)
+            .FirstOrDefault();
         await notificationService.SendNotificationToColocationAsync(new NotificationInput {
             Id = message.ColocationId,
-            Title = $"New message from {message.SentBy} !",
+            Title = $"New message from {name} !",
             Body = messageOutput.Content,
         },
         messageOutput.SendBy);
