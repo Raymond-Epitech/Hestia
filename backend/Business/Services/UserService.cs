@@ -5,6 +5,8 @@ using EntityFramework.Repositories;
 using Google.Apis.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Npgsql.TypeMapping;
+using Shared.Enums;
 using Shared.Exceptions;
 using Shared.Models.Input;
 using Shared.Models.Output;
@@ -17,8 +19,7 @@ namespace Business.Services;
 public class UserService(ILogger<UserService> logger,
     IRepository<User> userRepository,
     IRepository<FCMDevice> fcmDeviceRepository,
-    IJwtService jwtService,
-    IFirebaseNotificationService notificationService) : IUserService
+    IJwtService jwtService) : IUserService
 {
     /// <summary>
     /// Get all users from a collocation
@@ -89,7 +90,9 @@ public class UserService(ILogger<UserService> logger,
 
         userToUpdate.Username = user.Username;
         userToUpdate.ColocationId = user.ColocationId;
-        userToUpdate.PathToProfilePicture = user.PathToProfilePicture;
+
+        if( user.PathToProfilePicture is not null)
+            userToUpdate.PathToProfilePicture = user.PathToProfilePicture;
 
         await userRepository.SaveChangesAsync();
 
@@ -187,23 +190,25 @@ public class UserService(ILogger<UserService> logger,
             PathToProfilePicture = validPayload.Picture ?? "default.jpg"
         };
 
-        if (userInput.FCMToken is not null)
-        {
-            var fmcDevice = new FCMDevice
-            {
-                FCMToken = userInput.FCMToken
-            };
-
-            await fcmDeviceRepository.AddAsync(fmcDevice);
-            
-            logger.LogInformation($"Succes : FCM Device {fmcDevice.FCMToken} added for user {newUser.Id}");
-        }
-
         await userRepository.AddAsync(newUser);
 
-        await userRepository.SaveChangesAsync();
-
         logger.LogInformation($"Succes : User {newUser.Id} added");
+
+        if (!string.IsNullOrEmpty(userInput.FCMToken))
+        {
+            logger.LogInformation($"FCM Token received : {userInput.FCMToken}, Creating a new FCM Device linked to user");
+
+            await fcmDeviceRepository.AddAsync(new FCMDevice
+            {
+                Id = Guid.NewGuid(),
+                FCMToken = userInput.FCMToken,
+                UserId = newUser.Id
+            });
+
+            logger.LogInformation($"Success: FCM Device {userInput.FCMToken} linked to user {newUser.Id}");
+        }
+
+        await userRepository.SaveChangesAsync();
 
         // Generate and return JWT
 
@@ -254,10 +259,11 @@ public class UserService(ILogger<UserService> logger,
             new Claim(JwtRegisteredClaimNames.Email, validPayload.Email),
             new Claim(JwtRegisteredClaimNames.Name, validPayload.Name),
             new Claim("picture", validPayload.Picture ?? ""),
-        };
+        };;
 
         var user = await userRepository.Query()
             .Where(u => u.Email == validPayload.Email)
+            .Include(u => u.FCMDevices)
             .FirstOrDefaultAsync();
 
         if (user is null)
@@ -269,16 +275,23 @@ public class UserService(ILogger<UserService> logger,
 
         userRepository.Update(user);
 
-        if (loginInput is not null && await fcmDeviceRepository.Query().AnyAsync(f => f.FCMToken != loginInput.FCMToken))
+        if (loginInput is not null && !string.IsNullOrEmpty(loginInput.FCMToken))
         {
-            var fmcDevice = new FCMDevice
+            logger.LogInformation($"FCM Token received : {loginInput.FCMToken}");
+
+            if (!user.FCMDevices.Any(f => f.FCMToken == loginInput.FCMToken))
             {
-                FCMToken = loginInput.FCMToken
-            };
+                logger.LogInformation("Linking FCM Device to user");
+                
+                await fcmDeviceRepository.AddAsync(new FCMDevice
+                {
+                    Id = Guid.NewGuid(),
+                    FCMToken = loginInput.FCMToken,
+                    UserId = user.Id
+                });
 
-            await fcmDeviceRepository.AddAsync(fmcDevice);
-
-            logger.LogInformation($"Succes : FCM Device {fmcDevice.FCMToken} added for user {user.Id}");
+                logger.LogInformation($"Success: FCM Device {loginInput.FCMToken} linked to user {user.Id}");
+            }
         }
 
         await userRepository.SaveChangesAsync();
@@ -307,58 +320,6 @@ public class UserService(ILogger<UserService> logger,
     }
 
     /// <summary>
-    /// Send a notification to a user
-    /// </summary>
-    /// <param name="NotificationInput">The id of the user and notification content</param>
-    /// <returns>The id of the User</returns>
-    /// <exception cref="NotFoundException"></exception>
-    public async Task<Guid> SendNotificationToUserAsync(NotificationInput notification)
-    {
-        var user = await userRepository.GetByIdAsync(notification.Id);
-
-        if (user == null)
-            throw new NotFoundException($"User {notification.Id} not found");
-
-        var fcmDevices = user.FCMDevices;
-
-        if (fcmDevices.Count == 0)
-            throw new NotFoundException($"No FCM devices found for user {notification.Id}");
-
-        await notificationService.SendNotificationAsync(fcmDevices.Select(f => f.FCMToken).ToList(), notification.Title, notification.Body);
-
-        logger.LogInformation($"Succes : Notification sent to user {notification.Id}");
-        
-        return notification.Id;
-    }
-
-    /// <summary>
-    /// Send a notification to all users in a colocation
-    /// </summary>
-    /// <param name="ColocationId">The id of the colocation and the notification content</param>
-    /// <returns>The ids of all the user who received a notification</returns>
-    /// <exception cref="NotFoundException"></exception>
-    public async Task<List<Guid>> SendNotificationToColocationAsync(NotificationInput notification)
-    {
-        var users = await userRepository.Query()
-            .Where(u => u.ColocationId == notification.Id && !u.IsDeleted)
-            .ToListAsync();
-
-        if (users.Count == 0)
-            throw new NotFoundException($"No users found in colocation {notification.Id}");
-
-        var fcmDevices = users.SelectMany(u => u.FCMDevices).ToList();
-
-        if (fcmDevices.Count == 0)
-            throw new NotFoundException($"No FCM devices found for colocation {notification.Id}");
-
-        await notificationService.SendNotificationAsync(fcmDevices.Select(f => f.FCMToken).ToList(), notification.Title, notification.Body);
-
-        logger.LogInformation($"Succes : Notification sent to colocation {notification.Id}");
-
-        return users.Select(u => u.Id).ToList();
-    }
-
-    /// <summary>
     /// Delete a fcm device for a user
     /// </summary>
     /// <param name="input">The user id and the fcmToken</param>
@@ -367,7 +328,7 @@ public class UserService(ILogger<UserService> logger,
     public async Task<string> LogoutUserAsync(LogoutInput input)
     {
         var fcmDevice = await fcmDeviceRepository.Query()
-            .Where(f => f.FCMToken == input.FCMToken && f.Users.Any(u => u.Id == input.UserId))
+            .Where(f => f.FCMToken == input.FCMToken && f.UserId == input.UserId)
             .FirstOrDefaultAsync();
 
         if (fcmDevice == null)
@@ -377,5 +338,36 @@ public class UserService(ILogger<UserService> logger,
 
         logger.LogInformation($"Succes : FCM Device {input.FCMToken} deleted for user {input.UserId}");
         return fcmDevice.FCMToken;
+    }
+
+    public async Task<Languages> GetLanguageAsync(Guid id)
+    {
+        var language = await userRepository.Query()
+            .Where(u => u.Id == id)
+            .Select(u => u.Language)
+            .FirstOrDefaultAsync();
+
+        if (language == null)
+            throw new NotFoundException($"User {id} not found");
+
+        logger.LogInformation($"Succes : Language {language} found for user {id}");
+
+        return Enum.Parse<Languages>(language);
+    }
+
+    public async Task<Guid> SetLanguageAsync(LanguageInput input)
+    {
+        var user = await userRepository.GetByIdAsync(input.UserId);
+
+        if (user == null)
+            throw new NotFoundException($"User {input.UserId} not found");
+
+        user.Language = input.Language.ToString();
+
+        userRepository.Update(user);
+        await userRepository.SaveChangesAsync();
+        logger.LogInformation($"Succes : User {user.Id} set language to {user.Language}");
+
+        return user.Id;
     }
 }

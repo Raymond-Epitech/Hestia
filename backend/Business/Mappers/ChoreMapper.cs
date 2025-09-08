@@ -1,5 +1,4 @@
 ﻿using EntityFramework.Models;
-using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
 
@@ -14,6 +13,7 @@ namespace Business.Mappers
                 Id = Guid.NewGuid(),
                 ColocationId = choreInput.ColocationId,
                 CreatedAt = DateTime.Now.ToUniversalTime(),
+                UpdatedAt = DateTime.Now.ToUniversalTime(),
                 DueDate = choreInput.DueDate,
                 CreatedBy = choreInput.CreatedBy,
                 Title = choreInput.Title,
@@ -22,15 +22,20 @@ namespace Business.Mappers
             };
         }
 
-        public static ChoreMessage ToDb(this ChoreMessageInput choreInput)
+        public static ChoreOutput ToOutput(this Chore c)
         {
-            return new ChoreMessage
+            return new ChoreOutput
             {
-                Id = Guid.NewGuid(),
-                CreatedAt = DateTime.Now.ToUniversalTime(),
-                Content = choreInput.Content,
-                ChoreId = choreInput.ChoreId,
-                CreatedBy = choreInput.CreatedBy,
+                Id = c.Id,
+                CreatedBy = c.CreatedBy,
+                CreatedAt = c.CreatedAt,
+                UpdatedAt = c.UpdatedAt,
+                DueDate = c.DueDate,
+                Title = c.Title,
+                Description = c.Description,
+                IsDone = c.IsDone,
+                EnrolledUsers = c.ChoreEnrollments
+                    .ToDictionary(ce => ce.UserId, ce => ce.User.PathToProfilePicture)
             };
         }
 
@@ -42,6 +47,7 @@ namespace Business.Mappers
             chore.Description = input.Description;
             chore.DueDate = input.DueDate;
             chore.IsDone = input.IsDone;
+            chore.UpdatedAt = DateTime.Now.ToUniversalTime();
             return chore;
         }
     }

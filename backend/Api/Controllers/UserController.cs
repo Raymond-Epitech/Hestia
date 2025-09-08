@@ -11,7 +11,7 @@ namespace Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController(IUserService userService) : ControllerBase
+    public class UserController(IUserService userService, IFirebaseNotificationService notificationService) : ControllerBase
     {
         [HttpGet("GetByColocationId/{colocationId}")]
         [Authorize]
@@ -122,7 +122,7 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Guid>> SendNotificationToUser(NotificationInput notification)
         {
-            await userService.SendNotificationToUserAsync(notification);
+            await notificationService.SendNotificationToUserAsync(notification);
 
             return Ok(notification.Id);
         }
@@ -134,9 +134,37 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<List<Guid>>> SendNotificationToColocation(NotificationInput notification)
         {
-            var users = await userService.SendNotificationToColocationAsync(notification);
+            var users = await notificationService.SendNotificationToColocationAsync(notification, null);
 
             return Ok(users);
+        }
+
+        [HttpGet("Language/{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<string>> GetLanguage(Guid id)
+        {
+            if (id == Guid.Empty)
+                throw new InvalidEntityException("User Id is empty");
+
+            return Ok(await userService.GetLanguageAsync(id));
+        }
+
+        [HttpPost("Language")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> SetLanguage(LanguageInput input)
+        {
+            if (input.UserId == Guid.Empty)
+                throw new InvalidEntityException("User Id is empty");
+
+            return Ok(await userService.SetLanguageAsync(input));
         }
     }
 }

@@ -10,6 +10,27 @@ Ce document liste les codes d'événements utilisés dans la communication Signa
 | `RemindersUpdated` | Des rappels existants ont été modifié | ReminderOutput |
 | `ReminderDeleted` | Un rappel a été supprimé | Guid |
 
+### ShoppingList
+| Code événement | Description | Payload (données envoyées) |
+|--|--|--|
+| `NewShoppingItem` | Un objet de liste de course a été ajouté | ShoppingItemOutput |
+| `UpdatedShoppingItem` | Un objet de liste de course a été modifié | ShoppingItemOutput |
+| `DeletedShoppingItem` | Un objet de liste de course a été supprimé | GUID |
+
+### Reactions
+| Code événement | Description | Payload (données envoyées) |
+|--|--|--|
+| `NewReaction` | Une reaction a été ajoutée | ReactionOutput |
+| `UpdateReaction` | Une reaction a été modifiée | ReactionOutput |
+| `DeleteReaction` | Une reaction a été supprimée | GUID |
+
+### PollVote
+| Code événement | Description | Payload (données envoyées) |
+|--|--|--|
+| `NewPollVote` | Une reponse de sondage a été ajoutée | PollVoteOutput |
+| `UpdatePollVote` | Une reponse de sondage a été modifiée | PollVoteOutput |
+| `DeletePollVote` | Une reponse de sondage a été supprimée | GUID |
+
 ### Chores
 | Code événement | Description | Payload (données envoyées) |
 |--|--|--|
@@ -18,7 +39,7 @@ Ce document liste les codes d'événements utilisés dans la communication Signa
 | `ChoreUpdated` | Une tache existante a été modifiée | ChoreOutput |
 | `ChoreDeleted` | Une tache a été supprimée | Guid |
 | `ChoreMessagesDeleted` | Un commentaire de tache a été supprimée | Guid |
-| `ChoreEnrollmentAdded` | Une assignation a une tache a été ajoutée | {ChoreID, UserId} |
+| `ChoreEnrollmentAdded` | Une assignation a une tache a été ajoutée | {ChoreID, UserId, PathToPP} |
 | `ChoreEnrollmentRemoved` | Une assignation a une tache a été supprimée | {ChoreID, UserId} |
 
 ### Expenses

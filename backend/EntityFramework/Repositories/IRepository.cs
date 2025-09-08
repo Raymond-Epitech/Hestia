@@ -6,7 +6,7 @@ namespace EntityFramework.Repositories;
 public interface IRepository<T> where T : class
 {
     IQueryable<T> Query(bool asNoTracking = true);
-    Task<List<T>> GetAll(Guid colocationId);
+    Task<List<T>> GetAllAsync(Guid colocationId);
     Task<T?> GetByIdAsync(Guid id);
     Task<T> AddAsync(T entity);
     Task<int> AddRangeAsync(IEnumerable<T> entities);
