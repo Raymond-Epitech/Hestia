@@ -1,6 +1,5 @@
 <template>
-    <div v-if="props.linkToPP && props.linkToPP!= 'deleted.jpg' && props.linkToPP!= 'exempledetest' && props.linkToPP!= 'default.jpg'"
-        class="profile">
+    <div v-if="showImage" class="profile">
         <img class="profile" :src="$props.linkToPP" alt="profile icon"
            :style="{ height: `${props.height}px`, width: `${props.width}px` }" @error="onImgError" >
     </div>
@@ -26,9 +25,19 @@
         }
     })
 
-const onImgError = (event: Event) => {
-  (event.target as HTMLImageElement).src = '../public/navbar/Profile.svg';
-}
+const hasError = ref(false);
+
+const showImage = computed(() =>
+  props.linkToPP &&
+  props.linkToPP !== "deleted.jpg" &&
+  props.linkToPP !== "exempledetest" &&
+  props.linkToPP !== "default.jpg" &&
+  !hasError.value
+);
+
+const onImgError = () => {
+  hasError.value = true;
+};
 </script>
 
 <style scoped>
