@@ -1,6 +1,6 @@
 <template>
-    <div :class="[post.reminderType == 1 ? 'post_image' : 'post', , post.reminderType != 1 && post.color]">
-        <ProfileIcon class="profile-icon" :height="30" :width="30" :linkToPP="post.linkToPP" />
+    <div :class="[post.reminderType == 1 ? 'post_image' : post.reminderType == 2 ? 'shopping-container' : 'post', , post.reminderType != 1 && post.color]">
+        <ProfileIcon v-if="post.reminderType !== 2" class="profile-icon" :height="30" :width="30" :linkToPP="post.linkToPP" />
         <ReactModal :postId="post.id" v-model="isModalOpen" />
         <button class="react-button" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
             <div class="heart">❤️</div>
@@ -18,14 +18,16 @@
         </button>
         <p v-if="post.reminderType == 0">{{ post.content }}</p>
         <img v-if="post.reminderType == 1" :src="imageget" alt="Post Image" class="image" />
-        <div v-if="post.reminderType == 2" class="shopping">
-            <h3>{{ post.shoppingListName }}</h3>
-            <div v-for="item in post.items" :key="item.id" class="shopping-header">
-                <span class="shopping-name">
-                    {{ item.name }}
-                </span>
-                <div class="check-zone" :class="{ checked: item.isChecked }"
-                    @click.stop="toggleCheck(item)">
+        <div v-if="post.reminderType == 2">
+            <h3 v-if="post.shoppingListName" class="shopping-title">{{ post.shoppingListName }}</h3>
+            <div class="shopping-items">
+                <div v-for="item in post.items" :key="item.id" class="shopping-header">
+                    <span class="shopping-name">
+                        {{ item.name }}
+                    </span>
+                    <div class="check-zone" :class="{ checked: item.isChecked }"
+                        @click.stop="toggleCheck(item)">
+                    </div>
                 </div>
             </div>
         </div>
@@ -157,6 +159,7 @@ const toggleCheck = (item: any) => {
     margin: 20px;
     position: relative;
     background-color: transparent;
+    box-shadow: var(--rectangle-shadow-light);
 }
 
 .edit-button {
@@ -164,20 +167,20 @@ const toggleCheck = (item: any) => {
     justify-content: center;
     align-items: center;
     position: absolute;
-    top: 10px;
-    right: 14px;
-    background: var(--light-grey);
+    top: -20px;
+    right: -20px;
+    background: var(--main-buttons);
     border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
+    border-radius: 9px;
+    width: 40px;
+    height: 40px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
 }
 
 .edit-icon {
-    height: 16px;
-    width: 16px;
-    filter: invert(0);
+    height: 33px;
+    width: 33px;
+    filter: var(--icon-filter);
 }
 
 .delete-button {
@@ -308,18 +311,6 @@ const toggleCheck = (item: any) => {
     border-color: #8D90D6;
 }
 
-.shopping-name {
-    display: grid;
-    grid-template-columns: 9fr 1fr 1fr;
-    align-items: center;
-    margin-right: 10px;
-    padding-left: 2px;
-}
-
-.edit {
-    margin-bottom: 2px;
-}
-
 .modify-input {
     border: none;
     border-radius: 5px;
@@ -327,15 +318,42 @@ const toggleCheck = (item: any) => {
     outline: none;
 }
 
+.shopping-container {
+    background-color: var(--main-buttons);
+    width: 275px;
+    padding: 20px 20px 50px 20px;
+    border-radius: 0px;
+    margin: 20px;
+    position: relative;
+    box-shadow: var(--rectangle-shadow-light);
+    font-weight: 600;
+}
+
+.shopping-title {
+    font-weight: 600;
+    font-size: 20px;
+    border-bottom: 2px dashed var(--page-text);
+}
+
+.shopping-items {
+    max-height: 310px;
+    overflow-y: scroll;
+}
+
 .shopping-header {
     display: grid;
     grid-template-columns: 10fr 1fr;
     font-weight: bold;
     align-items: center;
+    border-bottom: 1px solid var(--sent-message);
+    margin-top: 10px;
 }
 
-.shopping {
-    border-bottom: 2px dotted #dddddd94;
-    padding: 10px 0;
+.shopping-name {
+    display: grid;
+    grid-template-columns: 9fr 1fr 1fr;
+    align-items: center;
+    margin-right: 10px;
+    padding-left: 2px;
 }
 </style>
