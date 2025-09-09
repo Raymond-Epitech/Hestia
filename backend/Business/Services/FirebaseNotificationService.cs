@@ -1,6 +1,7 @@
 ﻿using Business.Interfaces;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
+using FirebaseAdmin.Messaging;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -8,8 +9,6 @@ using Microsoft.Extensions.Options;
 using Shared.Exceptions;
 using Shared.Models.Configuration;
 using Shared.Models.Input;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
 
 public class FirebaseNotificationService : IFirebaseNotificationService
@@ -19,18 +18,21 @@ public class FirebaseNotificationService : IFirebaseNotificationService
     private readonly HttpClient _httpClient;
     private readonly FirebaseSettings _settings;
     private readonly IRepository<User> userRepository;
+    private readonly IRepository<FCMDevice> fcmdeviceRepository;
     private readonly ILogger<FirebaseNotificationService> logger;
 
     public FirebaseNotificationService(
         IOptions<FirebaseSettings> options,
         HttpClient httpClient,
         IRepository<User> userRepository,
+        IRepository<FCMDevice> fcmDeviceRepository,
         ILogger<FirebaseNotificationService> logger)
     {
         _httpClient = httpClient;
         _settings = options.Value;
         _projectId = _settings.ProjectId;
         this.userRepository = userRepository;
+        this.fcmdeviceRepository = fcmDeviceRepository;
         this.logger = logger;
 
         _settings.PrivateKey = _settings.PrivateKey.Replace("\\n", "\n");
@@ -48,42 +50,72 @@ public class FirebaseNotificationService : IFirebaseNotificationService
             .CreateScoped("https://www.googleapis.com/auth/firebase.messaging");
     }
 
-    private async Task SendNotificationAsync(List<string> fcmDevices, string title, string body)
+    private static IEnumerable<List<string>> Chunk(List<string> source, int size)
     {
-        var accessToken = await _googleCredential.UnderlyingCredential
-            .GetAccessTokenForRequestAsync();
+        for (int i = 0; i < source.Count; i += size)
+            yield return source.GetRange(i, Math.Min(size, source.Count - i));
+    }
 
-        foreach (var token in fcmDevices)
+    private async Task SendNotificationAsync(List<string> fcmTokens, string title, string body, CancellationToken ct = default)
+    {
+        if (fcmTokens is null || fcmTokens.Count == 0) return;
+
+        int totalSuccess = 0;
+        int totalFailure = 0;
+
+        foreach (var tokenBatch in Chunk(fcmTokens, 500))
         {
-            var messagePayload = new
+            var message = new MulticastMessage
             {
-                message = new
-                {
-                    token = token,
-                    notification = new
-                    {
-                        title,
-                        body
-                    }
-                }
+                Tokens = tokenBatch,
+                Notification = new Notification { Title = title, Body = body },
             };
 
-            var json = JsonSerializer.Serialize(messagePayload);
-            var request = new HttpRequestMessage(
-                HttpMethod.Post,
-                $"https://fcm.googleapis.com/v1/projects/{_projectId}/messages:send"
-            );
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.SendAsync(request);
-            if (!response.IsSuccessStatusCode)
+            BatchResponse batchResponse;
+            try
             {
-                var error = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Erreur FCM : {response.StatusCode} - {error}");
+                batchResponse = await FirebaseMessaging.DefaultInstance.SendEachForMulticastAsync(message, ct);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, $"FCM multicast call failed for a chunk of {tokenBatch.Count} tokens");
+                continue;
+            }
+
+            totalSuccess += batchResponse.SuccessCount;
+            totalFailure += batchResponse.FailureCount;
+
+            for (int i = 0; i < batchResponse.Responses.Count; i++)
+            {
+                var responce = batchResponse.Responses[i];
+                var token = tokenBatch[i];
+
+                if (responce.IsSuccess)
+                    continue;
+
+                var fcmExpcetion = responce.Exception as FirebaseMessagingException;
+
+                logger.LogWarning(responce.Exception, $"FCM failed for token {token}. Code={fcmExpcetion?.MessagingErrorCode} Msg={responce.Exception.Message}");
+
+                if (fcmExpcetion?.MessagingErrorCode == MessagingErrorCode.Unregistered ||
+                    fcmExpcetion?.MessagingErrorCode == MessagingErrorCode.InvalidArgument)
+                {
+                    await fcmdeviceRepository.Query()
+                        .Where(d => d.FCMToken == token)
+                        .ExecuteDeleteAsync(ct);
+                }
+                else if (fcmExpcetion?.MessagingErrorCode == MessagingErrorCode.Internal ||
+                         fcmExpcetion?.MessagingErrorCode == MessagingErrorCode.Unavailable)
+                {
+                    logger.LogInformation($"Transient FCM error for token {token} - consider retrying later");
+                }
             }
         }
+
+        logger.LogInformation($"FCM multicast done. Success={totalSuccess} Failure={totalFailure}");
     }
+
+
 
 
     /// <summary>
@@ -160,6 +192,8 @@ public class FirebaseNotificationService : IFirebaseNotificationService
             logger.LogInformation($"No user found");
             return new List<Guid>();
         }
+
+        logger.LogInformation($"Found {fcmDevices.Count} fcm devices for colocation {notification.Id}");
 
         await SendNotificationAsync(fcmDevices.Select(f => f.FCMToken).ToList(), notification.Title, notification.Body);
 

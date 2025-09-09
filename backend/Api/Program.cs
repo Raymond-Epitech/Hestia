@@ -1,6 +1,8 @@
 using Api.Configuration;
 using Api.ErrorHandler;
 using Business.Jwt;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Mvc;
@@ -80,6 +82,35 @@ try
 
     // Firebase
     builder.Services.Configure<FirebaseSettings>(builder.Configuration.GetSection("Firebase"));
+    var projectId = builder.Configuration["Firebase:ProjectId"];
+    var serviceAccountJson = $@"
+    {{
+      ""type"": ""service_account"",
+      ""project_id"": ""{builder.Configuration["Firebase:ProjectId"]}"",
+      ""private_key_id"": ""{builder.Configuration["Firebase:PrivateKeyId"]}"",
+      ""private_key"": ""{builder.Configuration["Firebase:PrivateKey"]}"",
+      ""client_email"": ""{builder.Configuration["Firebase:ClientEmail"]}"",
+      ""client_id"": ""{builder.Configuration["Firebase:ClientId"]}"",
+      ""auth_uri"": ""https://accounts.google.com/o/oauth2/auth"",
+      ""token_uri"": ""https://oauth2.googleapis.com/token"",
+      ""auth_provider_x509_cert_url"": ""https://www.googleapis.com/oauth2/v1/certs"",
+      ""client_x509_cert_url"": ""https://www.googleapis.com/robot/v1/metadata/x509/{Uri.EscapeDataString(builder.Configuration["Firebase:ClientEmail"]!)}""
+    }}";
+
+    GoogleCredential credential = GoogleCredential.FromJson(serviceAccountJson);
+    if (FirebaseApp.DefaultInstance == null)
+    {
+        FirebaseApp.Create(new AppOptions
+        {
+            Credential = credential,
+            ProjectId = builder.Configuration["Firebase:ProjectId"]
+        });
+    }
+    builder.Services.AddSingleton(provider =>
+    {
+        var app = FirebaseApp.DefaultInstance;
+        return FirebaseAdmin.Messaging.FirebaseMessaging.GetMessaging(app);
+    });
 
     // Hangfire
     builder.Services.AddHangfire(config => config

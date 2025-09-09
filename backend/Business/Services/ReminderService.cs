@@ -238,12 +238,15 @@ public class ReminderService(ILogger<ReminderService> logger,
 
         cache.Remove($"reminders:{reminder.ColocationId}");
 
+        logger.LogInformation($"RealTime sent to group {reminder.ColocationId}");
         await realTimeService.SendToGroupAsync(reminder.ColocationId, "NewReminderAdded", reminder.ToOutput());
+
+        logger.LogInformation($"Notification sent to colocation {reminder.ColocationId}");
         await notificationService.SendNotificationToColocationAsync(new NotificationInput
         {
             Id = reminder.ColocationId,
             Title = "New reminder",
-            Body = $"{reminder.User.Username} added a new reminder"
+            Body = $"{user.Username} added a new reminder"
         }, reminder.CreatedBy);
 
         logger.LogInformation("Succes : Reminder added");
