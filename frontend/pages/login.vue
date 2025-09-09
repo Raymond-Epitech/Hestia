@@ -194,7 +194,7 @@ const login = async () => {
 .register {
     height: 400px;
     width: 300px;
-    padding: 30px;
+    padding: 50px;
     margin: 30px;
     display: flex;
     flex-direction: column;
