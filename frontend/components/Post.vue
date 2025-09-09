@@ -320,6 +320,7 @@ const toggleCheck = (item: any) => {
 
 .shopping-container {
     background-color: var(--main-buttons);
+    color: var(--page-text);
     width: 310px;
     padding: 20px 20px 50px 20px;
     border-radius: 0px;
