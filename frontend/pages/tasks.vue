@@ -101,22 +101,21 @@ onMounted(async () => {
 
 <style scoped>
 .icon {
-  width: 20px;
-  height: 20px;
+  width: 60%;
   filter: var(--icon-filter);
 }
 
 .icon.plus {
-  width: 15px;
-  height: 15px;
+  width: 18px;
+  height: 18px;
 }
 
 button {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   margin: 8px 5%;
   background-color: var(--main-buttons);
   border-radius: 9px;
@@ -145,14 +144,14 @@ button {
 
 .tasks {
   overflow-y: visible;
-  margin-top: 3rem;
-  max-height: calc(100vh - 7.5rem);
+  margin-top: 3.5rem;
+  max-height: calc(100vh - 8rem);
 }
 
 .calendar-container {
   padding: 0% 1%;
   overflow-y: visible;
-  max-height: calc(100vh - 7.5rem);
-  margin-top: 3rem;
+  max-height: calc(100vh - 8rem);
+  margin-top: 3.5rem;
 }
 </style>
