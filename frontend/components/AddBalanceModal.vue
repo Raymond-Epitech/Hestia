@@ -168,14 +168,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        filter: invert(0);
+        filter: var(--icon-filter);
     }
 
     .icon-inverse {
         display: flex;
         align-items: center;
         justify-content: center;
-        filter: invert(1);
+        filter: var(--icon-filter);
     }
 
 
