@@ -153,6 +153,7 @@ const toggleCheck = (item: any) => {
     position: relative;
     border-radius: 96% 4% 92% 8% / 0% 100% 6% 100%;
     box-shadow: -9px 16px 12px 0px rgba(0, 0, 0, 0.33);
+    font-weight: 600;
 }
 
 .post_image {
@@ -328,7 +329,6 @@ const toggleCheck = (item: any) => {
     margin: 40px 20px 20px 20px;
     position: relative;
     box-shadow: var(--rectangle-shadow-light);
-    font-weight: 600;
 }
 
 .shopping-title {
