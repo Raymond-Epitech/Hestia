@@ -2,10 +2,12 @@
   <transition name="modal">
     <div v-if="visible">
       <div class="modal-background" @click="handleClose">
-        <div class="modal" @click.stop>
-          <span class="delete" @click="deleteReaction()">❌</span>
-          <div v-for="emoji in ['❤️', '😂', '😮', '😢', '😡', '👍', '👎', '🎉', '💡', '🔥']" :key="emoji">
-            <span class="emoticon" @click="handleReaction(emoji)">{{ emoji }}</span>
+        <div class="modal-container">
+          <div class="modal" @click.stop>
+            <span class="delete" @click="deleteReaction()">❌</span>
+            <div v-for="emoji in ['❤️', '😂', '😮', '😢', '😡', '👍', '👎', '🎉', '💡', '🔥']" :key="emoji">
+              <span class="emoticon" @click="handleReaction(emoji)">{{ emoji }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -93,17 +95,17 @@ watch(
 }
 
 .delete {
+  text-align: center;
+    min-width: 30px;
+    height: 30px;
     font-size: 20px;
-    border-radius: 20px;
+    border-radius: 50%;
     background-color: var(--basic-grey);
 }
 
 .modal {
     position: relative;
-    top: 0.15rem;
-    left: 0;
-    width: 98%;
-    height: 98%;
+    margin: 0px 6px;
     display: flex;
     align-items: center;
     z-index: 1000;
@@ -113,14 +115,28 @@ watch(
 }
 
 .modal-background {
-    position: relative;
-    top: 13rem;
-    left: 0.25rem;
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
+    z-index: 1000;
+    position: absolute;
+    animation: fadeIn 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.modal-container {
+    position: absolute;
+    padding: 4px 0px;
+    bottom: 0px;
+    right: 0px;
+    width: 98%;
     height: 3rem;
     background-clip:content-box;
     background-color: var(--main-buttons);
-    box-shadow: var(--box-shadow-light);
+    box-shadow: var(--rectangle-shadow-light);
     border-radius: 20px 20px 20px 20px;
     display: flex;
     justify-content: center;
