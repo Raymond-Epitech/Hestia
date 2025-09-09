@@ -331,10 +331,8 @@ const cancelDelete = () => {
   border-radius: 9px;
   border-style: hidden;
   padding: 0.5rem;
-  /* add space all arround input field */
   margin: 0.5rem;
   color: var(--page-text);
-  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); */
   outline: none;
   border: none;
   line-height: 3ch;
@@ -348,7 +346,7 @@ const cancelDelete = () => {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 100;
+  z-index: 11;
   display: flex;
   position: fixed;
   align-items: flex-end;

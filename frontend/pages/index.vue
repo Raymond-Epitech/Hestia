@@ -103,33 +103,27 @@ button {
   border-radius: 9px;
   border: none;
   box-shadow: var(--button-shadow-light);
+  z-index: 1;
 }
 
 .add-post {
   top: 6%;
   right: 3%;
-  z-index: 1000;
 }
 
 .add-image {
   top: 15%;
   right: 3%;
-  z-index: 1000;
 }
 
 .add-list {
   top: 24%;
   right: 3%;
-  z-index: 1000;
 }
 
 .icon {
   width: 72%;
   padding-top: 5%;
   filter: var(--icon-filter);
-}
-
-.hestia .post {
-  filter: none;
 }
 </style>
