@@ -10,6 +10,7 @@ using Shared.Models.DTO;
 using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
+using System.Threading.Tasks;
 
 namespace Business.Services
 {
@@ -18,6 +19,8 @@ namespace Business.Services
         IRepository<Expense> expenseRepository,
         IRepository<Entry> entryRepository,
         IRepository<SplitBetween> splitbetweenRepository,
+        IRepository<User> userRepository,
+        IRealTimeService realTimeService,
         IAppCache cache) : IExpenseService
     {
         /// <summary>
@@ -140,6 +143,14 @@ namespace Business.Services
 
             cache.Remove($"expenseCategories:{input.ColocationId}");
 
+            var expenseCategoryOutput = new ExpenseCategoryOutput
+            {
+                Id = expenseCategory.Id,
+                Name = expenseCategory.Name,
+                TotalAmount = 0
+            };
+            await realTimeService.SendToGroupAsync(expenseCategory.ColocationId, "NewExpenseCategoryAdded", expenseCategoryOutput);
+
             logger.LogInformation($"Succes : Expense category with id {expenseCategory.Id} was added to db");
             return expenseCategory.Id;
         }
@@ -164,6 +175,14 @@ namespace Business.Services
 
             cache.Remove($"expenseCategories:{expenseCategory.ColocationId}");
 
+            var expenseCategoryOutput = new ExpenseCategoryOutput
+            {
+                Id = expenseCategory.Id,
+                Name = expenseCategory.Name,
+                TotalAmount = expenseCategory.Expenses.Sum(e => e.Amount)
+            };
+            await realTimeService.SendToGroupAsync(expenseCategory.ColocationId, "ExpenseCategoryUpdated", expenseCategoryOutput);
+
             logger.LogInformation($"Succes : Expense category with id {expenseCategory.Id} was updated in db");
 
             return expenseCategory.Id;
@@ -184,6 +203,10 @@ namespace Business.Services
             await expenseCategoryRepository.SaveChangesAsync();
 
             cache.Remove($"expenseCategories:{expenseCategory.ColocationId}");
+            cache.Remove($"balances:{expenseCategory.ColocationId}");
+            cache.Remove($"refundMethods:{expenseCategory.ColocationId}");
+
+            await realTimeService.SendToGroupAsync(expenseCategory.ColocationId, "ExpenseCategoryDeleted", expenseCategory.Id);
 
             logger.LogInformation($"Succes : Expense category with id {id} was deleted from db");
             return id;
@@ -438,6 +461,31 @@ namespace Business.Services
 
                     transaction.Commit();
 
+                    var splitBetweens = await splitbetweenRepository.Query()
+                        .Where(e => e.ExpenseId == expense.Id)
+                        .ToListAsync();
+
+                    var expenseCategory = await expenseCategoryRepository.GetByIdAsync(input.ExpenseCategoryId);
+
+                    if (expenseCategory is null)
+                        throw new NotFoundException($"The expense category with id {input.ExpenseCategoryId} was not found");
+
+                    var expenseOutput = new ExpenseOutput
+                    {
+                        Id = expense.Id,
+                        CreatedBy = expense.CreatedBy,
+                        Name = expense.Name,
+                        Description = expense.Description,
+                        Amount = expense.Amount,
+                        PaidBy = expense.PaidBy,
+                        SplitType = Enum.Parse<SplitTypeEnum>(expense.SplitType),
+                        SplitBetween = splitBetweens.ToDictionary(k => k.UserId, v => v.Amount),
+                        DateOfPayment = expense.DateOfPayment,
+                        ExpenseCategoryId = expenseCategory.Id,
+                        ExpenseCategoryName = expenseCategory.Name
+                    };
+                    await realTimeService.SendToGroupAsync(input.ColocationId, "NewExpenseAdded", expenseOutput);
+
                     logger.LogInformation("Succes : Transaction commited");
 
                     return expense.Id;
@@ -463,7 +511,9 @@ namespace Business.Services
         /// <returns>The Guid of the updated expense</returns>
         public async Task<Guid> UpdateExpenseAsync(ExpenseUpdate input)
         {
-            var expense = await expenseRepository.GetByIdAsync(input.Id);
+            var expense = await expenseRepository.Query()
+                .Include(e => e.ExpenseCategory)
+                .FirstOrDefaultAsync(e => e.Id == input.Id);
 
             if (expense is null)
                 throw new NotFoundException($"The expense with id {input.Id} was not found");
@@ -513,6 +563,26 @@ namespace Business.Services
 
                     transaction.Commit();
 
+                    var splitbetweens = await splitbetweenRepository.Query()
+                        .Where(e => e.ExpenseId == expense.Id)
+                        .ToListAsync();
+
+                    var expenseOutput = new ExpenseOutput
+                    {
+                        Id = expense.Id,
+                        CreatedBy = expense.CreatedBy,
+                        Name = expense.Name,
+                        Description = expense.Description,
+                        Amount = expense.Amount,
+                        PaidBy = expense.PaidBy,
+                        SplitType = Enum.Parse<SplitTypeEnum>(expense.SplitType),
+                        SplitBetween = splitbetweens.ToDictionary(k => k.UserId, v => v.Amount),
+                        DateOfPayment = expense.DateOfPayment,
+                        ExpenseCategoryId = expense.ExpenseCategoryId,
+                        ExpenseCategoryName = expense.ExpenseCategory.Name
+                    };
+                    await realTimeService.SendToGroupAsync(input.ColocationId, "ExpenseUpdated", expenseOutput);
+
                     logger.LogInformation("Succes : Transaction commited");
 
                     return expense.Id;
@@ -549,6 +619,10 @@ namespace Business.Services
             await expenseRepository.SaveChangesAsync();
 
             cache.Remove($"balances:{expense.ExpenseCategory.ColocationId}");
+            cache.Remove($"expenseCategories:{expense.ExpenseCategory.ColocationId}");
+            cache.Remove($"refundMethods:{expense.ExpenseCategory.ColocationId}");
+
+            await realTimeService.SendToGroupAsync(expense.ExpenseCategory.ColocationId, "ExpenseDeleted", id);
 
             logger.LogInformation($"Succes : Expense with id {id} deleted");
             return id;
@@ -587,7 +661,7 @@ namespace Business.Services
         /// </summary>
         /// <param name="debts">List of debts, each represented by {UserId, Balance}.</param>
         /// <returns>A list of refund transactions required to settle all debts.</returns>
-        private List<RefundOutput> CalculateBestRefundMethod(Dictionary<Guid, decimal> debts)
+        private async Task<List<RefundOutput>> CalculateBestRefundMethod(Dictionary<Guid, decimal> debts)
         {
             var debtorList = debts
                 .Where(x => x.Value < 0)
@@ -628,6 +702,23 @@ namespace Business.Services
                 if (creditorList[j].Amount == 0)
                     j++;
             }
+
+            var userIds = refunds
+                .SelectMany(r => new[] { r.From, r.To })
+                .Distinct()
+                .ToList();
+
+            var usernames = await userRepository
+                .Query()
+                .Where(u => userIds.Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id, u => u.Username);
+
+            foreach (var refund in refunds)
+            {
+                refund.FromUsername = usernames.GetValueOrDefault(refund.From, "Unknown User");
+                refund.ToUsername = usernames.GetValueOrDefault(refund.To, "Unknown User");
+            }
+
             return refunds;
         }
 
@@ -643,7 +734,7 @@ namespace Business.Services
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
                 var balances = await GetAllBalanceAsync(colocationId);
-                return CalculateBestRefundMethod(balances);
+                return await CalculateBestRefundMethod(balances);
             });
         }
     }

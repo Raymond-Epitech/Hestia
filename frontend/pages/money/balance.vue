@@ -16,7 +16,7 @@
                 </text>
             </Rectangle>
             <rectangle color="#4FA3A6" id="rec" class="regularize-text" :onClick="() => redirectto('refund')">
-                <Texte_language source="refund" />
+                <Texte_language source="Refund" />
             </rectangle>
         </div>
     </div>

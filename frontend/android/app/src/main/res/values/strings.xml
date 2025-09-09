@@ -2,6 +2,9 @@
 <resources>
     <string name="app_name">Hestia</string>
     <string name="title_activity_main">Hestia</string>
-    <string name="package_name">io.ionic.starter</string>
-    <string name="custom_url_scheme">io.ionic.starter</string>
+    <string name="package_name">com.hestiaapp.org</string>
+    <string name="custom_url_scheme">com.hestiaapp.org</string>
+    <string name="default_notification_channel_id">fcm_default_channel</string>
+    <string name="default_notification_channel_name">General</string>
+    <string name="default_notification_channel_description">General app notifications</string>
 </resources>

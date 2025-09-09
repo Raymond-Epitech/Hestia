@@ -175,3 +175,6 @@ msbuild.wrn
 appsettings.Development.json
 appsettings.Production.json
 backend/Api/appsettings.json
+
+*pfx
+test.json

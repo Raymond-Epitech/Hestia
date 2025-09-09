@@ -23,9 +23,6 @@ namespace Shared.Models.Update
         public decimal Amount { get; set; }
 
         [Required]
-        public string Category { get; set; } = null!;
-
-        [Required]
         public Guid PaidBy { get; set; }
 
         public SplitTypeEnum SplitType { get; set; } = SplitTypeEnum.Evenly;

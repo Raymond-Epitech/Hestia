@@ -41,9 +41,9 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Guid>> AddCollocation(ColocationInput colocation, Guid AddedBy)
+        public async Task<ActionResult<Guid>> AddCollocation(ColocationInput colocation)
         {
-            return Ok(await colocationService.AddColocation(colocation, AddedBy));
+            return Ok(await colocationService.AddColocation(colocation));
         }
 
         [HttpPut]

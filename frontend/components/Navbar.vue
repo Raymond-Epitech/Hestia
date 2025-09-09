@@ -1,27 +1,40 @@
 <template>
     <div class="navbar">
-        <a class="money-button" :onClick="() => redirect('/settings')">
-            <img src="../public/settings.png" class="settings">
+        <a class="button" @click="select('profile'); redirect('/profile')">
+            <img src="../public/navbar/Profile.svg" class="icon" :class="{ selected: selected === 'profile' }">
+            <br>
+            <p class="icon-subtext">{{ $t('nav_profile') }}</p>
         </a>
-        <a class="task-button" :onClick="() => redirect('/tasks')">
-            <div class="task-button-top-bar"></div>
-            <div class="task-button-middle-bar"></div>
-            <div class="task-button-bottom-bar"></div>
+        <a class="button" @click="select('tasks'); redirect('/tasks')">
+            <img src="../public/navbar/Tasks.svg" class="icon" :class="{ selected: selected === 'tasks' }">
+            <br>
+            <p class="icon-subtext">{{ $t('nav_tasks') }}</p>
         </a>
-        <a class="wall-button" :onClick="() => redirect('/')">
-            <img src="../public/frigo.png" class="fridge">
+        <a class="wall-button" @click="select('fridge'); redirect('/')">
+            <img src="../public/navbar/Fridge.png" class="fridge" :class="{ selected: selected === 'fridge' }">
         </a>
-        <a class="money-button" :onClick="() => redirect('/money')">
-            <img src="../public/money-button.png" class="money">
+        <a class="button" @click="select('message'); redirect('/message')">
+            <img src="../public/navbar/Message.svg" class="icon" :class="{ selected: selected === 'message' }">
+            <br>
+            <p class="icon-subtext">{{ $t('nav_messages') }}</p>
         </a>
-        <a class="shopping-button" :onClick="() => redirect('/shopping')">
-            <img src="../public/shopping.png" class="shopping">
+        <a class="button" @click="select('money'); redirect('/money')">
+            <img src="../public/navbar/Money.svg" class="icon" :class="{ selected: selected === 'money' }">
+            <br>
+            <p class="icon-subtext">{{ $t('nav_expenses') }}</p>
         </a>
     </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 const router = useRouter();
+const selected = ref(null);
+
+const select = (name) => {
+    selected.value = name;
+};
+
 const redirect = (page) => {
     router.push(page);
 }
@@ -30,84 +43,75 @@ const redirect = (page) => {
 <style scoped>
 .navbar {
     position: fixed;
-    bottom: 0px;
-    width: 100vw;
-    height: 58px;
-    background-color: #074338;
+    bottom: 0;
+    width: 100%;
+    height: 4.5rem;
+    background-color: var(--main-buttons);
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: repeat(5, 1fr);
     justify-content: center;
     align-items: center;
-    padding: 0%;
+    padding: 0;
+    line-height: 0rem;
+    z-index: 100;
 }
 
-.task-button {
+
+.icon-subtext {
+    font-size: 0.65rem;
+    margin-top: 0.8rem;
+    font-weight: bold;
+    list-style: none;
+    text-align: center;
+    display: block;
+    color: var(--basic-grey);
+}
+
+.dark .icon-subtext {
+    color: var(--light-grey);
+}
+
+.hestia .icon-subtext {
+    color: var(--light-grey);
+}
+
+.button {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
+    max-height: 3rem;
     width: 100%;
-    height: 35px;
+    padding-top: 0.3rem;
+    margin-top: 0.2rem;
+    text-decoration: none;
 }
 
-.task-button-top-bar {
-    width: 39px;
-    height: 7px;
-    background-color: #85AD7B;
-    border-radius: 8px;
+.icon {
+    height: 3rem;
+    filter: var(--icon-filter);
+    transition: transform 0.2s cubic-bezier(.4, 2, .3, 1);
 }
 
-.task-button-middle-bar {
-    width: 39px;
-    height: 7px;
-    background-color: #FFC93D;
-    border-radius: 8px;
-}
-
-.task-button-bottom-bar {
-    width: 39px;
-    height: 7px;
-    background-color: #FF6A61;
-    border-radius: 8px;
+.icon.selected {
+    transform: translateY(-0.3rem) scale(1.08);
 }
 
 .wall-button {
-    max-width: 100%;
-    height: 35px;
+    height: 3.5rem;
     display: flex;
     justify-content: center;
 }
 
 .fridge {
-    display: flex;
-    max-width: 125px;
-    height: 200px;
-    margin-top: -30px;
+    display: block;
+    max-width: 5.8rem;
+    height: 10rem;
+    margin-top: -1.5rem;
+    transition: transform 0.2s cubic-bezier(.4, 2, .3, 1);
 }
 
-.money-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-}
-
-.money {
-    height: 58px;
-    width: 66px;
-}
-
-.shopping-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-}
-
-.shopping {
-    height: 38px;
-    width: 38px;
+.fridge.selected {
+    transform: translateY(-12px) scale(1.08);
 }
 </style>

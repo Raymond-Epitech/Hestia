@@ -14,12 +14,14 @@ namespace Tests.Hestia.Controller;
 public class UserControllerTests
 {
     private readonly Mock<IUserService> _userServiceMock;
+    private readonly Mock<IFirebaseNotificationService> _notificationService;
     private readonly UserController _controller;
 
     public UserControllerTests()
     {
         _userServiceMock = new Mock<IUserService>();
-        _controller = new UserController(_userServiceMock.Object);
+        _notificationService = new Mock<IFirebaseNotificationService>();
+        _controller = new UserController(_userServiceMock.Object, _notificationService.Object);
     }
 
     // Get all user
@@ -347,11 +349,15 @@ public class UserControllerTests
                 ColocationId = null
             }
         };
+        var loginInput = new LoginInput
+        {
+            FCMToken = "validFcmToken"
+        };
 
-        _userServiceMock.Setup(service => service.LoginUserAsync(googleToken)).ReturnsAsync(userInfo);
+        _userServiceMock.Setup(service => service.LoginUserAsync(googleToken, loginInput)).ReturnsAsync(userInfo);
 
         // Act
-        var actionResult = await _controller.Login(googleToken);
+        var actionResult = await _controller.Login(googleToken, loginInput);
 
         // Assert
         actionResult.Result.Should().BeOfType<OkObjectResult>();
@@ -359,7 +365,7 @@ public class UserControllerTests
         var okResult = actionResult.Result as OkObjectResult;
         okResult.Should().NotBeNull();
         okResult!.Value.Should().BeEquivalentTo(userInfo);
-        _userServiceMock.Verify(service => service.LoginUserAsync(googleToken), Times.Once);
+        _userServiceMock.Verify(service => service.LoginUserAsync(googleToken, loginInput), Times.Once);
     }
 
     [Fact]
@@ -372,15 +378,19 @@ public class UserControllerTests
             Username = "test",
             ColocationId = Guid.NewGuid()
         };
+        var loginInput = new LoginInput
+        {
+            FCMToken = "validFcmToken"
+        };
 
-        _userServiceMock.Setup(service => service.LoginUserAsync(googleToken))
+        _userServiceMock.Setup(service => service.LoginUserAsync(googleToken, loginInput))
             .ThrowsAsync(new NotFoundException("User not found"));
 
         // Act
-        await Assert.ThrowsAsync<NotFoundException>(() => _controller.Login(googleToken));
+        await Assert.ThrowsAsync<NotFoundException>(() => _controller.Login(googleToken, loginInput));
 
         // Assert
-        _userServiceMock.Verify(service => service.LoginUserAsync(googleToken), Times.Once);
+        _userServiceMock.Verify(service => service.LoginUserAsync(googleToken, loginInput), Times.Once);
     }
 }
 

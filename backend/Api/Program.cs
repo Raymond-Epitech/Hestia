@@ -4,6 +4,8 @@ using Business.Jwt;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Models.Configuration;
+using SignalR.Hubs;
 
 try
 {
@@ -13,6 +15,18 @@ try
     {
         o.ValidateOnBuild = true;
         o.ValidateScopes = true;
+    });
+
+    //var cert = X509Certificate2.CreateFromPemFile("/etc/ssl/certificate.pem", "/etc/ssl/key.pem");
+
+    builder.WebHost.ConfigureKestrel(options =>
+    {
+        options.ListenAnyIP(8081);
+
+        /*options.ListenAnyIP(8080, listenOptions =>
+        {
+            listenOptions.UseHttps(cert);
+        });*/
     });
 
     // Controllers
@@ -58,6 +72,15 @@ try
     // Swagger
     builder.Services.ConfigureSwagger(builder.Configuration, builder.Environment.IsDevelopment());
 
+    // SignalR
+    builder.Services.AddSignalR(options =>
+    {
+        options.EnableDetailedErrors = true;
+    });
+
+    // Firebase
+    builder.Services.Configure<FirebaseSettings>(builder.Configuration.GetSection("Firebase"));
+
     // Hangfire
     builder.Services.AddHangfire(config => config
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
@@ -66,18 +89,29 @@ try
     .UsePostgreSqlStorage(options =>
         options.UseNpgsqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
     );
+    builder.Logging.SetMinimumLevel(LogLevel.Debug);
     builder.Services.AddHangfireServer();
+
+    builder.WebHost.UseSentry(o =>
+    {
+        o.Dsn = builder.Configuration["Sentry"];
+        o.Debug = true;
+    });
 
     var app = builder.Build();
 
-    app.UseCors();
+    app.UseRouting();
+    app.UseCors("AllowFrontend");
 
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
         app.UseSwaggerUI();
         app.UseStatusCodePages();
-        app.UseHangfireDashboard("/hangfire");
+        app.UseHangfireDashboard("/hangfire", new DashboardOptions
+        {
+            Authorization = [new AllowAllDashboardAuthorization()]
+        });
     }
 
     if (!app.Environment.IsDevelopment())
@@ -85,10 +119,13 @@ try
         app.UseHttpsRedirection();
     }
 
+    //app.UseHttpsRedirection();
     app.UseExceptionHandler();
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
+
+    app.MapHub<HestiaHub>("/hestiaHub");
 
     // Configure Hangfire recurring jobs
     using (var scope = app.Services.CreateScope())

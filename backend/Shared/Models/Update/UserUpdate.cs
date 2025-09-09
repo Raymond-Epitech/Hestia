@@ -13,8 +13,7 @@ namespace Shared.Models.Update
         [Required]
         public string Email { get; set; } = null!;
 
-        [Required]
-        public string PathToProfilePicture { get; set; } = null!;
+        public string? PathToProfilePicture { get; set; } = null;
 
         public Guid? ColocationId { get; set; }
     }

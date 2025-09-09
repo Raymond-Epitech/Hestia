@@ -3,19 +3,30 @@ using Business.Mappers;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
 using LazyCache;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Shared.Enums;
 using Shared.Exceptions;
+using Shared.Models.DTO;
 using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Formats.Webp;
 
 namespace Business.Services;
 
 public class ReminderService(ILogger<ReminderService> logger,
     IRepository<Reminder> reminderRepository,
+    IRealTimeService realTimeService,
+    IFirebaseNotificationService notificationService,
+    IRepository<User> userRepository,
     IAppCache cache) : IReminderService
 {
+    private string ImageRoute => "wwwroot/uploads/";
+
     /// <summary>
     /// Get all reminders
     /// </summary>
@@ -28,24 +39,19 @@ public class ReminderService(ILogger<ReminderService> logger,
         return await cache.GetOrAddAsync(cacheKey, async entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+
             var reminders = await reminderRepository.Query()
-            .Where(r => r.ColocationId == colocationId)
-            .Select(r => new ReminderOutput
-            {
-                Id = r.Id,
-                Content = r.Content,
-                Color = r.Color,
-                CreatedBy = r.CreatedBy,
-                CreatedAt = r.CreatedAt,
-                CoordX = r.CoordX,
-                CoordY = r.CoordY,
-                CoordZ = r.CoordZ
-            })
-            .ToListAsync();
+                .Where(r => r.ColocationId == colocationId)
+                .Include(r => r.Reactions)
+                .Include(r => (r as ShoppingListReminder)!.ShoppingItems)
+                .Include(r => (r as PollReminder)!.PollVotes)
+                .Include(r => r.User)
+                .Include(r => r.Reactions)
+                .ToListAsync();
 
-            logger.LogInformation("Succes : All reminders found");
+            logger.LogInformation($"Succes : All {reminders.Count} reminders found");
 
-            return reminders;
+            return reminders.Select(r => r.ToOutput()).ToList();
         });
     }
 
@@ -60,17 +66,11 @@ public class ReminderService(ILogger<ReminderService> logger,
     {
         var reminder = await reminderRepository.Query()
             .Where(r => r.Id == id)
-            .Select(r => new ReminderOutput
-            {
-                Id = r.Id,
-                Content = r.Content,
-                Color = r.Color,
-                CreatedBy = r.CreatedBy,
-                CreatedAt = r.CreatedAt,
-                CoordX = r.CoordX,
-                CoordY = r.CoordY,
-                CoordZ = r.CoordZ
-            })
+            .Include(r => r.Reactions)
+            .Include(r => (r as ShoppingListReminder)!.ShoppingItems)
+            .Include(r => (r as PollReminder)!.PollVotes)
+            .Include(r => r.User)
+            .Include(r => r.Reactions)
             .FirstOrDefaultAsync();
 
         if (reminder == null)
@@ -80,7 +80,126 @@ public class ReminderService(ILogger<ReminderService> logger,
 
         logger.LogInformation("Succes : Reminder found");
             
-        return reminder;
+        return reminder.ToOutput();
+    }
+
+    /// <summary>
+    /// Get the content type of a file based on its extension
+    /// </summary>
+    /// <param name="path">The path of the file to get the content type</param>
+    /// <returns>The correct content path</returns>
+    private string GetContentType(string path)
+    {
+        var ext = Path.GetExtension(path).ToLowerInvariant();
+        return ext switch
+        {
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            ".webp" => "image/webp",
+            ".pdf" => "application/pdf",
+            ".txt" => "text/plain",
+            _ => "application/octet-stream"
+        };
+    }
+
+    /// <summary>
+    /// Get an image by its name
+    /// </summary>
+    /// <param name="fileName">The name of the file</param>
+    /// <returns>The file's byte and its parameters</returns>
+    /// <exception cref="InvalidDataException"></exception>
+    /// <exception cref="NotFoundException"></exception>
+    public async Task<FileDTO> GetImageByNameAsync(string fileName)
+    {
+        if (string.IsNullOrWhiteSpace(fileName))
+            throw new InvalidDataException("File name invalid");
+
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), ImageRoute, fileName);
+
+        if (!File.Exists(filePath))
+            throw new NotFoundException("Image not found");
+
+        var file = new FileDTO
+        {
+            FileName = fileName,
+            ContentType = GetContentType(filePath),
+            Content = await File.ReadAllBytesAsync(filePath)
+        };
+        
+        if (file.Content == null)
+        {
+            throw new NotFoundException("Image not found");
+        }
+
+        return file;
+    }
+
+    /// <summary>
+    /// Compress an image to jpeg format
+    /// </summary>
+    /// <param name="imageStream">The byte stream of the image</param>
+    /// <param name="quality">The quality (default is 75%)</param>
+    /// <returns>A new byte stream</returns>
+    public async Task<byte[]> CompressImageAsync(Stream imageStream, int quality = 50)
+    {
+        using var image = await Image.LoadAsync(imageStream);
+
+        using var outputStream = new MemoryStream();
+
+        var encoder = new JpegEncoder
+        {
+            Quality = quality
+        };
+
+        await image.SaveAsync(outputStream, encoder);
+
+        return outputStream.ToArray();
+    }
+
+    /// <summary>
+    /// Save an image to the server
+    /// </summary>
+    /// <param name="file">The file</param>
+    /// <returns>the new name of the file</returns>
+    private async Task<string> SaveImage(IFormFile file)
+    {
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), ImageRoute);
+
+        if (!Directory.Exists(uploadsFolder))
+            Directory.CreateDirectory(uploadsFolder);
+
+        var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+
+        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+        byte[] compressedImage;
+        using (var inputStream = file.OpenReadStream())
+        {
+            compressedImage = await CompressImageAsync(inputStream, quality: 75);
+        }
+
+        await File.WriteAllBytesAsync(filePath, compressedImage);
+
+        return uniqueFileName;
+    }
+
+    /// <summary>
+    /// Delete an image from the server
+    /// </summary>
+    /// <param name="fileName">The file name</param>
+    /// <returns>The file name</returns>
+    /// <exception cref="InvalidDataException"></exception>
+    public string DeleteImage(string fileName)
+    {
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), ImageRoute, fileName);
+
+        if (!File.Exists(filePath))
+            throw new NotFoundException("Image not found");
+
+        File.Delete(filePath);
+
+        return fileName;
     }
 
     /// <summary>
@@ -91,11 +210,42 @@ public class ReminderService(ILogger<ReminderService> logger,
     public async Task<Guid> AddReminderAsync(ReminderInput input)
     {
         var reminder = input.ToDb();
-            
-        await reminderRepository.AddAsync(reminder);
-        await reminderRepository.SaveChangesAsync();
+
+        if (reminder is ImageReminder imageReminder && input.File is not null)
+        {
+            imageReminder.ImageUrl = await SaveImage(input.File);
+        }
+
+        var user = await userRepository.GetByIdAsync(reminder.CreatedBy);
+
+        if (user == null)
+        {
+            throw new NotFoundException($"User {reminder.CreatedBy} not found");
+        }
+        reminder.User = user!;
+
+        try
+        {
+            await reminderRepository.AddAsync(reminder);
+            await reminderRepository.SaveChangesAsync();
+        }
+        catch
+        {
+            if (reminder is ImageReminder image)
+            {
+                DeleteImage(image.ImageUrl);
+            }
+        }
 
         cache.Remove($"reminders:{reminder.ColocationId}");
+
+        await realTimeService.SendToGroupAsync(reminder.ColocationId, "NewReminderAdded", reminder.ToOutput());
+        await notificationService.SendNotificationToColocationAsync(new NotificationInput
+        {
+            Id = reminder.ColocationId,
+            Title = "New reminder",
+            Body = $"{reminder.User.Username} added a new reminder"
+        }, reminder.CreatedBy);
 
         logger.LogInformation("Succes : Reminder added");
             
@@ -111,8 +261,39 @@ public class ReminderService(ILogger<ReminderService> logger,
     /// <exception cref="ContextException">An error has occured while adding reminder from db</exception>
     public async Task<Guid> UpdateReminderAsync(ReminderUpdate input)
     {
-        var reminder = await reminderRepository.GetByIdAsync(input.Id);
-            
+        Reminder? reminder;
+
+        switch (input.ReminderType)
+        {
+            case ReminderType.Text:
+                reminder = await reminderRepository.Query()
+                    .Where(r => r.Id == input.Id && r is TextReminder)
+                    .Include(r => r.Reactions)
+                    .Include(r => r.User)
+                    .FirstOrDefaultAsync();
+                break;
+            case ReminderType.Image:
+                throw new InvalidDataException("Cannot update image reminder");
+            case ReminderType.ShoppingList:
+                reminder = await reminderRepository.Query()
+                    .Where(r => r.Id == input.Id && r is ShoppingListReminder)
+                    .Include(r => (r as ShoppingListReminder)!.ShoppingItems)
+                    .Include(r => r.Reactions)
+                    .Include(r => r.User)
+                    .FirstOrDefaultAsync();
+                break;
+            case ReminderType.Poll:
+                reminder = await reminderRepository.Query()
+                    .Where(r => r.Id == input.Id && r is PollReminder)
+                    .Include(r => (r as PollReminder)!.PollVotes)
+                    .Include(r => r.Reactions)
+                    .Include(r => r.User)
+                    .FirstOrDefaultAsync();
+                break;
+            default:
+                throw new MissingArgumentException("Type is invalid or missing");
+        }
+
         if (reminder == null)
         {
             throw new NotFoundException($"Reminder {input.Id} not found");
@@ -120,87 +301,17 @@ public class ReminderService(ILogger<ReminderService> logger,
 
         reminder.UpdateFromInput(input);
         reminderRepository.Update(reminder);
+
         await reminderRepository.SaveChangesAsync();
 
         cache.Remove($"reminders:{reminder.ColocationId}");
+
+        await realTimeService.SendToGroupAsync(reminder.ColocationId, "ReminderUpdated", reminder.ToOutput());
 
         logger.LogInformation("Succes : Reminder updated");
 
         return reminder.Id;
     }
-
-    /// <summary>
-    /// Update a range of reminders
-    /// </summary>
-    /// <param name="inputs">a dictionary with the id, and the value of the reminders</param>
-    /// <exception cref="NotFoundException">One or more reminder where not found with those id</exception>
-    /// <exception cref="ContextException">An error has occured while adding one or more reminder from db</exception>
-    public async Task<int> UpdateRangeReminderAsync(List<ReminderUpdate> inputs)
-    {
-        var idsToMatch = inputs.Select(x => x.Id).ToList();
-        var reminders = await reminderRepository.Query()
-            .Where(r => idsToMatch.Contains(r .Id))
-            .ToListAsync();
-            
-        if (reminders.Count == 0)
-        {
-            throw new NotFoundException($"No reminders found");
-        }
-        
-        var notfounds = inputs.Select(x => x.Id).Except(reminders.Select(x => x.Id)).ToList();
-            
-        if (notfounds.Any())
-        {
-            throw new NotFoundException($"Reminders {String.Join(", ", notfounds)} was/were not found");
-        }
-
-        using (var transaction = await reminderRepository.BeginTransactionAsync())
-        {
-            try
-            {
-                logger.LogInformation("Transaction begin");
-                    
-                foreach (var reminder in reminders)
-                {
-                    var input = inputs.FirstOrDefault(x => x.Id == reminder.Id);
-                        
-                    if (input is null)
-                    {
-                        throw new NotFoundException($"input {reminder.Id} not found");
-                    }
-
-                    reminder.UpdateFromInput(input);
-                }
-                    
-                await reminderRepository.SaveChangesAsync();
-
-                cache.Remove($"reminders:{reminders.First().ColocationId}");
-
-                transaction.Commit();
-
-                logger.LogInformation("Transaction commit");
-            }
-            catch (NotFoundException)
-            {
-                logger.LogError("Reminder not found, Transaction rollbacked");
-                transaction.Rollback();
-                throw;
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "An error occurred while updating the reminder from the db, Transaction rollbacked");
-                transaction.Rollback();
-                throw new ContextException("An error occurred while updating the reminder from the db", ex);
-            }
-        }
-
-        cache.Remove($"reminders:{reminders.FirstOrDefault()!.ColocationId}");
-
-        logger.LogInformation("Succes : Reminders all updated");
-
-        return reminders.Count;
-    }
-
 
     /// <summary>
     /// 
@@ -219,6 +330,8 @@ public class ReminderService(ILogger<ReminderService> logger,
         await reminderRepository.SaveChangesAsync();
 
         cache.Remove($"reminders:{reminder.ColocationId}");
+
+        await realTimeService.SendToGroupAsync(reminder.ColocationId, "ReminderDeleted", id);
 
         logger.LogInformation("Succes : Reminder deleted");
 

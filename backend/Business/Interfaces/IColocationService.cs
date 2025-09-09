@@ -8,7 +8,7 @@ namespace Business.Interfaces
     {
         Task<List<ColocationOutput>> GetAllColocations();
         Task<ColocationOutput> GetColocation(Guid id);
-        Task<Guid> AddColocation(ColocationInput colocation, Guid? AddedBy);
+        Task<Guid> AddColocation(ColocationInput colocation);
         Task<Guid> UpdateColocation(ColocationUpdate colocation);
         Task<Guid> DeleteColocation(Guid id);
     }

@@ -1,62 +1,44 @@
 <template>
-  <NuxtPage />
+  <button class="back" @click="redirect('/settings')">
+    <img src="~/public/Retour.svg" class="icon">
+  </button>
   <div class="container">
-    <Rectangle color="#85AD7B" id="return" @click="$router.back()">
-      <div class="inner-class">
-        <img src="/return.png" alt="Return" width="64" height="64" />
-        <h1>
-          <Texte_language source="Return" />
-        </h1>
+    <div class="setting-button" id="fr" @click="setlangue('fr')">
+      <div class="flag">
+        <img src="/flags/france.png" alt="France" />
       </div>
-    </Rectangle>
-    <Rectangle color="#85AD7B" id="fr" @click="setlangue('fr')">
-      <div class="inner-class">
-        <img src="/flags/france.png" alt="France" width="64" height="64" />
-        <h1>
-          <Texte_language source="French" />
-        </h1>
+      <Texte_language class="language-text" source="French" />
+    </div>
+    <div class="setting-button" id="ang" @click="setlangue('en')">
+      <div class="flag">
+        <img src="/flags/united-kingdom.png" alt="United Kingdom" />
       </div>
-    </Rectangle>
-    <Rectangle color="#85AD7B" id="ang" @click="setlangue('en')">
-      <div class="inner-class">
-        <img src="/flags/united-kingdom.png" alt="United Kingdom" width="64" height="64" />
-        <h1>
-          <Texte_language source="English" />
-        </h1>
+      <Texte_language class="language-text" source="English" />
+    </div>
+    <div class="setting-button" id="es" @click="setlangue('es')">
+      <div class="flag">
+        <img src="/flags/spain.png" alt="Spain" />
       </div>
-    </Rectangle>
-    <Rectangle color="#85AD7B" id="es" @click="setlangue('es')">
-      <div class="inner-class">
-        <img src="/flags/spain.png" alt="Spain" width="64" height="64" />
-        <h1>
-          <Texte_language source="Spanish" />
-        </h1>
+      <Texte_language class="language-text" source="Spanish" />
+    </div>
+    <div class="setting-button" id="allemand" @click="setlangue('de')">
+      <div class="flag">
+        <img src="/flags/germany.png" alt="Germany" />
       </div>
-    </Rectangle>
-    <Rectangle color="#85AD7B" id="allemand" @click="setlangue('de')">
-      <div class="inner-class">
-        <img src="/flags/germany.png" alt="Germany" width="64" height="64" />
-        <h1>
-          <Texte_language source="German" />
-        </h1>
+      <Texte_language class="language-text" source="German" />
+    </div>
+    <div class="setting-button" id="mandarin" @click="setlangue('zh')">
+      <div class="flag">
+        <img src="/flags/china.png" alt="China" />
       </div>
-    </Rectangle>
-    <Rectangle color="#85AD7B" id="mandarin" @click="setlangue('zh')">
-      <div class="inner-class">
-        <img src="/flags/china.png" alt="China" width="64" height="64" />
-        <h1>
-          <Texte_language source="Chinese" />
-        </h1>
+      <Texte_language class="language-text" source="Chinese" />
+    </div>
+    <div class="setting-button" id="japonais" @click="setlangue('ja')">
+      <div class="flag">
+        <img src="/flags/japan.png" alt="Japan" />
       </div>
-    </Rectangle>
-    <Rectangle color="#85AD7B" id="japonais" @click="setlangue('ja')">
-      <div class="inner-class">
-        <img src="/flags/japan.png" alt="Japan" width="64" height="64" />
-        <h1>
-          <Texte_language source="Japanese" />
-        </h1>
-      </div>
-    </Rectangle>
+      <Texte_language class="language-text" source="Japanese" />
+    </div>
   </div>
 </template>
 
@@ -64,26 +46,86 @@
 import { useI18n } from 'vue-i18n';
 import Texte_language from '~/components/texte_language.vue';
 import type { Locale } from '~/composables/service/type';
+import { useUserStore } from '~/store/user';
 const { setLocale } = useI18n();
 const { $locally } = useNuxtApp()
+const userStore = useUserStore();
+const router = useRouter();
+const { $bridge } = useNuxtApp()
+const api = $bridge;
+const redirect = (page: string) => {
+  router.push(page);
+}
 
 const setlangue = (lang: Locale) => {
   setLocale(lang);
   $locally.setItem('locale', lang);
+  api.updateLanguage(lang, userStore.user.id);
 }
 </script>
 
 <style scoped>
 .container {
-  display: grid;
-  gap: 40px;
-  width: 80%;
-  margin: 40px auto;
-}
-
-.inner-class {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 10px;
+  margin: 40px auto;
+  margin-top: 5rem;
+  max-height: calc(100vh - 12rem);
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: var(--icon-filter);
+}
+
+.setting-button {
+  width: 20.2rem;
+  height: 80px;
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  align-items: center;
+  border-radius: 20px;
+  background-color: var(--main-buttons);
+  box-shadow: var(--rectangle-shadow-light);
+  color: var(--page-text);
+}
+
+.flag {
+  margin-left: 30%;
+  height: 60px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.language-text {
+  margin-left: 8%;
+  font-weight: 600;
+  font-size: 24px;
+}
+
+.back {
+  background-color: var(--main-buttons);
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  border: none;
+  box-shadow: var(--button-shadow-light);
+  top: 3%;
+  left: 3%;
+}
+
+.back .icon {
+  width: 25px;
 }
 </style>

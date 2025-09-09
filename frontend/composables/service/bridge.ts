@@ -1,12 +1,17 @@
 import { json } from "stream/consumers";
-import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif, refund, shoppinglist, shoppinglist_item, expenses_category, expenses_category_get } from "./type";
+import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif, refund, shoppinglist, shoppinglist_item, expenses_category, expenses_category_get, message, UpdateChore, ReminderItem } from "./type";
+import { Capacitor } from '@capacitor/core'
+import { Filesystem, Directory } from '@capacitor/filesystem';
 
+function isNative() {
+    return Capacitor.isNativePlatform()
+}
 
 export class bridge {
     constructor() {
         console.log('Bridge instance created')
     }
-    url: string = "http://91.134.48.124:8080";
+    url: string = "https://hestiaapp.org";
     jwt: string = "";
 
     seturl(new_url: string) {
@@ -18,7 +23,6 @@ export class bridge {
     }
 
     getjwt() {
-        console.log("jwt:", this.jwt);
         return this.jwt;
     }
 
@@ -34,8 +38,8 @@ export class bridge {
 
     // Reminder section: get all reminders, get reminder by ID, add reminder, update reminder, delete reminder
 
-    async getAllReminders(id_colloc: string) {
-        const response: Response = await fetch(this.url + "/api/Reminder/GetByColocation/" + id_colloc,
+    async getAllReminders(id_colloc: string): Promise<Reminder[]> {
+        const response: Response = await fetch(this.url + "/api/Reminder?colocationId=" + id_colloc,
             {
                 method: 'GET',
                 headers: {
@@ -57,27 +61,48 @@ export class bridge {
         return {};
     }
 
-    async addReminder(data: any) {
+    async addReminder(data: any): Promise<string> {
+        const formData = new FormData();
+        formData.append('ColocationId', data.colocationId || '');
+        formData.append('CreatedBy', data.createdBy);
+        formData.append('CoordX', String(data.coordX));
+        formData.append('CoordY', String(data.coordY));
+        formData.append('CoordZ', String(data.coordZ));
+        formData.append('ReminderType', String(data.reminderType));
+        formData.append('Content', data.content);
+        formData.append('Color', data.color);
+        if (data.image) {
+            formData.append('File', data.image, data.image.name);
+        } else {
+            formData.append('File', '');
+        }
+        formData.append('ShoppingListName', data.shoppinglistName);
+        formData.append("PollInput.Title", data.pollInput.title);
+        formData.append("PollInput.Description", data.pollInput.description);
+        formData.append("PollInput.ExpirationDate", data.pollInput.expirationdate);
+        formData.append("PollInput.IsAnonymous", String(data.pollInput.isanonymous));
+        formData.append("PollInput.AllowMultipleChoices", String(data.pollInput.allowmultiplechoice));
         return await fetch(this.url + "/api/Reminder", {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + this.jwt
             },
-            body: JSON.stringify(data)
+            body: formData
         }).then(response => {
             if (response.status == 200) {
-                return true;
+                return response.json();
             }
-            return false;
+            return '';
         });
     }
 
-    async updateReminder(data: Reminder) {
-        return await fetch(this.url + "/api/Reminder/" + data.id, {
+    async updateReminder(data: any, id: string) {
+        data.id = id;
+        return await fetch(this.url + "/api/Reminder/", {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
             },
             body: JSON.stringify(data)
         }).then(response => {
@@ -112,32 +137,230 @@ export class bridge {
         });
     }
 
+    // Shopping list for reminder section:
+
+    async getReminderShoppingList(id: string) {
+        return await fetch(this.url + "/api/Reminder/ShoppingList?reminderId=" + id, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        });
+    }
+
+    async addReminderShoppingListItem(item: any) {
+        return await fetch(this.url + "/api/Reminder/ShoppingList", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(item)
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return '';
+        });
+    }
+
+    async updateReminderShoppingListItem(item: ReminderItem) {
+        return await fetch(this.url + "/api/Reminder/ShoppingList", {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify({
+                createdBy: item.createdBy,
+                id: item.id,
+                isChecked: item.isChecked,
+                name: item.name
+            })
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async deleteReminderShoppingListItem(id: string) {
+        return await fetch(this.url + "/api/Reminder/ShoppingList/" + id, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    // Poll for reminder section:
+
+    async getReminderPoll(id: string) {
+        return await fetch(this.url + "/api/Reminder/PollVote?reminderId=" + id, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        });
+    }
+
+    async addReminderPollVote(vote: any) {
+        return await fetch(this.url + "/api/Reminder/PollVote", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(vote)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async deleteReminderPollVote(Id: string, userId: string) {
+        return await fetch(this.url + "/api/Reminder/PollVote/id" + Id, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+
+    // Reaction for reminder section:
+
+    async addReactionReminder(reminderId: string, userId: string, reaction: string) {
+        return await fetch(this.url + "/api/Reminder/Reactions", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify({ reminderId: reminderId, userId: userId, type: reaction })
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async deleteReactionReminder(reminderId: string, userId: string) {
+        return await fetch(this.url + "/api/Reminder/Reactions", {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify({ reminderId: reminderId, userId: userId })
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async getReactionsReminder(reminderId: string) {
+        return await fetch(this.url + "/api/Reminder/Reactions?reminderId=" + reminderId, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        });
+    }
+
     // User section:
 
-    async login(google_token: string) {
-        return await fetch(this.url + "/Login?googleToken=" + google_token, {
-            method: 'POST'
+    async login(google_token: string, fcm_token: string) {
+        const options: RequestInit = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+        if (fcm_token && fcm_token !== "") {
+            options.body = JSON.stringify({ fcmToken: fcm_token });
+        }
+        return await fetch(this.url + "/api/User/Login?googleToken=" + google_token, options)
+            .then(async response => {
+                if (response.status == 200) {
+                    return await response.json();
+                } else if (response.status == 404) {
+                    const jsonresponse = await response.json();
+                    if (jsonresponse.message == "User not found") {
+                        return { error: "User not found" };
+                    }
+                    return { error: "Internal server error" };
+                } else if (response.status == 422) {
+                    const jsonresponse = await response.json();
+                    if (jsonresponse.message == "Invalid json body") {
+                        return { error: "Invalid json body" };
+                    }
+                }
+                return {};
+            });
+    }
+
+    async logout(userId: string, fcm_token: string) {
+        if (!fcm_token || fcm_token === "") {
+            return { error: "FCM token is required (could be absent on browser)" };
+        }
+        return await fetch(this.url + "/api/User/Logout", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId: userId, fcmToken: fcm_token })
         }).then(async response => {
             if (response.status == 200) {
                 return await response.json();
-            } else if (response.status == 404) {
+            } else if (response.status == 500) {
                 const jsonresponse = await response.json();
-                if (jsonresponse.message == "User not found") {
-                    return { error: "User not found" };
+                if (jsonresponse.message == "Internal server error") {
+                    return { error: "Internal server error" };
                 }
-                return { error: "Internal server error" };
             }
             return {};
-        })
+        });
     }
 
-    async addUser(user: User, google_token: string) {
-        return await fetch(this.url + "/Register?googleToken=" + google_token, {
+    async addUser(user: User, google_token: string, fcm_token: string) {
+        return await fetch(this.url + "/api/User/Register?googleToken=" + google_token, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(user)
+            body: JSON.stringify({ username: user.username, colocationId: user.colocationId, fcmToken: fcm_token })
         }).then(async response => {
             if (response.status == 200) {
                 return await response.json();
@@ -150,7 +373,8 @@ export class bridge {
         return await fetch(this.url + "/api/User", {
             method: 'PUT',
             headers: {
-                'Authorization': 'Bearer ' + this.jwt,
+                'Authorization': 'Bearer ' +
+                    this.jwt,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(user)
@@ -285,7 +509,7 @@ export class bridge {
         })
     }
 
-    async updateChore(chore: Chore) {
+    async updateChore(chore: UpdateChore) {
         return await fetch(this.url + "/api/Chore", {
             method: 'PUT',
             headers: {
@@ -433,6 +657,39 @@ export class bridge {
         })
     }
 
+    async getLanguage(id: string) {
+        return await fetch(`${this.url}/api/User/Language/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.text();;
+            }
+            return '';
+        })
+    }
+
+    async updateLanguage(lang: string, id: string) {
+        return await fetch(`${this.url}/api/User/Language`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json-patch+json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify({
+                userId: id,
+                language: lang
+            })
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
     // Expense section:
 
     async getExpenseByColocationId(colocationId: string): Promise<expenses_category_get[]> {
@@ -478,7 +735,7 @@ export class bridge {
         })
     }
 
-    async addExpense(data: Expense) {
+    async addExpense(data: Expense): Promise<boolean | { error: any }> {
         return await fetch(`${this.url}/api/Expense`, {
             method: 'POST',
             headers: {
@@ -486,16 +743,21 @@ export class bridge {
                 'Authorization': 'Bearer ' + this.jwt
             },
             body: JSON.stringify(data)
-        }).then(response => {
+        }).then(async response => {
             if (response.status == 200) {
                 return true;
             }
-            return false;
+            const errorJson = await response.json();
+            console.error("Error adding expense:", errorJson);
+            return { error: errorJson };
+        }).catch((error) => {
+            console.error("Network error:", error);
+            return { error };
         });
     }
 
-    async updateExpense(data: Expense) {
-        return await fetch(`${this.url}/api/Expense/${data.colocationId}`, {
+    async updateExpense(data: Expense_Modif) {
+        return await fetch(`${this.url}/api/Expense`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -720,11 +982,169 @@ export class bridge {
     }
 
     async deleteShoppingListItem(id: string) {
-        return await fetch(`${this.url}/api/ShoppingList/Item/${id}`, {
+        return await fetch(`${this.url}/api/ShoppingList/Item?shoppingItemId=${id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': 'Bearer ' + this.jwt
             }
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    // Image section:
+
+    async uploadImage(file: File,): Promise<string> {
+        const formData = new FormData();
+        formData.append('file', file, file.name);
+        return await fetch(`${this.url}/images`, {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: formData
+        }).then(response => {
+            if (response.status == 200) {
+                return response.text();
+            }
+            return '';
+        });
+    }
+
+    async getImagetocache(name: string): Promise<string> {
+        const url = `${this.url}/api/Reminder/images/${name}`;
+        if (await this.getImagefromcache(name) != null) {
+            return 'OK';
+        }
+        return await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(async response => {
+            if (response.status == 200) {
+                const blob = await response.blob();
+                if (isNative()) {
+                    await new Promise<void>((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onloadend = async () => {
+                            try {
+                                const base64Data = (reader.result as string).split(',')[1];
+                                await Filesystem.writeFile({
+                                    path: name,
+                                    data: base64Data,
+                                    directory: Directory.Data
+                                });
+                                resolve();
+                            } catch (err) {
+                                reject(err);
+                            }
+                        };
+                        reader.onerror = reject;
+                        reader.readAsDataURL(blob);
+                    });
+                } else {
+                    const cache = await caches.open('images-cache');
+                    await cache.put(url, new Response(blob));
+                }
+                return 'OK';
+            }
+            return 'KO';
+        });
+    }
+
+    async getImagefromcache(name: string): Promise<string | null> {
+        const url = `${this.url}/api/Reminder/images/${name}`;
+        if (isNative()) {
+            // Mobile : lecture depuis le disque
+            try {
+                const result = await Filesystem.readFile({
+                    path: name,
+                    directory: Directory.Data
+                })
+                return `data:image/jpeg;base64,${result.data}`
+            } catch {
+                return null
+            }
+        } else {
+            // Web : lecture depuis Cache Storage API
+            const cache = await caches.open('images-cache')
+            const response = await cache.match(url)
+            if (!response) return null
+            const blob = await response.blob()
+            return URL.createObjectURL(blob)
+        }
+    }
+
+    // Message section:
+    async getMessageByColocationId(colocationId: string): Promise<message[]> {
+        return await fetch(`${this.url}/api/Message?colocationId=${colocationId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return [];
+        });
+    }
+
+    async addMessage(data: message): Promise<boolean> {
+        return await fetch(`${this.url}/api/Message`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async deleteMessage(id: string): Promise<boolean> {
+        return await fetch(`${this.url}/api/Message/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    async getMessageById(id: string): Promise<message> {
+        return await fetch(`${this.url}/api/Message/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            }
+        }).then(response => {
+            if (response.status == 200) {
+                return response.json();
+            }
+            return {} as message;
+        });
+    }
+
+    async updateMessage(data: message): Promise<boolean> {
+        return await fetch(`${this.url}/api/Message`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt
+            },
+            body: JSON.stringify(data)
         }).then(response => {
             if (response.status == 200) {
                 return true;

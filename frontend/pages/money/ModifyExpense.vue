@@ -72,12 +72,14 @@
         <button class="button button-proceed" @click.prevent="handleProceed('modify')">
           <Texte_language source="modify" />
         </button>
-        <button class="button button-proceed" @click.prevent="handleProceed('delete')">
+        <button class="button button-proceed" @click.prevent="showPopup">
           <Texte_language source="delete" />
         </button>
       </div>
     </form>
   </div>
+  <popup v-if="popup_vue" :text="$t('confirm_delete_expense')" @confirm="handleProceed('delete')" @close="cancelDelete">
+  </popup>
 </template>
 
 <script setup lang="ts">
@@ -101,7 +103,7 @@ const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 const date = new Date();
-//a changer par les vrais valeur
+const popup_vue = ref(false);
 const collocid = user.colocationId
 const myid = user.id
 
@@ -117,7 +119,6 @@ const expense = ref<Expense_Modif>({
   colocationId: collocid,
   expenseCategoryId: '',
   description: '',
-  category: '',
   name: '',
   amount: 0,
   paidBy: list_coloc.value[0]?.id || '',
@@ -133,9 +134,7 @@ api.getUserbyCollocId(collocid).then((response) => {
   Object.assign(expense.value, {
     colocationId: collocid,
     expenseCategoryId: '',
-    createdBy: myid,
     description: '',
-    category: '',
     name: '',
     amount: 0,
     paidBy: list_coloc.value[0]?.id || '',
@@ -154,9 +153,7 @@ api.getExpenseById(id).then((response) => {
   Object.assign(expense.value, {
     id: expenseData.id,
     expenseCategoryId: expenseData.expenseCategoryId,
-    createdBy: expenseData.createdBy,
     description: expenseData.description,
-    category: expenseData.expenseCategoryName,
     name: expenseData.name,
     amount: expenseData.amount,
     paidBy: expenseData.paidBy,
@@ -184,22 +181,25 @@ const calculatedSplitValue = computed(() => {
   return numPeople > 0 ? (expense.value.amount / numPeople).toFixed(2) : 0;
 });
 
+const showPopup = () => {
+  popup_vue.value = true;
+};
+
+const cancelDelete = () => {
+  popup_vue.value = false;
+};
+
 const handleProceed = async (action: string) => {
   if (action === 'modify') {
-    console.log(expense.value);
     const response = await api.updateExpense(expense.value);
     if (response) {
-      console.log('Expense modified successfully');
       router.back()
     } else {
       console.error('Error modifying expense');
     }
   } else if (action === 'delete') {
-    const confirmed = window.confirm(t('confirm_delete_expense'));
-    if (confirmed) {
-      await api.deleteExpense(id);
-      router.back();
-    }
+    await api.deleteExpense(id);
+    router.back();
   }
 }
 

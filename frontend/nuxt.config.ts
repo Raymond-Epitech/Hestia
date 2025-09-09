@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     'pinia-plugin-persistedstate/nuxt',
     '@nuxtjs/ionic',
+    '@nuxtjs/color-mode',
   ],
 
   css: [
@@ -24,6 +25,18 @@ export default defineNuxtConfig({
 
   googleSignIn: {
     clientId: "80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com",
+  },
+
+  colorMode: {
+    preference: 'system', // default value of $colorMode.preference
+    fallback: 'light', // fallback value if not system preference found
+    hid: 'nuxt-color-mode-script',
+    globalName: '__NUXT_COLOR_MODE__',
+    componentName: 'ColorScheme',
+    classPrefix: '',
+    classSuffix: '',
+    storage: 'localStorage', // or 'sessionStorage' or 'cookie'
+    storageKey: 'nuxt-color-mode',
   },
 
   extends: ['nuxt-modal'],
@@ -41,6 +54,13 @@ export default defineNuxtConfig({
     langDir: 'locales/',
     defaultLocale: 'fr',
     strategy: 'no_prefix'
+  },
+  ssr: false,
+
+  runtimeConfig: {
+    public: {
+      signalrUrl: 'https://hestiaapp.org/hestiaHub'
+    }
   },
 
   compatibilityDate: '2025-06-27',

@@ -12,7 +12,8 @@ namespace Business.Services
 {
     public class ColocationService(ILogger<ColocationService> logger,
         IRepository<Colocation> colocationRepository,
-        IRepository<User> userRepository
+        IRepository<User> userRepository,
+        IRepository<ExpenseCategory> expenseCategoryRepository
         ) : IColocationService
     {
         /// <summary>
@@ -28,7 +29,7 @@ namespace Business.Services
                     Id = c.Id,
                     Name = c.Name,
                     Address = c.Address,
-                    Colocataires = c.Users.Select(u => u.Id).ToList()
+                    Colocataires = c.Users.Where(u => !u.IsDeleted).Select(u => u.Id).ToList()
                 })
                 .ToListAsync();
 
@@ -73,7 +74,7 @@ namespace Business.Services
         /// <param name="colocation">The object colocation you want to add</param>
         /// <param name="AddedBy"> The User that added the colocation</param>
         /// <exception cref="ContextException">An error has occured while retriving the colocation from db</exception>
-        public async Task<Guid> AddColocation(ColocationInput colocation, Guid? AddedBy)
+        public async Task<Guid> AddColocation(ColocationInput colocation)
         {
             var newColocation = new Colocation
             {
@@ -84,13 +85,13 @@ namespace Business.Services
                 CreatedBy = colocation.CreatedBy
             };
 
-            if (AddedBy is not null && AddedBy != Guid.Empty)
+            if (colocation.CreatedBy != Guid.Empty)
             {
-                var user = await userRepository.GetByIdAsync(AddedBy!.Value);
+                var user = await userRepository.GetByIdAsync(colocation.CreatedBy);
 
                 if (user is null)
                 {
-                    throw new NotFoundException($"The user {AddedBy} who created the colocation do not exist");
+                    throw new NotFoundException($"The user {colocation.CreatedBy} who created the colocation do not exist");
                 }
 
                 user.ColocationId = newColocation.Id;
@@ -100,6 +101,14 @@ namespace Business.Services
             }
 
             await colocationRepository.AddAsync(newColocation);
+
+            await expenseCategoryRepository.AddAsync(new ExpenseCategory
+            {
+                Id = Guid.NewGuid(),
+                Name = "Refund",
+                ColocationId = newColocation.Id
+            });
+
             await colocationRepository.SaveChangesAsync();
 
             logger.LogInformation($"Succes : Colocation {newColocation.Id} added");

@@ -14,16 +14,12 @@
                         </div>
                     </div>
 
-                    <div class="modal-body">
-                        <task-message-box></task-message-box>
-                        <slot name="content"></slot>
-                    </div>
-
                     <!-- Buttons -->
                     <div class="modal-buttons">
                         <div class="enrollees-icon-container">
-                            <div v-for="enroll in enrollees" :key="enroll.id" :value="enroll.id" class="enrollees-icon">
-                                <profile-icon :height="33" :width="33"></profile-icon>
+                            <div v-for="(link, index) in linkToPP" :key="index" :value="linkToPP"
+                                class="enrollees-icon">
+                                <profile-icon :linkToPP="link" :height="33" :width="33"></profile-icon>
                             </div>
                         </div>
                         <slot name="buttons">
@@ -37,7 +33,7 @@
                                     <Texte_language source="Enroll" /> !
                                 </button>
                             </div>
-                            <div v-if="done">
+                            <div v-if="isDone">
                                 <text>
                                     <Texte_language source="isDone" />
                                 </text>
@@ -56,19 +52,19 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
 import { useUserStore } from '../store/user';
 import useModal from '../composables/useModal';
-import type { User } from '../composables/service/type'
+import type { UpdateChore, User } from '../composables/service/type'
 
 const props = defineProps<{
-    id: string
-    title: string
-    modelValue?: boolean
-    description: string
-    color: string
-    dueDate: string
-    isDone: boolean
+    id: string,
+    title: string,
+    modelValue?: boolean,
+    description: string,
+    color: string,
+    dueDate: string,
+    isDone: boolean,
+    enrolledUsers?: Object,
 }>();
 
 const userStore = useUserStore();
@@ -76,8 +72,8 @@ const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 const isEnrolled = ref(false);
-const enrollees = ref<User[]>([]);
-var done = props.isDone;
+const enrollees = props.enrolledUsers ? Object.keys(props.enrolledUsers) : [];
+const linkToPP = props.enrolledUsers ? Object.values(props.enrolledUsers) : [];
 
 const { modelValue } = toRefs(props)
 const { open, close, toggle, visible } = useModal(props.title)
@@ -96,9 +92,7 @@ defineExpose({
 })
 
 const getEnroll = async () => {
-    const data = await api.getUserEnrollChore(props.id);
-    enrollees.value = data;
-    isEnrolled.value = data.some(obj => obj.id === userStore.user.id);
+    isEnrolled.value = enrollees.includes(userStore.user.id);
 };
 
 const handleClose = () => {
@@ -108,7 +102,7 @@ const handleClose = () => {
 
 const handleQuit = async () => {
     api.deleteChoreUser(props.id, userStore.user.id).then(() => {
-        isEnrolled.value = false;
+        // isEnrolled.value = false;
     }).catch((error) => {
         console.error('Error delete chore user:', error);
     });
@@ -118,7 +112,7 @@ const handleQuit = async () => {
 
 const handleEnroll = async () => {
     api.addChoreUser(props.id, userStore.user.id).then(() => {
-        isEnrolled.value = true;
+        // isEnrolled.value = true;
     }).catch((error) => {
         console.error('Error add chore user:', error);
     });
@@ -126,17 +120,17 @@ const handleEnroll = async () => {
     emit('proceed')
 }
 const handleDone = async () => {
-    const updateChore = {
+    const updateChore: UpdateChore = {
         id: props.id,
         colocationId: userStore.user.colocationId,
         dueDate: props.dueDate,
         title: props.title,
         description: props.description,
         isDone: true,
-        enrolled: enrollees.value.map(user => user.id),
+        enrolled: enrollees.map(userId => userId),
     }
     api.updateChore(updateChore).then(() => {
-        done = true;
+        // done = true;
     }).catch((error) => {
         console.error('Error update chore:', error);
     });
@@ -174,15 +168,15 @@ watch(visible, (value) => {
 
 <style scoped>
 .red {
-    background-color: #FF6A61;
+    background-color: var(--basic-red);
 }
 
 .orange {
-    background-color: #FFC93D;
+    background-color: var(--basic-yellow);
 }
 
 .green {
-    background-color: #85AD7B;
+    background-color: var(--basic-green);
 }
 
 .modal {
@@ -207,20 +201,23 @@ watch(visible, (value) => {
 
 .modal-header {
     height: fit-content;
-    color: #000000;
+    color: var(--page-text);
     display: grid;
-    grid-template-columns: 4fr 1fr;
+    grid-template-columns: 80% 20%;
     align-items: start;
     justify-content: space-between;
     width: 90%;
-    padding-left: 5%;
+    padding: 0;
     border-bottom: none;
 }
 
 .modal-header-text {
     padding-top: 4px;
+    padding-left: 6%;
     display: flex;
     flex-direction: column;
+    line-height: normal;
+    text-align: left;
 }
 
 .title {
@@ -250,7 +247,7 @@ watch(visible, (value) => {
     align-content: center;
     text-align: center;
     height: 40px;
-    font-size: 250%;
+    font-size: 32px;
     margin-bottom: 4px;
     font-weight: 600;
     -webkit-text-size-adjust: none;
@@ -315,7 +312,7 @@ watch(visible, (value) => {
     border-bottom-right-radius: 20px;
     margin-top: auto;
     display: grid;
-    grid-template-columns: 1fr 3fr 3fr;
+    grid-template-columns: 2fr 3fr 2fr;
     align-items: center;
     gap: 1em;
 }
@@ -331,16 +328,18 @@ watch(visible, (value) => {
 
 .enrollees-icon-container {
     display: flex;
+    margin-left: 28px;
 }
 
 .enrollees-icon {
-    margin-right: -14px;
+    margin-left: -12px;
+    z-index: 1;
 }
 
 /** Fallback Buttons */
 .button {
     min-width: 50%;
-    max-width: fit-content;
+    width: fit-content;
     margin-left: 20px;
     padding: 10px 10px;
     border-radius: 15px;

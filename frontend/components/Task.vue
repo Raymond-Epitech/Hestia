@@ -1,19 +1,28 @@
 <template>
     <div class="task-container">
-        <TaskModal v-model="isModalOpen" :id="id" :title="title" :description="description" :color="getColor()"
-            :dueDate="dueDate" :isDone="isDone" @proceed="emitProceed()"></TaskModal>
-        <div class="task" :class="[getColor()]" data-toggle="modal" data-target=".bd-example-modal-sm"
-            @click="openModal">
+        <TaskModal v-model="isModalOpen" :key="updatedAt" :id="id" :title="title" :description="description"
+            :color="getColor()" :dueDate="dueDate" :isDone="isDone" :enrolledUsers="enrolledUsers"
+            @proceed="emitProceed()"></TaskModal>
+        <div class="task" :class="[getColor(), { 'done': isDone }]" data-toggle="modal"
+            data-target=".bd-example-modal-sm" @click="openModal">
             <h1>{{ title }}</h1>
             <div class="due-date">
                 <div class="number">{{ getDayNumber() }}</div>
                 <div class="month">{{ getMonthAbbreviation() }}</div>
+                <div class="year">{{ getYearNumber() }}</div>
+            </div>
+            <div class="enrolles-list">
+                <div v-for="(userObj, index) in enrolledUsers" :key="index" class="enrolles-pictures">
+                    <profile-icon :linkToPP="userObj" :height="33" :width="33"></profile-icon>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
+
 const props = defineProps({
     id: {
         type: String,
@@ -42,12 +51,21 @@ const props = defineProps({
     isDone: {
         type: Boolean,
         required: true,
+    },
+    enrolledUsers: {
+        type: Object,
+        required: false,
+    },
+    updatedAt: {
+        type: String,
+        required: true,
     }
 })
-const isModalOpen = ref(false)
-const openModal = () => (isModalOpen.value = true)
+const { locale } = useI18n();
+const isModalOpen = ref(false);
+const openModal = () => (isModalOpen.value = true);
 
-const emit = defineEmits(['proceed', 'get'])
+const emit = defineEmits(['proceed', 'get']);
 
 function emitProceed() {
     emit('proceed')
@@ -60,7 +78,12 @@ function getDayNumber() {
 
 function getMonthAbbreviation() {
     const date = new Date(props.dueDate);
-    return date.toLocaleString('en-US', { month: 'short' });
+    return date.toLocaleString(locale.value, { month: 'short' });
+}
+
+function getYearNumber() {
+    const date = new Date(props.dueDate);
+    return date.getFullYear();
 }
 
 function getColor() {
@@ -77,7 +100,6 @@ function getColor() {
         return "red"
     }
 }
-
 </script>
 
 <style scoped>
@@ -87,22 +109,22 @@ function getColor() {
 }
 
 .red {
-    background-color: #FF6A61;
+    background-color: var(--basic-red);
 }
 
 .orange {
-    background-color: #FFC93D;
+    background-color: var(--basic-yellow);
 }
 
 .green {
-    background-color: #85AD7B;
+    background-color: var(--basic-green);
 }
 
 .task {
+    position: relative;
     display: grid;
-    grid-template-columns: 4fr 1fr;
-    align-items: top;
-    padding-top: 8px;
+    grid-template-columns: 80% 20%;
+    padding-top: 10px;
     justify-content: space-between;
     width: 90%;
     height: 80px;
@@ -113,10 +135,14 @@ function getColor() {
     box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
 }
 
+.done {
+    opacity: 0.5;
+}
+
 h1 {
     font-weight: 700;
-    font-size: 18px;
-    padding-top: 2px;
+    font-size: 16px;
+    padding-top: 6px;
 }
 
 .due-date {
@@ -125,6 +151,7 @@ h1 {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding-left: 10px;
     padding-bottom: 6px;
     width: 62px;
     height: 62px;
@@ -135,9 +162,9 @@ h1 {
     justify-content: center;
     align-content: center;
     text-align: center;
-    height: 40px;
-    font-size: 38px;
-    margin-bottom: 4px;
+    height: 32px;
+    font-size: 34px;
+    margin-bottom: 10%;
     font-weight: 600;
     -webkit-text-size-adjust: none;
     text-size-adjust: none;
@@ -149,5 +176,27 @@ h1 {
     text-transform: uppercase;
     -webkit-text-size-adjust: none;
     text-size-adjust: none;
+}
+
+.year {
+    font-size: 12px;
+    font-weight: 500;
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+}
+
+.enrolles-list {
+    width: 90%;
+    position: absolute;
+    float: left;
+    display: flex;
+    justify-content: left;
+    margin-top: 58px;
+    margin-left: 28px;
+}
+
+.enrolles-pictures {
+    margin-left: -12px;
+    z-index: 1;
 }
 </style>

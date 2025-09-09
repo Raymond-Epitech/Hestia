@@ -1,3 +1,4 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"></meta>
 <template>
   <div>
     <div class="body-container">
@@ -12,27 +13,34 @@
 
 <script setup>
 import { storeToRefs } from 'pinia';
-import { useAuthStore } from '../store/auth';
+import { useUserStore } from '~/store/user';
+import { StatusBar } from '@capacitor/status-bar';
 
-const router = useRouter();
+const userStore = useUserStore();
+const { $signalr, $signalrReady } = useNuxtApp()
 
-const { logUserOut } = useAuthStore();
-const { authenticated } = storeToRefs(useAuthStore());
+StatusBar.setOverlaysWebView({ overlay: true });
 
-const logout = () => {
-  logUserOut();
-  router.push('/login');
-};
+onMounted(async () => {
+  await $signalrReady;
+  if (userStore.user?.colocationId) {
+    $signalr.invoke("JoinColocationGroup", userStore.user.colocationId)
+    .then(() => console.log("Demande envoyée au hub"))
+    .catch(err => console.error("Erreur lors de l'envoi", err))
+  }
+  if ((await StatusBar.getInfo()).visible) {
+    await StatusBar.hide();
+  }
+  await StatusBar.hide();
+})
 </script>
 
 <style scoped>
 .body-container {
   position: absolute;
-  border-top: 1px solid #d2edd9;
-  top: 25pt;
-  bottom: 58px;
   left: 0;
   right: 0;
   overflow: auto;
 }
+
 </style>

@@ -4,11 +4,11 @@
       <div class="modal-background" @click="handleClose">
         <div class="modal" @click.stop>
           <div class="modal-header left">
-            <h1 class="modal-header-text">Contenu du post : </h1>
+            <h1 class="modal-header-text">{{ $t('post-content') }} :</h1>
           </div>
           <form method="post" action="">
             <div class="modal-body left">
-              <textarea class="modal-body-input" rows="3" v-model="post.content" required></textarea>
+              <textarea class="modal-body-input" rows="3" maxlength="150" v-model="post.content" required></textarea>
             </div>
             <div class="post-colors-buttons">
               <input class="form-check-input color-choice blue" v-model="post.color" type="radio" name="gridRadios"
@@ -20,8 +20,11 @@
               <input class="form-check-input color-choice green" v-model="post.color" type="radio" name="gridRadios"
                 id="gridRadios4" value="green">
             </div>
-            <div class="modal-buttons">
-              <button class="button button-proceed" @click.prevent="handleProceed">Poster</button>
+            <div v-if="post.color && post.content" class="modal-buttons">
+              <button @click.prevent="handleProceed">{{ $t('poster') }}</button>
+            </div>
+            <div v-else class="modal-buttons">
+              <button @click.prevent="handleProceed" disabled>{{ $t('poster') }}</button>
             </div>
           </form>
         </div>
@@ -53,24 +56,34 @@ const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
+const prewiew = ref('');
 
 const post = ref({
+  colocationId: userStore.user.colocationId,
   createdBy: userStore.user.id,
-  content: '',
-  color: '',
   coordX: 0,
   coordY: 0,
   coordZ: 0,
-  colocationId: userStore.user.colocationId,
+  reminderType: 0,
+  content: '',
+  color: '',
+  image: new File([], 'test.jpg'),
+  shoppinglistName: '',
+  pollInput: {
+    title: '',
+    description: '',
+    expirationdate: '',
+    isanonymous: false,
+    allowmultiplechoice: false,
+  }
 })
-
 const { modelValue } = toRefs(props)
 
 const { open, close, toggle, visible } = useModal(props.name)
 
 const emit = defineEmits<{
-  closed: [] // named tuple syntax
-  proceed: []
+  closed: [], // named tuple syntax
+  proceed: [],
   'update:modelValue': [value: boolean]
 }>()
 
@@ -81,15 +94,45 @@ defineExpose({
   visible,
 })
 
+const resetPost = () => {
+  prewiew.value = '';
+  post.value = {
+    colocationId: userStore.user.colocationId,
+    createdBy: userStore.user.id,
+    coordX: 0,
+    coordY: 0,
+    coordZ: 0,
+    reminderType: 0,
+    content: '',
+    color: '',
+    image: new File([], 'test.jpg'),
+    shoppinglistName: '',
+    pollInput: {
+      title: '',
+      description: '',
+      expirationdate: '',
+      isanonymous: false,
+      allowmultiplechoice: false,
+    }
+  }
+}
+
 const handleClose = () => {
+  resetPost()
   close()
   emit('closed')
 }
 
 const handleProceed = async () => {
-  await api.addReminder(post.value)
-  close()
-  emit('proceed')
+  if (post.value.reminderType === 1) {
+    post.value.content = '';
+  }
+  const response = await api.addReminder(post.value)
+  if (response != '') {
+    resetPost()
+    close()
+    emit('closed')
+  }
 }
 
 watch(
@@ -98,13 +141,30 @@ watch(
     if (value !== oldValue) {
       toggle(value)
     }
-  },
-  { immediate: true }
+    emit('proceed')
+  }
 )
+
+watch(
+  () => post.value.reminderType,
+  (newValue, oldValue) => {
+    if (newValue !== oldValue) {
+      prewiew.value = '';
+      if (post.value.reminderType === 1) {
+        post.value.content = '';
+        post.value.color = 'none'
+      } else {
+        post.value.image = new File([], 'test.jpg');
+        post.value.color = '';
+      }
+    }
+  }
+);
 
 watch(visible, (value) => {
   emit('update:modelValue', value)
 })
+
 </script>
 
 <style scoped>
@@ -132,7 +192,7 @@ watch(visible, (value) => {
   padding: 0px 16px;
   font-weight: 600;
   border-bottom: none;
-  color: #fff;
+  color: var(--overlay-text);
 }
 
 .modal-header-text {
@@ -161,8 +221,9 @@ watch(visible, (value) => {
   line-height: 3ch;
   background-image: linear-gradient(transparent, transparent calc(3ch - 1px), #E7EFF8 0px);
   background-size: 100% 3ch;
-  color: #fff;
+  color: var(--overlay-text);
   font-size: 18px;
+  margin-bottom: 12px;
 }
 
 .post-colors-buttons {
@@ -218,12 +279,12 @@ watch(visible, (value) => {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 100;
   position: fixed;
   animation: fadeIn 0.2s;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  z-index: 11;
 }
 
 .modal-buttons {
@@ -245,21 +306,15 @@ watch(visible, (value) => {
   border: 0;
 }
 
-/** Fallback Buttons */
-.button {
+button {
   padding: 10px 20px;
   border-radius: 15px;
   border: 0;
   cursor: pointer;
 }
 
-.button-proceed {
-  background: #00000088;
-  color: #fff;
-}
-
-.button-proceed:hover {
-  opacity: 0.7;
+button:disabled {
+  opacity: 0.5;
 }
 
 /* Transition */
@@ -285,7 +340,7 @@ watch(visible, (value) => {
 
 @keyframes slideIn {
   0% {
-    transform: translateY(-400px);
+    transform: translateY(-600px);
   }
 
   100% {
@@ -299,7 +354,7 @@ watch(visible, (value) => {
   }
 
   100% {
-    transform: translateY(-400px);
+    transform: translateY(-600px);
   }
 }
 

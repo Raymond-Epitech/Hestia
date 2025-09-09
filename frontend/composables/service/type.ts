@@ -1,12 +1,46 @@
 export type Reminder = {
-    id: string,
-    createdBy: string,
-    content: string,
-    color: string,
-    coordX: number,
-    coordY: number,
-    coordZ: number
+    id: string;
+    createdBy: string;
+    createdAt: string; // format ISO string
+    reminderType: number;
+    linkToPP: string;
+    coordX: number;
+    coordY: number;
+    coordZ: number;
+    content: string;
+    color: string;
+    imageUrl: string;
+    shoppingListName: string;
+    items: ReminderItem[];
+    title: string;
+    description: string;
+    expirationDate: string; // ISO date-time string
+    isAnonymous: boolean;
+    allowMultipleChoices: boolean;
+    votes: ReminderVote[];
 };
+
+export type ReminderItem = {
+    id?: string;
+    name: string;
+    createdBy: string;
+    reminderId: string;
+    isChecked: boolean;
+};
+
+export type ReminderVote = {
+    id: string;
+    votedBy: string;
+    votedAt: string; // ISO date-time string
+    choice: string;
+};
+
+export type Reaction = {
+    id: string;
+    userId: string;
+    reminderId: string;
+    type: string;
+}
 
 export type Coloc = {
     id: string,
@@ -42,7 +76,6 @@ export type Expense_Modif = {
     name: string,
     description: string,
     amount: number,
-    category: string,
     paidBy: string
     splitType: number,
     splitBetween: string[],
@@ -92,12 +125,25 @@ export type User = {
 
 export type Colocation = {
     name: string;
-    addresse: string;
+    address: string;
     createdBy: string;
-    id: string;
+    id?: string;
 }
 
 export type Chore = {
+    id: string;
+    createdBy: string;
+    createdAt: string;
+    updatedAt: string;
+    colocationId?: string;
+    dueDate: string;
+    title: string;
+    description: string;
+    isDone: boolean;
+    enrolledUsers: string[];
+}
+
+export type UpdateChore = {
     id: string;
     colocationId: string;
     dueDate: string;
@@ -111,7 +157,9 @@ export type Locale = 'fr' | 'en' | 'es' | 'de' | 'zh' | 'ja';
 
 export type refund = {
     from: string,
+    fromUsername: string,
     to: string,
+    toUsername: string,
     amount: number,
 }
 
@@ -141,4 +189,16 @@ export type expenses_category_get = {
     id: string,
     name: string,
     totalAmount: number,
+}
+
+export type message = {
+    id?: string,
+    colocationId: string,
+    content: string,
+    sendBy: string,
+    sendAt?: string,
+}
+
+export type SignalRClient = {
+    on(event: string, callback: (data: any) => void): void;
 }

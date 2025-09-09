@@ -3,24 +3,23 @@ using Business.Jwt;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
 using Google.Apis.Auth;
-using Google.Apis.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Npgsql.TypeMapping;
+using Shared.Enums;
 using Shared.Exceptions;
-using Shared.Models.DTO;
 using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text.Json;
 
 namespace Business.Services;
 
 public class UserService(ILogger<UserService> logger,
     IRepository<User> userRepository,
-    IJwtService jwtService,
-    System.Net.Http.IHttpClientFactory httpClientFactory) : IUserService
+    IRepository<FCMDevice> fcmDeviceRepository,
+    IJwtService jwtService) : IUserService
 {
     /// <summary>
     /// Get all users from a collocation
@@ -31,13 +30,14 @@ public class UserService(ILogger<UserService> logger,
     public async Task<List<UserOutput>> GetAllUserAsync(Guid collocationId)
     {
         var users = await userRepository.Query()
-            .Where(u => u.ColocationId == collocationId)
+            .Where(u => u.ColocationId == collocationId && !u.IsDeleted)
             .Select(u => new UserOutput
             {
                 Id = u.Id,
                 Username = u.Username,
                 Email = u.Email,
-                ColocationId = u.ColocationId
+                ColocationId = u.ColocationId,
+                ProfilePictureUrl = u.PathToProfilePicture
             })
             .ToListAsync();
 
@@ -62,7 +62,8 @@ public class UserService(ILogger<UserService> logger,
                 Id = u.Id,
                 Username = u.Username,
                 Email = u.Email,
-                ColocationId = u.ColocationId
+                ColocationId = u.ColocationId,
+                ProfilePictureUrl = u.PathToProfilePicture
             })
             .FirstOrDefaultAsync();
 
@@ -89,7 +90,9 @@ public class UserService(ILogger<UserService> logger,
 
         userToUpdate.Username = user.Username;
         userToUpdate.ColocationId = user.ColocationId;
-        userToUpdate.PathToProfilePicture = user.PathToProfilePicture;
+
+        if( user.PathToProfilePicture is not null)
+            userToUpdate.PathToProfilePicture = user.PathToProfilePicture;
 
         await userRepository.SaveChangesAsync();
 
@@ -106,7 +109,18 @@ public class UserService(ILogger<UserService> logger,
     /// <exception cref="ContextException">An error occurred while getting all chores from the db</exception>
     public async Task<Guid> DeleteUserAsync(Guid id)
     {
-        await userRepository.DeleteFromIdAsync(id);
+        var user = await userRepository.GetByIdAsync(id);
+
+        if (user == null)
+            throw new NotFoundException($"User {id} not found");
+
+        user.Email = "";
+        user.ColocationId = null;
+        user.Username = $"(Deleted) {user.Username}";
+        user.PathToProfilePicture = "deleted.jpg";
+        user.IsDeleted = true;
+
+        userRepository.Update(user);
 
         await userRepository.SaveChangesAsync();
 
@@ -122,51 +136,11 @@ public class UserService(ILogger<UserService> logger,
         if (user == null)
             throw new NotFoundException($"User {id} not found");
 
-        user.ColocationId = Guid.Empty;
+        user.ColocationId = null;
         userRepository.Update(user);
         await userRepository.SaveChangesAsync();
         logger.LogInformation($"Succes : User {user.Id} quit colocation {user.ColocationId}");
         return user.Id;
-    }
-
-    private async Task<string> GetGoogleJwt(GoogleCredentials googleCredentials, string code)
-    {
-
-        if (string.IsNullOrEmpty(googleCredentials.ClientId) ||
-            string.IsNullOrEmpty(googleCredentials.ClientSecret) ||
-            string.IsNullOrEmpty(googleCredentials.RedirectUri))
-        {
-            throw new InvalidEntityException("Google credentials are not set");
-        }
-
-        var parameters = new Dictionary<string, string>
-        {
-            { "code", code },
-            { "client_id", googleCredentials.ClientId },
-            { "client_secret", googleCredentials.ClientSecret },
-            { "redirect_uri", googleCredentials.RedirectUri },
-            { "grant_type", "authorization_code" }
-        };
-
-        var request = new HttpRequestMessage(HttpMethod.Post, "https://oauth2.googleapis.com/token")
-        {
-            Content = new FormUrlEncodedContent(parameters)
-        };
-
-        var client = httpClientFactory.CreateClient();
-        var response = await client.SendAsync(request);
-        var responseContent = await response.Content.ReadAsStringAsync();
-        var tokenResponse = JsonSerializer.Deserialize<GoogleTokenResponse>(responseContent, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
-
-        if (!response.IsSuccessStatusCode || tokenResponse is null || tokenResponse.IdToken is null)
-        {
-            throw new InvalidEntityException($"Google token exchange failed: {responseContent}");
-        }
-        
-        return tokenResponse.IdToken;
     }
 
     /// <summary>
@@ -191,7 +165,7 @@ public class UserService(ILogger<UserService> logger,
             logger.LogWarning(ex, "Google token validation failed.");
             throw new InvalidTokenException("Google token invalid");
         }
-            
+
         var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, validPayload.Subject),
@@ -199,6 +173,8 @@ public class UserService(ILogger<UserService> logger,
             new Claim(JwtRegisteredClaimNames.Name, validPayload.Name),
             new Claim("picture", validPayload.Picture ?? ""),
         };
+
+        logger.LogInformation($"Google link to profil picture is : {validPayload.Picture}");
 
         if (userRepository.Query().Any(u => u.Email == validPayload.Email))
         {
@@ -211,14 +187,28 @@ public class UserService(ILogger<UserService> logger,
             Username = userInput.Username,
             Email = validPayload.Email,
             ColocationId = userInput.ColocationId,
-            PathToProfilePicture = "default.jpg"
+            PathToProfilePicture = validPayload.Picture ?? "default.jpg"
         };
 
         await userRepository.AddAsync(newUser);
 
-        await userRepository.SaveChangesAsync();
-
         logger.LogInformation($"Succes : User {newUser.Id} added");
+
+        if (!string.IsNullOrEmpty(userInput.FCMToken))
+        {
+            logger.LogInformation($"FCM Token received : {userInput.FCMToken}, Creating a new FCM Device linked to user");
+
+            await fcmDeviceRepository.AddAsync(new FCMDevice
+            {
+                Id = Guid.NewGuid(),
+                FCMToken = userInput.FCMToken,
+                UserId = newUser.Id
+            });
+
+            logger.LogInformation($"Success: FCM Device {userInput.FCMToken} linked to user {newUser.Id}");
+        }
+
+        await userRepository.SaveChangesAsync();
 
         // Generate and return JWT
 
@@ -248,7 +238,7 @@ public class UserService(ILogger<UserService> logger,
     /// <exception cref="InvalidTokenException">Token is invalid</exception>
     /// <exception cref="NotFoundException">User is not found</exception>
     /// <returns>Info of user</returns>
-    public async Task<UserInfo> LoginUserAsync(string googleToken)
+    public async Task<UserInfo> LoginUserAsync(string googleToken, LoginInput? loginInput)
     {
         GoogleJsonWebSignature.Payload validPayload = null!;
 
@@ -269,10 +259,11 @@ public class UserService(ILogger<UserService> logger,
             new Claim(JwtRegisteredClaimNames.Email, validPayload.Email),
             new Claim(JwtRegisteredClaimNames.Name, validPayload.Name),
             new Claim("picture", validPayload.Picture ?? ""),
-        };
+        };;
 
         var user = await userRepository.Query()
             .Where(u => u.Email == validPayload.Email)
+            .Include(u => u.FCMDevices)
             .FirstOrDefaultAsync();
 
         if (user is null)
@@ -283,6 +274,26 @@ public class UserService(ILogger<UserService> logger,
         user.LastConnection = DateTime.UtcNow;
 
         userRepository.Update(user);
+
+        if (loginInput is not null && !string.IsNullOrEmpty(loginInput.FCMToken))
+        {
+            logger.LogInformation($"FCM Token received : {loginInput.FCMToken}");
+
+            if (!user.FCMDevices.Any(f => f.FCMToken == loginInput.FCMToken))
+            {
+                logger.LogInformation("Linking FCM Device to user");
+                
+                await fcmDeviceRepository.AddAsync(new FCMDevice
+                {
+                    Id = Guid.NewGuid(),
+                    FCMToken = loginInput.FCMToken,
+                    UserId = user.Id
+                });
+
+                logger.LogInformation($"Success: FCM Device {loginInput.FCMToken} linked to user {user.Id}");
+            }
+        }
+
         await userRepository.SaveChangesAsync();
 
         logger.LogInformation($"Succes : User {user.Id}'s last connexion updated");
@@ -306,5 +317,57 @@ public class UserService(ILogger<UserService> logger,
         logger.LogInformation("Succes : User logged in and JWT created");
 
         return userInfo;
+    }
+
+    /// <summary>
+    /// Delete a fcm device for a user
+    /// </summary>
+    /// <param name="input">The user id and the fcmToken</param>
+    /// <returns>The fcmToken deleted</returns>
+    /// <exception cref="NotFoundException"></exception>
+    public async Task<string> LogoutUserAsync(LogoutInput input)
+    {
+        var fcmDevice = await fcmDeviceRepository.Query()
+            .Where(f => f.FCMToken == input.FCMToken && f.UserId == input.UserId)
+            .FirstOrDefaultAsync();
+
+        if (fcmDevice == null)
+            throw new NotFoundException($"FcmToken {input.FCMToken} not found");
+
+        fcmDeviceRepository.Delete(fcmDevice);
+
+        logger.LogInformation($"Succes : FCM Device {input.FCMToken} deleted for user {input.UserId}");
+        return fcmDevice.FCMToken;
+    }
+
+    public async Task<Languages> GetLanguageAsync(Guid id)
+    {
+        var language = await userRepository.Query()
+            .Where(u => u.Id == id)
+            .Select(u => u.Language)
+            .FirstOrDefaultAsync();
+
+        if (language == null)
+            throw new NotFoundException($"User {id} not found");
+
+        logger.LogInformation($"Succes : Language {language} found for user {id}");
+
+        return Enum.Parse<Languages>(language);
+    }
+
+    public async Task<Guid> SetLanguageAsync(LanguageInput input)
+    {
+        var user = await userRepository.GetByIdAsync(input.UserId);
+
+        if (user == null)
+            throw new NotFoundException($"User {input.UserId} not found");
+
+        user.Language = input.Language.ToString();
+
+        userRepository.Update(user);
+        await userRepository.SaveChangesAsync();
+        logger.LogInformation($"Succes : User {user.Id} set language to {user.Language}");
+
+        return user.Id;
     }
 }

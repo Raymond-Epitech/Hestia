@@ -2,6 +2,7 @@
 using Business.Services;
 using EntityFramework.Context;
 using EntityFramework.Repositories;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Configuration;
@@ -26,6 +27,12 @@ public static class ServiceConfigurationExtension
         services.AddScoped<IExpenseService, ExpenseService>();
         services.AddScoped<IShoppingListService, ShoppingListService>();
         services.AddScoped<IExpiredChoreRemover, ExpiredChoreRemover>();
+        services.AddScoped<IFileStorageService, LocalFileStorageService>();
+        services.AddScoped<IRealTimeService, RealTimeService>();
+        services.AddScoped<IFirebaseNotificationService, FirebaseNotificationService>();
+        services.AddScoped<IMessageService, MessageService>();
+        services.AddScoped<IPollService, PollService>();
+        services.AddScoped<IReactionService, ReactionService>();
 
         // Repositories
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -38,12 +45,19 @@ public static class ServiceConfigurationExtension
 
     public static IServiceCollection EnableCors(this IServiceCollection services)
     {
-        services.AddCors(opt => opt.AddDefaultPolicy(policy => policy
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowAnyOrigin()));
+        services.AddCors(opt =>
+        {
+            opt.AddPolicy("AllowFrontend", policy => policy
+                .WithOrigins("http://localhost:3000", "https://hestiaapp.org")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+            );
+        });
+
         return services;
     }
+    
 
     private static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
     {

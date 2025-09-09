@@ -50,9 +50,14 @@ namespace EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ColocationId");
+
+                    b.HasIndex("CreatedBy");
 
                     b.ToTable("Chores");
                 });
@@ -73,32 +78,6 @@ namespace EntityFramework.Migrations
                     b.HasIndex("ChoreId");
 
                     b.ToTable("ChoreEnrollments");
-                });
-
-            modelBuilder.Entity("EntityFramework.Models.ChoreMessage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ChoreId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChoreId");
-
-                    b.ToTable("ChoreMessages");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.Colocation", b =>
@@ -222,7 +201,27 @@ namespace EntityFramework.Migrations
                     b.ToTable("ExpenseCategories");
                 });
 
-            modelBuilder.Entity("EntityFramework.Models.Reminder", b =>
+            modelBuilder.Entity("EntityFramework.Models.FCMDevice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("FCMToken")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("FCMDevices");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Message", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -231,13 +230,89 @@ namespace EntityFramework.Migrations
                     b.Property<Guid>("ColocationId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Color")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("SentBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ColocationId");
+
+                    b.HasIndex("SentBy");
+
+                    b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.PollVote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Choice")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("PollReminderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("VotedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("VotedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PollReminderId");
+
+                    b.HasIndex("VotedBy");
+
+                    b.ToTable("PollVotes");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Reaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("ReminderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReminderId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Reactions");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Reminder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ColocationId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("CoordX")
                         .HasColumnType("integer");
@@ -254,11 +329,22 @@ namespace EntityFramework.Migrations
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("ReminderType")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("character varying(13)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ColocationId");
 
+                    b.HasIndex("CreatedBy");
+
                     b.ToTable("Reminders");
+
+                    b.HasDiscriminator<string>("ReminderType").HasValue("Reminder");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("EntityFramework.Models.ShoppingItem", b =>
@@ -280,40 +366,14 @@ namespace EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("ShoppingListId")
+                    b.Property<Guid>("ShoppingListReminderId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ShoppingListId");
+                    b.HasIndex("ShoppingListReminderId");
 
                     b.ToTable("ShoppingItems");
-                });
-
-            modelBuilder.Entity("EntityFramework.Models.ShoppingList", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ColocationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ColocationId");
-
-                    b.ToTable("ShoppingList");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.SplitBetween", b =>
@@ -350,6 +410,13 @@ namespace EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("LastConnection")
                         .HasColumnType("timestamp without time zone");
 
@@ -368,6 +435,66 @@ namespace EntityFramework.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("EntityFramework.Models.ImageReminder", b =>
+                {
+                    b.HasBaseType("EntityFramework.Models.Reminder");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasDiscriminator().HasValue("Image");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.PollReminder", b =>
+                {
+                    b.HasBaseType("EntityFramework.Models.Reminder");
+
+                    b.Property<bool>("AllowMultipleChoices")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsAnonymous")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasDiscriminator().HasValue("Poll");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.ShoppingListReminder", b =>
+                {
+                    b.HasBaseType("EntityFramework.Models.Reminder");
+
+                    b.Property<string>("ShoppingListName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasDiscriminator().HasValue("ShoppingList");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.TextReminder", b =>
+                {
+                    b.HasBaseType("EntityFramework.Models.Reminder");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasDiscriminator().HasValue("Text");
+                });
+
             modelBuilder.Entity("EntityFramework.Models.Chore", b =>
                 {
                     b.HasOne("EntityFramework.Models.Colocation", "Colocation")
@@ -376,7 +503,15 @@ namespace EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("EntityFramework.Models.User", "User")
+                        .WithMany("Chores")
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("Colocation");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.ChoreEnrollment", b =>
@@ -396,17 +531,6 @@ namespace EntityFramework.Migrations
                     b.Navigation("Chore");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EntityFramework.Models.ChoreMessage", b =>
-                {
-                    b.HasOne("EntityFramework.Models.Chore", "Chore")
-                        .WithMany("ChoreMessages")
-                        .HasForeignKey("ChoreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Chore");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.Entry", b =>
@@ -466,6 +590,74 @@ namespace EntityFramework.Migrations
                     b.Navigation("Colocation");
                 });
 
+            modelBuilder.Entity("EntityFramework.Models.FCMDevice", b =>
+                {
+                    b.HasOne("EntityFramework.Models.User", "User")
+                        .WithMany("FCMDevices")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Message", b =>
+                {
+                    b.HasOne("EntityFramework.Models.Colocation", "Colocation")
+                        .WithMany("Messages")
+                        .HasForeignKey("ColocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EntityFramework.Models.User", "User")
+                        .WithMany("Messages")
+                        .HasForeignKey("SentBy")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Colocation");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.PollVote", b =>
+                {
+                    b.HasOne("EntityFramework.Models.PollReminder", "PollReminder")
+                        .WithMany("PollVotes")
+                        .HasForeignKey("PollReminderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EntityFramework.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("VotedBy")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PollReminder");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Reaction", b =>
+                {
+                    b.HasOne("EntityFramework.Models.Reminder", "Reminder")
+                        .WithMany("Reactions")
+                        .HasForeignKey("ReminderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EntityFramework.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Reminder");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("EntityFramework.Models.Reminder", b =>
                 {
                     b.HasOne("EntityFramework.Models.Colocation", "Colocation")
@@ -474,29 +666,26 @@ namespace EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("EntityFramework.Models.User", "User")
+                        .WithMany("Reminders")
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Colocation");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.ShoppingItem", b =>
                 {
-                    b.HasOne("EntityFramework.Models.ShoppingList", "ShoppingList")
+                    b.HasOne("EntityFramework.Models.ShoppingListReminder", "ShoppingListReminder")
                         .WithMany("ShoppingItems")
-                        .HasForeignKey("ShoppingListId")
+                        .HasForeignKey("ShoppingListReminderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ShoppingList");
-                });
-
-            modelBuilder.Entity("EntityFramework.Models.ShoppingList", b =>
-                {
-                    b.HasOne("EntityFramework.Models.Colocation", "Colocation")
-                        .WithMany("ShoppingLists")
-                        .HasForeignKey("ColocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Colocation");
+                    b.Navigation("ShoppingListReminder");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.SplitBetween", b =>
@@ -531,8 +720,6 @@ namespace EntityFramework.Migrations
             modelBuilder.Entity("EntityFramework.Models.Chore", b =>
                 {
                     b.Navigation("ChoreEnrollments");
-
-                    b.Navigation("ChoreMessages");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.Colocation", b =>
@@ -541,9 +728,9 @@ namespace EntityFramework.Migrations
 
                     b.Navigation("ExpenseCategories");
 
-                    b.Navigation("Reminders");
+                    b.Navigation("Messages");
 
-                    b.Navigation("ShoppingLists");
+                    b.Navigation("Reminders");
 
                     b.Navigation("Users");
                 });
@@ -560,20 +747,38 @@ namespace EntityFramework.Migrations
                     b.Navigation("Expenses");
                 });
 
-            modelBuilder.Entity("EntityFramework.Models.ShoppingList", b =>
+            modelBuilder.Entity("EntityFramework.Models.Reminder", b =>
                 {
-                    b.Navigation("ShoppingItems");
+                    b.Navigation("Reactions");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.User", b =>
                 {
                     b.Navigation("ChoreEnrollments");
 
+                    b.Navigation("Chores");
+
                     b.Navigation("Entries");
 
                     b.Navigation("Expenses");
 
+                    b.Navigation("FCMDevices");
+
+                    b.Navigation("Messages");
+
+                    b.Navigation("Reminders");
+
                     b.Navigation("SplitBetweens");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.PollReminder", b =>
+                {
+                    b.Navigation("PollVotes");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.ShoppingListReminder", b =>
+                {
+                    b.Navigation("ShoppingItems");
                 });
 #pragma warning restore 612, 618
         }

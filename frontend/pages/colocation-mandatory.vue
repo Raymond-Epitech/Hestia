@@ -47,6 +47,8 @@ const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 const router = useRouter();
+const route = useRoute();
+const collocID = route.query.collocID
 
 const colocation = ref({
     name: '',
@@ -56,8 +58,8 @@ const colocation = ref({
 const new_data = ref({
     username: user.username,
     email: user.email,
-    colocationId: '',
-    pathToProfilePicture: 'exempledetest',
+    colocationId: collocID ? collocID : '',
+    pathToProfilePicture: null,
     id: user.id,
 })
 const joinColocation = async () => {
@@ -79,7 +81,12 @@ const createColocation = async () => {
 
 <style scoped>
 .conteneur {
-    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: auto;
 }
 
 .header {

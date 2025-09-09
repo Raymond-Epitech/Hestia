@@ -1,5 +1,5 @@
 ﻿using Business.Jwt;
-using Shared.Models.DTO;
+using Shared.Enums;
 using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
@@ -13,7 +13,10 @@ namespace Business.Interfaces
         Task<Guid> UpdateUserAsync(UserUpdate user);
         Task<Guid> DeleteUserAsync(Guid id);
         Task<Guid> QuitColocationAsync(Guid id);
-        Task<UserInfo> RegisterUserAsync(string code, UserInput userInput);
-        Task<UserInfo> LoginUserAsync(string code);
+        Task<UserInfo> RegisterUserAsync(string googleToken, UserInput userInput);
+        Task<UserInfo> LoginUserAsync(string googleToken, LoginInput? loginInput);
+        Task<string> LogoutUserAsync(LogoutInput input);
+        Task<Languages> GetLanguageAsync(Guid id);
+        Task<Guid> SetLanguageAsync(LanguageInput input);
     }
 }

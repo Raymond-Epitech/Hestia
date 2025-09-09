@@ -1,42 +1,45 @@
 <template>
-    <div>
-        <div class="conteneur">
-            <div class="colocation-container">
-                <form class="create-colocation">
-                    <h2>
-                        <Texte_language source="ColocationName" />:
-                    </h2>
-                    <input type="text" class="input" v-model="colocation.name" required />
-                    <h2>
-                        <Texte_language source="ColocationAdress" />:
-                    </h2>
-                    <input type="text" class="input" v-model="colocation.address" required />
-                    <button class="button" @click.prevent="createColocation()">
-                        <Texte_language source="CreateColocation" />
-                    </button>
-                </form>
-                <form class="create-colocation">
-                    <h2>
-                        <Texte_language source="ColocationID" />:
-                    </h2>
-                    <input type="text" class="input" v-model="new_data.colocationId" required />
-                    <button class="button" @click.prevent="joinColocation()">
-                        <Texte_language source="JoinColocation" />
-                    </button>
-                </form>
-            </div>
+    <button class="back" @click="redirect('/settings')">
+        <img src="~/public/Retour.svg" class="icon">
+    </button>
+    <div class="page-conteneur">
+        <div class="colocation-container">
+            <form class="create-colocation">
+                <Texte_language source="newFlateshare" />
+                <input type="text" class="input" v-model="colocation.name" :placeholder="$t('ColocationName')"
+                    required />
+                <input type="text" class="input" v-model="colocation.address" :placeholder="$t('ColocationAdress')"
+                    required />
+                <button class="button" @click.prevent="createColocation()">
+                    <Texte_language source="CreateColocation" />
+                </button>
+            </form>
+            <form class="create-colocation">
+                <Texte_language source="ChangeColocation" />
+                <input type="text" class="input" v-model="new_data.colocationId" :placeholder="$t('ColocationID')"
+                    required />
+                <button class="button" @click.prevent="joinColocation()">
+                    <Texte_language source="JoinColocation" />
+                </button>
+            </form>
         </div>
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useUserStore } from '~/store/user';
 
+const router = useRouter();
+const route = useRoute();
 const userStore = useUserStore();
 const user = userStore.user;
 const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
+const collocID = route.query.collocID as string;
+const redirect = (page) => {
+    router.push(page);
+}
 
 const colocation = ref({
     name: '',
@@ -46,88 +49,95 @@ const colocation = ref({
 const new_data = ref({
     username: user.username,
     email: user.email,
-    colocationId: '',
-    pathToProfilePicture: 'exempledetest',
+    colocationId: collocID ? collocID : '',
+    pathToProfilePicture: null,
     id: user.id,
 })
 const joinColocation = async () => {
     const data = await api.updateUser(new_data.value)
     if (data) {
         userStore.setColocation(new_data.value.colocationId);
+        router.push('/');
     }
 }
 const createColocation = async () => {
     const data = await api.addColocation(colocation.value);
     if (data) {
         userStore.setColocation(data);
+        router.push('/');
     }
 }
 
 </script>
 
 <style scoped>
-.conteneur {
-    display: grid;
-    gap: 40px;
+.page-conteneur {
     width: 100%;
-    margin: 40px auto;
-}
-
-h1 {
-    margin-top: -12px;
-    align-items: center;
-    text-align: center;
-    font-size: 32px;
-    font-weight: 600;
-    z-index: 1;
-}
-
-.colocation-container {
+    height: calc(100vh - 4.5rem);
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: center;
+    overflow: scroll;
 }
 
-h2 {
-    margin-top: 12px;
-    font-weight: 600;
-}
-
-.create-colocation {
-    width: 100%;
-    margin-top: 40px;
+.back {
+    background-color: var(--main-buttons);
+    position: fixed;
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 9px;
+    border: none;
+    box-shadow: var(--button-shadow-light);
+    top: 3%;
+    left: 3%;
+}
+
+.back .icon {
+    filter: var(--icon-filter);
+    width: 25px;
+}
+
+.colocation-container {
+    margin: 100px 0px 20px 0px;
+    padding: 30px;
+    display: flex;
+    height: fit-content;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--login-box-bg);
+    border-radius: 20px;
+    box-shadow: var(--rectangle-shadow-light);
+    gap: 40px;
+    font-size: 20px;
+    font-weight: 600;
     text-align: center;
+    color: var(--page-text);
+}
+
+.create-colocation {
+    display: grid;
+    gap: 10px;
 }
 
 .input {
-    width: 80%;
-    height: 46px;
-    margin-top: 12px;
-    border: none;
-    border-radius: 20px;
     outline: none;
-    box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
-    font-weight: 500;
-    font-size: 20px;
-    background-color: #FFFFFF;
+    border-radius: 18px;
+    border: none;
+    font-size: 16px;
+    text-align: start;
+    padding-left: 12px;
+    background-color: var(--secondary-button);
+    color: var(--secondary-page-text);
 }
 
 .button {
-    width: 80%;
-    height: 70px;
-    margin-top: 12px;
     padding: 10px 20px;
-    border-radius: 15px;
-    border: 0;
-    box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
-    background-color: #85AD7B;
-    font-size: 32px;
     font-weight: 600;
-    text-align: center;
+    border-radius: 16px;
+    background-color: var(--secondary-button);
+    color: var(--secondary-page-text);
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <span class="text">{{ $t(source) }}</span> 
+    <span class="text">{{ $t(source) }}</span>
 </template>
 
 <script setup>
@@ -13,6 +13,6 @@ const props = defineProps({
 
 <style scoped>
 .text {
-  white-space: pre-line;
+    white-space: pre-line;
 }
 </style>

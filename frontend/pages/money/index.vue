@@ -1,32 +1,31 @@
 <template>
     <div class="body-container">
+        <AddCategoryModal v-model="isCategoryModalOpen" @proceed="getall()" />
+        <AddBalanceModal v-model="isBalanceModalOpen" @proceed="getall()" />
+        <div class="top-bar">
+            <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openCategoryModal">
+                <img src="~/public/plus.png" class="plus">
+            </button>
+            <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openBalanceModal">
+                <img src="~/public/dollar-sign.svg" class="plus">
+            </button>
+        </div>
         <div class="center-container">
-            <Rectangle v-for="expense in expenses_list" :key="expense.id" color="#85AD7B" id="rec"
-                class="expense mini_rec" :onClick="() => redirectto(expense.name, expense.id)">
-                <text class="category">{{ expense.name }}</text>
-                <text class="regularize-text number">
-                    {{ expense.totalAmount }} €
-                </text>
-            </Rectangle>
-            <Rectangle color="#4FA3A6" id="rec" class="expense mini_rec">
+            <div v-for="expense in expenses_list" :key="expense.id" class="center-container">
+                <ExpenseCategoryBox :expense="expense" @proceed="getall()" />
+            </div>
+            <div class="global">
                 <Texte_language class="category" source="global" />
                 <text class="regularize-text number">
                     {{ global }} €
                 </text>
-            </Rectangle>
-            <Rectangle color="#FFF973" id="rec" class="regularize-text mini_rec"
-                :onClick="() => redirectto('add_category')">
-                <Texte_language source="add_category" />
-            </Rectangle>
-            <Rectangle color="#FFF973" id="rec" class="regularize-text mini_rec" :onClick="() => redirectto('balance')">
-                <Texte_language source="regularize" />
-            </Rectangle>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import type { expenses_category_get } from '~/composables/service/type';
+import type { expenses_category_get, SignalRClient } from '~/composables/service/type';
 import { useI18n } from 'vue-i18n';
 import { useUserStore } from '~/store/user';
 
@@ -38,35 +37,57 @@ api.setjwt(useCookie('token').value ?? '');
 const { t } = useI18n();
 const router = useRouter();
 const global = ref(0);
-const food = ref(0);
-const health = ref(0);
-const partie = ref(0);
 const expenses_list = ref<expenses_category_get[]>([]);
-const collocid = user.colocationId
+const collocid = user.colocationId;
+const { $signalr } = useNuxtApp();
+const signalr = $signalr as SignalRClient;
 
-const redirectto = (name: string, id?: string) => {
-    if (name === 'balance') {
-        router.push({ path: '/money/balance' });
-        return;
+const isCategoryModalOpen = ref(false)
+const openCategoryModal = () => (isCategoryModalOpen.value = true)
+
+const isBalanceModalOpen = ref(false)
+const openBalanceModal = () => (isBalanceModalOpen.value = true)
+
+signalr.on("NewExpenseCategoryAdded", async (CategoryOutput) => {
+    if (!expenses_list.value.some(expense => expense.id === CategoryOutput.id)) {
+        expenses_list.value.push(CategoryOutput)
     }
-    if (name === 'add_category') {
-        router.push({ path: '/money/addCategory' });
-        return;
-    }
-    router.push({ path: '/money/historical', query: { name, id } });
+})
+
+signalr.on("ExpenseCategoryUpdated", (CategoryOutput) => {
+    expenses_list.value = expenses_list.value.filter(expense => expense.id !== CategoryOutput)
+})
+
+signalr.on("NewExpenseAdded", (CategoryOutput) => {
+    getall();
+})
+
+signalr.on("ExpenseUpdated", (CategoryOutput) => {
+    getall();
+})
+
+signalr.on("ExpenseDeleted", (CategoryOutput) => {
+    getall();
+})
+
+const getall = async () => {
+    api.getExpenseByColocationId(collocid).then((response) => {
+        expenses_list.value = response.filter(item => item.name !== "Refund");
+        global.value = expenses_list.value.reduce((acc, expense) => acc + expense.totalAmount, 0);
+    }).catch((error) => {
+        console.error('Error fetching data:', error);
+    })
 }
 
-api.getExpenseByColocationId(collocid).then((response) => {
-    expenses_list.value = response;
-    global.value = expenses_list.value.reduce((acc, expense) => acc + expense.totalAmount, 0);
-}).catch((error) => {
-    console.error('Error fetching data:', error);
-})
+onMounted(async () => {
+    await getall();
+});
 </script>
 
 <style scoped>
 .center-container {
     height: 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -74,17 +95,50 @@ api.getExpenseByColocationId(collocid).then((response) => {
     text-align: center;
 }
 
-.mini_rec {
-    width: 80%;
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+}
+
+.add-post {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    margin: 8px 5%;
+    background-color: var(--main-buttons);
+    border-radius: 9px;
+    border: none;
+    box-shadow: var(--button-shadow-light);
+}
+
+.plus {
+    width: 20px;
+    height: 20px;
+}
+
+.dark .plus {
+    filter: invert(1) opacity(1);
+}
+
+.hestia .plus {
+    filter: invert(1) opacity(1);
+}
+
+.expense {
+    width: 90%;
+    height: 88px;
     margin: 10px;
     padding: 10px;
     display: grid;
     align-items: center;
-}
-
-.expense {
     grid-template-columns: 1fr 1fr;
     justify-content: space-between;
+    background-color: var(--recieved-message);
+    border-radius: 20px;
+    box-shadow: var(--rectangle-shadow-light);
+    color: var(--page-text);
 }
 
 .regularize-text {
@@ -93,13 +147,31 @@ api.getExpenseByColocationId(collocid).then((response) => {
 }
 
 .category {
+    font-size: 20px;
     margin-left: 5px;
     font-weight: 600;
     text-align: left;
 }
 
 .number {
+    font-size: 28px;
     margin-right: 5px;
     text-align: right;
+}
+
+.global {
+    position: fixed;
+    bottom: 62px;
+    width: 100%;
+    height: 88px;
+    padding: 10px;
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1fr 1fr;
+    justify-content: space-between;
+    background-color: var(--main-buttons);
+    border-radius: 20px 20px 0px 0px;
+    box-shadow: var(--button-shadow-light);
+    color: var(--page-text);
 }
 </style>

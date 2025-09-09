@@ -11,7 +11,7 @@ public class ShoppingItemInput
     public Guid CreatedBy { get; set; }
 
     [Required]
-    public Guid ShoppingListId { get; set; }
+    public Guid ReminderId { get; set; }
 
     [Required]
     public bool IsChecked { get; set; } = false;

@@ -3,7 +3,6 @@ using Business.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Exceptions;
-using Shared.Models.DTO;
 using Shared.Models.Input;
 using Shared.Models.Output;
 using Shared.Models.Update;
@@ -12,7 +11,7 @@ namespace Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController(IUserService userService) : ControllerBase
+    public class UserController(IUserService userService, IFirebaseNotificationService notificationService) : ControllerBase
     {
         [HttpGet("GetByColocationId/{colocationId}")]
         [Authorize]
@@ -78,7 +77,7 @@ namespace Api.Controllers
             return Ok(await userService.QuitColocationAsync(id));
         }
 
-        [HttpPost("/Register")]
+        [HttpPost("Register")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -91,17 +90,81 @@ namespace Api.Controllers
             return Ok(await userService.RegisterUserAsync(googleToken, userInput));
         }
 
-        [HttpPost("/Login")]
+        [HttpPost("Login")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<UserInfo>> Login(string googleToken)
+        public async Task<ActionResult<UserInfo>> Login(string googleToken, LoginInput? loginInput)
         {
             if (googleToken is "")
                 throw new InvalidEntityException("Google token is empty");
 
-            return Ok(await userService.LoginUserAsync(googleToken));
+            return Ok(await userService.LoginUserAsync(googleToken, loginInput));
+        }
+
+        [HttpDelete("Logout")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<string>> Logout(LogoutInput input)
+        {
+            if (input.UserId == Guid.Empty)
+                throw new InvalidEntityException("User Id is empty");
+
+            return Ok(await userService.LogoutUserAsync(input));
+        }
+
+        [HttpPost("Notifications/users")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> SendNotificationToUser(NotificationInput notification)
+        {
+            await notificationService.SendNotificationToUserAsync(notification);
+
+            return Ok(notification.Id);
+        }
+
+        [HttpPost("Notifications/colocation")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<Guid>>> SendNotificationToColocation(NotificationInput notification)
+        {
+            var users = await notificationService.SendNotificationToColocationAsync(notification, null);
+
+            return Ok(users);
+        }
+
+        [HttpGet("Language/{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<string>> GetLanguage(Guid id)
+        {
+            if (id == Guid.Empty)
+                throw new InvalidEntityException("User Id is empty");
+
+            return Ok(await userService.GetLanguageAsync(id));
+        }
+
+        [HttpPost("Language")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Guid>> SetLanguage(LanguageInput input)
+        {
+            if (input.UserId == Guid.Empty)
+                throw new InvalidEntityException("User Id is empty");
+
+            return Ok(await userService.SetLanguageAsync(input));
         }
     }
 }

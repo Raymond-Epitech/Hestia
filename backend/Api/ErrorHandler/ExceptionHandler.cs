@@ -36,7 +36,7 @@ public class ExceptionHandler(ILogger<ExceptionHandler> logger) : IExceptionHand
             Instance = context.Request.Path
         };
 
-        logger.LogError(exception, "Handled exception with status {Status}", status);
+        logger.LogError(exception, $"Handled exception with status {status}");
 
         context.Response.StatusCode = status;
 

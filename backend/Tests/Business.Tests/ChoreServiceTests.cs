@@ -1,4 +1,5 @@
-﻿using Business.Services;
+﻿using Business.Interfaces;
+using Business.Services;
 using EntityFramework.Models;
 using EntityFramework.Repositories;
 using FluentAssertions;
@@ -15,10 +16,10 @@ public class ChoreServiceTests
 {
     private readonly Mock<ILogger<ChoreService>> _loggerMock = new();
     private readonly Mock<IRepository<Chore>> _choreRepositoryMock = new();
-    private readonly Mock<IRepository<ChoreMessage>> _choreMessageRepositoryMock = new();
     private readonly Mock<IRepository<User>> _userRepositoryMock = new();
     private readonly Mock<IRepository<ChoreEnrollment>> _choreEnrollmentRepositoryMock = new();
     private readonly Mock<IAppCache> _cacheMock = new();
+    private readonly Mock<IRealTimeService> _realTimeService = new();
 
     private readonly ChoreService _service;
 
@@ -27,10 +28,10 @@ public class ChoreServiceTests
         _service = new ChoreService(
             _loggerMock.Object,
             _choreRepositoryMock.Object,
-            _choreMessageRepositoryMock.Object,
             _userRepositoryMock.Object,
             _choreEnrollmentRepositoryMock.Object,
-            _cacheMock.Object);
+            _cacheMock.Object,
+            _realTimeService.Object);
     }
 
     [Fact]
@@ -173,30 +174,6 @@ public class ChoreServiceTests
             .Setup(r => r.SaveChangesAsync());
 
         var result = await _service.AddChoreAsync(input);
-
-        result.Should().Be(generatedId);
-    }
-
-    [Fact]
-    public async Task AddChoreMessageAsync_ShouldReturnMessageId()
-    {
-        var generatedId = Guid.NewGuid();
-        var input = new ChoreMessageInput
-        {
-            ChoreId = Guid.NewGuid(),
-            CreatedBy = Guid.NewGuid(),
-            Content = "Test"
-        };
-
-        _choreMessageRepositoryMock
-            .Setup(r => r.AddAsync(It.IsAny<ChoreMessage>()))
-            .ReturnsAsync((ChoreMessage msg) => { msg.Id = generatedId; return msg; });
-
-        _choreRepositoryMock
-            .Setup(r => r.SaveChangesAsync())
-            .Returns(Task.CompletedTask);
-
-        var result = await _service.AddChoreMessageAsync(input);
 
         result.Should().Be(generatedId);
     }
