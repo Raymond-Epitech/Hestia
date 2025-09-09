@@ -2,7 +2,7 @@
     <div class="body-container">
         <div class="base">
             <img src="../public/logo-hestia.png" class="logo" />
-            <div v-if="registretion" class="register">
+            <div v-if="registration" class="register">
                 <h2 class="login-font">{{ $t('register') }}</h2>
                 <h2 class="register-font">{{ $t('user_name') }} :</h2>
                 <input class="input" type="text" :placeholder="$t('user_name')" maxlength="12" v-model="username" />
@@ -13,17 +13,19 @@
                 <a type="submit" @click.prevent="register()" class="google-button">
                     {{ $t('register_with_google') }}
                 </a>
-                <button class="register-button" @click="goLogin()">{{ $t('login') }}</button>
             </div>
             <div v-else class="login">
                 <h2 class="login-font">{{ $t('login') }}</h2>
                 <a @click="login()" class="google-button">
                     {{ $t('login_with_google') }}
                 </a>
-                <button class="register-button" @click="goRegister()">
-                    {{ $t('register') }}
-                </button>
             </div>
+            <button v-if="!registration" class="register-button" @click="goRegister()">
+                    {{ $t('register') }}
+            </button>
+            <button v-if="registration" class="register-button" @click="goLogin()">
+                {{ $t('login') }}
+            </button>
         </div>
     </div>
 </template>
@@ -52,7 +54,7 @@ const router = useRouter();
 const route = useRoute()
 const username = ref('');
 const colocationID = ref('');
-const registretion = ref(false);
+const registration = ref(false);
 const alert = ref(false);
 const fcmToken = ref('');
 
@@ -65,7 +67,7 @@ onMounted(() => {
     registerNotifications();
     colocationID.value = route.query.collocID;
     if (colocationID.value) {
-        registretion.value = true;
+        registration.value = true;
     }
     if (Capacitor.isNativePlatform()) {
         PushNotifications.addListener('registration', (token) => {
@@ -79,11 +81,11 @@ onMounted(() => {
 addListeners();
 
 function goLogin() {
-    registretion.value = false;
+    registration.value = false;
 }
 
 function goRegister() {
-    registretion.value = true;
+    registration.value = true;
 }
 
 const register = async () => {
@@ -192,7 +194,7 @@ const login = async () => {
 .register {
     height: 400px;
     width: 300px;
-    padding: 30px;
+    padding: 50px;
     margin: 30px;
     display: flex;
     flex-direction: column;
@@ -239,24 +241,14 @@ h2 {
 .register-button {
     min-width: 68px;
     min-height: 28px;
-    margin-top: 14px;
+    margin-top: 0.2rem;
     padding: 0px 5px;
     border-radius: 8px;
-    color: var(--background);
-    background-color: var(--page-text);
+    color: var(--page-text);
+    background-color: var(--login-box-bg);
     font-weight: 600;
     border: none;
     text-align: center;
-}
-
-.dark .register-button {
-    background-color: var(--background);
-    color: var(--page-text);
-}
-
-.hestia .register-button {
-    background-color: var(--background);
-    color: var(--main-buttons);
 }
 
 .google-button {

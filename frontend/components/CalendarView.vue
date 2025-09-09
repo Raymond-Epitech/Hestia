@@ -152,7 +152,11 @@ watch(locale, (newLocale) => {
     font-size: 20px;
     font-weight: 600;
     margin-bottom: 4px;
-    color: var(--page-text);
+    /* color: var(--page-text); */
+}
+
+.hestia .month-picker {
+    color: var(--secondary-page-text);
 }
 
 .month-picker-button {
