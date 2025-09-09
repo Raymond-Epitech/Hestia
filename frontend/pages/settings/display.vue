@@ -3,37 +3,40 @@
         <img src="~/public/Retour.svg" class="icon">
     </button>
     <div class="container">
-        <h1>{{ $t('theme')}} : {{ $t($colorMode.preference) }}</h1>
+        <h1>{{ $t('theme') }} : {{ $t($colorMode.preference) }}</h1>
         <div class="themes-container">
-            <div class="theme-box" :class="{selected: $colorMode.preference === 'system'}" @click="$colorMode.preference = 'system'">
-            <img src="~/public/settings/system.svg" class="icon"></img>
+            <div class="theme-box" :class="{ selected: $colorMode.preference === 'system' }"
+                @click="$colorMode.preference = 'system'">
+                <img src="~/public/settings/system.svg" class="icon"></img>
             </div>
-            <div class="theme-box" :class="{selected: $colorMode.preference === 'light'}" @click="$colorMode.preference = 'light'">
+            <div class="theme-box" :class="{ selected: $colorMode.preference === 'light' }"
+                @click="$colorMode.preference = 'light'">
                 <img src="~/public/settings/sun.svg" class="icon"></img>
             </div>
-            <div class="theme-box" :class="{selected: $colorMode.preference === 'dark'}" @click="$colorMode.preference = 'dark'">
+            <div class="theme-box" :class="{ selected: $colorMode.preference === 'dark' }"
+                @click="$colorMode.preference = 'dark'">
                 <img src="~/public/settings/moon.svg" class="icon"></img>
             </div>
-            <div class="theme-box" :class="{selected: $colorMode.preference === 'hestia'}" @click="$colorMode.preference = 'hestia'">
+            <div class="theme-box" :class="{ selected: $colorMode.preference === 'hestia' }"
+                @click="$colorMode.preference = 'hestia'">
                 <img src="~/public/settings/fridge.svg" class="icon"></img>
             </div>
         </div>
     </div>
     <div>
-  </div>
+    </div>
 </template>
 
 <script setup>
-  const colorMode = useColorMode()
-  const router = useRouter();
-  const redirect = (page) => {
+const colorMode = useColorMode()
+const router = useRouter();
+const redirect = (page) => {
     router.push(page);
-  }
+}
 
 </script>
 
 <style scoped>
-
 .themes-container {
     display: grid;
     grid-template-columns: repeat(4, 50px);
@@ -107,5 +110,4 @@
 .back .icon {
     width: 25px;
 }
-
 </style>

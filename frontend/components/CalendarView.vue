@@ -15,8 +15,7 @@
         </div>
 
         <div class="days-container">
-            <div v-for="day in days" :key="day.format('YYYY-MM-DD')"
-                class="days" :class="{
+            <div v-for="day in days" :key="day.format('YYYY-MM-DD')" class="days" :class="{
                 'not-current-month': day.month() !== currentMonth,
                 'bg-blue-100': day.isSame(today, 'day')
             }">
@@ -24,7 +23,8 @@
                 <div v-if="choresByDay[day.format('YYYY-MM-DD')]" class="dot-container">
                     <div v-for="chore in choresByDay[day.format('YYYY-MM-DD')]" :key="chore.id">
                         <CalendarDot :id="chore.id" :title="chore.title" :description="chore.description"
-                        :color="getColor(chore.dueDate)" :dueDate="chore.dueDate" :isDone="chore.isDone" :enrolledUsers="chore.enrolledUsers" @proceed="emitProceed()"/>
+                            :color="getColor(chore.dueDate)" :dueDate="chore.dueDate" :isDone="chore.isDone"
+                            :enrolledUsers="chore.enrolledUsers" @proceed="emitProceed()" />
                     </div>
                 </div>
             </div>
@@ -141,7 +141,7 @@ function getColor(dueDate: any) {
 }
 
 watch(locale, (newLocale) => {
-  dayjs.locale(newLocale)
+    dayjs.locale(newLocale)
 }, { immediate: true })
 </script>
 

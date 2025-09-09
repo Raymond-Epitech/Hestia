@@ -272,7 +272,7 @@ export class bridge {
     async deleteReactionReminder(reminderId: string, userId: string) {
         return await fetch(this.url + "/api/Reminder/Reactions", {
             method: 'DELETE',
-             headers: {
+            headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + this.jwt
             },

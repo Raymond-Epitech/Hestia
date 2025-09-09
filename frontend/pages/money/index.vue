@@ -11,8 +11,8 @@
             </button>
         </div>
         <div class="center-container">
-            <div v-for="expense in expenses_list" :key="expense.id" class="center-container" >
-                <ExpenseCategoryBox :expense="expense" @proceed="getall()"/>
+            <div v-for="expense in expenses_list" :key="expense.id" class="center-container">
+                <ExpenseCategoryBox :expense="expense" @proceed="getall()" />
             </div>
             <div class="global">
                 <Texte_language class="category" source="global" />
@@ -37,7 +37,7 @@ api.setjwt(useCookie('token').value ?? '');
 const { t } = useI18n();
 const router = useRouter();
 const global = ref(0);
-const expenses_list = ref < expenses_category_get[] > ([]);
+const expenses_list = ref<expenses_category_get[]>([]);
 const collocid = user.colocationId;
 const { $signalr } = useNuxtApp();
 const signalr = $signalr as SignalRClient;
@@ -49,25 +49,25 @@ const isBalanceModalOpen = ref(false)
 const openBalanceModal = () => (isBalanceModalOpen.value = true)
 
 signalr.on("NewExpenseCategoryAdded", async (CategoryOutput) => {
-  if (!expenses_list.value.some(expense => expense.id === CategoryOutput.id)) {
-    expenses_list.value.push(CategoryOutput)
-  }
+    if (!expenses_list.value.some(expense => expense.id === CategoryOutput.id)) {
+        expenses_list.value.push(CategoryOutput)
+    }
 })
 
 signalr.on("ExpenseCategoryUpdated", (CategoryOutput) => {
-  expenses_list.value = expenses_list.value.filter(expense => expense.id !== CategoryOutput)
+    expenses_list.value = expenses_list.value.filter(expense => expense.id !== CategoryOutput)
 })
 
 signalr.on("NewExpenseAdded", (CategoryOutput) => {
-  getall();
+    getall();
 })
 
 signalr.on("ExpenseUpdated", (CategoryOutput) => {
-  getall();
+    getall();
 })
 
 signalr.on("ExpenseDeleted", (CategoryOutput) => {
-  getall();
+    getall();
 })
 
 const getall = async () => {
@@ -174,5 +174,4 @@ onMounted(async () => {
     box-shadow: var(--button-shadow-light);
     color: var(--page-text);
 }
-
 </style>

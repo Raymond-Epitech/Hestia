@@ -1,6 +1,8 @@
 <template>
-    <div :class="[post.reminderType == 1 ? 'post_image' : post.reminderType == 2 ? 'shopping-container' : 'post', , post.reminderType != 1 && post.color]">
-        <ProfileIcon v-if="post.reminderType !== 2" class="profile-icon" :height="30" :width="30" :linkToPP="post.linkToPP" />
+    <div
+        :class="[post.reminderType == 1 ? 'post_image' : post.reminderType == 2 ? 'shopping-container' : 'post', , post.reminderType != 1 && post.color]">
+        <ProfileIcon v-if="post.reminderType !== 2" class="profile-icon" :height="30" :width="30"
+            :linkToPP="post.linkToPP" />
         <ReactModal :postId="post.id" v-model="isModalOpen" />
         <button class="react-button" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
             <div class="heart">❤️</div>
@@ -14,7 +16,7 @@
             <div class="close"></div>
         </button>
         <button class="edit-button" @click="handleModify" v-if="post.reminderType == 2">
-            <img src="/edit.svg" class="edit-icon"/>
+            <img src="/edit.svg" class="edit-icon" />
         </button>
         <p v-if="post.reminderType == 0">{{ post.content }}</p>
         <img v-if="post.reminderType == 1" :src="imageget" alt="Post Image" class="image" />
@@ -25,8 +27,7 @@
                     <span class="shopping-name">
                         {{ item.name }}
                     </span>
-                    <div class="check-zone" :class="{ checked: item.isChecked }"
-                        @click.stop="toggleCheck(item)">
+                    <div class="check-zone" :class="{ checked: item.isChecked }" @click.stop="toggleCheck(item)">
                     </div>
                 </div>
             </div>

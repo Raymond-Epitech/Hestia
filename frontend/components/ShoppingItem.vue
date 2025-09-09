@@ -16,12 +16,7 @@
             <div v-if="!modif" class="check-zone" :class="{ checked: item.isChecked }" @click.stop="toggleCheck"></div>
         </div>
     </div>
-    <popup
-        v-if="popup_vue"
-        :text="$t('confirm_delete_shoppingitem')"
-        @confirm="confirmDelete"
-        @close="cancelDelete"
-    />
+    <popup v-if="popup_vue" :text="$t('confirm_delete_shoppingitem')" @confirm="confirmDelete" @close="cancelDelete" />
 </template>
 
 <script setup lang="ts">

@@ -10,8 +10,7 @@
         <div>
             <ShoppingItem v-for="item in shopping_list.shoppingItems" :key="item.id ?? item.name" :item="item"
                 @update:isChecked="updateIsChecked(item.id ?? '', $event)"
-                @update:name="updateName(item.id ?? '', $event)"
-                @delete="deleteItem(item.id ?? '')" />
+                @update:name="updateName(item.id ?? '', $event)" @delete="deleteItem(item.id ?? '')" />
         </div>
     </div>
 </template>

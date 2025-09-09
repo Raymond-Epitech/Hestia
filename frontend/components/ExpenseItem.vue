@@ -1,9 +1,10 @@
 <template>
-  <ModifyExpenseModal v-model="isModalOpen" :key="expense.id" :expense="expense" @open="emitOpen()" @proceed="emitProceed()"/>
+  <ModifyExpenseModal v-model="isModalOpen" :key="expense.id" :expense="expense" @open="emitOpen()"
+    @proceed="emitProceed()" />
   <div class="expense" @click="openModal">
     <div class="expense-header">
       <div class="dot-container">
-        <div class="dot"/>
+        <div class="dot" />
       </div>
       <span class="expense-name">{{ expense.name }}</span>
       <span class="expense-amount">{{ expense.amount }} €</span>
@@ -30,7 +31,7 @@ const openModal = () => (isModalOpen.value = true)
 const emit = defineEmits(['proceed', 'get', 'open'])
 
 function emitProceed() {
-    emit('proceed')
+  emit('proceed')
 }
 
 function emitOpen() {

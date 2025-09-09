@@ -60,69 +60,69 @@
 </template>
 
 <script setup>
-    import { useAuthStore } from '~/store/auth';
+import { useAuthStore } from '~/store/auth';
 
-    const authenticateUser = useAuthStore();
+const authenticateUser = useAuthStore();
 
-    const router = useRouter();
-    const redirect = (page) => {
-        router.push(page);
-    }
+const router = useRouter();
+const redirect = (page) => {
+    router.push(page);
+}
 
-    function logout() {
-        authenticateUser.logUserOut();
-        router.push('/');
-    }
+function logout() {
+    authenticateUser.logUserOut();
+    router.push('/');
+}
 </script>
 
 <style scoped>
-    .conteneur {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-        margin: 40px auto;
-        margin-top: 5rem;
-        max-height: calc(100vh - 5.5rem);
-    }
+.conteneur {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin: 40px auto;
+    margin-top: 5rem;
+    max-height: calc(100vh - 5.5rem);
+}
 
-    .setting-button {
-        width: 20.2rem;
-        height: 80px;
-        display: grid;
-        grid-template-columns: 1fr 4fr;
-        align-items: center;
-        border-radius: 20px;
-        background-color: var(--main-buttons);
-        box-shadow: var(--rectangle-shadow-light);
-        color: var(--page-text);
-    }
+.setting-button {
+    width: 20.2rem;
+    height: 80px;
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    align-items: center;
+    border-radius: 20px;
+    background-color: var(--main-buttons);
+    box-shadow: var(--rectangle-shadow-light);
+    color: var(--page-text);
+}
 
-    .setting-text {
-        display: flex;
-        flex-direction: column;
-    }
+.setting-text {
+    display: flex;
+    flex-direction: column;
+}
 
-    .header {
-        font-size: 24px;
-        font-weight: 600;
-    }
+.header {
+    font-size: 24px;
+    font-weight: 600;
+}
 
-    .sub-header {
-        font-size: 12px;
-        font-weight: 600;
-    }
+.sub-header {
+    font-size: 12px;
+    font-weight: 600;
+}
 
-    .icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        filter: var(--icon-filter);
-    }
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: var(--icon-filter);
+}
 
-    img {
-        width: 30px;
-    }
+img {
+    width: 30px;
+}
 
 .back {
     background-color: var(--main-buttons);

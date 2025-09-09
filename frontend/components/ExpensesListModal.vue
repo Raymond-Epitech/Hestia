@@ -1,19 +1,21 @@
 <template>
     <transition name="modal">
         <div v-if="visible">
-            <AddExpenseModal v-model="isAddExpenseModalOpen" :category-id="expense" @proceed="handleProceed()"/>
+            <AddExpenseModal v-model="isAddExpenseModalOpen" :category-id="expense" @proceed="handleProceed()" />
             <div class="modal-background" @click="handleClose">
                 <div class="modal" @click.stop>
                     <div class="modal-top-bar">
                         <div id="return" @click="handleClose">
                             <img src="/Retour.svg" class="icon" alt="Return" width="32" height="32" />
                         </div>
-                        <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openAddExpenseModal">
+                        <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm"
+                            @click="openAddExpenseModal">
                             <img src="~/public/plus.png" class="plus">
                         </button>
                     </div>
                     <div :class="[forbid_scroll === true ? 'forbid-scroll' : '']">
-                        <ExpenseItem v-for="expense in expenses_list" :key="expense.id" :expense="expense" :paidBy="getUsername(expense.paidBy)" @open="forbidScroll()" @proceed="handleProceed()"/>
+                        <ExpenseItem v-for="expense in expenses_list" :key="expense.id" :expense="expense"
+                            :paidBy="getUsername(expense.paidBy)" @open="forbidScroll()" @proceed="handleProceed()" />
                     </div>
                 </div>
             </div>
@@ -27,14 +29,14 @@ import { useUserStore } from '~/store/user';
 import type { Expenseget, Coloc, SignalRClient } from '~/composables/service/type';
 
 const props = withDefaults(
-    defineProps < {
+    defineProps<{
         name?: string,
         modelValue?: boolean,
         header?: boolean,
         buttons?: boolean,
         borders?: boolean,
         expense: string,
-    } > (),
+    }>(),
     {
         header: true,
         buttons: true,
@@ -59,31 +61,31 @@ const { open, close, toggle, visible } = useModal(props.name)
 const isAddExpenseModalOpen = ref(false)
 const openAddExpenseModal = () => (isAddExpenseModalOpen.value = true)
 
-const emit = defineEmits < {
+const emit = defineEmits<{
     closed: [], // named tuple syntax
     proceed: [],
     'update:modelValue': [value: boolean]
-} > ()
+}>()
 
 signalr.on("NewExpenseAdded", (CategoryOutput) => {
-  api.getExpensebycategoryId(props.expense).then((response) => {
-    expenses_list.value = response;
+    api.getExpensebycategoryId(props.expense).then((response) => {
+        expenses_list.value = response;
     }).catch((error) => {
         console.error('Error fetching data:', error);
     })
 })
 
 signalr.on("ExpenseUpdated", (CategoryOutput) => {
-  api.getExpensebycategoryId(props.expense).then((response) => {
-    expenses_list.value = response;
+    api.getExpensebycategoryId(props.expense).then((response) => {
+        expenses_list.value = response;
     }).catch((error) => {
         console.error('Error fetching data:', error);
     })
 })
 
 signalr.on("ExpenseDeleted", (CategoryOutput) => {
-  api.getExpensebycategoryId(props.expense).then((response) => {
-    expenses_list.value = response;
+    api.getExpensebycategoryId(props.expense).then((response) => {
+        expenses_list.value = response;
     }).catch((error) => {
         console.error('Error fetching data:', error);
     })

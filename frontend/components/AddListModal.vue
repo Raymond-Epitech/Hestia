@@ -4,7 +4,8 @@
       <div class="modal-background" @click="handleClose">
         <div class="modal" @click.stop>
           <div class="modal-header left">
-            <input class="modal-body-input" rows="1" maxlength="50" v-model="post.shoppinglistName" :placeholder="$t('shopping-list-name')"></input>
+            <input class="modal-body-input" rows="1" maxlength="50" v-model="post.shoppinglistName"
+              :placeholder="$t('shopping-list-name')"></input>
             <button v-if="modify" src="/Trash.svg" alt="Delete Icon" @click="showPopup">
               <img src="/Trash.svg" alt="Delete Icon" class="svg-icon" />
             </button>
@@ -17,23 +18,20 @@
               </div>
             </div>
             <div @click.prevent="handleAddItem" class="form-add-item">
-              <input v-model="newitemList.name" type="text" placeholder="Item" maxlength="18" class="modal-body-input" /><!-- !!!! add locale !!! -->
-              <button v-if="newitemList.name==''" :disabled="true" type="submit">
+              <input v-model="newitemList.name" type="text" placeholder="Item" maxlength="18"
+                class="modal-body-input" /><!-- !!!! add locale !!! -->
+              <button v-if="newitemList.name == ''" :disabled="true" type="submit">
                 <img src="/Submit.svg" alt="Submit Icon" class="svg-icon submit" />
               </button>
-              <button v-if="newitemList.name!=''" type="submit">
+              <button v-if="newitemList.name != ''" type="submit">
                 <img src="/Submit.svg" alt="Submit Icon" class="svg-icon submit" />
               </button>
             </div>
           </form>
         </div>
       </div>
-      <popup
-        v-if="popup_vue"
-        :text="$t('confirm_delete_shoppinglist')"
-        @confirm="confirmDelete"
-        @close="cancelDelete"
-    />
+      <popup v-if="popup_vue" :text="$t('confirm_delete_shoppinglist')" @confirm="confirmDelete"
+        @close="cancelDelete" />
     </div>
   </transition>
 </template>
@@ -269,24 +267,24 @@ const handleSubmit = () => {
 };
 
 const showPopup = () => {
-    popup_vue.value = true;
+  popup_vue.value = true;
 };
 
 const confirmDelete = async () => {
-    popup_vue.value = false;
-    api.deleteReminder(Id.value).then((response) => {
-      if (!response) {
-        console.error(`Failed to delete reminder ${Id.value}`);
-        return;
-      }
-      resetPost()
-      close()
-      emit('closed')
-    });
+  popup_vue.value = false;
+  api.deleteReminder(Id.value).then((response) => {
+    if (!response) {
+      console.error(`Failed to delete reminder ${Id.value}`);
+      return;
+    }
+    resetPost()
+    close()
+    emit('closed')
+  });
 };
 
 const cancelDelete = () => {
-    popup_vue.value = false;
+  popup_vue.value = false;
 };
 
 </script>

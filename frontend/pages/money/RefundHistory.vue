@@ -9,7 +9,8 @@
             </div>
             <div v-for="refund in refund_list" :key="refund.id" class="refund-rectangle">
                 <div class="refund-text">
-                    <text>{{ $t('from') }} {{ getUsername(refund.paidBy) }} {{ $t('to') }} {{getUsername(Object.keys(refund.splitBetween)[0])}}</text>
+                    <text>{{ $t('from') }} {{ getUsername(refund.paidBy) }} {{ $t('to') }}
+                        {{ getUsername(Object.keys(refund.splitBetween)[0]) }}</text>
                     <text class="date"> {{ getDayNumber(refund.dateOfPayment) }}</text>
                 </div>
                 <text class="number"> {{ refund.amount }} € </text>
@@ -26,23 +27,23 @@ const userStore = useUserStore();
 const user = userStore.user;
 const { $bridge } = useNuxtApp()
 const api = $bridge;
-const refund = ref < expenses_category_get > ();
-const refund_list = ref<Expenseget[]> ([]);
+const refund = ref<expenses_category_get>();
+const refund_list = ref<Expenseget[]>([]);
 api.setjwt(useCookie('token').value ?? '');
 const list_coloc = ref<Coloc[]>([]);
 
 await api.getExpenseByColocationId(user.colocationId).then((response) => {
-            refund.value = response.find(item => item.name === "Refund");
-            if (refund.value) {
-                api.getExpensebycategoryId(refund.value.id).then((response) => {
-                refund_list.value = response;
-                }).catch((error) => {
-                    console.error('Error fetching data:', error);
-                })
-            }
+    refund.value = response.find(item => item.name === "Refund");
+    if (refund.value) {
+        api.getExpensebycategoryId(refund.value.id).then((response) => {
+            refund_list.value = response;
         }).catch((error) => {
             console.error('Error fetching data:', error);
         })
+    }
+}).catch((error) => {
+    console.error('Error fetching data:', error);
+})
 
 api.getUserbyCollocId(user.colocationId).then((response) => {
     list_coloc.value = response;

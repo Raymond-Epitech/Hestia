@@ -14,9 +14,7 @@
     </button>
     <div class="post-list">
       <div v-for="(post) in posts" :key="post.id">
-        <Post :post="post"
-          @delete="getall()" 
-          @modify="handleModify(post)"/>
+        <Post :post="post" @delete="getall()" @modify="handleModify(post)" />
       </div>
     </div>
   </div>
@@ -26,18 +24,18 @@
 import { useUserStore } from '~/store/user';
 import type { Reminder, SignalRClient } from '../composables/service/type';
 
-  const isModalOpen = ref(false)
-  const openModal = () => (isModalOpen.value = true)
-  const isModalImageOpen = ref(false)
-  const openImageModal = () => (isModalImageOpen.value = true)
-  const isModalListOpen = ref(false)
-  const remindermodif = ref<Reminder>();
-  const openListModal = () => (isModalListOpen.value = true)
+const isModalOpen = ref(false)
+const openModal = () => (isModalOpen.value = true)
+const isModalImageOpen = ref(false)
+const openImageModal = () => (isModalImageOpen.value = true)
+const isModalListOpen = ref(false)
+const remindermodif = ref<Reminder>();
+const openListModal = () => (isModalListOpen.value = true)
 
-  const userStore = useUserStore();
-  const { $bridge } = useNuxtApp()
-  const api = $bridge;
-  api.setjwt(useCookie('token').value ?? '');
+const userStore = useUserStore();
+const { $bridge } = useNuxtApp()
+const api = $bridge;
+api.setjwt(useCookie('token').value ?? '');
 
 const posts = ref<Reminder[]>([]);
 
@@ -89,49 +87,49 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-  .post-list {
-    overflow-y: auto;
-    max-height: calc(100vh - 4.5rem);
-  }
+.post-list {
+  overflow-y: auto;
+  max-height: calc(100vh - 4.5rem);
+}
 
-  button {
-    position: fixed;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 40px;
-    height: 40px;
-    background-color: var(--main-buttons);
-    border-radius: 9px;
-    border: none;
-    box-shadow: var(--button-shadow-light);
-  }
+button {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  background-color: var(--main-buttons);
+  border-radius: 9px;
+  border: none;
+  box-shadow: var(--button-shadow-light);
+}
 
-  .add-post {
-    top: 6%;
-    right: 3%;
-    z-index: 1000;
-  }
-  
-  .add-image {
-    top: 15%;
-    right: 3%;
-    z-index: 1000;
-  }
-  
-  .add-list {
-    top: 24%;
-    right: 3%;
-    z-index: 1000;
-  }
+.add-post {
+  top: 6%;
+  right: 3%;
+  z-index: 1000;
+}
 
-  .icon {
-    width: 72%;
-    padding-top: 5%;
-    filter: var(--icon-filter);
-  }
+.add-image {
+  top: 15%;
+  right: 3%;
+  z-index: 1000;
+}
 
-  .hestia .post {
-    filter: none;
-  }
+.add-list {
+  top: 24%;
+  right: 3%;
+  z-index: 1000;
+}
+
+.icon {
+  width: 72%;
+  padding-top: 5%;
+  filter: var(--icon-filter);
+}
+
+.hestia .post {
+  filter: none;
+}
 </style>

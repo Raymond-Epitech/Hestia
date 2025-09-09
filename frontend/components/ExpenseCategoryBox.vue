@@ -1,5 +1,5 @@
 <template>
-    <ExpensesListModal v-model="isExpenseModalOpen" :expense="expense.id" @proceed="handleProceed()"/>
+    <ExpensesListModal v-model="isExpenseModalOpen" :expense="expense.id" @proceed="handleProceed()" />
     <div class="expense" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openExpenseModal">
         <text class="category">{{ expense.name }}</text>
         <text class="regularize-text number">

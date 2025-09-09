@@ -5,16 +5,19 @@
     <div class="page-conteneur">
         <div class="colocation-container">
             <form class="create-colocation">
-                <Texte_language source="newFlateshare"/>
-                <input type="text" class="input" v-model="colocation.name" :placeholder="$t('ColocationName')" required />
-                <input type="text" class="input" v-model="colocation.address" :placeholder="$t('ColocationAdress')" required />
+                <Texte_language source="newFlateshare" />
+                <input type="text" class="input" v-model="colocation.name" :placeholder="$t('ColocationName')"
+                    required />
+                <input type="text" class="input" v-model="colocation.address" :placeholder="$t('ColocationAdress')"
+                    required />
                 <button class="button" @click.prevent="createColocation()">
                     <Texte_language source="CreateColocation" />
                 </button>
             </form>
             <form class="create-colocation">
                 <Texte_language source="ChangeColocation" />
-                <input type="text" class="input" v-model="new_data.colocationId" :placeholder="$t('ColocationID')" required />
+                <input type="text" class="input" v-model="new_data.colocationId" :placeholder="$t('ColocationID')"
+                    required />
                 <button class="button" @click.prevent="joinColocation()">
                     <Texte_language source="JoinColocation" />
                 </button>
@@ -137,5 +140,4 @@ const createColocation = async () => {
     background-color: var(--secondary-button);
     color: var(--secondary-page-text);
 }
-
 </style>

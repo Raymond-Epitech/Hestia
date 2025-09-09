@@ -8,7 +8,7 @@
     <div class="page-container">
         <div class="user">
             <div v-if="user" class="username">{{ user.username }}</div>
-            <ProfileIcon v-if="user" :key="user.id" :height="200" :width="200" :linkToPP="user.profilePictureUrl"/>
+            <ProfileIcon v-if="user" :key="user.id" :height="200" :width="200" :linkToPP="user.profilePictureUrl" />
         </div>
         <div class="colocation-preview">
             <text class="header">
@@ -111,7 +111,7 @@ button {
     bottom: 4.5rem;
     padding: 1rem;
     display: grid;
-    grid-template-rows: repeat(4,1fr);
+    grid-template-rows: repeat(4, 1fr);
     gap: 10px;
     background-color: var(--main-buttons);
     align-items: center;
@@ -161,5 +161,4 @@ sub {
     line-height: 2.2rem;
     color: var(--page-text);
 }
-
 </style>

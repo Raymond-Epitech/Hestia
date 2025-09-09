@@ -21,14 +21,14 @@ import { useUserStore } from '~/store/user';
 import type { refund, Expense } from '~/composables/service/type';
 
 const props = withDefaults(
-    defineProps < {
+    defineProps<{
         name?: string,
         modelValue?: boolean,
         header?: boolean,
         buttons?: boolean,
         borders?: boolean,
         refund: refund,
-    } > (),
+    }>(),
     {
         header: true,
         buttons: true,
@@ -44,11 +44,11 @@ let rufendcategoryId = '';
 const { modelValue } = toRefs(props)
 const { open, close, toggle, visible } = useModal(props.name)
 
-const emit = defineEmits < {
+const emit = defineEmits<{
     closed: [], // named tuple syntax
     proceed: [],
     'update:modelValue': [value: boolean]
-} > ()
+}>()
 
 defineExpose({
     open,
@@ -64,11 +64,11 @@ const handleClose = () => {
 
 const handleRefund = async () => {
     await api.getExpenseByColocationId(user.colocationId).then((response) => {
-    response.forEach((expense) => {
-        if (expense.name === "Refund") {
-            rufendcategoryId = expense.id;
-        }
-    });
+        response.forEach((expense) => {
+            if (expense.name === "Refund") {
+                rufendcategoryId = expense.id;
+            }
+        });
     }).catch((error) => {
         console.error('Error fetching expenses:', error);
     });
@@ -111,149 +111,149 @@ watch(visible, (value) => {
 </script>
 
 <style scoped>
-    .modal {
-        width: 100%;
-        height: fit-content;
-        overflow-y: auto;
-        margin-top: 0px;
-        padding-top: 25pt;
-        border-top-left-radius: 0px;
-        border-top-right-radius: 0px;
-        border-bottom-left-radius: 20px;
-        border-bottom-right-radius: 20px;
-        animation: slideIn 0.4s;
-        background-color: #1e1e1eda;
-        backdrop-filter: blur(8px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        position: relative;
-    }
+.modal {
+    width: 100%;
+    height: fit-content;
+    overflow-y: auto;
+    margin-top: 0px;
+    padding-top: 25pt;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    animation: slideIn 0.4s;
+    background-color: #1e1e1eda;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+}
 
-    .modal-header {
-        padding: 0px 16px;
-        font-weight: 600;
-        border-bottom: none;
-        color: var(--overlay-text);
-    }
+.modal-header {
+    padding: 0px 16px;
+    font-weight: 600;
+    border-bottom: none;
+    color: var(--overlay-text);
+}
 
-    .modal-header-text {
-        font-size: 20px;
-    }
+.modal-header-text {
+    font-size: 20px;
+}
 
-    .modal-body {
-        padding: 0px 12px 12px 12px;
-        display: flex;
-        flex-direction: column;
-        overflow: auto;
-        gap: 16px;
-    }
+.modal-body {
+    padding: 0px 12px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    gap: 16px;
+}
 
-    .modal-background {
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 100;
-        position: fixed;
-        animation: fadeIn 0.2s;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-    }
+.modal-background {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    position: fixed;
+    animation: fadeIn 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
 
-    .modal-buttons {
-        padding: 14px;
-        border-top: 0px;
-        margin-top: auto;
-        margin-bottom: 12px;
-        display: flex;
-        justify-content: center;
-    }
+.modal-buttons {
+    padding: 14px;
+    border-top: 0px;
+    margin-top: auto;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: center;
+}
 
-    .modal-no-border {
-        border: 0;
-    }
+.modal-no-border {
+    border: 0;
+}
 
-    /** Fallback Buttons */
-    .button {
-        width: 136px;
-        height: 66px;
-        border-radius: 16px;
-        border: 0;
-        cursor: pointer;
-        font-size: 20px;
-        background: var(--main-buttons);
-        color: var(--page-text);
-        font-weight: 600;
-    }
+/** Fallback Buttons */
+.button {
+    width: 136px;
+    height: 66px;
+    border-radius: 16px;
+    border: 0;
+    cursor: pointer;
+    font-size: 20px;
+    background: var(--main-buttons);
+    color: var(--page-text);
+    font-weight: 600;
+}
 
-    button:disabled {
-        opacity: 0.5;
-    }
+button:disabled {
+    opacity: 0.5;
+}
 
-    /* Transition */
-    .modal-enter-active,
-    .modal-leave-active {
-        transition: opacity 0.2s ease;
-    }
+/* Transition */
+.modal-enter-active,
+.modal-leave-active {
+    transition: opacity 0.2s ease;
+}
 
-    .modal-enter-from,
-    .modal-leave-to {
+.modal-enter-from,
+.modal-leave-to {
+    opacity: 0;
+}
+
+@keyframes fadeIn {
+    0% {
         opacity: 0;
     }
 
-    @keyframes fadeIn {
-        0% {
-            opacity: 0;
-        }
+    100% {
+        opacity: 1;
+    }
+}
 
-        100% {
-            opacity: 1;
-        }
+@keyframes slideIn {
+    0% {
+        transform: translateY(-600px);
     }
 
-    @keyframes slideIn {
-        0% {
-            transform: translateY(-600px);
-        }
+    100% {
+        transform: translateY(0px);
+    }
+}
 
-        100% {
-            transform: translateY(0px);
-        }
+@keyframes slideOut {
+    0% {
+        transform: translateY(0px);
     }
 
-    @keyframes slideOut {
-        0% {
-            transform: translateY(0px);
-        }
+    100% {
+        transform: translateY(-600px);
+    }
+}
 
-        100% {
-            transform: translateY(-600px);
-        }
+@media screen and (max-width: 768px) {
+
+    /** Slide Out Transition (mobile only) */
+    .modal-enter-from:deep(.modal),
+    .modal-leave-to:deep(.modal) {
+        animation: slideOut 0.4s linear;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .modal-background {
+        justify-content: flex-start;
     }
 
-    @media screen and (max-width: 768px) {
-
-        /** Slide Out Transition (mobile only) */
-        .modal-enter-from:deep(.modal),
-        .modal-leave-to:deep(.modal) {
-            animation: slideOut 0.4s linear;
-        }
+    .modal {
+        width: 100%;
+        margin: 0 0 0 0;
+        max-height: calc(100dvh - 120px);
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
     }
-
-    @media screen and (min-width: 768px) {
-        .modal-background {
-            justify-content: flex-start;
-        }
-
-        .modal {
-            width: 100%;
-            margin: 0 0 0 0;
-            max-height: calc(100dvh - 120px);
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-        }
-    }
+}
 </style>

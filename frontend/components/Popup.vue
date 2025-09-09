@@ -16,98 +16,98 @@
 </template>
 
 <script setup>
-    const props = defineProps({
-        text: {
-            type: String,
-            required: true
-        },
-        title: {
-            type: String,
-            required: false
-        }
-    })
-    const emit = defineEmits([
-        'confirm',
-        'close'
-    ]);
+const props = defineProps({
+    text: {
+        type: String,
+        required: true
+    },
+    title: {
+        type: String,
+        required: false
+    }
+})
+const emit = defineEmits([
+    'confirm',
+    'close'
+]);
 </script>
 
 <style scoped>
-    .overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 2000;
-        backdrop-filter: blur(6px);
-    }
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    backdrop-filter: blur(6px);
+}
 
 
-    .popup {
-        position: fixed;
-        display: flex;
-        flex-direction: column;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: var(--list-overlay-bg);
-        padding: 4%;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        z-index: 1000;
-    }
+.popup {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--list-overlay-bg);
+    padding: 4%;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
 
-    .popup h1 {
-        margin: 0 0 10px;
-        font-size: 24px;
-    }
+.popup h1 {
+    margin: 0 0 10px;
+    font-size: 24px;
+}
 
-    .popup p {
-        margin: 0 0 20px;
-        font-size: 20px;
-        text-align: center;
-    }
+.popup p {
+    margin: 0 0 20px;
+    font-size: 20px;
+    text-align: center;
+}
 
-    .popup button {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 7px;
-        border-radius: 16px;
-    }
+.popup button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 7px;
+    border-radius: 16px;
+}
 
-    .button {
-        display: flex;
-        justify-content: center;
-        gap: 16px
-    }
+.button {
+    display: flex;
+    justify-content: center;
+    gap: 16px
+}
 
-    .text {
-        text-align: center;
-        font-size: 16px;
-        font-weight: bold;
-        color: var(--page-text);
-    }
+.text {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--page-text);
+}
 
-    .cancel-button {
-        background-color: var(--main-buttons);
-        color: var(--page-text);
-        padding: 10px 20px;
-        box-shadow: var(--button-shadow-light);
-    }
+.cancel-button {
+    background-color: var(--main-buttons);
+    color: var(--page-text);
+    padding: 10px 20px;
+    box-shadow: var(--button-shadow-light);
+}
 
-    .confirm-button {
-        background-color: var(--basic-red);
-        color: var(--page-text);
-        padding: 10px 20px;
-        box-shadow: var(--button-shadow-light);
-    }
+.confirm-button {
+    background-color: var(--basic-red);
+    color: var(--page-text);
+    padding: 10px 20px;
+    box-shadow: var(--button-shadow-light);
+}
 
-    .dark .confirm-button {
-        background-color: var(--sent-message);
-    }
+.dark .confirm-button {
+    background-color: var(--sent-message);
+}
 </style>

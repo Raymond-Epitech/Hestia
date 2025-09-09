@@ -126,6 +126,6 @@ const setlangue = (lang: Locale) => {
 }
 
 .back .icon {
-    width: 25px;
+  width: 25px;
 }
 </style>

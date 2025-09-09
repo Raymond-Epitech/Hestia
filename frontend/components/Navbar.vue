@@ -90,7 +90,7 @@ const redirect = (page) => {
 .icon {
     height: 3rem;
     filter: var(--icon-filter);
-    transition: transform 0.2s cubic-bezier(.4,2,.3,1);
+    transition: transform 0.2s cubic-bezier(.4, 2, .3, 1);
 }
 
 .icon.selected {
@@ -108,7 +108,7 @@ const redirect = (page) => {
     max-width: 5.8rem;
     height: 10rem;
     margin-top: -1.5rem;
-    transition: transform 0.2s cubic-bezier(.4,2,.3,1);
+    transition: transform 0.2s cubic-bezier(.4, 2, .3, 1);
 }
 
 .fridge.selected {

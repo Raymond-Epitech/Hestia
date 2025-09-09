@@ -1,7 +1,7 @@
 <template>
     <div class="box">
         <div v-if="sendBy != 'me'" class="header">
-            <ProfileIcon :height="15" :width="15"/>
+            <ProfileIcon :height="15" :width="15" />
             <p>{{ sendBy }}</p>
         </div>
         <div :class="['content', sendBy === 'me' ? 'content-me' : 'content-other']">
@@ -66,6 +66,7 @@ const props = defineProps({
 .content p {
     margin-bottom: 0;
 }
+
 .content-me {
     font-size: 14px;
     border-radius: 8px 8px 0 8px;
@@ -79,5 +80,4 @@ const props = defineProps({
     background-color: var(--recieved-message);
     margin-right: auto;
 }
-
 </style>

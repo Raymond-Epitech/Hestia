@@ -3,7 +3,7 @@
     <div class="refund-rectangle to" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openRefundModal">
         <text>{{ $t('Due_to') }} {{ refund.toUsername }} </text>
         <text class="number">
-            {{ refund.amount}} €
+            {{ refund.amount }} €
         </text>
     </div>
 </template>
@@ -27,29 +27,29 @@ const handleProceed = () => {
 </script>
 
 <style scoped>
-    .refund-rectangle {
-        width: 100%;
-        height: 100px;
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0% 6%;
-        color: var(--page-text);
-        font-size: 20px;
-        font-weight: 600;
-        border-radius: 20px;
-        margin: 10px 0px;
-    }
+.refund-rectangle {
+    width: 100%;
+    height: 100px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0% 6%;
+    color: var(--page-text);
+    font-size: 20px;
+    font-weight: 600;
+    border-radius: 20px;
+    margin: 10px 0px;
+}
 
-    .to {
-        background-color: var(--recieved-message);
-        color: var(--page-text);
-    }
+.to {
+    background-color: var(--recieved-message);
+    color: var(--page-text);
+}
 
-    .number {
-        display: flex;
-        justify-content: right;
-        font-size: 22px;
-    }
+.number {
+    display: flex;
+    justify-content: right;
+    font-size: 22px;
+}
 </style>
