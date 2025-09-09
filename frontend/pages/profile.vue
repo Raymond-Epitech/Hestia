@@ -7,8 +7,8 @@
     </button>
     <div class="page-container">
         <div class="user">
-            <div class="username">{{ userStore.user.username }}</div>
-            <ProfileIcon :height="200" :width="200" :linkToPP="user.profilePictureUrl"/>
+            <div v-if="user" class="username">{{ user.username }}</div>
+            <ProfileIcon v-if="user" :key="user.id" :height="200" :width="200" :linkToPP="user.profilePictureUrl"/>
         </div>
         <div class="colocation-preview">
             <text class="header">
@@ -34,8 +34,9 @@ const router = useRouter();
 const { $bridge } = useNuxtApp();
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
-const colocationData = ref([])
+const colocationData = ref([]);
 const list_coloc = ref([]);
+const user = ref(null);
 
 api.getColocationById(userStore.user.colocationId).then((response) => {
     colocationData.value = response;
@@ -45,12 +46,11 @@ api.getColocationById(userStore.user.colocationId).then((response) => {
 
 api.getUserbyCollocId(userStore.user.colocationId).then((response) => {
     list_coloc.value = response;
-    console.log(list_coloc)
+    user.value = list_coloc.value.find(user => user.id === userStore.user.id) || null;
 }).catch((error) => {
     console.error('Error fetching data:', error);
 });
 
-const user = colocationData.value.filter(user => user.id === userStore.user.id)
 
 const redirect = (page) => {
     router.push(page);
