@@ -46,7 +46,7 @@ const redirect = (page) => {
     bottom: 0;
     width: 100%;
     height: 4.5rem;
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     justify-content: center;
@@ -56,9 +56,6 @@ const redirect = (page) => {
     z-index: 100;
 }
 
-.dark .navbar {
-    background-color: var(--main-buttons-dark);
-}
 
 .icon-subtext {
     font-size: 0.65rem;
@@ -71,6 +68,10 @@ const redirect = (page) => {
 }
 
 .dark .icon-subtext {
+    color: var(--light-grey);
+}
+
+.hestia .icon-subtext {
     color: var(--light-grey);
 }
 
@@ -88,17 +89,12 @@ const redirect = (page) => {
 
 .icon {
     height: 3rem;
-    filter: brightness(29%);
+    filter: var(--icon-filter);
     transition: transform 0.2s cubic-bezier(.4,2,.3,1);
 }
 
 .icon.selected {
     transform: translateY(-0.3rem) scale(1.08);
-}
-
-.dark .icon {
-    color: var(--page-text-dark);
-    filter: none;
 }
 
 .wall-button {

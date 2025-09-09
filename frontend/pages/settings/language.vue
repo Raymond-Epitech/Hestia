@@ -72,18 +72,14 @@ const setlangue = (lang: Locale) => {
   gap: 10px;
   margin: 40px auto;
   margin-top: 5rem;
-  max-height: calc(100vh - 5.5rem);
+  max-height: calc(100vh - 12rem);
 }
 
 .icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  filter: invert(1);
-}
-
-.dark .icon {
-  filter: invert(0);
+  filter: var(--icon-filter);
 }
 
 .setting-button {
@@ -93,13 +89,9 @@ const setlangue = (lang: Locale) => {
   grid-template-columns: 1fr 4fr;
   align-items: center;
   border-radius: 20px;
-  background-color: var(--main-buttons-light);
+  background-color: var(--main-buttons);
   box-shadow: var(--rectangle-shadow-light);
-}
-
-.dark .setting-button {
-  background-color: var(--main-buttons-dark);
-  color: var(--page-text-dark);
+  color: var(--page-text);
 }
 
 .flag {
@@ -119,7 +111,7 @@ const setlangue = (lang: Locale) => {
 }
 
 .back {
-  background-color: var(--main-buttons-light);
+  background-color: var(--main-buttons);
   position: fixed;
   display: flex;
   justify-content: center;
@@ -134,15 +126,6 @@ const setlangue = (lang: Locale) => {
 }
 
 .back .icon {
-  filter: invert(1);
-  width: 25px;
-}
-
-.dark .back {
-  background-color: var(--main-buttons-dark);
-}
-
-.dark .back .icon {
-  filter: none;
+    width: 25px;
 }
 </style>

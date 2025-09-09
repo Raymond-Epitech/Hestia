@@ -85,9 +85,10 @@
   "nav_expenses": "Expenses",
   "nav_messages": "Messages",
   "Display": "Display",
-  "system": "system",
-  "dark": "dark",
-  "light": "light",
+  "system": "System",
+  "dark": "Dark",
+  "light": "Light",
+  "hestia": "Hestia",
   "Language-subtext": "Change the application language",
   "Display-subtext": "Change display settings",
   "Colocation-subtext": "Change display settings",
@@ -106,6 +107,9 @@
     "sat": "Sat",
     "sun": "Sun"
   },
+  "theme": "Theme",
   "confirm_delete_shoppinglist": "Are you sure you want to delete this shopping list?",
-  "shopping-list-name": "Name of the shopping list"
+  "shopping-list-name": "Name of the shopping list",
+  "newFlateshare": "Create a new flat share",
+  "ChangeColocation": "Join another flat share"
 }

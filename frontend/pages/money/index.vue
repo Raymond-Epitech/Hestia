@@ -72,7 +72,7 @@ signalr.on("ExpenseDeleted", (CategoryOutput) => {
 
 const getall = async () => {
     api.getExpenseByColocationId(collocid).then((response) => {
-        expenses_list.value = response.filter(item => item.name !== "refund");
+        expenses_list.value = response.filter(item => item.name !== "Refund");
         global.value = expenses_list.value.reduce((acc, expense) => acc + expense.totalAmount, 0);
     }).catch((error) => {
         console.error('Error fetching data:', error);
@@ -107,14 +107,10 @@ onMounted(async () => {
     width: 30px;
     height: 30px;
     margin: 8px 5%;
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     border-radius: 9px;
     border: none;
     box-shadow: var(--button-shadow-light);
-}
-
-.dark .add-post {
-    background-color: var(--main-buttons-dark);
 }
 
 .plus {
@@ -123,6 +119,10 @@ onMounted(async () => {
 }
 
 .dark .plus {
+    filter: invert(1) opacity(1);
+}
+
+.hestia .plus {
     filter: invert(1) opacity(1);
 }
 
@@ -135,15 +135,10 @@ onMounted(async () => {
     align-items: center;
     grid-template-columns: 1fr 1fr;
     justify-content: space-between;
-    background-color: var(--recieved-message-light);
+    background-color: var(--recieved-message);
     border-radius: 20px;
     box-shadow: var(--rectangle-shadow-light);
-    color: var(--page-text-light);
-}
-
-.dark .expense {
-    background-color: var(--recieved-message-dark);
-    color: var(--page-text-dark);
+    color: var(--page-text);
 }
 
 .regularize-text {
@@ -174,14 +169,10 @@ onMounted(async () => {
     align-items: center;
     grid-template-columns: 1fr 1fr;
     justify-content: space-between;
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     border-radius: 20px 20px 0px 0px;
     box-shadow: var(--button-shadow-light);
-    color: var(--page-text-light);
+    color: var(--page-text);
 }
 
-.dark .global {
-    background-color: var(--main-buttons-dark);
-    color: var(--page-text-dark);
-}
 </style>

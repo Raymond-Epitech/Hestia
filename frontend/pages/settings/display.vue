@@ -3,20 +3,24 @@
         <img src="~/public/Retour.svg" class="icon">
     </button>
     <div class="container">
-        <h1>Color mode: {{ $colorMode.value }}</h1>
-        <select v-model="$colorMode.preference" class="select-theme">
-            <option value="system">
-                <Texte_language source="system" />
-            </option>
-            <option value="light">
-                <Texte_language source="light" />
-            </option>
-            <option value="dark">
-                <Texte_language source="dark" />
-            </option>
-            <!-- <option value="sepia">Sepia</option> -->
-        </select>
+        <h1>{{ $t('theme')}} : {{ $t($colorMode.preference) }}</h1>
+        <div class="themes-container">
+            <div class="theme-box" :class="{selected: $colorMode.preference === 'system'}" @click="$colorMode.preference = 'system'">
+            <img src="~/public/settings/system.svg" class="icon"></img>
+            </div>
+            <div class="theme-box" :class="{selected: $colorMode.preference === 'light'}" @click="$colorMode.preference = 'light'">
+                <img src="~/public/settings/sun.svg" class="icon"></img>
+            </div>
+            <div class="theme-box" :class="{selected: $colorMode.preference === 'dark'}" @click="$colorMode.preference = 'dark'">
+                <img src="~/public/settings/moon.svg" class="icon"></img>
+            </div>
+            <div class="theme-box" :class="{selected: $colorMode.preference === 'hestia'}" @click="$colorMode.preference = 'hestia'">
+                <img src="~/public/settings/fridge.svg" class="icon"></img>
+            </div>
+        </div>
     </div>
+    <div>
+  </div>
 </template>
 
 <script setup>
@@ -29,9 +33,42 @@
 </script>
 
 <style scoped>
+
+.themes-container {
+    display: grid;
+    grid-template-columns: repeat(4, 50px);
+    margin-top: 20px;
+    grid-gap: 22px;
+}
+
+.hestia .container {
+    color: var(--main-buttons);
+}
+
+.theme-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 62px;
+    height: 62px;
+    border-radius: 10px;
+    background-color: var(--main-buttons);
+    box-shadow: var(--button-shadow-light);
+}
+
+.icon {
+    width: 48px;
+    height: 48px;
+    filter: var(--icon-filter);
+}
+
+.selected {
+    transform: scale(1.18);
+}
+
 .container {
-    background-color: var(--background-light);
-    color: var(--page-text-light);
+    background-color: var(--background);
+    color: var(--page-text);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -41,29 +78,19 @@
     max-height: calc(100vh - 5.5rem);
 }
 
-.dark .container {
-    background-color: var(--background-dark);
-    color: var(--page-text-dark);
-}
-
 .select-theme {
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     width: 13rem;
     height: 2.2rem;
     border-radius: 9px;
     border-style: hidden;
     padding-left: 0.5rem;
-    color: var(--page-text-light);
+    color: var(--page-text);
     box-shadow: var(--rectangle-shadow-light);
 }
 
-.dark .select-theme {
-    background-color: var(--main-buttons-dark);
-    color: var(--page-text-dark);
-}
-
 .back {
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     position: fixed;
     display: flex;
     justify-content: center;
@@ -78,15 +105,7 @@
 }
 
 .back .icon {
-    filter: invert(1);
     width: 25px;
 }
 
-.dark .back {
-    background-color: var(--main-buttons-dark);
-}
-
-.dark .back .icon {
-    filter: none;
-}
 </style>

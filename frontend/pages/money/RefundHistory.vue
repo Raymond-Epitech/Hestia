@@ -32,7 +32,7 @@ api.setjwt(useCookie('token').value ?? '');
 const list_coloc = ref<Coloc[]>([]);
 
 await api.getExpenseByColocationId(user.colocationId).then((response) => {
-            refund.value = response.find(item => item.name === "refund");
+            refund.value = response.find(item => item.name === "Refund");
             if (refund.value) {
                 api.getExpensebycategoryId(refund.value.id).then((response) => {
                 refund_list.value = response;
@@ -91,20 +91,19 @@ const getDayNumber = (timecode: string) => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    color: var(--page-text-light);
+    color: var(--page-text);
     font-weight: 600;
     text-align: center;
 }
-
-.dark .page-container{
-    color: var(--page-text-dark);
-}
-
 
 .header-name {
     width: 100%;
     font-size: 32px;
     margin: 10px 0px;
+}
+
+.hestia .header-name {
+    color: var(--main-buttons);
 }
 
 .refund-rectangle {
@@ -115,17 +114,12 @@ const getDayNumber = (timecode: string) => {
     justify-content: space-between;
     align-items: center;
     padding: 0% 6%;
-    color: var(--page-text-light);
+    color: var(--page-text);
     font-size: 20px;
     font-weight: 600;
     border-radius: 20px;
     margin: 10px 0px;
-    background-color: var(--sent-message-light);
-}
-
-.dark .refund-rectangle {
-    background-color: var(--sent-message-dark);
-    color: var(--page-text-dark);
+    background-color: var(--sent-message);
 }
 
 .refund-text {

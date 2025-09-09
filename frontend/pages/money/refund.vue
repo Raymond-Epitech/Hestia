@@ -70,7 +70,7 @@ onMounted(() => {
     });
     api.getExpenseByColocationId(user.colocationId).then((response) => {
         response.forEach((expense) => {
-            if (expense.name === "refund") {
+            if (expense.name === "Refund") {
                 rufendcategoryId = expense.id;
             }
         });
@@ -84,10 +84,10 @@ const refund_prosess = (refund: refund) => {
     const data: Expense = {
         colocationId: user.colocationId,
         createdBy: user.id,
-        name: "refund",
+        name: "Refund",
         description: "Remboursement de " + refund.amount + "€",
         amount: refund.amount,
-        category: "refund",
+        category: "Refund",
         paidBy: refund.from,
         splitType: 0,
         splitBetween: [refund.to],

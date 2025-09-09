@@ -1,5 +1,5 @@
 import { json } from "stream/consumers";
-import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif, refund, shoppinglist, shoppinglist_item, expenses_category, expenses_category_get, message, UpdateChore } from "./type";
+import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif, refund, shoppinglist, shoppinglist_item, expenses_category, expenses_category_get, message, UpdateChore, ReminderItem } from "./type";
 import { Capacitor } from '@capacitor/core'
 import { Filesystem, Directory } from '@capacitor/filesystem';
 
@@ -163,20 +163,25 @@ export class bridge {
             body: JSON.stringify(item)
         }).then(response => {
             if (response.status == 200) {
-                return true;
+                return response.json();
             }
-            return false;
+            return '';
         });
     }
 
-    async updateReminderShoppingListItem(item: any) {
+    async updateReminderShoppingListItem(item: ReminderItem) {
         return await fetch(this.url + "/api/Reminder/ShoppingList", {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + this.jwt
             },
-            body: JSON.stringify(item)
+            body: JSON.stringify({
+                createdBy: item.createdBy,
+                id: item.id,
+                isChecked: item.isChecked,
+                name: item.name
+            })
         }).then(response => {
             if (response.status == 200) {
                 return true;

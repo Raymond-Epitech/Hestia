@@ -85,9 +85,10 @@
   "nav_expenses": "Gastos",
   "nav_messages": "Mensajes",
   "Display": "Visualización",
-  "system": "sistema",
-  "dark": "oscuro",
-  "light": "claro",
+  "system": "Sistema",
+  "dark": "Oscuro",
+  "light": "Claro",
+  "hestia": "Hestia",
   "Language-subtext": "Cambiar el idioma de la aplicación",
   "Display-subtext": "Modificar los parámetros de visualización",
   "Colocation-subtext": "Parámetros de tu piso compartido",
@@ -106,6 +107,9 @@
     "sat": "Sáb",
     "sun": "Dom"
   },
+  "theme": "Tema",
   "confirm_delete_shoppinglist": "¿Estás seguro de que quieres eliminar esta lista de compras?",
-  "shopping-list-name": "Nombre de la lista de compras"
+  "shopping-list-name": "Nombre de la lista de compras",
+  "newFlateshare": "Crear un nuevo piso compartido",
+  "ChangeColocation": "Unirse a otro piso compartido"
 }

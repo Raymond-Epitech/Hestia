@@ -65,7 +65,7 @@ const handleClose = () => {
 const handleRefund = async () => {
     await api.getExpenseByColocationId(user.colocationId).then((response) => {
     response.forEach((expense) => {
-        if (expense.name === "refund") {
+        if (expense.name === "Refund") {
             rufendcategoryId = expense.id;
         }
     });
@@ -75,10 +75,10 @@ const handleRefund = async () => {
     const data: Expense = {
         colocationId: user.colocationId,
         createdBy: user.id,
-        name: "refund",
+        name: "Refund",
         description: "Remboursement de " + props.refund.amount + "€",
         amount: props.refund.amount,
-        category: "refund",
+        category: "Refund",
         paidBy: props.refund.from,
         splitType: 0,
         splitBetween: [props.refund.to],
@@ -184,14 +184,9 @@ watch(visible, (value) => {
         border: 0;
         cursor: pointer;
         font-size: 20px;
-        background: var(--main-buttons-light);
-        color: var(--page-text-light);
+        background: var(--main-buttons);
+        color: var(--page-text);
         font-weight: 600;
-    }
-
-    .dark .button {
-        background: var(--main-buttons-dark);
-        color: var(--page-text-dark);
     }
 
     button:disabled {

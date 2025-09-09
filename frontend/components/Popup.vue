@@ -55,15 +55,11 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background-color: var(--background-light);
+        background-color: var(--list-overlay-bg);
         padding: 4%;
         border-radius: 8px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         z-index: 1000;
-    }
-
-    .dark .popup {
-        background-color: var(--background-dark);
     }
 
     .popup h1 {
@@ -94,36 +90,24 @@
         text-align: center;
         font-size: 16px;
         font-weight: bold;
-        color: var(--page-text-light);
-    }
-
-    .dark .text {
-        color: var(--page-text-dark);
+        color: var(--page-text);
     }
 
     .cancel-button {
-        background-color: var(--main-buttons-light);
-        color: var(--page-text-light);
-        width: 120px;
+        background-color: var(--main-buttons);
+        color: var(--page-text);
+        padding: 10px 20px;
         box-shadow: var(--button-shadow-light);
     }
 
     .confirm-button {
         background-color: var(--basic-red);
-        color: var(--page-text-light);
-        width: 120px;
+        color: var(--page-text);
+        padding: 10px 20px;
         box-shadow: var(--button-shadow-light);
     }
 
-    .dark .cancel-button {
-        background-color: #000000;
-        color: var(--page-text-dark);
-        width: 120px;
-    }
-
     .dark .confirm-button {
-        background-color: var(--sent-message-dark);
-        color: var(--page-text-dark);
-        width: 120px;
+        background-color: var(--sent-message);
     }
 </style>

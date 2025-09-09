@@ -1,21 +1,20 @@
 @import "bootstrap/scss/bootstrap";
 
 :root {
-    --main-buttons-light: #FFFFFF;
-    --main-buttons-dark: #000000;
-    --background-light: #FFFCF7;
-    --background-dark: #1D1B20;
-    --page-text-light: #000000;
-    --page-text-dark: #FFFFFF;
+    --main-buttons: #FFFFFF;
+    --background: #FFFCF7;
+    --page-text: #000000;
     --overlay-text: #FFFFFF;
-    --overlay-background-light: #1d1b20a6;
-    --overlay-background-dark: #1d1b2099;
-    --list-lines-light: #BDD4F6;
-    --list-lines-dark: #727C8C;
-    --recieved-message-light: #C1E0B9;
-    --recieved-message-dark: #4D4D4C;
-    --sent-message-light: #BDD4F6;
-    --sent-message-dark: #526074;
+    --overlay-background: #1d1b20a6;
+    --list-lines: #BDD4F6;
+    --recieved-message: #C1E0B9;
+    --sent-message: #BDD4F6;
+    --list-overlay-bg: #FFFFFF;
+    --icon-filter: invert(0);
+    --login-box-bg: #FFFCF7;
+    --secondary-button: #D6D6D6;
+    --secondary-page-text: #000000;
+    --icon-background: #FFFFFF;
 
     --basic-grey: #4B4B4B;
     --light-grey: #D6D6D6;
@@ -25,15 +24,49 @@
     --basic-yellow: #FFC93D;
 
     --button-shadow-light: -2px 4px 10px 4px rgba(0, 0, 0, 0.25);
+    --small-button-shadow: -1px 2px 3px 2px rgba(0, 0, 0, 0.12);
     --rectangle-shadow-light: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
 }
 
+.dark {
+    --main-buttons: #000000;
+    --background: #1D1B20;
+    --page-text: #FFFFFF;
+    --overlay-background: #1d1b2099;
+    --list-lines: #727C8C;
+    --recieved-message: #4D4D4C;
+    --sent-message: #526074;
+    --list-overlay-bg: #1D1B20;
+    --icon-filter: brightness(0) invert(1);
+    --login-box-bg: #000000;
+    --secondary-button: #1D1B20;
+    --secondary-page-text: #FFFFFF;
+    --icon-background: #000000;
+}
+
+.hestia {
+    --main-buttons: #084338;
+    --background: #E9FFE3;
+    --page-text: #FFFFFF;
+    --overlay-text: #FFFFFF;
+    --overlay-background: #1d1b2099;
+    --list-lines: #BDD4F6;
+    --recieved-message: #084338;
+    --sent-message: #526074;
+    --list-overlay-bg: #084338;
+    --icon-filter: brightness(0) invert(1);
+    --login-box-bg: #084338;
+    --secondary-button: #E9FFE3;
+    --secondary-page-text: #000000;
+    --icon-background: #000000;
+}
+
 body {
-    background-color: var(--background-light);
+    background-color: var(--background);
     padding-bottom: 70px;
     font-family: 'Inter-Variable', sans-serif;
 }
 
 .dark body {
-    background-color: var(--background-dark);
+    background-color: var(--background);
 }

@@ -5,7 +5,9 @@
         <div class="modal" @click.stop>
           <div class="modal-header left">
             <input class="modal-body-input" rows="1" maxlength="50" v-model="post.shoppinglistName" :placeholder="$t('shopping-list-name')"></input>
-            <img src="/Trash.svg" alt="Delete Icon" class="svg-icon" @click="showPopup" />
+            <button v-if="modify" src="/Trash.svg" alt="Delete Icon" @click="showPopup">
+              <img src="/Trash.svg" alt="Delete Icon" class="svg-icon" />
+            </button>
           </div>
           <form method="post" action="" @submit.prevent="handleSubmit">
             <div ref="itemList" class="item-list">
@@ -15,16 +17,13 @@
               </div>
             </div>
             <div @click.prevent="handleAddItem" class="form-add-item">
-              <input v-model="newitemList.name" type="text" placeholder="Item" class="modal-body-input" /><!-- !!!! add locale !!! -->
-              <button type="submit">
-                <img src="/Submit.svg" alt="Submit Icon" class="svg-icon" />
+              <input v-model="newitemList.name" type="text" placeholder="Item" maxlength="18" class="modal-body-input" /><!-- !!!! add locale !!! -->
+              <button v-if="newitemList.name==''" :disabled="true" type="submit">
+                <img src="/Submit.svg" alt="Submit Icon" class="svg-icon submit" />
               </button>
-            </div>
-            <div v-if="post.shoppinglistName">
-              <button class="button-proceed" @click.prevent="handleProceed">{{ $t('poster') }}</button>
-            </div>
-            <div v-else>
-              <button class="button-proceed" @click.prevent="handleProceed" disabled>{{ $t('poster') }}</button>
+              <button v-if="newitemList.name!=''" type="submit">
+                <img src="/Submit.svg" alt="Submit Icon" class="svg-icon submit" />
+              </button>
             </div>
           </form>
         </div>
@@ -68,6 +67,7 @@ const prewiew = ref('');
 const item_list = ref<ReminderItem[]>([]);
 const Id = ref('');
 const modify = ref(false);
+const oldshoppinglistName = ref('');
 const newitemList = ref<ReminderItem>({
   name: '',
   reminderId: '',
@@ -138,7 +138,32 @@ const resetPost = () => {
   modify.value = false;
 }
 
-const handleClose = () => {
+const createList = async () => {
+  const response = await api.addReminder(post.value)
+  if (response != '') {
+    Id.value = response;
+    modify.value = true;
+    return true;
+  }
+  return false;
+}
+
+const handleClose = async () => {
+  if (modify.value && oldshoppinglistName.value != post.value.shoppinglistName) {
+    api.updateReminder(post.value, Id.value).then((response) => {
+      if (!response) {
+        console.error(`Failed to update reminder ${Id.value}`);
+        return;
+      }
+    });
+  }
+  if (!modify.value && post.value.shoppinglistName != '') {
+    const response = await createList();
+    if (!response) {
+      console.error('Failed to create list');
+      return;
+    }
+  }
   resetPost()
   close()
   emit('closed')
@@ -146,46 +171,22 @@ const handleClose = () => {
 
 const handleAddItem = async () => {
   if (newitemList.value.name.trim() !== '') {
-    item_list.value.push({ ...newitemList.value });
-    if (Id.value != '') {
-      newitemList.value.reminderId = Id.value;
-      await api.addReminderShoppingListItem(newitemList.value);
+    if (!modify.value) {
+      const response = await createList();
+      if (!response) {
+        console.error('Failed to create list');
+        return;
+      }
     }
+    newitemList.value.reminderId = Id.value;
+    const newID = await api.addReminderShoppingListItem(newitemList.value);
+    if (newID) {
+      newitemList.value.id = newID;
+    }
+    item_list.value.push({ ...newitemList.value });
     newitemList.value.name = '';
   }
 }
-
-const handleProceed = async () => {
-  if (modify.value) {
-    api.updateReminder(post.value, Id.value).then((response) => {
-      if (!response) {
-        console.error(`Failed to update reminder ${Id.value}`);
-        return;
-      }
-    });
-    for (const item of item_list.value) {
-      if (!item.id) {
-        item.reminderId = Id.value;
-        await api.addReminderShoppingListItem(item);
-      }
-    }
-    resetPost()
-    close()
-    emit('closed')
-    return
-  }
-  const response = await api.addReminder(post.value)
-  if (response != '') {
-    item_list.value.forEach(async (item) => {
-      item.reminderId = response;
-      await api.addReminderShoppingListItem(item);
-    });
-    resetPost()
-    close()
-    emit('closed')
-  }
-}
-
 
 watch(
   modelValue,
@@ -203,15 +204,14 @@ watch(visible, (value) => {
 
 watch(() => props.post, (newPost, oldPost) => {
   if (newPost) {
-    if (newPost) {
-      console.log("post to modify", newPost);
-      console.log("post avant modif", post.value);
-      post.value.shoppinglistName = newPost.shoppingListName;
-      Id.value = newPost.id;
-      item_list.value = newPost.items;
-      modify.value = true;
-      console.log("id", Id.value)
-    }
+    console.log("post to modify", newPost);
+    console.log("post avant modif", post.value);
+    post.value.shoppinglistName = newPost.shoppingListName;
+    oldshoppinglistName.value = newPost.shoppingListName;
+    Id.value = newPost.id;
+    item_list.value = newPost.items;
+    modify.value = true;
+    console.log("id", Id.value)
   }
 });
 
@@ -236,21 +236,17 @@ const updateIsChecked = (id: string, value: boolean) => {
 
 const updateName = (id: string, value: string) => {
   const item = item_list.value?.find((item) => item.id === id);
-  if (!modify.value && item) {
-    item.name = value;
-  }
-  if (item && modify.value) {
-    item.name = value;
-    api.updateReminderShoppingListItem(item).then((response) => {
-      if (!response) {
-        console.error(`Failed to update item ${id}`);
-        window.location.reload();
-        return;
-      }
-    }).catch((error) => {
-      console.error(`Error updating item ${id}:`, error);
-    });
-  }
+  if (!item) return;
+  item.name = value;
+  console.log("update name", item);
+  api.updateReminderShoppingListItem(item).then((response) => {
+    if (!response) {
+      console.error(`Failed to update item ${id}`);
+      return;
+    }
+  }).catch((error) => {
+    console.error(`Error updating item ${id}:`, error);
+  });
 };
 
 const deleteItem = (id: string) => {
@@ -307,7 +303,7 @@ const cancelDelete = () => {
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   animation: slideIn 0.4s;
-  background-color: var(--main-buttons-light);
+  background-color: var(--main-buttons);
   box-shadow: var(--rectangle-shadow-light);
   display: flex;
   flex-direction: column;
@@ -315,19 +311,11 @@ const cancelDelete = () => {
   top: -4.5rem;
 }
 
-.dark .modal {
-  background-color: var(--main-buttons-dark);
-}
-
 .modal-header {
   font-size: 10px;
   padding: 0;
   border-bottom: none;
-  color: var(--page-text-light);
-}
-
-.dark .modal-header {
-  color: var(--page-text-dark);
+  color: var(--page-text);
 }
 
 .modal-body {
@@ -339,7 +327,7 @@ const cancelDelete = () => {
 }
 
 .modal-body-input {
-  background-color: var(--main-buttons-light);
+  background-color: var(--main-buttons);
   width: 13rem;
   height: 2.2rem;
   border-radius: 9px;
@@ -347,20 +335,14 @@ const cancelDelete = () => {
   padding: 0.5rem;
   /* add space all arround input field */
   margin: 0.5rem;
-  color: var(--page-text-light);
+  color: var(--page-text);
   /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); */
   outline: none;
   border: none;
   line-height: 3ch;
-  background-image: linear-gradient(transparent, transparent calc(3ch - 1px), var(--list-lines-light) 0px);
+  background-image: linear-gradient(transparent, transparent calc(3ch - 1px), var(--list-lines) 0px);
   background-size: 100% 3ch;
   font-size: 14px;
-}
-
-.dark .modal-body-input {
-  background-color: var(--main-buttons-dark);
-  color: var(--page-text-dark);
-  background-image: linear-gradient(transparent, transparent calc(3ch - 1px), var(--list-lines-dark) 0px);
 }
 
 .modal-background {
@@ -389,6 +371,16 @@ const cancelDelete = () => {
   padding: 0.5rem 0;
 }
 
+.svg-icon {
+  width: 25px;
+  height: 25px;
+}
+
+.svg-icon.submit {
+  filter: var(--icon-filter);
+}
+
+
 button {
   padding: 10px 20px;
   border-radius: 15px;
@@ -400,15 +392,10 @@ button {
   border-top: 0px;
   gap: 1em;
   margin: 0.5rem;
-  background: var(--main-buttons-light);
-  color: var(--page-text-light);
+  background: var(--main-buttons);
+  color: var(--page-text);
   font-weight: 600;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.dark button {
-  background: var(--main-buttons-dark);
-  color: var(--page-text-dark);
 }
 
 button:disabled {

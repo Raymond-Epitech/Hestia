@@ -43,12 +43,8 @@ function emitOpen() {
 .expense {
   color: var(--overlay-text);
   text-align: left;
-  border-bottom: 1px solid var(--list-lines-light);
+  border-bottom: 1px solid var(--list-lines);
   padding: 4px 0;
-}
-
-.dark .expense {
-  border-bottom: 1px solid var(--list-lines-dark);
 }
 
 .expense-header {

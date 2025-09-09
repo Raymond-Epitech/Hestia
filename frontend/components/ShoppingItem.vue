@@ -2,15 +2,15 @@
     <div class="shopping" @click="props.onclick && props.onclick()">
         <div class="shopping-header">
             <span v-if="!modif" class="shopping-name">{{ item.name }} <span>
-                    <img src="../public/edit.png" width="20" height="20" @click="modif = !modif" class="edit" />
+                    <img src="../public/edit.svg" width="20" height="20" @click="modif = !modif" class="icon" />
                 </span></span>
             <span v-if="modif" class="shopping-name">
                 <input class="modify-input" v-model="item.name" maxlength="42" required />
                 <button class="ok-button" @click="modifname">
-                    <Texte_language source="confirm" />
+                    <img src="../public/Submit.svg" width="20" height="20" class="icon" />
                 </button>
                 <button class="delete-button" @click="showPopup">
-                    <img src="../public/delete.png" width="20" height="20" />
+                    <img src="../public/Trash.svg" width="20" height="20" class="icon" />
                 </button>
             </span>
             <div v-if="!modif" class="check-zone" :class="{ checked: item.isChecked }" @click.stop="toggleCheck"></div>
@@ -64,14 +64,11 @@ const modifname = () => {
 
 <style scoped>
 .shopping {
-    border-bottom: 2px dotted var(--list-lines-light);
-    color: var(--page-text-light);
+    border-bottom: 2px dotted var(--list-lines);
+    color: var(--page-text);
+    word-wrap: break-word;
+    word-break: break-word;
     padding: 10px 0;
-}
-
-.dark .shopping {
-    border-bottom: 2px dotted var(--list-lines-dark);
-    color: var(--page-text-dark);
 }
 
 .shopping-header {
@@ -91,30 +88,32 @@ const modifname = () => {
 }
 
 .check-zone.checked {
-    background-color: #85AD7B;
-    border-color: #85AD7B;
+    background-color: var(--basic-green);
+    border-color: var(--recieved-message);
 }
 
 .check-zone:not(.checked) {
-    border-color: #8D90D6;
+    border-color: var(--basic-purple);
 }
 
 .shopping-name {
     display: grid;
-    grid-template-columns: 9fr 1fr 1fr;
+    grid-template-columns: 8fr 1fr 1fr;
     align-items: center;
     margin-right: 10px;
     padding-left: 2px;
 }
 
-.edit {
+.icon {
     margin-bottom: 2px;
+    filter: var(--icon-filter);
 }
 
 .modify-input {
     border: none;
     border-radius: 5px;
-    background-color: #393a40;
+    background-color: var(--sent-message);
+    box-shadow: var(--small-button-shadow);
     outline: none;
 }
 
@@ -124,7 +123,9 @@ const modifname = () => {
     padding: 2px 4px;
     margin-left: 30%;
     border-radius: 4px;
-    background-color: #393a40;
+    color: var(--page-text);
+    background-color: var(--sent-message);
+    box-shadow: var(--small-button-shadow);
     font-weight: 600;
 }
 
@@ -134,7 +135,8 @@ const modifname = () => {
     padding: 2px 4px;
     margin-left: 30%;
     border-radius: 4px;
-    background-color: #cf1616;
+    background-color: var(--main-buttons);
+    box-shadow: var(--small-button-shadow);
     font-weight: 600;
 }
 </style>

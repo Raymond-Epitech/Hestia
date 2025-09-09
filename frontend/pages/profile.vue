@@ -1,11 +1,15 @@
 <template>
-    <div>
-        <button class="settings" @click="redirect('/settings')">
-            <img src="~/public/profile/settings.svg" class="icon">
-        </button>
-        <button class="add-user" @click="redirect('/add-user')">
-            <img src="~/public/profile/addUser.svg" class="icon">
-        </button>
+    <button class="settings" @click="redirect('/settings')">
+        <img src="~/public/profile/settings.svg" class="icon">
+    </button>
+    <button class="add-user" @click="redirect('/add-user')">
+        <img src="~/public/profile/addUser.svg" class="icon">
+    </button>
+    <div class="page-container">
+        <div class="user">
+            <div v-if="user" class="username">{{ user.username }}</div>
+            <ProfileIcon v-if="user" :key="user.id" :height="200" :width="200" :linkToPP="user.profilePictureUrl"/>
+        </div>
         <div class="colocation-preview">
             <text class="header">
                 <Texte_language source="flatInfo" />
@@ -26,13 +30,13 @@
 <script setup>
 import { useUserStore } from '~/store/user';
 const userStore = useUserStore();
-const user = userStore.user;
 const router = useRouter();
 const { $bridge } = useNuxtApp();
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
-const colocationData = ref([])
+const colocationData = ref([]);
 const list_coloc = ref([]);
+const user = ref(null);
 
 api.getColocationById(userStore.user.colocationId).then((response) => {
     colocationData.value = response;
@@ -42,9 +46,11 @@ api.getColocationById(userStore.user.colocationId).then((response) => {
 
 api.getUserbyCollocId(userStore.user.colocationId).then((response) => {
     list_coloc.value = response;
+    user.value = list_coloc.value.find(user => user.id === userStore.user.id) || null;
 }).catch((error) => {
     console.error('Error fetching data:', error);
 });
+
 
 const redirect = (page) => {
     router.push(page);
@@ -52,9 +58,14 @@ const redirect = (page) => {
 </script>
 
 <style scoped>
+.page-container {
+    margin-bottom: 4.5rem;
+    height: calc(100vh - 4.5rem);
+    display: grid;
+}
 
 button {
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     position: fixed;
     display: flex;
     justify-content: center;
@@ -66,16 +77,8 @@ button {
     box-shadow: var(--button-shadow-light);
 }
 
-.dark button {
-    background-color: var(--main-buttons-dark);
-}
-
 .icon {
-    filter: brightness(0%);
-}
-
-.dark .icon {
-    filter: none;
+    filter: var(--icon-filter);
 }
 
 .add-user {
@@ -88,91 +91,75 @@ button {
     left: 3%;
 }
 
+.user {
+    margin-top: 80px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: none;
+}
+
+.username {
+    font-size: 24px;
+    color: var(--secondary-page-text);
+    font-weight: 600;
+}
+
 .colocation-preview {
+    bottom: 4.5rem;
     padding: 1rem;
     display: grid;
-    position: fixed;
-    width: 100%;
-    bottom: 4.5rem;
-    max-height: (100rem - 4.5rem);
-    grid-template-rows: 1fr;
-    background-color: var(--main-buttons-light);
-    justify-content: center;
+    grid-template-rows: repeat(4,1fr);
+    gap: 10px;
+    background-color: var(--main-buttons);
     align-items: center;
     text-align: center;
     border-top-left-radius: 30px;
     border-top-right-radius: 30px;
-    box-shadow: var(--button-shadow-light)
-}
-
-.dark .colocation-preview {
-    background-color: var(--main-buttons-dark);
+    box-shadow: var(--button-shadow-light);
+    overflow: scroll;
+    scrollbar-width: none;
 }
 
 .header {
     padding: 13px;
-    padding-bottom: 16px;
     font-size: 26px;
     font-weight: 600;
     border-radius: 20px;
-    background-color: var(--sent-message-light);
+    background-color: var(--sent-message);
     /* box-shadow: var(--button-shadow-light); */
-    color: var(--page-text-light);
-}
-
-.dark .header {
-    background-color: var(--sent-message-dark);
-    color: var(--page-text-dark);
+    color: var(--page-text);
 }
 
 sub {
-    margin-bottom: 1rem;
     font-size: 18px;
-    line-height: 1.4rem;
     font-weight: 600;
-    color: var(--page-text-light);
-}
-
-.dark sub {
-    color: var(--page-text-dark);
+    color: var(--page-text);
 }
 
 .roommates-list {
-    max-height: 20rem;
-    overflow-y: auto;
-    margin-top: 5px;
-    padding: 0 1rem;
-    /* text-align: left; */
+    margin-top: 6px;
+    height: fit-content;
+    padding: 13px;
     font-weight: 600;
-    /* width: fit-content; */
-    /* max-width: 90%; */
     border-radius: 20px;
-    background-color: var(--recieved-message-light);
-    /* box-shadow: var(--button-shadow-light); */
-    color: var(--page-text-light);
-    /* align-items: center; */
-}
-
-.dark .roommates-list {
-    background-color: var(--recieved-message-dark);
-    color: var(--page-text-dark);
+    background-color: var(--recieved-message);
+    color: var(--page-text);
 }
 
 .colocation-name {
+    margin-bottom: 12px;
     font-size: 22px;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    padding: 13px;
     stroke: var(basic-grey);
     stroke-width: 2px;
-    background-color: var(--recieved-message-light);
+    background-color: var(--recieved-message);
     /* box-shadow: var(--button-shadow-light); */
     border-radius: 20px;
     line-height: 2.2rem;
-}
-
-.dark .colocation-name {
-    background-color: var(--recieved-message-dark);
-    color: var(--page-text-dark);
+    color: var(--page-text);
 }
 
 </style>

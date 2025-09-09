@@ -40,7 +40,7 @@
 <script setup lang="ts">
     import useModal from '~/composables/useModal';
     import { useUserStore } from '~/store/user';
-    import type { Coloc, UserBalance } from '~/composables/service/type';
+    import type { Coloc, UserBalance, refund } from '~/composables/service/type';
 
     const props = withDefaults(
         defineProps < {
@@ -82,21 +82,6 @@
         proceed: [],
         'update:modelValue': [value: boolean]
     } > ()
-
-    api.getRefund(user.colocationId)
-        .then((response) => {
-            const data = Array.isArray(response) ? response : [...response];
-
-            const toList = data.filter(item => item.to === user.id);
-            const fromList = data.filter(item => item.from === user.id);
-            const othersList = data.filter(item => item.to !== user.id && item.from !== user.id);
-            refund_to.value = toList;
-            refund_from.value = fromList;
-            refund_others.value = othersList;
-        })
-        .catch((error) => {
-            console.error('Error fetching data:', error);
-        });
 
     const handleReload = async () => {
         api.getRefund(user.colocationId)
@@ -140,6 +125,21 @@
 
     watch(visible, (value) => {
         emit('update:modelValue', value)
+
+        if (value) {
+            api.getRefund(user.colocationId).then((response) => {
+            const data = Array.isArray(response) ? response : [...response];
+            const toList = data.filter(item => item.to === user.id);
+            const fromList = data.filter(item => item.from === user.id);
+            const othersList = data.filter(item => item.to !== user.id && item.from !== user.id);
+            refund_to.value = toList;
+            refund_from.value = fromList;
+            refund_others.value = othersList;
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+        }
     })
 </script>
 
@@ -151,7 +151,7 @@
         margin-top: 0px;
         padding: 25pt 6%;
         animation: slideIn 0.4s;
-        background-color: var(--overlay-background-light);
+        background-color: var(--overlay-background);
         backdrop-filter: blur(8px);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
         display: flex;
@@ -164,22 +164,18 @@
         justify-content: space-between;
     }
 
-    .dark .modal {
-        background-color: var(--overlay-background-dark);
-    }
-
     .icon {
         display: flex;
         align-items: center;
         justify-content: center;
-        filter: invert(0);
+        filter: var(--icon-filter);
     }
 
     .icon-inverse {
         display: flex;
         align-items: center;
         justify-content: center;
-        filter: invert(1);
+        filter: var(--icon-filter);
     }
 
 
@@ -214,7 +210,7 @@
         justify-content: space-between;
         align-items: center;
         padding: 0% 6%;
-        color: var(--page-text-light);
+        color: var(--page-text);
         font-size: 20px;
         font-weight: 600;
         border-radius: 20px;
@@ -222,30 +218,18 @@
     }
 
     .from {
-        background-color: var(--sent-message-light);
-    }
-
-    .dark .from {
-        background-color: var(--sent-message-dark);
-        color: var(--page-text-dark);
+        background-color: var(--sent-message);
+        color: var(--page-text);
     }
 
     .to {
-        background-color: var(--recieved-message-light);
-    }
-
-    .dark .to {
-        background-color: var(--recieved-message-dark);
-        color: var(--page-text-dark);
+        background-color: var(--recieved-message);
+        color: var(--page-text);
     }
 
     .others {
-        background-color: var(--recieved-message-light);
-    }
-
-    .dark .others {
-        background-color: var(--recieved-message-dark);
-        color: var(--page-text-dark);
+        background-color: var(--recieved-message);
+        color: var(--page-text);
     }
 
     .number {

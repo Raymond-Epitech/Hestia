@@ -85,9 +85,10 @@
   "nav_expenses": "Ausgaben",
   "nav_messages": "Nachrichten",
   "Display": "Anzeige",
-  "system": "system",
-  "dark": "dunkel",
-  "light": "hell",
+  "system": "System",
+  "dark": "Dunkel",
+  "light": "Hell",
+  "hestia": "Hestia",
   "Language-subtext": "Sprache der Anwendung ändern",
   "Display-subtext": "Sprache der Anwendung ändern",
   "Colocation-subtext": "Anzeigeeinstellungen ändern",
@@ -106,6 +107,9 @@
     "sat": "Sa",
     "sun": "So"
   },
+  "theme": "Thema",
   "confirm_delete_shoppinglist": "Sind Sie sicher, dass Sie diese Einkaufsliste löschen möchten?",
-  "shopping-list-name": "Name der Einkaufsliste"
+  "shopping-list-name": "Name der Einkaufsliste",
+  "newFlateshare": "Neue Wohngemeinschaft gründen",
+  "ChangeColocation": "Einer anderen Wohngemeinschaft beitreten"
 }

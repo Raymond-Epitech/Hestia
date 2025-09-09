@@ -88,6 +88,7 @@
   "system": "系统",
   "dark": "深色",
   "light": "浅色",
+  "hestia": "赫斯提亚",
   "Language-subtext": "更改应用程序语言",
   "Display-subtext": "更改应用程序语言",
   "Colocation-subtext": "你的合租设置",
@@ -106,6 +107,9 @@
     "sat": "周六",
     "sun": "周日"
   },
+  "theme": "主题",
   "confirm_delete_shoppinglist": "您确定要删除此购物清单吗？",
-  "shopping-list-name": "购物清单的名称"
+  "shopping-list-name": "购物清单的名称",
+  "newFlateshare": "创建新的合租公寓",
+  "ChangeColocation": "加入其他合租公寓"
 }

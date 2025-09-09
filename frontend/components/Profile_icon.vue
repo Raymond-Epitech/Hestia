@@ -1,11 +1,10 @@
 <template>
-    <div v-if="props.linkToPP && props.linkToPP!= 'deleted.jpg' && props.linkToPP!= 'exempledetest' && props.linkToPP!= 'default.jpg'"
-        class="profile">
+    <div v-if="showImage" class="profile">
         <img class="profile" :src="$props.linkToPP" alt="profile icon"
            :style="{ height: `${props.height}px`, width: `${props.width}px` }" @error="onImgError" >
     </div>
     <div v-else class="icon">
-        <img class="icon_image" src="../public/profile-icon.svg" alt="profile icon"
+        <img class="icon_image" src="../public/navbar/Profile.svg" alt="profile icon"
             :style="{height: `${props.height}px`, width: `${props.width}px`}">
     </div>
 </template>
@@ -26,30 +25,32 @@
         }
     })
 
-const onImgError = (event: Event) => {
-  (event.target as HTMLImageElement).src = '/profile-icon.svg';
-}
+const hasError = ref(false);
+
+const showImage = computed(() =>
+  props.linkToPP &&
+  props.linkToPP !== "deleted.jpg" &&
+  props.linkToPP !== "exempledetest" &&
+  props.linkToPP !== "default.jpg" &&
+  !hasError.value
+);
+
+const onImgError = () => {
+  hasError.value = true;
+};
 </script>
 
 <style scoped>
     .profile {
-        border-radius: 50px;
+        border-radius: 50%;
     }
 
     .icon {
-        border-radius: 50px;
-        background-color: white;
-    }
-
-    .dark .icon {
-        background-color: black;
+        border-radius: 50%;
+        background-color: var(--icon-background);
     }
 
     .icon_image {
-        filter: brightness(29%);
-    }
-
-    .dark .icon_image {
-        filter: none;
+        filter: var(--icon-filter);
     }
 </style>

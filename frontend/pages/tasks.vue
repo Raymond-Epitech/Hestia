@@ -2,11 +2,11 @@
     <AddTaskModal v-model="isModalOpen" @proceed="getall()" />
     <div class="buttons-list">
         <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
-            <img src="~/public/plus.png" class="plus">
+            <img src="~/public/tasks/Plus.svg" class="icon plus">
         </button>
         <button class="calendar-view" @click="triggerCalendar()">
-            <img v-if="calendar_view === true" src="~/public/order.svg" class="calendar">
-            <img v-else src="~public/calendar.svg" class="calendar"/>
+            <img v-if="calendar_view === true" src="~/public/tasks/Order.svg" class="icon">
+            <img v-else src="~/public/tasks/Calendar.svg" class="icon"/>
         </button>
     </div>
     <div v-if="calendar_view === false" class="tasks">
@@ -100,14 +100,16 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-    .plus {
-        width: 20px;
-        height: 20px;
-    }
+.icon {
+    width: 20px;
+    height: 20px;
+    filter: var(--icon-filter);
+}
 
-    .dark .plus {
-        filter: invert(1) opacity(1);
-    }
+.icon.plus {
+    width: 15px;
+    height: 15px;
+}
 
 button {
     display: flex;
@@ -116,14 +118,10 @@ button {
     width: 30px;
     height: 30px;
     margin: 8px 5%;
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     border-radius: 9px;
     border: none;
     box-shadow: var(--button-shadow-light);
-}
-
-.dark button {
-  background-color: var(--main-buttons-dark);
 }
 
 .buttons-list{
@@ -136,14 +134,6 @@ button {
     top: 0;
     background-color: var(--page-background-light);
     z-index: 1;
-}
-
-.calendar {
-   filter: invert(1) opacity(1);
-}
-
-.dark .calendar {
-   filter: invert(0) opacity(1);
 }
 
 .task-list {

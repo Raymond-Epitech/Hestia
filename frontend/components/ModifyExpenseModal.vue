@@ -333,14 +333,10 @@ h3 {
   box-sizing: border-box;
   border: none;
   background-color: inherit;
-  border-bottom: 2px dotted var(--list-lines-light);
+  border-bottom: 2px dotted var(--list-lines);
   outline: none;
   color: var(--overlay-text);
   font-weight: 600;
-}
-
-.dark .name-input {
-  border-bottom: 2px dotted var(--list-lines-dark);
 }
 
 .expense-container {
@@ -350,33 +346,23 @@ h3 {
   display: grid;
   grid-template-columns: 3fr 1fr;
   align-items: center;
-  background-color: var(--main-buttons-light);
-  color: var(--page-text-light);
+  background-color: var(--main-buttons);
+  color: var(--page-text);
   border-radius: 9px;
   font-size: 18px;
   padding-right: 6px;
 }
 
-.dark .expense-container {
-  background-color: var(--main-buttons-dark);
-  color: var(--page-text-dark);
-}
-
 .expense-input {
   height: 62px;
   width: 100%;
-  background-color: var(--main-buttons-light);
-  color: var(--page-text-light);
+  background-color: var(--main-buttons);
+  color: var(--page-text);
   outline: none;
   border: none;
   border-radius: 9px;
   text-align: center;
   font-weight: 600;
-}
-
-.dark .expense-input {
-  background-color: var(--main-buttons-dark);
-  color: var(--page-text-dark);
 }
 
 .subtext {
@@ -398,23 +384,13 @@ h3 {
 }
 
 .name {
-  background-color: var(--sent-message-light);
-  color: var(--page-text-light);
-}
-
-.dark .name {
-  background-color: var(--sent-message-dark);
-  color: var(--page-text-dark);
+  background-color: var(--sent-message);
+  color: var(--page-text);
 }
 
 .type {
-  background-color: var(--recieved-message-light);
-  color: var(--page-text-light);
-}
-
-.dark .type {
-  background-color: var(--recieved-message-dark);
-  color: var(--page-text-dark);
+  background-color: var(--recieved-message);
+  color: var(--page-text);
 }
 
 .split-value-container {
@@ -426,29 +402,20 @@ h3 {
 .split-value-input {
   width: 90%;
   height: 30px;
-  background-color: var(--recieved-message-light);
+  background-color: var(--recieved-message);
   outline: none;
   border: none;
   line-height: 3ch;
   background-size: 100% 3ch;
-  color: var(--page-text-light);
+  color: var(--page-text);
   font-size: 16px;
   text-align: end;
 }
 
-.dark .split-value-input {
-  background-color: var(--recieved-message-dark);
-  color: var(--page-text-dark);
-}
-
 .percentage-symbol {
-  color: var(--page-text-light);
+  color: var(--page-text);
   font-size: 16px;
   font-weight: 600;
-}
-
-.dark .percentage-symbol {
-  color: var(--page-text-dark);
 }
 
 /* Masquer les boutons de type "spinner" pour les navigateurs Webkit (Chrome, Safari, Edge) */
@@ -480,13 +447,8 @@ input[type="number"] {
   align-items: center;
   padding-left: 4px;
   border-radius: 9px;
-  background-color: var(--recieved-message-light);
-  color: var(--page-text-light);
-}
-
-.dark .checkbox-item {
-  background-color: var(--recieved-message-dark);
-  color: var(--page-text-dark);
+  background-color: var(--recieved-message);
+  color: var(--page-text);
 }
 
 .checkbox-item-pourcentage {
@@ -498,13 +460,8 @@ input[type="number"] {
   justify-content: space-between;
   padding-left: 4px;
   border-radius: 9px;
-  background-color: var(--recieved-message-light);
-  color: var(--page-text-light);
-}
-
-.dark .checkbox-item-pourcentage {
-  background-color: var(--recieved-message-dark);
-  color: var(--page-text-dark);
+  background-color: var(--recieved-message);
+  color: var(--page-text);
 }
 
 input[type="checkbox"] {
@@ -543,14 +500,9 @@ input[type="checkbox"]:checked {
   background: none;
   padding: 18px;
   border-radius: 16px;
-  background-color: var(--main-buttons-light);
-  color: var(--page-text-light);
+  background-color: var(--main-buttons);
+  color: var(--page-text);
   font-weight: 600;
-}
-
-.dark .button-proceed {
-  background-color: var(--main-buttons-dark);
-  color: var(--page-text-dark);
 }
 
 .button-proceed:hover {

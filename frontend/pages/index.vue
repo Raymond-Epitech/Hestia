@@ -2,7 +2,7 @@
   <div>
     <AddPostModal v-model="isModalOpen" @proceed="getall()" />
     <AddImageModal v-model="isModalImageOpen" @proceed="getall()" />
-    <AddListModal v-model="isModalListOpen" @proceed="getall()" :post="remindermodif" />
+    <AddListModal v-model="isModalListOpen" @proceed="getall()" @closed="getall()" :post="remindermodif" />
     <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openModal">
       <img src="~/public/posts/Post.svg" class="icon">
     </button>
@@ -43,6 +43,7 @@ const posts = ref<Reminder[]>([]);
 
 const { $signalr } = useNuxtApp()
 const signalr = $signalr as SignalRClient;
+
 signalr.on("NewReminderAdded", async (ReminderOutput) => {
   if (!posts.value.some(post => post.id === ReminderOutput.id)) {
     if (ReminderOutput.reminderType === 1) {
@@ -51,6 +52,7 @@ signalr.on("NewReminderAdded", async (ReminderOutput) => {
     posts.value.push(ReminderOutput)
   }
 })
+
 signalr.on("ReminderDeleted", (ReminderOutput) => {
   posts.value = posts.value.filter(post => post.id !== ReminderOutput)
 })
@@ -99,38 +101,37 @@ onMounted(async () => {
     align-items: center;
     width: 40px;
     height: 40px;
-    background-color: #FFFFFF;
+    background-color: var(--main-buttons);
     border-radius: 9px;
     border: none;
     box-shadow: var(--button-shadow-light);
   }
 
-  .dark button {
-    background-color: #000000;
-  }
-
   .add-post {
     top: 6%;
     right: 3%;
+    z-index: 1000;
   }
-
+  
   .add-image {
     top: 15%;
     right: 3%;
+    z-index: 1000;
   }
-
+  
   .add-list {
     top: 24%;
     right: 3%;
+    z-index: 1000;
   }
 
   .icon {
     width: 72%;
     padding-top: 5%;
-    filter: brightness(29%);
+    filter: var(--icon-filter);
   }
 
-  .dark .icon {
+  .hestia .post {
     filter: none;
   }
 </style>

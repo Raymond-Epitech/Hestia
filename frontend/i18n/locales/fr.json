@@ -82,9 +82,10 @@
   "nav_expenses": "Dépenses",
   "nav_messages": "Messages",
   "Display": "Affichage",
-  "system": "système",
-  "dark": "sombre",
-  "light": "clair",
+  "system": "Système",
+  "dark": "Sombre",
+  "light": "Clair",
+  "hestia": "Hestia",
   "Language-subtext": "Changer la langue de l’application",
   "Display-subtext": "Modifier les paramètres d’affichage",
   "Colocation-subtext": "Paramètres de ta colocation",
@@ -103,6 +104,9 @@
     "sat": "Sam",
     "sun": "Dim"
   },
+  "theme": "Thème",
   "confirm_delete_shoppinglist": "Etes-vous sûr de vouloir supprimer cette liste de courses ?",
-  "shopping-list-name": "Nom de la liste de courses"
+  "shopping-list-name": "Nom de la liste de courses",
+  "newFlateshare": "Créer une nouvelle colocation",
+  "ChangeColocation": "Rejoindre une autre colocation"
 }

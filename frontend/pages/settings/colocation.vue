@@ -61,11 +61,13 @@ const redirect = (page) => {
 
 <style scoped>
 .page-container {
-    height: max-content;
+    height: fit-content;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 10%;
+    margin: 40px auto;
+    margin-top: 5rem;
+    max-height: calc(100vh - 12rem);
 }
 
 .colocation-preview-container {
@@ -119,7 +121,7 @@ const redirect = (page) => {
 }
 
 .back {
-    background-color: var(--main-buttons-light);
+    background-color: var(--main-buttons);
     position: fixed;
     display: flex;
     justify-content: center;
@@ -134,15 +136,7 @@ const redirect = (page) => {
 }
 
 .back .icon {
-    filter: invert(1);
+    filter: var(--icon-filter);
     width: 25px;
-}
-
-.dark .back {
-    background-color: var(--main-buttons-dark);
-}
-
-.dark .back .icon {
-    filter: none;
 }
 </style>
