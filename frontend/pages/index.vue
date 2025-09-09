@@ -110,16 +110,19 @@ onMounted(async () => {
   .add-post {
     top: 6%;
     right: 3%;
+    z-index: 1000;
   }
-
+  
   .add-image {
     top: 15%;
     right: 3%;
+    z-index: 1000;
   }
-
+  
   .add-list {
     top: 24%;
     right: 3%;
+    z-index: 1000;
   }
 
   .icon {

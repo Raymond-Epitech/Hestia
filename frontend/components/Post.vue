@@ -320,10 +320,10 @@ const toggleCheck = (item: any) => {
 
 .shopping-container {
     background-color: var(--main-buttons);
-    width: 275px;
+    width: 310px;
     padding: 20px 20px 50px 20px;
     border-radius: 0px;
-    margin: 20px;
+    margin: 40px 20px 20px 20px;
     position: relative;
     box-shadow: var(--rectangle-shadow-light);
     font-weight: 600;
@@ -342,7 +342,7 @@ const toggleCheck = (item: any) => {
 
 .shopping-header {
     display: grid;
-    grid-template-columns: 10fr 1fr;
+    grid-template-columns: 9fr 1fr;
     font-weight: bold;
     align-items: center;
     border-bottom: 1px solid var(--sent-message);
@@ -351,7 +351,6 @@ const toggleCheck = (item: any) => {
 
 .shopping-name {
     display: grid;
-    grid-template-columns: 9fr 1fr 1fr;
     align-items: center;
     margin-right: 10px;
     padding-left: 2px;
