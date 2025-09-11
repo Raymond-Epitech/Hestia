@@ -129,7 +129,7 @@ button {
   filter: var(--icon-filter);
 }
 
-.hestia .post {
+.vegane .post {
   filter: none;
 }
 </style>

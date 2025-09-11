@@ -99,7 +99,7 @@ const getUsername = (sendById: string): string => {
     filter: invert(1);
 }
 
-.hestia .svg-icon {
+.vegane .svg-icon {
     filter: invert(1);
 }
 

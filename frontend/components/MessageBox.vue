@@ -36,7 +36,7 @@ const props = defineProps({
     color: var(--light-grey);
 }
 
-.hestia .box {
+.vegane .box {
     color: var(--light-grey);
 }
 

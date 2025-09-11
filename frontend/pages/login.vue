@@ -223,7 +223,7 @@ h2 {
     color: var(--page-text);
 }
 
-.hestia .input {
+.vegane .input {
     color: var(--main-buttons);
 }
 
@@ -254,7 +254,7 @@ h2 {
     color: var(--page-text);
 }
 
-.hestia .register-button {
+.vegane .register-button {
     background-color: var(--background);
     color: var(--main-buttons);
 }
@@ -275,7 +275,7 @@ h2 {
     box-shadow: var(--button-shadow-light);
 }
 
-.hestia .google-button {
+.vegane .google-button {
     background-color: var(--main-buttons);
 }
 

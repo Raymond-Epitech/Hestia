@@ -17,8 +17,8 @@
                 @click="$colorMode.preference = 'dark'">
                 <img src="~/public/settings/moon.svg" class="icon"></img>
             </div>
-            <div class="theme-box" :class="{ selected: $colorMode.preference === 'hestia' }"
-                @click="$colorMode.preference = 'hestia'">
+            <div class="theme-box" :class="{ selected: $colorMode.preference === 'vegane' }"
+                @click="$colorMode.preference = 'vegane'">
                 <img src="~/public/settings/fridge.svg" class="icon"></img>
             </div>
         </div>
@@ -44,7 +44,7 @@ const redirect = (page) => {
     grid-gap: 22px;
 }
 
-.hestia .container {
+.vegane .container {
     color: var(--main-buttons);
 }
 

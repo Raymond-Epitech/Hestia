@@ -103,7 +103,7 @@ const getDayNumber = (timecode: string) => {
     margin: 10px 0px;
 }
 
-.hestia .header-name {
+.vegane .header-name {
     color: var(--main-buttons);
 }
 

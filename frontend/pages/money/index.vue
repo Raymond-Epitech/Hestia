@@ -122,7 +122,7 @@ onMounted(async () => {
     filter: invert(1) opacity(1);
 }
 
-.hestia .plus {
+.vegane .plus {
     filter: invert(1) opacity(1);
 }
 
