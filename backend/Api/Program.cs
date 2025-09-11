@@ -4,12 +4,17 @@ using Business.Jwt;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Hangfire;
+using Hangfire.Dashboard;
 using Hangfire.PostgreSql;
 using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Models.Configuration;
 using SignalR.Hubs;
+using System.Net;
+using System.Text;
 
 try
 {
@@ -72,6 +77,15 @@ try
 
     // Authorization
     builder.Services.AddAuthorization();
+    
+    builder.Services.AddAuthentication("Basic")
+    .AddScheme<AuthenticationSchemeOptions, BasicAuthHandler>("Basic", _ => { });
+
+    builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy("BasicOnly", p =>
+            p.AddAuthenticationSchemes("Basic").RequireAuthenticatedUser());
+    });
 
     // Swagger
     builder.Services.ConfigureSwagger(builder.Configuration, builder.Environment.IsDevelopment());
@@ -90,12 +104,24 @@ try
 
     builder.Services.AddHealthChecks()
         .AddCheck<SignalRHealthCheck>("signalr_hub");
+
     builder.Services.AddHealthChecksUI(setup =>
     {
         setup.SetEvaluationTimeInSeconds(15);
         setup.MaximumHistoryEntriesPerEndpoint(60);
-        setup.AddHealthCheckEndpoint("api-self", "http://localhost:8081/healthz");
-    }).AddInMemoryStorage();
+        setup.AddHealthCheckEndpoint("api-self", "http://127.0.0.1:8081/_health-internal");
+
+        // IMPORTANT: header Basic pour que l’UI puisse appeler /healthz protégé
+        setup.ConfigureApiEndpointHttpclient((sp, client) =>
+        {
+            var cfg = sp.GetRequiredService<IConfiguration>();
+            var token = Convert.ToBase64String(Encoding.UTF8.GetBytes(
+                $"{cfg["BasicAuth:Username"]}:{cfg["BasicAuth:Password"]}"));
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", token);
+        });
+    })
+    .AddInMemoryStorage();
 
     builder.Logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Debug);
     builder.Logging.AddFilter("Microsoft.AspNetCore.Http.Connections", LogLevel.Debug);
@@ -159,10 +185,6 @@ try
         app.UseSwagger();
         app.UseSwaggerUI();
         app.UseStatusCodePages();
-        app.UseHangfireDashboard("/hangfire", new DashboardOptions
-        {
-            Authorization = [new AllowAllDashboardAuthorization()]
-        });
     }
 
     if (!app.Environment.IsDevelopment())
@@ -175,23 +197,47 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
+    
+    app.MapHangfireDashboard("/hangfire", new DashboardOptions
+    {
+        Authorization = new List<IDashboardAuthorizationFilter>()
+    }).RequireAuthorization("BasicOnly");
 
     app.UseWebSockets(new WebSocketOptions
     {
         KeepAliveInterval = TimeSpan.FromSeconds(15)
     });
 
-    app.MapHealthChecks("/healthz", new HealthCheckOptions
+    app.Map("/_health-internal", branch =>
     {
-        Predicate = _ => true,
-        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        // Autorise seulement les IPs loopback (127.0.0.1, ::1)
+        branch.Use(async (ctx, next) =>
+        {
+            var ip = ctx.Connection.RemoteIpAddress;
+            if (ip is null || !IPAddress.IsLoopback(ip))
+            {
+                ctx.Response.StatusCode = 403;
+                await ctx.Response.WriteAsync("Forbidden");
+                return;
+            }
+            await next();
+        });
+
+        branch.UseRouting();
+        branch.UseEndpoints(endpoints =>
+        {
+            endpoints.MapHealthChecks("", new HealthCheckOptions
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+        });
     });
 
     app.MapHealthChecksUI(options =>
     {
         options.UIPath = "/health";
-        options.ApiPath = "/health-api";
-    });
+    }).RequireAuthorization("BasicOnly");
 
     app.MapHub<HestiaHub>("/hestiaHub");
 
