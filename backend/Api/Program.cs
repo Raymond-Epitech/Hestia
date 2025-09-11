@@ -8,13 +8,10 @@ using Hangfire.Dashboard;
 using Hangfire.PostgreSql;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Models.Configuration;
 using SignalR.Hubs;
-using System.Net;
-using System.Text;
 
 try
 {
@@ -26,35 +23,28 @@ try
         o.ValidateScopes = true;
     });
 
-    //var cert = X509Certificate2.CreateFromPemFile("/etc/ssl/certificate.pem", "/etc/ssl/key.pem");
-
+    // Kestrel
     builder.WebHost.ConfigureKestrel(options =>
     {
         options.ListenAnyIP(8081);
-
-        /*options.ListenAnyIP(8080, listenOptions =>
-        {
-            listenOptions.UseHttps(cert);
-        });*/
     });
 
-    // Controllers
-    builder.Services.AddMvcCore();
-    builder.Services.AddControllers().AddNewtonsoftJson();
+    builder.Configuration["BasicAuth:Username"] ??= "admin";
+    builder.Configuration["BasicAuth:Password"] ??= "ChangeMe!Tr3sLong";
 
-    // Error handling
+    // Controllers
+    builder.Services.AddControllers().AddNewtonsoftJson();
+    builder.Services.AddEndpointsApiExplorer();
+
+    // ProblemDetails + ExceptionHandler
     builder.Services.AddProblemDetails();
     builder.Services.AddExceptionHandler<ExceptionHandler>();
 
-    builder.Services.AddEndpointsApiExplorer();
-
-    // Ajout de LazyCache
+    // Divers
     builder.Services.AddLazyCache();
-
-    // Add HttpClient
     builder.Services.AddHttpClient();
 
-    // Services and DI
+    // Validation 422 personnalisée
     builder.Services.Configure<ApiBehaviorOptions>(options =>
     {
         options.InvalidModelStateResponseFactory = context =>
@@ -65,43 +55,34 @@ try
                 Title = "Validation error",
                 Instance = context.HttpContext.Request.Path
             };
-
             return new UnprocessableEntityObjectResult(problemDetails);
         };
     });
+
     builder.Services.ConfigureServices(builder.Configuration, builder.Environment.IsDevelopment());
     builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
-
-    // Authentication
     builder.Services.ConfigureJWT(builder.Configuration, builder.Environment.IsDevelopment());
+    builder.Services.ConfigureSwagger(builder.Configuration, builder.Environment.IsDevelopment());
 
-    // Authorization
-    builder.Services.AddAuthorization();
-    
-    builder.Services.AddAuthentication("Basic")
-    .AddScheme<AuthenticationSchemeOptions, BasicAuthHandler>("Basic", _ => { });
+    builder.Services.AddAuthentication()
+        .AddScheme<AuthenticationSchemeOptions, BasicAuthHandler>("Basic", _ => { });
 
     builder.Services.AddAuthorization(options =>
     {
-        options.AddPolicy("BasicOnly", p =>
-            p.AddAuthenticationSchemes("Basic").RequireAuthenticatedUser());
+        options.AddPolicy("BasicOnly",
+            p => p.AddAuthenticationSchemes("Basic").RequireAuthenticatedUser());
     });
-
-    // Swagger
-    builder.Services.ConfigureSwagger(builder.Configuration, builder.Environment.IsDevelopment());
 
     // SignalR
     builder.Services.AddSignalR(options =>
     {
         options.EnableDetailedErrors = true;
-        // Si le client reste silencieux plus longtemps que ça, on le considère déconnecté
         options.ClientTimeoutInterval = TimeSpan.FromSeconds(45);
-        // Ping serveur => client (doit être inférieur au timeout client)
         options.KeepAliveInterval = TimeSpan.FromSeconds(15);
-        // Taille max (ajuste si tu envoies des gros payloads)
         options.MaximumReceiveMessageSize = 64 * 1024; // 64 KB
     });
 
+    // HealthChecks + UI (UI sonde un endpoint INTERNE loopback)
     builder.Services.AddHealthChecks()
         .AddCheck<SignalRHealthCheck>("signalr_hub");
 
@@ -110,31 +91,22 @@ try
         setup.SetEvaluationTimeInSeconds(15);
         setup.MaximumHistoryEntriesPerEndpoint(60);
         setup.AddHealthCheckEndpoint("api-self", "http://127.0.0.1:8081/_health-internal");
-
-        // IMPORTANT: header Basic pour que l’UI puisse appeler /healthz protégé
-        setup.ConfigureApiEndpointHttpclient((sp, client) =>
-        {
-            var cfg = sp.GetRequiredService<IConfiguration>();
-            var token = Convert.ToBase64String(Encoding.UTF8.GetBytes(
-                $"{cfg["BasicAuth:Username"]}:{cfg["BasicAuth:Password"]}"));
-            client.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", token);
-        });
     })
     .AddInMemoryStorage();
 
+    // Logging ciblé pour SignalR
     builder.Logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Debug);
     builder.Logging.AddFilter("Microsoft.AspNetCore.Http.Connections", LogLevel.Debug);
 
     // Firebase
     builder.Services.Configure<FirebaseSettings>(builder.Configuration.GetSection("Firebase"));
-    var projectId = builder.Configuration["Firebase:ProjectId"];
+    var firebasePrivateKey = builder.Configuration["Firebase:PrivateKey"]?.Replace("\\n", "\n");
     var serviceAccountJson = $@"
     {{
       ""type"": ""service_account"",
       ""project_id"": ""{builder.Configuration["Firebase:ProjectId"]}"",
       ""private_key_id"": ""{builder.Configuration["Firebase:PrivateKeyId"]}"",
-      ""private_key"": ""{builder.Configuration["Firebase:PrivateKey"]}"",
+      ""private_key"": ""{firebasePrivateKey}"",
       ""client_email"": ""{builder.Configuration["Firebase:ClientEmail"]}"",
       ""client_id"": ""{builder.Configuration["Firebase:ClientId"]}"",
       ""auth_uri"": ""https://accounts.google.com/o/oauth2/auth"",
@@ -160,15 +132,15 @@ try
 
     // Hangfire
     builder.Services.AddHangfire(config => config
-    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-    .UseSimpleAssemblyNameTypeSerializer()
-    .UseRecommendedSerializerSettings()
-    .UsePostgreSqlStorage(options =>
-        options.UseNpgsqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
+        .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+        .UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UsePostgreSqlStorage(options =>
+            options.UseNpgsqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
     );
-    builder.Logging.SetMinimumLevel(LogLevel.Debug);
     builder.Services.AddHangfireServer();
 
+    // Sentry
     builder.WebHost.UseSentry(o =>
     {
         o.Dsn = builder.Configuration["Sentry"];
@@ -177,9 +149,6 @@ try
 
     var app = builder.Build();
 
-    app.UseRouting();
-    app.UseCors("AllowFrontend");
-
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
@@ -187,61 +156,67 @@ try
         app.UseStatusCodePages();
     }
 
-    if (!app.Environment.IsDevelopment())
-    {
-        app.UseHttpsRedirection();
-    }
-
-    //app.UseHttpsRedirection();
     app.UseExceptionHandler();
+
+    app.UseRouting();
+    app.UseCors("AllowFrontend");
+
     app.UseAuthentication();
     app.UseAuthorization();
-    app.MapControllers();
-    
+
+    app.Use(async (ctx, next) =>
+    {
+        var p = ctx.Request.Path;
+
+        bool needsBasic =
+            p.StartsWithSegments("/health", StringComparison.OrdinalIgnoreCase) ||
+            p.StartsWithSegments("/health-api", StringComparison.OrdinalIgnoreCase) ||
+            p.StartsWithSegments("/hangfire", StringComparison.OrdinalIgnoreCase);
+
+        if (!needsBasic)
+        {
+            await next();
+            return;
+        }
+
+        var result = await ctx.AuthenticateAsync("Basic");
+        if (!result.Succeeded)
+        {
+            await ctx.ChallengeAsync("Basic");
+            return;
+        }
+
+        ctx.User = result.Principal!;
+        await next();
+    });
+
+    // ---- Endpoints ----
+
+    app.MapHealthChecks("/_health-internal", new HealthCheckOptions
+    {
+        Predicate = _ => true,
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    }).RequireHost("127.0.0.1", "localhost");
+
+    app.MapHealthChecksUI(options =>
+    {
+        options.UIPath = "/health";
+        options.ApiPath = "/health-api";
+    }).RequireAuthorization("BasicOnly");
+
     app.MapHangfireDashboard("/hangfire", new DashboardOptions
     {
         Authorization = new List<IDashboardAuthorizationFilter>()
     }).RequireAuthorization("BasicOnly");
 
-    app.UseWebSockets(new WebSocketOptions
-    {
-        KeepAliveInterval = TimeSpan.FromSeconds(15)
-    });
-
-    app.Map("/_health-internal", branch =>
-    {
-        // Autorise seulement les IPs loopback (127.0.0.1, ::1)
-        branch.Use(async (ctx, next) =>
-        {
-            var ip = ctx.Connection.RemoteIpAddress;
-            if (ip is null || !IPAddress.IsLoopback(ip))
-            {
-                ctx.Response.StatusCode = 403;
-                await ctx.Response.WriteAsync("Forbidden");
-                return;
-            }
-            await next();
-        });
-
-        branch.UseRouting();
-        branch.UseEndpoints(endpoints =>
-        {
-            endpoints.MapHealthChecks("", new HealthCheckOptions
-            {
-                Predicate = _ => true,
-                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            });
-        });
-    });
-
-    app.MapHealthChecksUI(options =>
-    {
-        options.UIPath = "/health";
-    }).RequireAuthorization("BasicOnly");
-
+    // WebSockets + SignalR Hub
+    app.UseWebSockets(new WebSocketOptions { KeepAliveInterval = TimeSpan.FromSeconds(15) });
     app.MapHub<HestiaHub>("/hestiaHub");
 
-    // Configure Hangfire recurring jobs
+    // Controllers
+    app.MapControllers();
+
+    // Recurring jobs
     using (var scope = app.Services.CreateScope())
     {
         var jobConfigurator = scope.ServiceProvider.GetRequiredService<RecurringJobsConfigurator>();
