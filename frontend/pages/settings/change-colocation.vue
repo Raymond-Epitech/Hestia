@@ -18,6 +18,7 @@
                 <Texte_language source="ChangeColocation" />
                 <input type="text" class="input" v-model="new_data.colocationId" :placeholder="$t('ColocationID')"
                     required />
+                <div v-if="alert" class="alert">{{ $t('error_colloc_id') }}</div>
                 <button class="button" @click.prevent="joinColocation()">
                     <Texte_language source="JoinColocation" />
                 </button>
@@ -37,6 +38,8 @@ const { $bridge } = useNuxtApp()
 const api = $bridge;
 api.setjwt(useCookie('token').value ?? '');
 const collocID = route.query.collocID as string;
+const alert = ref(false);
+
 const redirect = (page) => {
     router.push(page);
 }
@@ -54,10 +57,16 @@ const new_data = ref({
     id: user.id,
 })
 const joinColocation = async () => {
-    const data = await api.updateUser(new_data.value)
-    if (data) {
-        userStore.setColocation(new_data.value.colocationId);
-        router.push('/');
+    if (new_data.value.colocationId !== '') {
+        alert.value = false;
+        const data = await api.updateUser(new_data.value)
+        if (data) {
+            userStore.setColocation(new_data.value.colocationId);
+            router.push('/');
+        }
+    } else {
+        console.log("JoinColocation error: no colocation Id");
+        alert.value = true;
     }
 }
 const createColocation = async () => {
@@ -131,6 +140,15 @@ const createColocation = async () => {
     padding-left: 12px;
     background-color: var(--secondary-button);
     color: var(--secondary-page-text);
+}
+
+.alert {
+    padding: 0;
+    margin: 0;
+    margin-top: -6px;
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: var(--basic-red);
 }
 
 .button {
