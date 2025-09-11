@@ -13,6 +13,8 @@ namespace Business.Services
     public class ColocationService(ILogger<ColocationService> logger,
         IRepository<Colocation> colocationRepository,
         IRepository<User> userRepository,
+        IRepository<Chore> choreRepository,
+        IRepository<Reminder> reminderRepository,
         IRepository<ExpenseCategory> expenseCategoryRepository
         ) : IColocationService
     {
@@ -101,6 +103,29 @@ namespace Business.Services
             }
 
             await colocationRepository.AddAsync(newColocation);
+            await reminderRepository.AddAsync(new TextReminder
+            {
+                Id = Guid.NewGuid(),
+                ColocationId = newColocation.Id,
+                CreatedBy = colocation.CreatedBy,
+                Content = "Bienvenue dans votre nouvelle colocation ! Ceci est une petite note texte que vous pouvez modifier ou supprimer. Essayez d'en ajouter un !",
+                Color = "blue",
+                CoordX = 0,
+                CoordY = 0,
+                CoordZ = 0
+            });
+            await choreRepository.AddAsync(new Chore
+            {
+                Id = Guid.NewGuid(),
+                CreatedBy = colocation.CreatedBy,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                ColocationId = newColocation.Id,
+                DueDate = DateTime.UtcNow.AddDays(7),
+                Title = "Première tâche",
+                Description = "Ceci est votre première tâche, vous pouvez essayez de vous y inscrire ou la marquer comme terminée",
+                IsDone = false
+            });
 
             await expenseCategoryRepository.AddAsync(new ExpenseCategory
             {
