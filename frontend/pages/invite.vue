@@ -20,6 +20,6 @@ if (!islogin) {
 } else if (userStore.user.colocationId) {
   router.push({ path: '/settings/change-colocation', query: { collocID: collocID } });
 } else {
-  router.push({ path: '/colocation-mandatory', query: { collocID: collocID } });
+  router.push({ path: '/', query: { collocID: collocID } });
 }
 </script>
