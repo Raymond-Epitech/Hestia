@@ -21,10 +21,10 @@
                 id="gridRadios4" value="green">
             </div>
             <div v-if="post.color && post.content" class="modal-buttons">
-              <button class="button button-proceed" @click.prevent="handleProceed">{{ $t('poster') }}</button>
+              <button @click.prevent="handleProceed">{{ $t('poster') }}</button>
             </div>
             <div v-else class="modal-buttons">
-              <button class="button button-proceed" @click.prevent="handleProceed" disabled>{{ $t('poster') }}</button>
+              <button @click.prevent="handleProceed" disabled>{{ $t('poster') }}</button>
             </div>
           </form>
         </div>
@@ -134,15 +134,6 @@ const handleProceed = async () => {
     emit('closed')
   }
 }
-
-const handleImageUpload = (event: Event) => {
-  const file = (event.target as HTMLInputElement).files?.[0];
-  if (file) {
-    post.value.image = file;
-    prewiew.value = URL.createObjectURL(file);
-    post.value.content = 'none';
-  }
-};
 
 watch(
   modelValue,
@@ -288,12 +279,12 @@ watch(visible, (value) => {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 100;
   position: fixed;
   animation: fadeIn 0.2s;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  z-index: 11;
 }
 
 .modal-buttons {
@@ -315,17 +306,11 @@ watch(visible, (value) => {
   border: 0;
 }
 
-/** Fallback Buttons */
-.button {
+button {
   padding: 10px 20px;
   border-radius: 15px;
   border: 0;
   cursor: pointer;
-}
-
-.button-proceed {
-  background: #00000088;
-  color: var(--overlay-text);
 }
 
 button:disabled {

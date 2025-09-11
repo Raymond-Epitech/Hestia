@@ -111,5 +111,6 @@
   "confirm_delete_shoppinglist": "この買い物リストを削除したいですか？",
   "shopping-list-name": "買い物リストの名前",
   "newFlateshare": "新しいシェアハウスを作成する",
-  "ChangeColocation": "別のシェアハウスに参加する"
+  "ChangeColocation": "別のシェアハウスに参加する",
+  "error_colloc_id": "*共同居住者IDを入力してください*"
 }

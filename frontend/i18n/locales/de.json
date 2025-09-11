@@ -111,5 +111,6 @@
   "confirm_delete_shoppinglist": "Sind Sie sicher, dass Sie diese Einkaufsliste löschen möchten?",
   "shopping-list-name": "Name der Einkaufsliste",
   "newFlateshare": "Neue Wohngemeinschaft gründen",
-  "ChangeColocation": "Einer anderen Wohngemeinschaft beitreten"
+  "ChangeColocation": "Einer anderen Wohngemeinschaft beitreten",
+  "error_colloc_id": "*Bitte geben Sie eine Mitbewohner-ID an*"
 }

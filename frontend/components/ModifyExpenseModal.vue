@@ -45,17 +45,17 @@
               </div>
               <div v-if="modified_expense.splitType == 1">
                 <div class="checkbox-list">
-                  <label v-for="coloc in list_coloc" :key="coloc.id" class="checkbox-item">
-                    <input type="checkbox" :value="coloc.id" />
+                  <label v-for="coloc in list_coloc" :key="coloc.id" class="checkbox-item set-value">
+                    <!-- <input type="checkbox" :value="coloc.id" /> -->
                     {{ coloc.username }}
                     <input type="number" class="split-value-input"
                       v-model.number="modified_expense.splitValues[coloc.id]" placeholder="0.00" min="0" />
                   </label>
                 </div>
               </div>
-              <div v-if="modified_expense.splitType == 2">
+              <!-- <div v-if="modified_expense.splitType == 2">
                 <div class="checkbox-list">
-                  <label v-for="coloc in list_coloc" :key="coloc.id" class="checkbox-item-pourcentage">
+                  <label v-for="coloc in list_coloc" :key="coloc.id" class="checkbox-item percentage">
                     <input class="check-zone" type="checkbox" :value="coloc.id" />
                     {{ coloc.username }}
                     <div class="split-value-container">
@@ -68,7 +68,7 @@
                       readonly />
                   </label>
                 </div>
-              </div>
+              </div> -->
             </div>
             <div class="modal-buttons">
               <button class="button button-proceed" @click.prevent="handleProceed('modify')">
@@ -128,7 +128,7 @@ const list_coloc = ref<Coloc[]>([]);
 const splitTypes = [
   { value: 0, label: 'split_type0' },
   { value: 1, label: 'split_type1' },
-  { value: 2, label: 'split_type2' },
+  // { value: 2, label: 'split_type2' },
 ];
 
 const modified_expense = ref<Expense_Modif>({
@@ -146,10 +146,10 @@ const modified_expense = ref<Expense_Modif>({
   dateOfPayment: date.toISOString(),
 })
 
-const calculateValueFromPercentage = (colocId: string) => {
-  const percentage = modified_expense.value.splitPercentages[colocId] || 0;
-  return ((percentage / 100) * modified_expense.value.amount).toFixed(2);
-};
+// const calculateValueFromPercentage = (colocId: string) => {
+//   const percentage = modified_expense.value.splitPercentages[colocId] || 0;
+//   return ((percentage / 100) * modified_expense.value.amount).toFixed(2);
+// };
 
 const calculatedSplitValue = computed(() => {
   const numPeople = modified_expense.value.splitBetween.length;
@@ -451,17 +451,13 @@ input[type="number"] {
   color: var(--page-text);
 }
 
-.checkbox-item-pourcentage {
-  width: 100%;
-  height: 30px;
-  display: grid;
+.percentage {
   grid-template-columns: 2fr 11fr 4fr 6fr;
-  align-items: center;
   justify-content: space-between;
-  padding-left: 4px;
-  border-radius: 9px;
-  background-color: var(--recieved-message);
-  color: var(--page-text);
+}
+
+.set-value {
+  grid-template-columns: 7fr 3fr;
 }
 
 input[type="checkbox"] {
