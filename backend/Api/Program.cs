@@ -5,6 +5,8 @@ using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Hangfire;
 using Hangfire.PostgreSql;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Models.Configuration;
 using SignalR.Hubs;
@@ -78,7 +80,25 @@ try
     builder.Services.AddSignalR(options =>
     {
         options.EnableDetailedErrors = true;
+        // Si le client reste silencieux plus longtemps que ça, on le considère déconnecté
+        options.ClientTimeoutInterval = TimeSpan.FromSeconds(45);
+        // Ping serveur => client (doit être inférieur au timeout client)
+        options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+        // Taille max (ajuste si tu envoies des gros payloads)
+        options.MaximumReceiveMessageSize = 64 * 1024; // 64 KB
     });
+
+    builder.Services.AddHealthChecks()
+        .AddCheck<SignalRHealthCheck>("signalr_hub");
+    builder.Services.AddHealthChecksUI(setup =>
+    {
+        setup.SetEvaluationTimeInSeconds(15);
+        setup.MaximumHistoryEntriesPerEndpoint(60);
+        setup.AddHealthCheckEndpoint("api-self", "http://localhost:8081/healthz");
+    }).AddInMemoryStorage();
+
+    builder.Logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Debug);
+    builder.Logging.AddFilter("Microsoft.AspNetCore.Http.Connections", LogLevel.Debug);
 
     // Firebase
     builder.Services.Configure<FirebaseSettings>(builder.Configuration.GetSection("Firebase"));
@@ -155,6 +175,23 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
+
+    app.UseWebSockets(new WebSocketOptions
+    {
+        KeepAliveInterval = TimeSpan.FromSeconds(15)
+    });
+
+    app.MapHealthChecks("/healthz", new HealthCheckOptions
+    {
+        Predicate = _ => true,
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    });
+
+    app.MapHealthChecksUI(options =>
+    {
+        options.UIPath = "/health";
+        options.ApiPath = "/health-api";
+    });
 
     app.MapHub<HestiaHub>("/hestiaHub");
 
