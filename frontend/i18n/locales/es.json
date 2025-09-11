@@ -111,5 +111,6 @@
   "confirm_delete_shoppinglist": "¿Estás seguro de que quieres eliminar esta lista de compras?",
   "shopping-list-name": "Nombre de la lista de compras",
   "newFlateshare": "Crear un nuevo piso compartido",
-  "ChangeColocation": "Unirse a otro piso compartido"
+  "ChangeColocation": "Unirse a otro piso compartido",
+  "error_colloc_id": "*Indique un ID de piso compartido*"
 }

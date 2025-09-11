@@ -111,5 +111,6 @@
   "confirm_delete_shoppinglist": "Are you sure you want to delete this shopping list?",
   "shopping-list-name": "Name of the shopping list",
   "newFlateshare": "Create a new flat share",
-  "ChangeColocation": "Join another flat share"
+  "ChangeColocation": "Join another flat share",
+  "error_colloc_id": "*Please enter a roommate ID*"
 }
