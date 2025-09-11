@@ -1,30 +1,26 @@
 <template>
     <div>
         <div class="conteneur">
-            <div class="header">
+            <!-- <div class="header">
                 <h1 class="header">
                     <Texte_language source="ColocationMenu" />
                 </h1>
-            </div>
+            </div> -->
             <div class="colocation-container">
                 <form class="create-colocation">
-                    <h2>
-                        <Texte_language source="ColocationName" />:
-                    </h2>
-                    <input type="text" class="input" v-model="colocation.name" required />
-                    <h2>
-                        <Texte_language source="ColocationAdress" />:
-                    </h2>
-                    <input type="text" class="input" v-model="colocation.address" required />
+                    <Texte_language source="newFlateshare" />
+                    <input type="text" class="input" v-model="colocation.name" :placeholder="$t('ColocationName')"
+                        required />
+                    <input type="text" class="input" v-model="colocation.address" :placeholder="$t('ColocationAdress')"
+                        required />
                     <button class="button" @click.prevent="createColocation()">
                         <Texte_language source="CreateColocation" />
                     </button>
                 </form>
                 <form class="create-colocation">
-                    <h2>
-                        <Texte_language source="ColocationID" />:
-                    </h2>
-                    <input type="text" class="input" v-model="new_data.colocationId" required />
+                    <Texte_language source="ChangeColocation" />
+                    <input type="text" class="input" v-model="new_data.colocationId" :placeholder="$t('ColocationID')"
+                        required />
                     <button class="button" @click.prevent="joinColocation()">
                         <Texte_language source="JoinColocation" />
                     </button>
@@ -81,12 +77,9 @@ const createColocation = async () => {
 
 <style scoped>
 .conteneur {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .header {
@@ -106,53 +99,74 @@ h1 {
     z-index: 1;
 }
 
-.colocation-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-}
-
-h2 {
-    margin-top: 12px;
-    font-weight: 600;
-}
-
-.create-colocation {
+.page-conteneur {
     width: 100%;
-    margin-top: 40px;
+    height: calc(100vh - 4.5rem);
+    display: flex;
+    justify-content: center;
+    overflow: scroll;
+}
+
+.back {
+    background-color: var(--main-buttons);
+    position: fixed;
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 9px;
+    border: none;
+    box-shadow: var(--button-shadow-light);
+    top: 3%;
+    left: 3%;
+}
+
+.back .icon {
+    filter: var(--icon-filter);
+    width: 25px;
+}
+
+.colocation-container {
+    margin-top: 100px;
+    padding: 30px;
+    width: 90%;
+    height: fit-content;
+    display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--login-box-bg);
+    border-radius: 20px;
+    box-shadow: var(--rectangle-shadow-light);
+    gap: 40px;
+    font-size: 20px;
+    font-weight: 600;
     text-align: center;
+    color: var(--page-text);
+}
+
+.create-colocation {
+    display: grid;
+    gap: 10px;
 }
 
 .input {
-    width: 80%;
-    height: 46px;
-    margin-top: 12px;
-    padding-left: 20px;
-    border: none;
-    border-radius: 20px;
     outline: none;
-    box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
-    font-weight: 500;
-    font-size: 20px;
-    background-color: #FFFFFF;
+    border-radius: 18px;
+    border: none;
+    font-size: 16px;
+    text-align: start;
+    padding-left: 12px;
+    background-color: var(--secondary-button);
+    color: var(--secondary-page-text);
 }
 
 .button {
-    width: 80%;
-    height: 70px;
-    margin-top: 12px;
     padding: 10px 20px;
-    border-radius: 15px;
-    border: 0;
-    box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.28);
-    background-color: #85AD7B;
-    font-size: 32px;
     font-weight: 600;
-    text-align: center;
+    border-radius: 16px;
+    background-color: var(--secondary-button);
+    color: var(--secondary-page-text);
 }
 </style>
