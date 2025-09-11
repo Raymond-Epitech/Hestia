@@ -20,8 +20,8 @@ export default defineNuxtRouteMiddleware((to) => {
     return navigateTo('/login');
   }
 
-  if (token.value && user.colocationId === null && to?.name !== 'colocation-mandatory') {
+  if (token.value && user.colocationId === null && !to?.name?.startsWith('colocation-mandatory') && to?.name !== 'invite') {
     abortNavigation();
-    return navigateTo('/colocation-mandatory');
+    return navigateTo({ path: '/colocation-mandatory', query: to.query });
   }
 });
