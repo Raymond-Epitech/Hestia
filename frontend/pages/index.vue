@@ -127,7 +127,7 @@ button {
   filter: var(--icon-filter);
 }
 
-.vegane .post {
+.vegan .post {
   filter: none;
 }
 </style>

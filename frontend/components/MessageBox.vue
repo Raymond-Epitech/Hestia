@@ -36,7 +36,7 @@ const props = defineProps({
     color: var(--light-grey);
 }
 
-.vegane .box {
+.vegan .box {
     color: var(--light-grey);
 }
 

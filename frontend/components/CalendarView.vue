@@ -210,7 +210,7 @@ watch(locale, (newLocale) => {
     color: var(--light-grey);
 }
 
-.vegane .not-current-month {
+.vegan .not-current-month {
     color: var(--light-grey);
 }
 

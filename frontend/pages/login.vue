@@ -225,7 +225,7 @@ h2 {
     color: var(--page-text);
 }
 
-.vegane .input {
+.vegan .input {
     color: var(--main-buttons);
 }
 
@@ -256,7 +256,7 @@ h2 {
     color: var(--page-text);
 }
 
-.vegane .register-button {
+.vegan .register-button {
     background-color: var(--background);
     color: var(--main-buttons);
 }
@@ -277,7 +277,7 @@ h2 {
     box-shadow: var(--button-shadow-light);
 }
 
-.vegane .google-button {
+.vegan .google-button {
     background-color: var(--main-buttons);
 }
 

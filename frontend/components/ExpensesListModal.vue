@@ -199,7 +199,7 @@ watch(visible, (value) => {
     filter: invert(1) opacity(1);
 }
 
-.vegane .plus {
+.vegan .plus {
     filter: invert(1) opacity(1);
 }
 

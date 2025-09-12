@@ -71,7 +71,7 @@ const redirect = (page) => {
     color: var(--light-grey);
 }
 
-.vegane .icon-subtext {
+.vegan .icon-subtext {
     color: var(--light-grey);
 }
 
