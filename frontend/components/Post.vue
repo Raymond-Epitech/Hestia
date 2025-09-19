@@ -106,6 +106,17 @@ signalr.on("UpdateReaction", async (ReactionOutput) => {
     }
 })
 
+signalr.on("UpdatedShoppingItem", async (item) => {
+    const updatedItem = item as any;
+    if (props.post.reminderType == 2 && props.post.items) {
+        for (let i = 0; i < props.post.items.length; i++) {
+            if (props.post.items[i].id == updatedItem.id) {
+                props.post.items[i] = updatedItem;
+            }
+        }
+    }
+});
+
 onMounted(async () => {
     reactions.value = [];
     await getReactions();
