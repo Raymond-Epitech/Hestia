@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia'
+import { Preferences } from '@capacitor/preferences';
+import { Capacitor } from '@capacitor/core';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -9,15 +11,28 @@ export const useAuthStore = defineStore('auth', {
     async authenticateUser(credential) {
 
       if (credential) {
-        const token = useCookie('token');
-        token.value = credential;
-        this.authenticated = true;
+        const platform = Capacitor.getPlatform();
+        if (platform !== 'web') {
+          await Preferences.set({
+            key: 'token',
+            value: credential,
+          });
+        } else {
+          const token = useCookie('token');
+          token.value = credential;
+          this.authenticated = true;
+        }
       }
     },
     logUserOut() {
-      const token = useCookie('token');
-      this.authenticated = false;
-      token.value = null;
+      const platform = Capacitor.getPlatform();
+      if (platform !== 'web') {
+        Preferences.remove({ key: 'token' });
+      } else {
+        const token = useCookie('token');
+        this.authenticated = false;
+        token.value = null;
+      }
     },
   },
 });

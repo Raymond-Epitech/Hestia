@@ -1,6 +1,8 @@
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from "../store/auth";
 import { useUserStore } from '~/store/user';
+import { Capacitor } from '@capacitor/core';
+import { Preferences } from '@capacitor/preferences';
 
 export default defineNuxtRouteMiddleware((to) => {
   const { authenticated } = storeToRefs(useAuthStore());
@@ -8,6 +10,13 @@ export default defineNuxtRouteMiddleware((to) => {
   const userStore = useUserStore();
   const user = userStore.user;
 
+  if (Capacitor.getPlatform() !== 'web') {
+    Preferences.get({ key: 'token' }).then((result) => {
+      if (result.value) {
+        token.value = result.value;
+      }
+    });
+  }
   if (token.value) {
     authenticated.value = true;
   }

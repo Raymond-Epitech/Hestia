@@ -69,7 +69,7 @@ onMounted(() => {
     if (colocationID.value) {
         registration.value = true;
     }
-    if (Capacitor.isNativePlatform()) {
+    if (Capacitor.getPlatform() !== 'web') {
         PushNotifications.addListener('registration', (token) => {
             fcmToken.value = token.value;
         });
