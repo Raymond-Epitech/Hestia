@@ -20,8 +20,8 @@ export const useAuthStore = defineStore('auth', {
         } else {
           const token = useCookie('token');
           token.value = credential;
-          this.authenticated = true;
         }
+        this.authenticated = true;
       }
     },
     logUserOut() {
