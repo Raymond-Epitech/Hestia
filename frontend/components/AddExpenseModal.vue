@@ -28,18 +28,18 @@
                     </option>
                   </select>
                 </div>
-                <div>
-                  <h3 class="recurring-expense subtext">
-                    <input type="checkbox" v-model="isRecurring" />
-                    <Texte_language :source="isRecurring ? 'recurrence_explaine' : 'recurrence'" />
-                  </h3>
-                  <div v-if="isRecurring" class="date-picker">
-                    <select v-model="dueDate" class="day-select">
-                      <option v-for="day in 30" :key="day" :value="day">
-                        {{ day }}
-                      </option>
-                    </select>
-                  </div>
+              </div>
+              <div>
+                <h3 class="recurring-expense subtext">
+                  <input type="checkbox" v-model="isRecurring" />
+                  <Texte_language :source="isRecurring ? 'recurrence_explaine' : 'recurrence'" />
+                </h3>
+                <div v-if="isRecurring">
+                  <select v-model="dueDate" class="day-select">
+                    <option v-for="day in 30" :key="day" :value="day">
+                      {{ day }}
+                    </option>
+                  </select>
                 </div>
               </div>
               <h3 class="subtext">
@@ -332,7 +332,7 @@ h3 {
 }
 
 .day-select {
-  width: 25%;
+  width: 100%;
   height: 30px;
   border-radius: 9px;
   border: none;
@@ -358,8 +358,6 @@ h3 {
 
 .recurring-expense {
   display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 5px;
   margin-top: 8px;
 }
