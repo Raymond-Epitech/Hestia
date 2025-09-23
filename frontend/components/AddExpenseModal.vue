@@ -31,14 +31,14 @@
                 <div>
                   <h3 class="recurring-expense subtext">
                     <input type="checkbox" v-model="isRecurring" />
-                    <Texte_language source="reccurance" />
+                    <Texte_language :source="isRecurring ? 'recurrence_explaine' : 'recurrence'" />
                   </h3>
                   <div v-if="isRecurring" class="date-picker">
-                    <client-only>
-                      <vue-date-picker placeholder="MM/DD/YYYY" format="MM/dd/yyyy" v-model="dueDate" teleport-center
-                        dark :min-date="minDate" :max-date="maxDate" prevent-min-max-navigation disable-year-select
-                        :enable-time-picker="false" />
-                    </client-only>
+                    <select v-model="dueDate" class="day-select">
+                      <option v-for="day in 30" :key="day" :value="day">
+                        {{ day }}
+                      </option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -255,6 +255,16 @@ watch(
   { immediate: true }
 )
 
+watch(isRecurring, (newValue) => {
+  if (!newValue) {
+    dueDate.value = '';
+  }
+});
+
+watch(dueDate, (newValue) => {
+  console.log('Due date changed:', newValue);
+});
+
 watch(visible, (value) => {
   emit('update:modelValue', value)
 })
@@ -319,6 +329,18 @@ h3 {
   grid-template-columns: 7fr 2fr;
   justify-content: center;
   align-content: center;
+}
+
+.day-select {
+  width: 25%;
+  height: 30px;
+  border-radius: 9px;
+  border: none;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 5px;
+  background-color: var(--recieved-message);
+  color: var(--page-text);
 }
 
 .name-input {
