@@ -17,14 +17,31 @@
                   <text>€</text>
                 </div>
               </div>
-              <h3 class="subtext">
-                <Texte_language source="expense_paid_by" /> :
-              </h3>
-              <select v-model="expense.paidBy" class="drop-down-input name">
-                <option v-for="coloc in list_coloc" :key="coloc.id" :value="coloc.id">
-                  {{ coloc.username }}
-                </option>
-              </select>
+              <div class="name-expense-container">
+                <div>
+                  <h3 class="subtext">
+                    <Texte_language source="expense_paid_by" /> :
+                  </h3>
+                  <select v-model="expense.paidBy" class="drop-down-input name">
+                    <option v-for="coloc in list_coloc" :key="coloc.id" :value="coloc.id">
+                      {{ coloc.username }}
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <h3 class="recurring-expense subtext">
+                    <input type="checkbox" v-model="isRecurring" />
+                    <Texte_language source="reccurance" />
+                  </h3>
+                  <div v-if="isRecurring" class="date-picker">
+                    <client-only>
+                      <vue-date-picker placeholder="MM/DD/YYYY" format="MM/dd/yyyy" v-model="dueDate" teleport-center
+                        dark :min-date="minDate" :max-date="maxDate" prevent-min-max-navigation disable-year-select
+                        :enable-time-picker="false" />
+                    </client-only>
+                  </div>
+                </div>
+              </div>
               <h3 class="subtext">
                 <Texte_language source="split_type" /> :
               </h3>
@@ -85,6 +102,7 @@
 import useModal from '~/composables/useModal';
 import { useUserStore } from '~/store/user';
 import type { Expense, Coloc } from '~/composables/service/type';
+import { addMonths, getMonth, getYear, subMonths } from 'date-fns';
 
 const props = withDefaults(
   defineProps<{
@@ -114,6 +132,10 @@ const splitTypes = [
   // { value: 2, label: 'split_type2' },
 ];
 
+const minDate = computed(() => subMonths(new Date(getYear(new Date()), getMonth(new Date())), 2));
+const maxDate = computed(() => addMonths(new Date(getYear(new Date()), getMonth(new Date())), 6));
+const dueDate = ref('');
+const isRecurring = ref(false);
 const expense = ref<Expense>({
   colocationId: user.colocationId,
   expenseCategoryId: props.categoryId,
@@ -310,6 +332,14 @@ h3 {
   outline: none;
   color: var(--overlay-text);
   font-weight: 600;
+}
+
+.recurring-expense {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 8px;
 }
 
 .expense-container {
