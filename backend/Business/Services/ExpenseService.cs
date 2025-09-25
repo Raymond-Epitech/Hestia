@@ -17,6 +17,7 @@ namespace Business.Services
     public class ExpenseService(ILogger<ColocationService> logger,
         IRepository<ExpenseCategory> expenseCategoryRepository,
         IRepository<Expense> expenseRepository,
+        IRepository<ExpenseAutomation> expenseAutomationRepository,
         IRepository<Entry> entryRepository,
         IRepository<SplitBetween> splitbetweenRepository,
         IRepository<User> userRepository,
@@ -64,6 +65,7 @@ namespace Business.Services
                 .Where(e => e.ExpenseCategoryId == expenseCategoryId)
                 .Include(e => e.SplitBetweens)
                 .Include(e => e.ExpenseCategory)
+                .Include(e => e.ExpenseAutomation)
                 .ToListAsync();
 
             var expenses = expensesRaw.Select(e => new ExpenseOutput
@@ -78,7 +80,9 @@ namespace Business.Services
                 SplitBetween = e.SplitBetweens.AsEnumerable().ToDictionary(k => k.UserId, v => v.Amount),
                 DateOfPayment = e.DateOfPayment,
                 ExpenseCategoryId = e.ExpenseCategoryId,
-                ExpenseCategoryName = e.ExpenseCategory.Name
+                ExpenseCategoryName = e.ExpenseCategory.Name,
+                IsRecurring = e.ExpenseAutomation != null,
+                DayOfTheRecursion = e.ExpenseAutomation?.DayOfTheMonth
             }).ToList();
 
             logger.LogInformation("Succes : All expenses were retrived from db");
@@ -98,6 +102,7 @@ namespace Business.Services
                 .Where(e => e.Id == id)
                 .Include(e => e.SplitBetweens)
                 .Include(e => e.ExpenseCategory)
+                .Include(e => e.ExpenseAutomation)
                 .FirstOrDefaultAsync();
 
             if (expenseRaw == null)
@@ -117,7 +122,9 @@ namespace Business.Services
                 SplitBetween = expenseRaw.SplitBetweens.AsEnumerable().ToDictionary(k => k.UserId, v => v.Amount),
                 DateOfPayment = expenseRaw.DateOfPayment,
                 ExpenseCategoryId = expenseRaw.ExpenseCategoryId,
-                ExpenseCategoryName = expenseRaw.ExpenseCategory.Name
+                ExpenseCategoryName = expenseRaw.ExpenseCategory.Name,
+                IsRecurring = expenseRaw.ExpenseAutomation != null,
+                DayOfTheRecursion = expenseRaw.ExpenseAutomation?.DayOfTheMonth
             };
                 
             logger.LogInformation($"Succes : Expense with id {id} was retrived from db");
@@ -451,6 +458,18 @@ namespace Business.Services
                         ColocationId = input.ColocationId
                     });
 
+                    if (input.IsRecurring)
+                    {
+                        var expenseAutomation = new ExpenseAutomation
+                        {
+                            Id = Guid.NewGuid(),
+                            Name = input.Name,
+                            DayOfTheMonth = input.DayOfTheRecursion?? 1
+                        };
+                        await expenseAutomationRepository.AddAsync(expenseAutomation);
+                        expense.ExpenseAutomationId = expenseAutomation.Id;
+                    }
+
                     await expenseRepository.AddAsync(expense);
                     await expenseRepository.SaveChangesAsync();
 
@@ -513,6 +532,7 @@ namespace Business.Services
         {
             var expense = await expenseRepository.Query()
                 .Include(e => e.ExpenseCategory)
+                .Include(e => e.ExpenseAutomation)
                 .FirstOrDefaultAsync(e => e.Id == input.Id);
 
             if (expense is null)
@@ -551,6 +571,32 @@ namespace Business.Services
                         ColocationId = input.ColocationId,
                         ExpenseCategoryId = input.ExpenseCategoryId
                     });
+
+                    if (input.IsRecurring)
+                    {
+                        if (expense.ExpenseAutomation is null)
+                        {
+                            var expenseAutomation = new ExpenseAutomation
+                            {
+                                Id = Guid.NewGuid(),
+                                Name = input.Name,
+                                DayOfTheMonth = input.DayOfTheRecursion ?? 1
+                            };
+                            await expenseAutomationRepository.AddAsync(expenseAutomation);
+                            expense.ExpenseAutomationId = expenseAutomation.Id;
+                        }
+                        else
+                        {
+                            expense.ExpenseAutomation.Name = input.Name;
+                            expense.ExpenseAutomation.DayOfTheMonth = input.DayOfTheRecursion ?? expense.ExpenseAutomation.DayOfTheMonth;
+                            expenseAutomationRepository.Update(expense.ExpenseAutomation);
+                        }
+                    }
+                    else if (expense.ExpenseAutomation is not null)
+                    {
+                        expense.ExpenseAutomationId = null;
+                        expenseAutomationRepository.Delete(expense.ExpenseAutomation);
+                    }
 
                     expenseRepository.Update(expense);
 

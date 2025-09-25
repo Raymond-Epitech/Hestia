@@ -19,6 +19,7 @@ namespace Business.Services;
 public class UserService(ILogger<UserService> logger,
     IRepository<User> userRepository,
     IRepository<FCMDevice> fcmDeviceRepository,
+    IImageService imageService,
     IJwtService jwtService) : IUserService
 {
     /// <summary>
@@ -187,7 +188,7 @@ public class UserService(ILogger<UserService> logger,
             Username = userInput.Username,
             Email = validPayload.Email,
             ColocationId = userInput.ColocationId,
-            PathToProfilePicture = validPayload.Picture ?? "default.jpg"
+            PathToProfilePicture = validPayload.Picture == null ? "default.jpg" : await imageService.DownloadImageAsFormFileAsync(validPayload.Picture)
         };
 
         await userRepository.AddAsync(newUser);

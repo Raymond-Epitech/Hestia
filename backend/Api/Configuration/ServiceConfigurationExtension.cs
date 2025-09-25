@@ -33,6 +33,7 @@ public static class ServiceConfigurationExtension
         services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<IPollService, PollService>();
         services.AddScoped<IReactionService, ReactionService>();
+        services.AddScoped<IImageService, ImageService>();
 
         // Repositories
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
