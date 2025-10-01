@@ -2,7 +2,7 @@
     <div class="body-container">
         <div class="base">
             <img src="../public/logo-hestia.png" class="logo" />
-            <div v-if="registration" class="register">
+            <!-- <div v-if="registration" class="register">
                 <h2 class="login-font">{{ $t('register') }}</h2>
                 <h2 class="register-font">{{ $t('user_name') }} :</h2>
                 <input class="input" type="text" :placeholder="$t('user_name')" maxlength="12" v-model="username" />
@@ -13,19 +13,19 @@
                 <a type="submit" @click.prevent="register()" class="google-button">
                     {{ $t('register_with_google') }}
                 </a>
-            </div>
-            <div v-else class="login">
+            </div> -->
+            <div class="login">
                 <h2 class="login-font">{{ $t('login') }}</h2>
                 <a @click="login()" class="google-button">
                     {{ $t('login_with_google') }}
                 </a>
             </div>
-            <button v-if="!registration" class="register-button" @click="goRegister()">
+            <!-- <button v-if="!registration" class="register-button" @click="goRegister()">
                     {{ $t('register') }}
             </button>
             <button v-if="registration" class="register-button" @click="goLogin()">
                 {{ $t('login') }}
-            </button>
+            </button> -->
         </div>
     </div>
 </template>
@@ -88,42 +88,42 @@ function goRegister() {
     registration.value = true;
 }
 
-const register = async () => {
-    if (!username.value) {
-        alert.value = true;
-        return;
-    }
-    alert.value = false;
-    if (alert.value == false) {
-        const res = await SocialLogin.login({
-            provider: 'google',
-            options: {
-                scopes: ['email', 'profile'],
-            },
-        });
-        if (res) {
-            const newuser = {
-                username: username.value,
-                colocationId: colocationID.value
-            };
-            const data = await $bridge.addUser(newuser, res.result.idToken, fcmToken.value);
-            if (data) {
-                $bridge.setjwt(data.jwt);
-                userStore.setUser(data.user);
-                $bridge.getLanguage(userStore.user.id).then((lang) => {
-                    if (lang != '') {
-                        setLocale(lang);
-                        $locally.setItem('locale', lang);
-                    }
-                })
-                await authenticateUser(data.jwt);
-            }
-            if (authenticated) {
-                router.push('/');
-            }
-        }
-    }
-}
+// const register = async () => {
+//     if (!username.value) {
+//         alert.value = true;
+//         return;
+//     }
+//     alert.value = false;
+//     if (alert.value == false) {
+//         const res = await SocialLogin.login({
+//             provider: 'google',
+//             options: {
+//                 scopes: ['email', 'profile'],
+//             },
+//         });
+//         if (res) {
+//             const newuser = {
+//                 username: username.value,
+//                 colocationId: colocationID.value
+//             };
+//             const data = await $bridge.addUser(newuser, res.result.idToken, fcmToken.value);
+//             if (data) {
+//                 $bridge.setjwt(data.jwt);
+//                 userStore.setUser(data.user);
+//                 $bridge.getLanguage(userStore.user.id).then((lang) => {
+//                     if (lang != '') {
+//                         setLocale(lang);
+//                         $locally.setItem('locale', lang);
+//                     }
+//                 })
+//                 await authenticateUser(data.jwt);
+//             }
+//             if (authenticated) {
+//                 router.push('/');
+//             }
+//         }
+//     }
+// }
 
 const login = async () => {
     const res = await SocialLogin.login({
@@ -136,6 +136,11 @@ const login = async () => {
         const data = await $bridge.login(res.result.idToken, fcmToken.value);
         if (data) {
             $bridge.setjwt(data.jwt);
+            // if the user does not exist, redirect to registration page
+            if (!data.user.username) {
+                registration.value = true;
+                return;
+            } 
             userStore.setUser(data.user);
             $bridge.getLanguage(userStore.user.id).then((lang) => {
                 if (lang != '') {
