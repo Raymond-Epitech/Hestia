@@ -312,15 +312,16 @@ export class bridge {
                 if (response.status == 200) {
                     return await response.json();
                 } else if (response.status == 404) {
-                    const jsonresponse = await response.json();
-                    if (jsonresponse.message == "User not found") {
-                        return { error: "User not found" };
-                    }
-                    return { error: "Internal server error" };
+                    // const jsonresponse = await response.json();
+                    // if (jsonresponse.message == "User not found") {
+                        // return { error: "User not found", status: 404 };
+                    // }
+                    return { error: "User not found", status: 404 };
+                    // return { error: "Internal server error", status: 500 };
                 } else if (response.status == 422) {
                     const jsonresponse = await response.json();
                     if (jsonresponse.message == "Invalid json body") {
-                        return { error: "Invalid json body" };
+                        return { error: "Invalid json body", status: 422 };
                     }
                 }
                 return {};

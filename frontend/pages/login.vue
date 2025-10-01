@@ -1,5 +1,6 @@
 <template>
     <div class="body-container">
+        <RegisterModal v-model="isRegisterModalOpen" />
         <div class="base">
             <img src="../public/logo-hestia.png" class="logo" />
             <!-- <div v-if="registration" class="register">
@@ -58,13 +59,18 @@ const registration = ref(false);
 const alert = ref(false);
 const fcmToken = ref('');
 
+const isRegisterModalOpen = ref(false);
+const openRegisterModal = () => (isRegisterModalOpen.value = true);
+
 onMounted(() => {
     SocialLogin.initialize({
         google: {
             webClientId: '80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com', // the web client id for Android and Web
         }
     })
-    registerNotifications();
+    if (Capacitor.getPlatform() !== 'web') {
+        registerNotifications();
+    }
     colocationID.value = route.query.collocID;
     if (colocationID.value) {
         registration.value = true;
@@ -136,9 +142,9 @@ const login = async () => {
         const data = await $bridge.login(res.result.idToken, fcmToken.value);
         if (data) {
             $bridge.setjwt(data.jwt);
-            // if the user does not exist, redirect to registration page
-            if (!data.user.username) {
-                registration.value = true;
+            if (data.status === 404) {
+                console.log('User does not exist, opening registration modal');
+                openRegisterModal();
                 return;
             } 
             userStore.setUser(data.user);
