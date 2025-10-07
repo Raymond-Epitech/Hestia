@@ -132,8 +132,6 @@ const splitTypes = [
   // { value: 2, label: 'split_type2' },
 ];
 
-const minDate = computed(() => subMonths(new Date(getYear(new Date()), getMonth(new Date())), 2));
-const maxDate = computed(() => addMonths(new Date(getYear(new Date()), getMonth(new Date())), 6));
 const dueDate = ref('');
 const isRecurring = ref(false);
 const expense = ref<Expense>({
@@ -200,7 +198,7 @@ const calculatedSplitValue = computed(() => {
 });
 
 const handleProceed = async () => {
-  api.addExpense(expense.value).then((response) => {
+  api.addExpense(expense.value, isRecurring.value, dueDate.value).then((response) => {
     if (response === true) {
       close()
       emit('proceed')
