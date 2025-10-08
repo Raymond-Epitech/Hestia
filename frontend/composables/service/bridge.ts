@@ -735,8 +735,8 @@ export class bridge {
         })
     }
 
-    async addExpense(data: Expense, isRecurring: boolean, dueDate: string): Promise<boolean | { error: any }> {
-        const newdata = { ...data, isRecurring, dueDate };
+    async addExpense(data: Expense, isRecurring: boolean, dayOfTheRecursion: string): Promise<boolean | { error: any }> {
+        const newdata = { ...data, isRecurring, dayOfTheRecursion };
         return await fetch(`${this.url}/api/Expense`, {
             method: 'POST',
             headers: {
