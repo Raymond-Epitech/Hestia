@@ -73,9 +73,9 @@ onMounted(() => {
         registerNotifications();
     }
     colocationID.value = route.query.collocID;
-    if (colocationID.value) {
-        openRegisterModal();
-    }
+    // if (colocationID.value) {
+    //     openRegisterModal();
+    // }
     if (Capacitor.getPlatform() !== 'web') {
         PushNotifications.addListener('registration', (token) => {
             fcmToken.value = token.value;

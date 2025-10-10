@@ -10,8 +10,7 @@
                     <h2 v-if="alert" class="alert">{{ $t('error_register') }}</h2>
                     <h2 class="register-font">{{ $t('colocation_id') }} :</h2>
                     <input class="input" type="text" :placeholder="$t('optional')" v-model="colocationID" />
-                    <!-- To change to simply say register. -->
-                    <a type="submit" @click.prevent="register()" class="google-button"> 
+                    <a type="submit" @click.prevent="register()" class="register-button"> 
                         {{ $t('register') }}
                     </a>
                 </div>
@@ -46,9 +45,9 @@ const { $locally } = useNuxtApp();
 const { authenticateUser } = useAuthStore();
 const { authenticated } = storeToRefs(useAuthStore());
 const userStore = useUserStore();
-const { $bridge } = useNuxtApp()
+const { $bridge } = useNuxtApp();
 const router = useRouter();
-const route = useRoute()
+const route = useRoute();
 const username = ref('');
 const colocationID = ref('');
 const alert = ref(false);
@@ -98,18 +97,12 @@ const register = async () => {
     }
     alert.value = false;
     if (alert.value == false) {
-        const res = await SocialLogin.login({
-            provider: 'google',
-            options: {
-                scopes: ['email', 'profile'],
-            },
-        });
-        if (res) {
+        if (props.providerJWT) {
             const newuser = {
                 username: username.value,
                 colocationId: colocationID.value
             };
-            const data = await $bridge.addUser(newuser, res.result.idToken, fcmToken.value);
+            const data = await $bridge.addUser(newuser, props.providerJWT, fcmToken.value);
             if (data) {
                 $bridge.setjwt(data.jwt);
                 userStore.setUser(data.user);
@@ -170,7 +163,6 @@ button {
 }
 
 .modal {
-    animation: slideIn 0.4s;
     color: var(--overlay-text);
     background-color: var(--overlay-background);
     height: fit-content;
@@ -214,7 +206,7 @@ button {
     color: var(--main-buttons);
 }
 
-.google-button {
+.register-button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -231,8 +223,19 @@ button {
     box-shadow: var(--button-shadow-light);
 }
 
-.hestia .google-button {
+.hestia .register-button {
     background-color: var(--main-buttons);
 }
+
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
 
 </style>
