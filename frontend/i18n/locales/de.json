@@ -75,7 +75,6 @@
   "task_description": "Beschreibung der Aufgabe (optional)",
   "login": "Verbindung",
   "register": "Registrieren",
-  "register_with_google": "Registrieren Sie sich bei Google",
   "login_with_google": "Google Connect",
   "error_register": "*Bitte geben Sie Ihren Benutzernamen an*",
   "colocation_id": "Geteilt",

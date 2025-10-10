@@ -1,6 +1,6 @@
 <template>
     <div class="body-container">
-        <RegisterModal v-model="isRegisterModalOpen" />
+        <RegisterModal v-model="isRegisterModalOpen" :providerJWT="providerJWT" :colocationID="colocationID" />
         <div class="base">
             <img src="../public/logo-hestia.png" class="logo" />
             <!-- <div v-if="registration" class="register">
@@ -58,6 +58,7 @@ const colocationID = ref('');
 const registration = ref(false);
 const alert = ref(false);
 const fcmToken = ref('');
+const providerJWT = ref('');
 
 const isRegisterModalOpen = ref(false);
 const openRegisterModal = () => (isRegisterModalOpen.value = true);
@@ -73,7 +74,7 @@ onMounted(() => {
     }
     colocationID.value = route.query.collocID;
     if (colocationID.value) {
-        registration.value = true;
+        openRegisterModal();
     }
     if (Capacitor.getPlatform() !== 'web') {
         PushNotifications.addListener('registration', (token) => {
@@ -138,6 +139,7 @@ const login = async () => {
             scopes: ['email', 'profile'],
         },
     });
+    providerJWT.value = res.result.idToken;
     if (res) {
         const data = await $bridge.login(res.result.idToken, fcmToken.value);
         if (data) {
@@ -146,7 +148,7 @@ const login = async () => {
                 console.log('User does not exist, opening registration modal');
                 openRegisterModal();
                 return;
-            } 
+            }
             userStore.setUser(data.user);
             $bridge.getLanguage(userStore.user.id).then((lang) => {
                 if (lang != '') {

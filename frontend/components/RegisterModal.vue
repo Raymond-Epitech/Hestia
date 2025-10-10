@@ -1,8 +1,19 @@
 <template>
     <transition name="modal">
         <div v-if="visible">
-            <div class="modal-background" @click="handleClose">
+            <div class="modal-background">
+                <button class="modal-close" @click="handleClose"><img class="icon" src="../public/Retour.svg"/></button>
                 <div class="modal" @click.stop>
+                    <h2 class="login-font">{{ $t('register') }}</h2>
+                    <h2 class="register-font">{{ $t('user_name') }} :</h2>
+                    <input class="input" type="text" :placeholder="$t('user_name')" maxlength="12" v-model="username" />
+                    <h2 v-if="alert" class="alert">{{ $t('error_register') }}</h2>
+                    <h2 class="register-font">{{ $t('colocation_id') }} :</h2>
+                    <input class="input" type="text" :placeholder="$t('optional')" v-model="colocationID" />
+                    <!-- To change to simply say register. -->
+                    <a type="submit" @click.prevent="register()" class="google-button"> 
+                        {{ $t('register') }}
+                    </a>
                 </div>
             </div>
         </div>
@@ -25,11 +36,9 @@ const props = withDefaults(
     defineProps<{
         name?: string,
         modelValue?: boolean,
-        providerJWT: string,
-    }>(),
-    {
-        providerJWT: '',
-    }
+        providerJWT?: string,
+        colocationID?: string,
+    }>(),{}
 );
 
 const { setLocale } = useI18n();
@@ -123,6 +132,28 @@ const register = async () => {
 
 <style scoped>
 
+button {
+    background-color: var(--main-buttons);
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 9px;
+    border: none;
+    box-shadow: var(--button-shadow-light);
+}
+
+.icon {
+    filter: var(--icon-filter);
+}
+
+.modal-close {
+    top: 3%;
+    left: 3%;
+}
+
 .modal-background {
     position: fixed;
     top: 0;
@@ -132,9 +163,76 @@ const register = async () => {
     background-color: var(--overlay-background);
     backdrop-filter: var(--overlay-blur);
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 1000;
+}
+
+.modal {
+    animation: slideIn 0.4s;
+    color: var(--overlay-text);
+    background-color: var(--overlay-background);
+    height: fit-content;
+    width: 360px;
+    padding: 50px;
+    margin: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    position: relative;
+    box-shadow: var(--rectangle-shadow-light);
+}
+
+.register-font {
+    font-size: 20px;
+}
+
+.login-font {
+    padding-bottom: 20px;
+    font-size: 50px;
+}
+
+.input {
+    margin-bottom: 10px;
+    outline: none;
+    background-color: var(--background);
+    border-radius: 8px;
+    border: none;
+    text-align: center;
+    color: var(--basic-grey);
+    font-weight: 600;
+}
+
+.dark .input {
+    color: var(--page-text);
+}
+
+.hestia .input {
+    color: var(--main-buttons);
+}
+
+.google-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 200px;
+    height: fit-content;
+    padding: 5px;
+    margin-top: 20px;
+    background-color: var(--background);
+    border-radius: 14px;
+    color: var(--page-text);
+    font-weight: 600;
+    font-size: 20px;
+    text-decoration: none;
+    box-shadow: var(--button-shadow-light);
+}
+
+.hestia .google-button {
+    background-color: var(--main-buttons);
 }
 
 </style>
