@@ -216,6 +216,8 @@ const handleProceed = async () => {
         splitValues: {},
         splitPercentages: {},
         dateOfPayment: date.toISOString(),
+        isRecurring: false,
+        dayOfTheRecursion: 1,
       });
     }
   }).catch((error) => {
