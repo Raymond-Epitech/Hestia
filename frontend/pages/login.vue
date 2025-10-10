@@ -3,30 +3,12 @@
         <RegisterModal v-model="isRegisterModalOpen" :providerJWT="providerJWT" :colocationID="colocationID" />
         <div class="base">
             <img src="../public/logo-hestia.png" class="logo" />
-            <!-- <div v-if="registration" class="register">
-                <h2 class="login-font">{{ $t('register') }}</h2>
-                <h2 class="register-font">{{ $t('user_name') }} :</h2>
-                <input class="input" type="text" :placeholder="$t('user_name')" maxlength="12" v-model="username" />
-                <h2 v-if="alert" class="alert">{{ $t('error_register') }}</h2>
-                <h2 class="register-font">{{ $t('colocation_id') }} :</h2>
-                <input class="input" type="text" :placeholder="$t('optional')" v-model="colocationID" />
-                <h2 class="register-font">{{ $t('create_account') }} :</h2>
-                <a type="submit" @click.prevent="register()" class="google-button">
-                    {{ $t('register_with_google') }}
-                </a>
-            </div> -->
             <div class="login">
                 <h2 class="login-font">{{ $t('login') }}</h2>
                 <a @click="login()" class="google-button">
                     {{ $t('login_with_google') }}
                 </a>
             </div>
-            <!-- <button v-if="!registration" class="register-button" @click="goRegister()">
-                    {{ $t('register') }}
-            </button>
-            <button v-if="registration" class="register-button" @click="goLogin()">
-                {{ $t('login') }}
-            </button> -->
         </div>
     </div>
 </template>
@@ -73,9 +55,6 @@ onMounted(() => {
         registerNotifications();
     }
     colocationID.value = route.query.collocID;
-    // if (colocationID.value) {
-    //     openRegisterModal();
-    // }
     if (Capacitor.getPlatform() !== 'web') {
         PushNotifications.addListener('registration', (token) => {
             fcmToken.value = token.value;
@@ -86,51 +65,6 @@ onMounted(() => {
 })
 
 addListeners();
-
-function goLogin() {
-    registration.value = false;
-}
-
-function goRegister() {
-    registration.value = true;
-}
-
-// const register = async () => {
-//     if (!username.value) {
-//         alert.value = true;
-//         return;
-//     }
-//     alert.value = false;
-//     if (alert.value == false) {
-//         const res = await SocialLogin.login({
-//             provider: 'google',
-//             options: {
-//                 scopes: ['email', 'profile'],
-//             },
-//         });
-//         if (res) {
-//             const newuser = {
-//                 username: username.value,
-//                 colocationId: colocationID.value
-//             };
-//             const data = await $bridge.addUser(newuser, res.result.idToken, fcmToken.value);
-//             if (data) {
-//                 $bridge.setjwt(data.jwt);
-//                 userStore.setUser(data.user);
-//                 $bridge.getLanguage(userStore.user.id).then((lang) => {
-//                     if (lang != '') {
-//                         setLocale(lang);
-//                         $locally.setItem('locale', lang);
-//                     }
-//                 })
-//                 await authenticateUser(data.jwt);
-//             }
-//             if (authenticated) {
-//                 router.push('/');
-//             }
-//         }
-//     }
-// }
 
 const login = async () => {
     const res = await SocialLogin.login({
@@ -249,19 +183,6 @@ h2 {
 .login-font {
     padding-bottom: 20px;
     font-size: 50px;
-}
-
-.register-button {
-    min-width: 68px;
-    min-height: 28px;
-    margin-top: 0.2rem;
-    padding: 0px 5px;
-    border-radius: 8px;
-    color: var(--page-text);
-    background-color: var(--login-box-bg);
-    font-weight: 600;
-    border: none;
-    text-align: center;
 }
 
 .google-button {

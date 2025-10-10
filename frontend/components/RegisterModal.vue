@@ -21,15 +21,10 @@
 
 <script setup lang="ts">
 import useModal from '~/composables/useModal';
-import { SocialLogin } from '@capgo/capacitor-social-login';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/store/auth';
 import { useUserStore } from '~/store/user';
-
-// definePageMeta({
-//     layout: false
-// })
 
 const props = withDefaults(
     defineProps<{
@@ -47,7 +42,6 @@ const { authenticated } = storeToRefs(useAuthStore());
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp();
 const router = useRouter();
-const route = useRoute();
 const username = ref('');
 const colocationID = ref('');
 const alert = ref(false);
@@ -59,7 +53,7 @@ const { open, close, toggle, visible } = useModal(props.name);
 
 
 const emit = defineEmits<{
-    closed: [], // named tuple syntax
+    closed: [],
     proceed: [],
     'update:modelValue': [value: boolean]
 }>()
