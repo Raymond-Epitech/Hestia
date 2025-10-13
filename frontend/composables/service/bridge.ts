@@ -693,186 +693,224 @@ export class bridge {
     // Expense section:
 
     async getExpenseByColocationId(colocationId: string): Promise<expenses_category_get[]> {
-        return await fetch(`${this.url}/api/Expense/GetByColocationId/${colocationId}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
+        try {
+            const response = await fetch(`${this.url}/api/Expense/GetByColocationId/${colocationId}`, {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + this.jwt }
+            });
+            if (response.ok) {
+                return await response.json();
             }
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            }
-            return [];
-        })
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error', err);
+            throw err;
+        }
     }
 
-
     async getExpensebycategoryId(categoryId: string): Promise<Expenseget[]> {
-        return await fetch(`${this.url}/api/Expense/GetByExpenseCategoryId/${categoryId}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
+        try {
+            const response = await fetch(`${this.url}/api/Expense/GetByExpenseCategoryId/${categoryId}`, {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + this.jwt }
+            });
+            if (response.ok) {
+                return await response.json();
             }
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            }
-            return [];
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error', err);
+            throw err;
+        }
     }
 
     async getExpenseById(id: string): Promise<Expenseget> {
-        return await fetch(`${this.url}/api/Expense/GetById/${id}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
+        try {
+            const response = await fetch(`${this.url}/api/Expense/GetById/${id}`, {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + this.jwt }
+            });
+            if (response.ok) {
+                return await response.json();
             }
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            }
-            return {} as Expenseget;
-        })
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error', err);
+            throw err;
+        }
     }
 
-    async addExpense(data: Expense, isRecurring: boolean, dayOfTheRecursion: string): Promise<boolean | { error: any }> {
+    async addExpense(data: Expense, isRecurring: boolean, dayOfTheRecursion: string): Promise<boolean> {
         const newdata = { ...data, isRecurring, dayOfTheRecursion };
-        return await fetch(`${this.url}/api/Expense`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.jwt
-            },
-            body: JSON.stringify(newdata)
-        }).then(async response => {
-            if (response.status == 200) {
+        try {
+            const response = await fetch(`${this.url}/api/Expense`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: JSON.stringify(newdata)
+            });
+            if (response.ok) {
                 return true;
             }
-            const errorJson = await response.json();
-            console.error("Error adding expense:", errorJson);
-            return { error: errorJson };
-        }).catch((error) => {
-            console.error("Network error:", error);
-            return { error };
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error', err);
+            throw err;
+        }
     }
 
-    async updateExpense(data: Expense_Modif) {
-        return await fetch(`${this.url}/api/Expense`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.jwt
-            },
-            body: JSON.stringify(data)
-        }).then(response => {
-            if (response.status == 200) {
+    async updateExpense(data: Expense_Modif): Promise<boolean> {
+        try {
+            const response = await fetch(`${this.url}/api/Expense`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: JSON.stringify(data)
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error', err);
+            throw err;
+        }
     }
 
-    async deleteExpense(id: string) {
-        return await fetch(`${this.url}/api/Expense/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
-            }
-        }).then(response => {
-            if (response.status == 200) {
+    async deleteExpense(id: string): Promise<boolean> {
+        try {
+            const response = await fetch(`${this.url}/api/Expense/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + this.jwt }
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error', err);
+            throw err;
+        }
     }
 
     async getBalance(colocationId: string): Promise<UserBalance> {
-        return await fetch(`${this.url}/api/Expense/GetBalance/${colocationId}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
+        try {
+            const response = await fetch(`${this.url}/api/Expense/GetBalance/${colocationId}`, {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + this.jwt }
+            });
+            if (response.ok) {
+                return await response.json();
             }
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            }
-            return [];
-        })
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error', err);
+            throw err;
+        }
     }
 
     async updateBalance(colocationId: string): Promise<UserBalance[]> {
-        return await fetch(`${this.url}/api/Expense/CalculBalance/${colocationId}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
+        try {
+            const response = await fetch(`${this.url}/api/Expense/CalculBalance/${colocationId}`, {
+                method: 'PUT',
+                headers: { 'Authorization': 'Bearer ' + this.jwt }
+            });
+            if (response.ok) {
+                return await response.json();
             }
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            }
-            return [];
-        })
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error', err);
+            throw err;
+        }
     }
 
     async getRefund(colocationId: string): Promise<refund[]> {
-        return await fetch(`${this.url}/api/Expense/GetRefundMethods/${colocationId}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
+        try {
+            const response = await fetch(`${this.url}/api/Expense/GetRefundMethods/${colocationId}`, {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + this.jwt }
+            });
+            if (response.ok) {
+                return await response.json();
             }
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            }
-            return [];
-        })
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error', err);
+            throw err;
+        }
     }
 
-    async addexpensecategory(category: expenses_category) {
-        return await fetch(`${this.url}/api/Expense/Category`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.jwt
-            },
-            body: JSON.stringify(category)
-        }).then(response => {
-            if (response.status == 200) {
+    async addexpensecategory(category: expenses_category): Promise<boolean> {
+        try {
+            const response = await fetch(`${this.url}/api/Expense/Category`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: JSON.stringify(category)
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error', err);
+            throw err;
+        }
     }
 
-    async updateexpensecategory(category: expenses_category) {
-        return await fetch(`${this.url}/api/Expense/Category`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.jwt
-            },
-            body: JSON.stringify(category)
-        }).then(response => {
-            if (response.status == 200) {
+    async updateexpensecategory(category: expenses_category): Promise<boolean> {
+        try {
+            const response = await fetch(`${this.url}/api/Expense/Category`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: JSON.stringify(category)
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error', err);
+            throw err;
+        }
     }
 
-    async deleteexpensecategory(id: string) {
-        return await fetch(`${this.url}/api/Expense/Category/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
-            }
-        }).then(response => {
-            if (response.status == 200) {
+    async deleteexpensecategory(id: string): Promise<boolean> {
+        try {
+            const response = await fetch(`${this.url}/api/Expense/Category/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + this.jwt }
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error', err);
+            throw err;
+        }
     }
 
     // shoppinglist section:
