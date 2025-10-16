@@ -268,96 +268,126 @@ export class bridge {
     // Poll for reminder section:
 
     async getReminderPoll(id: string) {
-        return await fetch(this.url + "/api/Reminder/PollVote?reminderId=" + id, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
+        try {
+            const response = await fetch(this.url + "/api/Reminder/PollVote?reminderId=" + id, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            });
+            if (response.ok) {
+                return await response.json();
             }
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            }
-            return [];
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error getReminderPoll', err);
+            throw err;
+        }
     }
 
-    async addReminderPollVote(vote: any) {
-        return await fetch(this.url + "/api/Reminder/PollVote", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.jwt
-            },
-            body: JSON.stringify(vote)
-        }).then(response => {
-            if (response.status == 200) {
+    async addReminderPollVote(vote: any): Promise<boolean> {
+        try {
+            const response = await fetch(this.url + "/api/Reminder/PollVote", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: JSON.stringify(vote)
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error addReminderPollVote', err);
+            throw err;
+        }
     }
 
-    async deleteReminderPollVote(Id: string, userId: string) {
-        return await fetch(this.url + "/api/Reminder/PollVote/id" + Id, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
-            }
-        }).then(response => {
-            if (response.status == 200) {
+    async deleteReminderPollVote(Id: string, userId: string): Promise<boolean> {
+        try {
+            const response = await fetch(this.url + "/api/Reminder/PollVote/id" + Id, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error deleteReminderPollVote', err);
+            throw err;
+        }
     }
 
 
     // Reaction for reminder section:
 
-    async addReactionReminder(reminderId: string, userId: string, reaction: string) {
-        return await fetch(this.url + "/api/Reminder/Reactions", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.jwt
-            },
-            body: JSON.stringify({ reminderId: reminderId, userId: userId, type: reaction })
-        }).then(response => {
-            if (response.status == 200) {
+    async addReactionReminder(reminderId: string, userId: string, reaction: string): Promise<boolean> {
+        try {
+            const response = await fetch(this.url + "/api/Reminder/Reactions", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: JSON.stringify({ reminderId: reminderId, userId: userId, type: reaction })
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error addReactionReminder', err);
+            throw err;
+        }
     }
 
-    async deleteReactionReminder(reminderId: string, userId: string) {
-        return await fetch(this.url + "/api/Reminder/Reactions", {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.jwt
-            },
-            body: JSON.stringify({ reminderId: reminderId, userId: userId })
-        }).then(response => {
-            if (response.status == 200) {
+    async deleteReactionReminder(reminderId: string, userId: string): Promise<boolean> {
+        try {
+            const response = await fetch(this.url + "/api/Reminder/Reactions", {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: JSON.stringify({ reminderId: reminderId, userId: userId })
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error deleteReactionReminder', err);
+            throw err;
+        }
     }
 
     async getReactionsReminder(reminderId: string) {
-        return await fetch(this.url + "/api/Reminder/Reactions?reminderId=" + reminderId, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
+        try {
+            const response = await fetch(this.url + "/api/Reminder/Reactions?reminderId=" + reminderId, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            });
+            if (response.ok) {
+                return await response.json();
             }
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            }
-            return [];
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error getReactionsReminder', err);
+            throw err;
+        }
     }
 
     // User section:
