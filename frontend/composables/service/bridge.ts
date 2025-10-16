@@ -570,70 +570,102 @@ export class bridge {
     // Colocation section: 
 
     async addColocation(colocation: Colocation) {
-        return await fetch(this.url + "/api/Colocation", {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(colocation)
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
+        try {
+            const response = await fetch(`${this.url}/api/Colocation`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(colocation)
+            });
+            if (response.ok) {
+                return await response.json();
             }
-            return false;
-        })
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error addColocation', err);
+            throw err;
+        }
     }
 
     async updateColocation(colocation: Colocation) {
-        return await fetch(this.url + "/api/Colocation", {
-            method: 'PUT',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: JSON.stringify(colocation)
-        }).then(response => {
-            if (response.status == 200) {
+      try {
+            const response = await fetch(`${this.url}/api/Colocation`, {
+                method: 'PUT',
+                headers: {
+                    'Content-type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: JSON.stringify(colocation)
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        })
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error updateColocation', err);
+            throw err;
+        }
     }
 
     async deleteColocation(id: string) {
-        return await fetch(this.url + "/api/Colocation/" + id, {
-            method: 'DELETE',
-        }).then(response => {
-            if (response.status == 200) {
+        try {
+            const response = await fetch(`${this.url}/api/Colocation/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        })
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error deleteColocation', err);
+            throw err;
+        }
     }
 
     async getAllColocation() {
-        return await fetch(this.url + "/api/Colocation", {
-            method: 'GET',
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
+       try {
+            const response = await fetch(`${this.url}/api/Colocation`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            });
+            if (response.ok) {
+                return await response.json();
             }
-            return [];
-        })
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error getAllColocation', err);
+            throw err;
+        }
     }
 
     async getColocationById(id: string) {
-        return await fetch(this.url + "/api/Colocation/" + id, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt,
+          try {
+            const response = await fetch(`${this.url}/api/Colocation/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt,
+                }
+            });
+            if (response.ok) {
+                return await response.json();
             }
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            }
-            return {};
-        })
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error getColocationById', err);
+            throw err;
+        }
     }
 
     // Chore section:
