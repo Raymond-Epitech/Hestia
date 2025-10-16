@@ -393,124 +393,178 @@ export class bridge {
     // User section:
 
     async login(google_token: string, fcm_token: string) {
-        const options: RequestInit = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        };
-        if (fcm_token && fcm_token !== "") {
-            options.body = JSON.stringify({ fcmToken: fcm_token });
-        }
-        return await fetch(this.url + "/api/User/Login?googleToken=" + google_token, options)
-            .then(async response => {
-                if (response.status == 200) {
-                    return await response.json();
-                } else if (response.status == 404) {
-                    const jsonresponse = await response.json();
-                    if (jsonresponse.message == "User not found") {
-                        return { error: "User not found" };
-                    }
-                    return { error: "Internal server error" };
-                } else if (response.status == 422) {
-                    const jsonresponse = await response.json();
-                    if (jsonresponse.message == "Invalid json body") {
-                        return { error: "Invalid json body" };
-                    }
+        try {
+            const options: RequestInit = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-                return {};
-            });
+            };
+            if (fcm_token && fcm_token !== "") {
+                options.body = JSON.stringify({ fcmToken: fcm_token });
+            }
+            const response = await fetch(this.url + "/api/User/Login?googleToken=" + google_token, options);
+            if (response.ok) {
+                return await response.json();
+            }
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error login', err);
+            throw err;
+        }
     }
 
     async logout(userId: string, fcm_token: string) {
         if (!fcm_token || fcm_token === "") {
             return { error: "FCM token is required (could be absent on browser)" };
         }
-        return await fetch(this.url + "/api/User/Logout", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ userId: userId, fcmToken: fcm_token })
-        }).then(async response => {
-            if (response.status == 200) {
-                return await response.json();
-            } else if (response.status == 500) {
-                const jsonresponse = await response.json();
-                if (jsonresponse.message == "Internal server error") {
-                    return { error: "Internal server error" };
-                }
+        try {
+            const response = await fetch(this.url + "/api/User/Logout", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: userId, fcmToken: fcm_token })
+            });
+            if (response.ok) {
+                return true;
             }
-            return {};
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error logout', err);
+            throw err;
+        }
     }
 
     async addUser(user: User, google_token: string, fcm_token: string) {
-        return await fetch(this.url + "/api/User/Register?googleToken=" + google_token, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username: user.username, colocationId: user.colocationId, fcmToken: fcm_token })
-        }).then(async response => {
-            if (response.status == 200) {
+        try {
+            const response = await fetch(this.url + "/api/User/Register?googleToken=" + google_token, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user.username, colocationId: user.colocationId, fcmToken: fcm_token })
+            });
+            if (response.ok) {
                 return await response.json();
             }
-            return {};
-        })
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error addUser', err);
+            throw err;
+        }
     }
 
     async updateUser(user: User) {
-        return await fetch(this.url + "/api/User", {
-            method: 'PUT',
-            headers: {
-                'Authorization': 'Bearer ' +
-                    this.jwt,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(user)
-        }).then(response => {
-            if (response.status == 200) {
+        try {
+            const response = await fetch(this.url + "/api/User", {
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        })
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error updateUser', err);
+            throw err;
+        }
     }
 
     async deleteUser(user: User) {
-        return await fetch(this.url + "/api/User/" + user.id, {
-            method: 'DELETE',
-        }).then(response => {
-            if (response.status == 200) {
+        try {
+            const response = await fetch(this.url + "/api/User/" + user.id, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + this.jwt }
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        })
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error deleteUser', err);
+            throw err;
+        }
     }
 
     async getUserbyId(id: string) {
-        return await fetch(this.url + "/api/User/GetById/" + id, {
-            method: 'GET'
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
+        try {
+            const response = await fetch(this.url + "/api/User/GetById/" + id, {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + this.jwt }
+            });
+            if (response.ok) {
+                return await response.json();
             }
-            return {}
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error getUserbyId', err);
+            throw err;
+        }
     }
 
     async getUserbyCollocId(collocid: string): Promise<Coloc[]> {
-        return await fetch(this.url + "/api/User/GetByColocationId/" + collocid, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
+        try {
+            const response = await fetch(this.url + "/api/User/GetByColocationId/" + collocid, {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + this.jwt }
+            });
+            if (response.ok) {
+                return await response.json();
             }
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error getUserbyCollocId', err);
+            throw err;
+        }
+    }
+
+    async getLanguage(id: string): Promise<string> {
+        try {
+            const response = await fetch(`${this.url}/api/User/Language/${id}`, {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + this.jwt }
+            });
+            if (response.ok) {
+                return await response.text();
             }
-            return []
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error getLanguage', err);
+            throw err;
+        }
+    }
+
+    async updateLanguage(lang: string, id: string): Promise<boolean> {
+        try {
+            const response = await fetch(`${this.url}/api/User/Language`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json-patch+json',
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: JSON.stringify({
+                    userId: id,
+                    language: lang
+                })
+            });
+            if (response.ok) {
+                return true;
+            }
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error updateLanguage', err);
+            throw err;
+        }
     }
 
     // Colocation section: 
@@ -746,39 +800,6 @@ export class bridge {
             }
             return [];
         })
-    }
-
-    async getLanguage(id: string) {
-        return await fetch(`${this.url}/api/User/Language/${id}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
-            }
-        }).then(response => {
-            if (response.status == 200) {
-                return response.text();;
-            }
-            return '';
-        })
-    }
-
-    async updateLanguage(lang: string, id: string) {
-        return await fetch(`${this.url}/api/User/Language`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json-patch+json',
-                'Authorization': 'Bearer ' + this.jwt
-            },
-            body: JSON.stringify({
-                userId: id,
-                language: lang
-            })
-        }).then(response => {
-            if (response.status == 200) {
-                return true;
-            }
-            return false;
-        });
     }
 
     // Expense section:
