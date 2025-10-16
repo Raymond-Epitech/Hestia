@@ -671,167 +671,219 @@ export class bridge {
     // Chore section:
 
     async addChore(chore: any) {
-        return await fetch(this.url + "/api/Chore", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.jwt
-            },
-            body: JSON.stringify(chore)
-        }).then(response => {
-            if (response.status == 200) {
-                return true;
-            }
-            return false;
-        })
+        try {
+            const response = await fetch(this.url + "/api/Chore", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: JSON.stringify(chore)
+            });
+            if (response.ok) return true;
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error addChore', err);
+            throw err;
+        }
     }
 
     async updateChore(chore: UpdateChore) {
-        return await fetch(this.url + "/api/Chore", {
-            method: 'PUT',
-            headers: {
-                'Content-type': 'application/json',
-                'Authorization': 'Bearer ' + this.jwt
-            },
-            body: JSON.stringify(chore)
-        }).then(response => {
-            if (response.status == 200) {
-                return true;
-            }
-            return false;
-        })
+        try {
+            const response = await fetch(this.url + "/api/Chore", {
+                method: 'PUT',
+                headers: {
+                    'Content-type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: JSON.stringify(chore)
+            });
+            if (response.ok) return true;
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error updateChore', err);
+            throw err;
+        }
     }
 
     async deleteChore(id: string) {
-        return await fetch(this.url + "/api/Chore/" + id, {
-            method: 'DELETE',
-        }).then(response => {
-            if (response.status == 200) {
-                return true;
-            }
-            return false;
-        })
+        try {
+            const response = await fetch(this.url + "/api/Chore/" + id, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            });
+            if (response.ok) return true;
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error deleteChore', err);
+            throw err;
+        }
     }
 
     async getAllChore(colocationId: string) {
-        return await fetch(this.url + "/api/Chore/GetByColocationId/" + colocationId, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
-            }
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            }
-            return [];
-        })
+        try {
+            const response = await fetch(this.url + "/api/Chore/GetByColocationId/" + colocationId, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            });
+            if (response.ok) return await response.json();
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error getAllChore', err);
+            throw err;
+        }
     }
 
     async getChoreById(id: string) {
-        return await fetch(this.url + "/api/Chore/GetById/" + id, {
-            method: 'GET',
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            }
-            return {};
-        })
+        try {
+            const response = await fetch(this.url + "/api/Chore/GetById/" + id, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            });
+            if (response.ok) return await response.json();
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error getChoreById', err);
+            throw err;
+        }
     }
 
     async addChoreMessage(choreId: string, userId: string, message: string) {
-        return await fetch(this.url + "/api/Chore/Message", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                choreId: choreId,
-                createdBy: userId,
-                content: message
-            })
-        }).then(response => {
-            if (response.status == 200) {
-                return true;
-            }
-            return false;
-        })
+        try {
+            const response = await fetch(this.url + "/api/Chore/Message", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: JSON.stringify({
+                    choreId: choreId,
+                    createdBy: userId,
+                    content: message
+                })
+            });
+            if (response.ok) return true;
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error addChoreMessage', err);
+            throw err;
+        }
     }
 
     async deleteChoreMessage(id: string) {
-        return await fetch(this.url + "/api/Chore/Message/" + id, {
-            method: 'DELETE',
-        }).then(response => {
-            if (response.status == 200) {
-                return true;
-            }
-            return false;
-        })
+        try {
+            const response = await fetch(this.url + "/api/Chore/Message/" + id, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            });
+            if (response.ok) return true;
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error deleteChoreMessage', err);
+            throw err;
+        }
     }
 
     async getChoreMessage(choreId: string) {
-        return await fetch(this.url + "/api/Chore/Message/" + choreId, {
-            method: 'GET',
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            }
-            return [];
-        })
+        try {
+            const response = await fetch(this.url + "/api/Chore/Message/" + choreId, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            });
+            if (response.ok) return await response.json();
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error getChoreMessage', err);
+            throw err;
+        }
     }
 
     async addChoreUser(choreId: string, userId: string) {
-        return await fetch(`${this.url}/api/Chore/Enroll?ChoreId=${choreId}&UserId=${userId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.jwt
-            }
-        }).then(response => {
-            if (response.status == 200) {
-                return true;
-            }
-            return false;
-        })
+        try {
+            const response = await fetch(`${this.url}/api/Chore/Enroll?ChoreId=${choreId}&UserId=${userId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            });
+            if (response.ok) return true;
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error addChoreUser', err);
+            throw err;
+        }
     }
 
     async deleteChoreUser(choreId: string, userId: string) {
-        return await fetch(`${this.url}/api/Chore/Enroll?ChoreId=${choreId}&UserId=${userId}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.jwt
-            }
-        }).then(response => {
-            if (response.status == 200) {
-                return true;
-            }
-            return false;
-        })
+        try {
+            const response = await fetch(`${this.url}/api/Chore/Enroll?ChoreId=${choreId}&UserId=${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            });
+            if (response.ok) return true;
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error deleteChoreUser', err);
+            throw err;
+        }
     }
 
     async getChoreByUser(userId: string) {
-        return await fetch(`${this.url}/api/Chore/Enroll/ByUser?UserId=${userId}`, {
-            method: 'GET',
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            }
-            return [];
-        })
+        try {
+            const response = await fetch(`${this.url}/api/Chore/Enroll/ByUser?UserId=${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            });
+            if (response.ok) return await response.json();
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error getChoreByUser', err);
+            throw err;
+        }
     }
 
     async getUserEnrollChore(choreId: string): Promise<User[]> {
-        return await fetch(`${this.url}/api/Chore/Enroll/ByChore?ChoreId=${choreId}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
-            }
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            }
-            return [];
-        })
+        try {
+            const response = await fetch(`${this.url}/api/Chore/Enroll/ByChore?ChoreId=${choreId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            });
+            if (response.ok) return await response.json();
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error getUserEnrollChore', err);
+            throw err;
+        }
     }
 
     // Expense section:
