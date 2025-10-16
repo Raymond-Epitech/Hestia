@@ -1267,18 +1267,23 @@ export class bridge {
     async uploadImage(file: File,): Promise<string> {
         const formData = new FormData();
         formData.append('file', file, file.name);
-        return await fetch(`${this.url}/images`, {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
-            },
-            body: formData
-        }).then(response => {
-            if (response.status == 200) {
-                return response.text();
+        try {
+            const response = await fetch(`${this.url}/images`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: formData
+            });
+            if (response.ok) {
+                return await response.text();
             }
-            return '';
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error uploadImage', err);
+            throw err;
+        }
     }
 
     async getImagetocache(name: string): Promise<string> {
@@ -1286,12 +1291,13 @@ export class bridge {
         if (await this.getImagefromcache(name) != null) {
             return 'OK';
         }
-        return await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
-            }
-        }).then(async response => {
+        try {
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            });
             if (response.status == 200) {
                 const blob = await response.blob();
                 if (isNative()) {
@@ -1319,8 +1325,12 @@ export class bridge {
                 }
                 return 'OK';
             }
-            return 'KO';
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error getImagetocache', err);
+            throw err;
+        }
     }
 
     async getImagefromcache(name: string): Promise<string | null> {
@@ -1348,75 +1358,101 @@ export class bridge {
 
     // Message section:
     async getMessageByColocationId(colocationId: string): Promise<message[]> {
-        return await fetch(`${this.url}/api/Message?colocationId=${colocationId}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
+        try {
+            const response = await fetch(`${this.url}/api/Message?colocationId=${colocationId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            });
+            if (response.ok) {
+                return await response.json();
             }
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            }
-            return [];
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error getMessageByColocationId', err);
+            throw err;
+        }
     }
 
     async addMessage(data: message): Promise<boolean> {
-        return await fetch(`${this.url}/api/Message`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.jwt
-            },
-            body: JSON.stringify(data)
-        }).then(response => {
-            if (response.status == 200) {
+        try {
+            const response = await fetch(`${this.url}/api/Message`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: JSON.stringify(data)
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error addMessage', err);
+            throw err;
+        }
     }
 
     async deleteMessage(id: string): Promise<boolean> {
-        return await fetch(`${this.url}/api/Message/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
-            }
-        }).then(response => {
-            if (response.status == 200) {
+        try {
+            const response = await fetch(`${this.url}/api/Message/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error deleteMessage', err);
+            throw err;
+        }
     }
 
     async getMessageById(id: string): Promise<message> {
-        return await fetch(`${this.url}/api/Message/${id}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
+        try {
+            const response = await fetch(`${this.url}/api/Message/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + this.jwt
+                }
+            });
+            if (response.ok) {
+                return await response.json();
             }
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            }
-            return {} as message;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error getMessageById', err);
+            throw err;
+        }
     }
 
     async updateMessage(data: message): Promise<boolean> {
-        return await fetch(`${this.url}/api/Message`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
-            },
-            body: JSON.stringify(data)
-        }).then(response => {
-            if (response.status == 200) {
+        try {
+            const response = await fetch(`${this.url}/api/Message`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: JSON.stringify(data)
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error updateMessage', err);
+            throw err;
+        }
     }
 }
