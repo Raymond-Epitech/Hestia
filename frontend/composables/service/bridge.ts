@@ -591,7 +591,7 @@ export class bridge {
     }
 
     async updateColocation(colocation: Colocation) {
-      try {
+        try {
             const response = await fetch(`${this.url}/api/Colocation`, {
                 method: 'PUT',
                 headers: {
@@ -631,7 +631,7 @@ export class bridge {
     }
 
     async getAllColocation() {
-       try {
+        try {
             const response = await fetch(`${this.url}/api/Colocation`, {
                 method: 'GET',
                 headers: {
@@ -650,7 +650,7 @@ export class bridge {
     }
 
     async getColocationById(id: string) {
-          try {
+        try {
             const response = await fetch(`${this.url}/api/Colocation/${id}`, {
                 method: 'GET',
                 headers: {
@@ -1111,123 +1111,155 @@ export class bridge {
 
     // shoppinglist section:
     async getShoppingListByColocationId(colocationId: string): Promise<shoppinglist[]> {
-        return await fetch(`${this.url}/api/ShoppingList/GetByColocationId/${colocationId}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
+        try {
+            const response = await fetch(`${this.url}/api/ShoppingList/GetByColocationId/${colocationId}`, {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + this.jwt }
+            });
+            if (response.ok) {
+                return await response.json();
             }
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            }
-            return [];
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error getShoppingListByColocationId', err);
+            throw err;
+        }
     }
 
     async getShoppingListById(id: string): Promise<shoppinglist> {
-        return await fetch(`${this.url}/api/ShoppingList/GetById/${id}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
+        try {
+            const response = await fetch(`${this.url}/api/ShoppingList/GetById/${id}`, {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + this.jwt }
+            });
+            if (response.ok) {
+                return await response.json();
             }
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            }
-            return {} as shoppinglist;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error getShoppingListById', err);
+            throw err;
+        }
     }
 
     async addShoppingList(data: shoppinglist) {
-        return await fetch(`${this.url}/api/ShoppingList`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.jwt
-            },
-            body: JSON.stringify(data)
-        }).then(response => {
-            if (response.status == 200) {
-                return true;
+        try {
+            const response = await fetch(`${this.url}/api/ShoppingList`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: JSON.stringify(data)
+            });
+            if (response.ok) {
+                return await response.json();
             }
-            return false;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error addShoppingList', err);
+            throw err;
+        }
     }
 
     async updateShoppingList(data: shoppinglist) {
-        return await fetch(`${this.url}/api/ShoppingList`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.jwt
-            },
-            body: JSON.stringify(data)
-        }).then(response => {
-            if (response.status == 200) {
+        try {
+            const response = await fetch(`${this.url}/api/ShoppingList`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: JSON.stringify(data)
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error updateShoppingList', err);
+            throw err;
+        }
     }
 
     async deleteShoppingList(id: string) {
-        return await fetch(`${this.url}/api/ShoppingList/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
-            }
-        }).then(response => {
-            if (response.status == 200) {
+        try {
+            const response = await fetch(`${this.url}/api/ShoppingList/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + this.jwt }
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error deleteShoppingList', err);
+            throw err;
+        }
     }
 
     async addShoppingListItem(item: shoppinglist_item) {
-        return await fetch(`${this.url}/api/ShoppingList/Item`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.jwt
-            },
-            body: JSON.stringify(item)
-        }).then(response => {
-            if (response.status == 200) {
-                return true;
+        try {
+            const response = await fetch(`${this.url}/api/ShoppingList/Item`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: JSON.stringify(item)
+            });
+            if (response.ok) {
+                return await response.json();
             }
-            return false;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error addShoppingListItem', err);
+            throw err;
+        }
     }
 
     async updateShoppingListItem(item: shoppinglist_item) {
-        return await fetch(`${this.url}/api/ShoppingList/Item`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.jwt
-            },
-            body: JSON.stringify(item)
-        }).then(response => {
-            if (response.status == 200) {
+        try {
+            const response = await fetch(`${this.url}/api/ShoppingList/Item`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.jwt
+                },
+                body: JSON.stringify(item)
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error updateShoppingListItem', err);
+            throw err;
+        }
     }
 
     async deleteShoppingListItem(id: string) {
-        return await fetch(`${this.url}/api/ShoppingList/Item?shoppingItemId=${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': 'Bearer ' + this.jwt
-            }
-        }).then(response => {
-            if (response.status == 200) {
+        try {
+            const response = await fetch(`${this.url}/api/ShoppingList/Item?shoppingItemId=${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + this.jwt }
+            });
+            if (response.ok) {
                 return true;
             }
-            return false;
-        });
+            const errBody = await response.text();
+            throw new Error(`API error ${response.status}: ${errBody}`);
+        } catch (err) {
+            console.error('Network / fetch error deleteShoppingListItem', err);
+            throw err;
+        }
     }
 
     // Image section:
