@@ -49,8 +49,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getAllReminders', err);
             throw err;
@@ -68,8 +68,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getReminderbyID', err);
             throw err;
@@ -108,8 +108,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error addReminder', err);
             throw err;
@@ -130,8 +130,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error updateReminder', err);
             throw err;
@@ -151,8 +151,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error updateReminderRange', err);
             throw err;
@@ -170,8 +170,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error deleteReminder', err);
             throw err;
@@ -191,8 +191,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getReminderShoppingList', err);
             throw err;
@@ -212,8 +212,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error addReminderShoppingListItem', err);
             throw err;
@@ -238,8 +238,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error updateReminderShoppingListItem', err);
             throw err;
@@ -257,8 +257,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error deleteReminderShoppingListItem', err);
             throw err;
@@ -278,8 +278,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getReminderPoll', err);
             throw err;
@@ -299,8 +299,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error addReminderPollVote', err);
             throw err;
@@ -318,8 +318,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error deleteReminderPollVote', err);
             throw err;
@@ -342,8 +342,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error addReactionReminder', err);
             throw err;
@@ -363,8 +363,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error deleteReactionReminder', err);
             throw err;
@@ -382,8 +382,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getReactionsReminder', err);
             throw err;
@@ -407,8 +407,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error login', err);
             throw err;
@@ -428,8 +428,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error logout', err);
             throw err;
@@ -446,8 +446,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error addUser', err);
             throw err;
@@ -467,8 +467,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error updateUser', err);
             throw err;
@@ -484,8 +484,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error deleteUser', err);
             throw err;
@@ -501,8 +501,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getUserbyId', err);
             throw err;
@@ -518,8 +518,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getUserbyCollocId', err);
             throw err;
@@ -535,8 +535,8 @@ export class bridge {
             if (response.ok) {
                 return await response.text();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getLanguage', err);
             throw err;
@@ -559,8 +559,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error updateLanguage', err);
             throw err;
@@ -582,8 +582,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error addColocation', err);
             throw err;
@@ -603,8 +603,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error updateColocation', err);
             throw err;
@@ -622,8 +622,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error deleteColocation', err);
             throw err;
@@ -641,8 +641,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getAllColocation', err);
             throw err;
@@ -660,8 +660,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getColocationById', err);
             throw err;
@@ -681,8 +681,8 @@ export class bridge {
                 body: JSON.stringify(chore)
             });
             if (response.ok) return true;
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error addChore', err);
             throw err;
@@ -700,8 +700,8 @@ export class bridge {
                 body: JSON.stringify(chore)
             });
             if (response.ok) return true;
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error updateChore', err);
             throw err;
@@ -717,8 +717,8 @@ export class bridge {
                 }
             });
             if (response.ok) return true;
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error deleteChore', err);
             throw err;
@@ -734,8 +734,8 @@ export class bridge {
                 }
             });
             if (response.ok) return await response.json();
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getAllChore', err);
             throw err;
@@ -751,8 +751,8 @@ export class bridge {
                 }
             });
             if (response.ok) return await response.json();
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getChoreById', err);
             throw err;
@@ -774,8 +774,8 @@ export class bridge {
                 })
             });
             if (response.ok) return true;
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error addChoreMessage', err);
             throw err;
@@ -791,8 +791,8 @@ export class bridge {
                 }
             });
             if (response.ok) return true;
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error deleteChoreMessage', err);
             throw err;
@@ -808,8 +808,8 @@ export class bridge {
                 }
             });
             if (response.ok) return await response.json();
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getChoreMessage', err);
             throw err;
@@ -826,8 +826,8 @@ export class bridge {
                 }
             });
             if (response.ok) return true;
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error addChoreUser', err);
             throw err;
@@ -844,8 +844,8 @@ export class bridge {
                 }
             });
             if (response.ok) return true;
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error deleteChoreUser', err);
             throw err;
@@ -861,8 +861,8 @@ export class bridge {
                 }
             });
             if (response.ok) return await response.json();
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getChoreByUser', err);
             throw err;
@@ -878,8 +878,8 @@ export class bridge {
                 }
             });
             if (response.ok) return await response.json();
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getUserEnrollChore', err);
             throw err;
@@ -897,8 +897,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error', err);
             throw err;
@@ -914,8 +914,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error', err);
             throw err;
@@ -931,8 +931,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error', err);
             throw err;
@@ -953,8 +953,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error', err);
             throw err;
@@ -974,8 +974,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error', err);
             throw err;
@@ -991,8 +991,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error', err);
             throw err;
@@ -1008,8 +1008,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error', err);
             throw err;
@@ -1025,8 +1025,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error', err);
             throw err;
@@ -1042,8 +1042,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error', err);
             throw err;
@@ -1063,8 +1063,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error', err);
             throw err;
@@ -1084,8 +1084,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error', err);
             throw err;
@@ -1101,8 +1101,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error', err);
             throw err;
@@ -1119,8 +1119,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getShoppingListByColocationId', err);
             throw err;
@@ -1136,8 +1136,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getShoppingListById', err);
             throw err;
@@ -1157,8 +1157,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error addShoppingList', err);
             throw err;
@@ -1178,8 +1178,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error updateShoppingList', err);
             throw err;
@@ -1195,8 +1195,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error deleteShoppingList', err);
             throw err;
@@ -1216,8 +1216,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error addShoppingListItem', err);
             throw err;
@@ -1237,8 +1237,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error updateShoppingListItem', err);
             throw err;
@@ -1254,8 +1254,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error deleteShoppingListItem', err);
             throw err;
@@ -1278,8 +1278,8 @@ export class bridge {
             if (response.ok) {
                 return await response.text();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error uploadImage', err);
             throw err;
@@ -1325,8 +1325,8 @@ export class bridge {
                 }
                 return 'OK';
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getImagetocache', err);
             throw err;
@@ -1368,8 +1368,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getMessageByColocationId', err);
             throw err;
@@ -1389,8 +1389,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error addMessage', err);
             throw err;
@@ -1408,8 +1408,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error deleteMessage', err);
             throw err;
@@ -1427,8 +1427,8 @@ export class bridge {
             if (response.ok) {
                 return await response.json();
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error getMessageById', err);
             throw err;
@@ -1448,8 +1448,8 @@ export class bridge {
             if (response.ok) {
                 return true;
             }
-            const errBody = await response.text();
-            throw new Error(`API error ${response.status}: ${errBody}`);
+            const errBody = await response.json();
+            throw { status: response.status, body : errBody };
         } catch (err) {
             console.error('Network / fetch error updateMessage', err);
             throw err;
