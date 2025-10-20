@@ -92,9 +92,13 @@
               </button>
             </div>
           </form>
+          <div v-if="errview">
+            <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+            <p>ttestset</p>
+          </div>
         </div>
       </div>
-    </div>
+      </div>
   </transition>
 </template>
 
@@ -121,6 +125,8 @@ const props = withDefaults(
 )
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 const userStore = useUserStore();
 const user = userStore.user;
 api.setjwt(useCookie('token').value ?? '');
@@ -221,7 +227,9 @@ const handleProceed = async () => {
       });
     }
   }).catch((error) => {
-    console.error('Error adding expense:', error);
+    console.error(error);
+    err.value = error;
+    errview.value = true;
   });
 }
 
