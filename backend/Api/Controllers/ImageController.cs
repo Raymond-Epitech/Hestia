@@ -5,6 +5,8 @@ using Shared.Exceptions;
 
 namespace Api.Controllers;
 
+[Route("api/[controller]")]
+[ApiController]
 public class ImageController(
     IImageService imageService) : Controller
 {
