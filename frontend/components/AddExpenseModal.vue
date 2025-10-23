@@ -94,11 +94,10 @@
           </form>
           <div v-if="errview">
             <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
-            <p>ttestset</p>
           </div>
         </div>
       </div>
-      </div>
+    </div>
   </transition>
 </template>
 
@@ -191,6 +190,8 @@ api.getUserbyCollocId(user.colocationId).then((response) => {
   });
 }).catch((error) => {
   console.error('Error fetching data:', error);
+  err.value = error;
+  errview.value = true;
 });
 
 // const calculateValueFromPercentage = (colocId: string) => {

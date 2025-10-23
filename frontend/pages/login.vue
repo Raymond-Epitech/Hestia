@@ -21,11 +21,14 @@
                 </a>
             </div>
             <button v-if="!registration" class="register-button" @click="goRegister()">
-                    {{ $t('register') }}
+                {{ $t('register') }}
             </button>
             <button v-if="registration" class="register-button" @click="goLogin()">
                 {{ $t('login') }}
             </button>
+        </div>
+        <div v-if="errview">
+            <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
         </div>
     </div>
 </template>
@@ -50,6 +53,8 @@ const { authenticateUser } = useAuthStore();
 const { authenticated } = storeToRefs(useAuthStore());
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
+const err = ref < { status: number, body: any } > ({ status: 0, body: null });
+const errview = ref(false);
 const router = useRouter();
 const route = useRoute()
 const username = ref('');
@@ -106,7 +111,11 @@ const register = async () => {
                 username: username.value,
                 colocationId: colocationID.value
             };
-            const data = await $bridge.addUser(newuser, res.result.idToken, fcmToken.value);
+            const data = await $bridge.addUser(newuser, res.result.idToken, fcmToken.value).catch((error) => {
+                console.error(error);
+                err.valueOf = error;
+                errview.value = true;
+            });
             if (data) {
                 $bridge.setjwt(data.jwt);
                 userStore.setUser(data.user);
@@ -115,7 +124,11 @@ const register = async () => {
                         setLocale(lang);
                         $locally.setItem('locale', lang);
                     }
-                })
+                }).catch((error) => {
+                    console.error(error);
+                    err.valueOf = error;
+                    errview.value = true;
+                });
                 await authenticateUser(data.jwt);
             }
             if (authenticated) {
@@ -133,7 +146,11 @@ const login = async () => {
         },
     });
     if (res) {
-        const data = await $bridge.login(res.result.idToken, fcmToken.value);
+        const data = await $bridge.login(res.result.idToken, fcmToken.value).catch((error) => {
+            console.error(error);
+            err.valueOf = error;
+            errview.value = true;
+        });
         if (data) {
             $bridge.setjwt(data.jwt);
             userStore.setUser(data.user);
@@ -142,7 +159,11 @@ const login = async () => {
                     setLocale(lang);
                     $locally.setItem('locale', lang);
                 }
-            })
+            }).catch((error) => {
+                console.error(error);
+                err.valueOf = error;
+                errview.value = true;
+            });
             await authenticateUser(data.jwt);
         }
         if (authenticated) {

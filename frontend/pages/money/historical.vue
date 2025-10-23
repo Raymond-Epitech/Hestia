@@ -11,6 +11,9 @@
             <ExpenseItem v-for="expense in expenses_list" :key="expense.id" :expense="expense"
                 :onclick="() => redirecttomodify(expense.id)" :paidBy="getUsername(expense.paidBy)" />
         </div>
+        <div v-if="errview">
+            <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+        </div>
     </div>
 </template>
 
@@ -34,19 +37,25 @@ const expenses_list = ref<Expenseget[]>([]);
 const list_coloc = ref<Coloc[]>([]);
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const collocid = user.colocationId;
 
 api.getExpensebycategoryId(categoryId).then((response) => {
     expenses_list.value = response;
 }).catch((error) => {
-    console.error('Error fetching data:', error);
-})
+    console.error(error);
+    err.value = error;
+    errview.value = true;
+});
 api.getUserbyCollocId(collocid).then((response) => {
     list_coloc.value = response;
 }).catch((error) => {
-    console.error('Error fetching data:', error);
-})
+    console.error(error);
+    err.value = error;
+    errview.value = true;
+});
 
 const getUsername = (id: string): string => {
     const user = list_coloc.value.find(coloc => coloc.id === id);

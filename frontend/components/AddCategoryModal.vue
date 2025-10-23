@@ -20,6 +20,9 @@
                         </div>
                     </form>
                 </div>
+                <div v-if="errview">
+                    <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+                </div>
             </div>
         </div>
     </transition>
@@ -37,6 +40,8 @@ const userStore = useUserStore();
 const user = userStore.user;
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const newcategory = ref<expenses_category>({
     colocationId: user.colocationId,
@@ -73,6 +78,8 @@ const handleProceed = async () => {
         emit('proceed')
     }).catch((error) => {
         console.error('Error adding expense category:', error);
+        err.value = error;
+        errview.value = true;
     });
 }
 

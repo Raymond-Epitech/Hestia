@@ -32,6 +32,9 @@
       </div>
       <popup v-if="popup_vue" :text="$t('confirm_delete_shoppinglist')" @confirm="confirmDelete"
         @close="cancelDelete" />
+      <div v-if="errview">
+        <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+      </div>
     </div>
   </transition>
 </template>
@@ -60,6 +63,8 @@ const popup_vue = ref(false)
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const prewiew = ref('');
 const item_list = ref<ReminderItem[]>([]);
@@ -137,7 +142,12 @@ const resetPost = () => {
 }
 
 const createList = async () => {
-  const response = await api.addReminder(post.value)
+  const response = await api.addReminder(post.value).catch((error) => {
+    console.error(error);
+    err.value = error;
+    errview.value = true;
+    return '';
+  });
   if (response != '') {
     Id.value = response;
     modify.value = true;
@@ -153,6 +163,10 @@ const handleClose = async () => {
         console.error(`Failed to update reminder ${Id.value}`);
         return;
       }
+    }).catch((error) => {
+      console.error(error);
+      err.value = error;
+      errview.value = true;
     });
   }
   if (!modify.value && post.value.shoppinglistName != '') {
@@ -177,7 +191,11 @@ const handleAddItem = async () => {
       }
     }
     newitemList.value.reminderId = Id.value;
-    const newID = await api.addReminderShoppingListItem(newitemList.value);
+    const newID = await api.addReminderShoppingListItem(newitemList.value).catch((error) => {
+      console.error(error);
+      err.value = error;
+      errview.value = true;
+    });
     if (newID) {
       newitemList.value.id = newID;
     }
@@ -227,7 +245,9 @@ const updateIsChecked = (id: string, value: boolean) => {
         return;
       }
     }).catch((error) => {
-      console.error(`Error updating item ${id}:`, error);
+      console.error(error);
+      err.value = error;
+      errview.value = true;
     });
   }
 };
@@ -243,7 +263,9 @@ const updateName = (id: string, value: string) => {
       return;
     }
   }).catch((error) => {
-    console.error(`Error updating item ${id}:`, error);
+    console.error(error);
+    err.value = error;
+    errview.value = true;
   });
 };
 
@@ -258,6 +280,10 @@ const deleteItem = (id: string) => {
         return;
       }
       item_list.value = item_list.value?.filter((item) => item.id !== id);
+    }).catch((error) => {
+      console.error(error);
+      err.value = error;
+      errview.value = true;
     });
   }
 };
@@ -280,6 +306,10 @@ const confirmDelete = async () => {
     resetPost()
     close()
     emit('closed')
+  }).catch((error) => {
+    console.error(error);
+    err.value = error;
+    errview.value = true;
   });
 };
 

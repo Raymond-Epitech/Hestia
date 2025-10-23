@@ -16,6 +16,9 @@
                 <text class="number"> {{ refund.amount }} € </text>
             </div>
         </div>
+        <div v-if="errview">
+            <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+        </div>
     </div>
 </template>
 
@@ -27,6 +30,8 @@ const userStore = useUserStore();
 const user = userStore.user;
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 const refund = ref<expenses_category_get>();
 const refund_list = ref<Expenseget[]>([]);
 api.setjwt(useCookie('token').value ?? '');
@@ -38,18 +43,24 @@ await api.getExpenseByColocationId(user.colocationId).then((response) => {
         api.getExpensebycategoryId(refund.value.id).then((response) => {
             refund_list.value = response;
         }).catch((error) => {
-            console.error('Error fetching data:', error);
-        })
+            console.error(error);
+            err.value = error;
+            errview.value = true;
+        });
     }
 }).catch((error) => {
-    console.error('Error fetching data:', error);
-})
+    console.error(error);
+    err.value = error;
+    errview.value = true;
+});
 
 api.getUserbyCollocId(user.colocationId).then((response) => {
     list_coloc.value = response;
 }).catch((error) => {
-    console.error('Error fetching data:', error);
-})
+    console.error(error);
+    err.value = error;
+    errview.value = true;
+});
 
 const getUsername = (id: string): string => {
     const user = list_coloc.value.find(coloc => coloc.id === id);
