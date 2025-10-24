@@ -26,7 +26,6 @@ public static class ServiceConfigurationExtension
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IExpenseService, ExpenseService>();
         services.AddScoped<IShoppingListService, ShoppingListService>();
-        services.AddScoped<IExpiredChoreRemover, ExpiredChoreRemover>();
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
         services.AddScoped<IRealTimeService, RealTimeService>();
         services.AddScoped<IFirebaseNotificationService, FirebaseNotificationService>();
@@ -40,7 +39,7 @@ public static class ServiceConfigurationExtension
 
         // Others
         services.AddHttpContextAccessor();
-        services.AddScoped<RecurringJobsConfigurator>();
+        services.AddSingleton<RecurringJobsConfigurator>();
         return services;
     }
 

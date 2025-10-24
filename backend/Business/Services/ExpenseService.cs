@@ -784,36 +784,41 @@ namespace Business.Services
             });
         }
 
-        public async Task<bool> TriggerExpenseAutomation(Guid id)
+        public async Task<bool> TriggerAllExpenseAutomation()
         {
-            var automation = await expenseAutomationRepository.Query()
-                .Where(e => e.Id == id)
+            var automations = await expenseAutomationRepository.Query()
+                .Where(e => e.DayOfTheMonth == DateTime.Now.Day)
                 .Include(e => e.Expenses)
-                .FirstOrDefaultAsync();
+                .ToListAsync();
 
-            if (automation is null || !automation.Expenses.Any())
-                throw new NotFoundException($"No expense automation found with this id : {id} or no expense register with this automation");
-
-            logger.LogInformation($"Succes : Expense automation with id {id} found");
-
-            var newExpense = new ExpenseInput
+            if (automations is null || automations.Count == 0)
             {
-                ColocationId = automation!.Expenses.First().ExpenseCategory.ColocationId,
-                CreatedBy = automation.Expenses.First().CreatedBy,
-                Name = automation.Name,
-                Description = automation.Expenses.First().Description,
-                Amount = automation.Expenses.First().Amount,
-                PaidBy = automation.Expenses.First().PaidBy,
-                ExpenseCategoryId = automation.Expenses.First().ExpenseCategoryId,
-                SplitType = Enum.Parse<SplitTypeEnum>(automation.Expenses.First().SplitType),
-                SplitBetween = automation.Expenses.First().SplitBetweens.Select(s => s.UserId).ToList(),
-                DateOfPayment = DateTime.Now.ToUniversalTime(),
-                IsRecurring = false,
-            };
+                logger.LogInformation($"Info : No expense automations found");
+                return false;
+            }
 
-            await AddExpenseAsync(newExpense);
+            logger.LogInformation($"Succes : Expense automations found");
 
-            logger.LogInformation($"Succes : Expense automation with id {id} triggered");
+            foreach (var automation in automations)
+            {
+                var newExpense = new ExpenseInput
+                {
+                    ColocationId = automation!.Expenses.First().ExpenseCategory.ColocationId,
+                    CreatedBy = automation.Expenses.First().CreatedBy,
+                    Name = automation.Name,
+                    Description = automation.Expenses.First().Description,
+                    Amount = automation.Expenses.First().Amount,
+                    PaidBy = automation.Expenses.First().PaidBy,
+                    ExpenseCategoryId = automation.Expenses.First().ExpenseCategoryId,
+                    SplitType = Enum.Parse<SplitTypeEnum>(automation.Expenses.First().SplitType),
+                    SplitBetween = automation.Expenses.First().SplitBetweens.Select(s => s.UserId).ToList(),
+                    DateOfPayment = DateTime.Now.ToUniversalTime(),
+                    IsRecurring = false,
+                };
+
+                await AddExpenseAsync(newExpense);
+                logger.LogInformation($"Succes : Expense automation with id {automation.Id} triggered");
+            }
 
             return true;
         }
