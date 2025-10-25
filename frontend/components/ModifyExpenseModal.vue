@@ -97,6 +97,9 @@
       <popup v-if="popup_vue" :text="$t('confirm_delete_expense')" @confirm="handleProceed('delete')"
         @close="cancelDelete">
       </popup>
+      <div v-if="errview">
+        <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+      </div>
     </div>
   </transition>
 </template>
@@ -116,6 +119,8 @@ const userStore = useUserStore();
 const user = userStore.user;
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const date = new Date();
 const popup_vue = ref(false);
@@ -181,7 +186,11 @@ const cancelDelete = () => {
 
 const handleProceed = async (action: string) => {
   if (action === 'modify') {
-    const response = await api.updateExpense(modified_expense.value);
+    const response = await api.updateExpense(modified_expense.value).catch((error) => {
+      console.error(error);
+      err.value = error;
+      errview.value = true;
+    });
     if (response) {
       close()
       emit('proceed')
@@ -189,7 +198,11 @@ const handleProceed = async (action: string) => {
       console.error('Error modifying expense');
     }
   } else if (action === 'delete') {
-    await api.deleteExpense(props.expense.id);
+    await api.deleteExpense(props.expense.id).catch((error) => {
+      console.error(error);
+      err.value = error;
+      errview.value = true;
+    });
     close()
     emit('proceed')
   }
@@ -232,7 +245,12 @@ watch(visible, async (value) => {
   if (value) {
     try {
       // fetch coloc members
-      list_coloc.value = await api.getUserbyCollocId(collocid)
+      list_coloc.value = await api.getUserbyCollocId(collocid).catch((error) => {
+        console.error(error);
+        err.value = error;
+        errview.value = true;
+        return [];
+      });
 
       // set defaults
       Object.assign(modified_expense.value, {
@@ -252,7 +270,12 @@ watch(visible, async (value) => {
       })
 
       // fetch expense details
-      const expenseData = await api.getExpenseById(props.expense.id)
+      const expenseData = await api.getExpenseById(props.expense.id).catch((error) => {
+        console.error(error);
+        err.value = error;
+        errview.value = true;
+        return {} as Expenseget;
+      })
       Object.assign(modified_expense.value, {
         id: expenseData.id,
         expenseCategoryId: expenseData.expenseCategoryId,

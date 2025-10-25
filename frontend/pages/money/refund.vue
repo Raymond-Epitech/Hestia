@@ -35,6 +35,9 @@
                 </li>
             </ul>
         </div>
+        <div v-if="errview">
+            <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+        </div>
     </div>
 </template>
 
@@ -54,6 +57,8 @@ const userStore = useUserStore();
 const user = userStore.user;
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 const refund_list = ref<refund[]>([]);
 api.setjwt(useCookie('token').value ?? '');
 let rufendcategoryId = '';
@@ -66,7 +71,9 @@ onMounted(() => {
     api.getRefund(user.colocationId).then((response) => {
         refund_list.value = response;
     }).catch((error) => {
-        console.error('Error fetching data:', error);
+        console.error(error);
+        err.value = error;
+        errview.value = true;
     });
     api.getExpenseByColocationId(user.colocationId).then((response) => {
         response.forEach((expense) => {
@@ -75,7 +82,9 @@ onMounted(() => {
             }
         });
     }).catch((error) => {
-        console.error('Error fetching expenses:', error);
+        console.error(error);
+        err.value = error;
+        errview.value = true;
     });
 
 });
@@ -96,12 +105,14 @@ const refund_prosess = (refund: refund) => {
         dateOfPayment: new Date().toISOString(),
         expenseCategoryId: rufendcategoryId,
     }
-    api.addExpense(data).then((response) => {
+    api.addExpense(data, false, "").then((response) => {
         if (response === true) {
             window.location.reload();
         }
     }).catch((error) => {
-        console.error('Error adding expense:', error);
+        console.error(error);
+        err.value = error;
+        errview.value = true;
     });
 }
 

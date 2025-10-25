@@ -92,6 +92,9 @@
               </button>
             </div>
           </form>
+          <div v-if="errview">
+            <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+          </div>
         </div>
       </div>
     </div>
@@ -121,6 +124,8 @@ const props = withDefaults(
 )
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 const userStore = useUserStore();
 const user = userStore.user;
 api.setjwt(useCookie('token').value ?? '');
@@ -185,6 +190,8 @@ api.getUserbyCollocId(user.colocationId).then((response) => {
   });
 }).catch((error) => {
   console.error('Error fetching data:', error);
+  err.value = error;
+  errview.value = true;
 });
 
 // const calculateValueFromPercentage = (colocId: string) => {
@@ -221,7 +228,9 @@ const handleProceed = async () => {
       });
     }
   }).catch((error) => {
-    console.error('Error adding expense:', error);
+    console.error(error);
+    err.value = error;
+    errview.value = true;
   });
 }
 

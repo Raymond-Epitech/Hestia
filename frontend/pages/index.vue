@@ -17,6 +17,9 @@
         <Post :post="post" @delete="getall()" @modify="handleModify(post)" />
       </div>
     </div>
+    <div v-if="errview">
+      <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+    </div>
   </div>
 </template>
 
@@ -35,6 +38,8 @@ const openListModal = () => (isModalListOpen.value = true)
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 
 const posts = ref<Reminder[]>([]);
@@ -45,7 +50,11 @@ const signalr = $signalr as SignalRClient;
 signalr.on("NewReminderAdded", async (ReminderOutput) => {
   if (!posts.value.some(post => post.id === ReminderOutput.id)) {
     if (ReminderOutput.reminderType === 1) {
-      await api.getImagetocache(ReminderOutput.imageUrl);
+      await api.getImagetocache(ReminderOutput.imageUrl).catch((error) => {
+        console.error(error);
+        err.value = error;
+        errview.value = true;
+      });
     }
     posts.value.push(ReminderOutput)
   }
@@ -66,10 +75,19 @@ signalr.on("ReminderUpdated", (ReminderOutput) => {
 
 
 const getall = async () => {
-  const data = await api.getAllReminders(userStore.user.colocationId);
+  const data = await api.getAllReminders(userStore.user.colocationId).catch((error) => {
+    console.error(error);
+    err.value = error;
+    errview.value = true;
+    return [] as Reminder[];
+  });
   for (const post of data) {
     if (post.reminderType === 1) {
-      await api.getImagetocache(post.imageUrl);
+      await api.getImagetocache(post.imageUrl).catch((error) => {
+        console.error(error);
+        err.value = error;
+        errview.value = true;
+      });
     }
   }
   posts.value = data;
