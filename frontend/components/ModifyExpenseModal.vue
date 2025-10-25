@@ -25,6 +25,19 @@
                   {{ coloc.username }}
                 </option>
               </select>
+              <div>
+                <h3 class="recurring-expense subtext">
+                  <input type="checkbox" v-model="modified_expense.isRecurring" />
+                  <Texte_language :source="modified_expense.isRecurring ? 'recurrence_explaine' : 'recurrence'" />
+                </h3>
+                <div v-if="modified_expense.isRecurring">
+                  <select v-model="modified_expense.dayOfTheRecursion" class="day-select">
+                    <option v-for="day in 30" :key="day" :value="day">
+                      {{ day }}
+                    </option>
+                  </select>
+                </div>
+              </div>
               <h3 class="subtext">
                 <Texte_language source="split_type" /> :
               </h3>
@@ -144,6 +157,8 @@ const modified_expense = ref<Expense_Modif>({
   splitValues: {},
   splitPercentages: {},
   dateOfPayment: date.toISOString(),
+  isRecurring: false,
+  dayOfTheRecursion: 1,
 })
 
 // const calculateValueFromPercentage = (colocId: string) => {
@@ -232,6 +247,8 @@ watch(visible, async (value) => {
         splitValues: {},
         splitPercentages: {},
         dateOfPayment: date.toISOString(),
+        isRecurring: false,
+        dayOfTheRecursion: 1,
       })
 
       // fetch expense details
@@ -245,6 +262,8 @@ watch(visible, async (value) => {
         paidBy: expenseData.paidBy,
         splitType: expenseData.splitType,
         dateOfPayment: date.toISOString(),
+        isRecurring: expenseData.isRecurring,
+        dayOfTheRecursion: expenseData.dayOfTheRecursion,
       })
 
       if (expenseData.splitType === 0) {
@@ -567,5 +586,23 @@ input[type="checkbox"]:checked {
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
   }
+}
+
+.recurring-expense {
+  display: flex;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.day-select {
+  width: 100%;
+  height: 30px;
+  border-radius: 9px;
+  border: none;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 5px;
+  background-color: var(--recieved-message);
+  color: var(--page-text);
 }
 </style>

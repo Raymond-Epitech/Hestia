@@ -735,14 +735,15 @@ export class bridge {
         })
     }
 
-    async addExpense(data: Expense): Promise<boolean | { error: any }> {
+    async addExpense(data: Expense, isRecurring: boolean, dayOfTheRecursion: string): Promise<boolean | { error: any }> {
+        const newdata = { ...data, isRecurring, dayOfTheRecursion };
         return await fetch(`${this.url}/api/Expense`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + this.jwt
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(newdata)
         }).then(async response => {
             if (response.status == 200) {
                 return true;

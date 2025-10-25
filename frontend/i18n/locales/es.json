@@ -112,5 +112,7 @@
   "shopping-list-name": "Nombre de la lista de compras",
   "newFlateshare": "Crear un nuevo piso compartido",
   "ChangeColocation": "Unirse a otro piso compartido",
-  "error_colloc_id": "*Indique un ID de piso compartido*"
+  "error_colloc_id": "*Indique un ID de piso compartido*",
+  "recurrence": "Reaparición",
+  "recurrence_explaine": "Recurrencia (el día del mes):"
 }
