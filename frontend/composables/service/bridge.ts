@@ -1264,24 +1264,28 @@ export class bridge {
 
     // Image section:
 
-    async uploadImage(file: File,): Promise<string> {
-        const formData = new FormData();
-        formData.append('file', file, file.name);
+    async deleteImage(name: string): Promise<boolean> {
         try {
-            const response = await fetch(`${this.url}/images`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + this.jwt
-                },
-                body: formData
+            const response = await fetch(`${this.url}/Images/${name}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + this.jwt }
             });
             if (response.ok) {
-                return await response.text();
+                if (isNative()) {
+                    await Filesystem.deleteFile({
+                        path: name,
+                        directory: Directory.Data
+                    });
+                } else {
+                    const cache = await caches.open('images-cache');
+                    await cache.delete(`${this.url}/api/Image/${name}`);
+                }
+                return true;
             }
             const errBody = await response.json();
             throw { status: response.status, body : errBody };
         } catch (err) {
-            console.error('Network / fetch error uploadImage', err);
+            console.error('Network / fetch error deleteImage', err);
             throw err;
         }
     }
