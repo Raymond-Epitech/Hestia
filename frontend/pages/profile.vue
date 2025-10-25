@@ -30,7 +30,8 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type { Coloc } from '~/composables/service/type';
 import { useUserStore } from '~/store/user';
 const userStore = useUserStore();
 const router = useRouter();
@@ -40,8 +41,8 @@ const err = ref < { status: number, body: any } > ({ status: 0, body: null });
 const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const colocationData = ref([]);
-const list_coloc = ref([]);
-const user = ref(null);
+const list_coloc = ref<Coloc[]>([]);
+const user = ref<Coloc | null>(null);
 
 api.getColocationById(userStore.user.colocationId).then((response) => {
     colocationData.value = response;
@@ -61,7 +62,7 @@ api.getUserbyCollocId(userStore.user.colocationId).then((response) => {
   });
 
 
-const redirect = (page) => {
+const redirect = (page: any) => {
     router.push(page);
 }
 </script>

@@ -33,7 +33,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { SocialLogin } from '@capgo/capacitor-social-login'
 import { useRouter, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia';
@@ -120,10 +120,8 @@ const register = async () => {
                 $bridge.setjwt(data.jwt);
                 userStore.setUser(data.user);
                 $bridge.getLanguage(userStore.user.id).then((lang) => {
-                    if (lang != '') {
-                        setLocale(lang);
-                        $locally.setItem('locale', lang);
-                    }
+                    setLocale(lang);
+                    $locally.setItem('locale', lang);
                 }).catch((error) => {
                     console.error(error);
                     err.valueOf = error;

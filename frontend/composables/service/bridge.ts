@@ -1,5 +1,5 @@
 import { json } from "stream/consumers";
-import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif, refund, shoppinglist, shoppinglist_item, expenses_category, expenses_category_get, message, UpdateChore, ReminderItem } from "./type";
+import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, UserBalance, ExpenseList, Expense_Modif, refund, shoppinglist, shoppinglist_item, expenses_category, expenses_category_get, message, UpdateChore, ReminderItem, Locale } from "./type";
 import { Capacitor } from '@capacitor/core'
 import { Filesystem, Directory } from '@capacitor/filesystem';
 
@@ -526,14 +526,14 @@ export class bridge {
         }
     }
 
-    async getLanguage(id: string): Promise<string> {
+    async getLanguage(id: string): Promise<Locale> {
         try {
             const response = await fetch(`${this.url}/api/User/Language/${id}`, {
                 method: 'GET',
                 headers: { 'Authorization': 'Bearer ' + this.jwt }
             });
             if (response.ok) {
-                return await response.text();
+                return await response.text() as Locale;
             }
             const errBody = await response.json();
             throw { status: response.status, body : errBody };
@@ -1287,7 +1287,7 @@ export class bridge {
     }
 
     async getImagetocache(name: string): Promise<string> {
-        const url = `${this.url}/api/Reminder/images/${name}`;
+        const url = `${this.url}/api/Image/${name}`;
         if (await this.getImagefromcache(name) != null) {
             return 'OK';
         }
@@ -1334,7 +1334,7 @@ export class bridge {
     }
 
     async getImagefromcache(name: string): Promise<string | null> {
-        const url = `${this.url}/api/Reminder/images/${name}`;
+        const url = `${this.url}/api/Image/${name}`;
         if (isNative()) {
             // Mobile : lecture depuis le disque
             try {
