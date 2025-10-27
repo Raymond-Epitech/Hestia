@@ -89,6 +89,13 @@ const getall = async () => {
         errview.value = true;
       });
     }
+    if (post.linkToPP) {
+      await api.getImagetocache(post.linkToPP).catch((error) => {
+        console.error(error);
+        err.value = error;
+        errview.value = true;
+      });
+    }
   }
   posts.value = data;
 };

@@ -1,6 +1,6 @@
 <template>
-    <div v-if="showImage" class="profile">
-        <img class="profile" :src="$props.linkToPP" alt="profile icon"
+    <div v-if="imageget" class="profile">
+        <img class="profile" :src="imageget" alt="profile icon"
             :style="{ height: `${props.height}px`, width: `${props.width}px` }" @error="onImgError">
     </div>
     <div v-else class="icon">
@@ -25,19 +25,30 @@ const props = defineProps({
     }
 })
 
-const hasError = ref(false);
+const { $bridge } = useNuxtApp();
+const api = $bridge;
+const imageget = ref('');
 
-const showImage = computed(() =>
-    props.linkToPP &&
-    props.linkToPP !== "deleted.jpg" &&
-    props.linkToPP !== "exempledetest" &&
-    props.linkToPP !== "default.jpg" &&
-    !hasError.value
-);
+const hasError = ref(false);
 
 const onImgError = () => {
     hasError.value = true;
 };
+
+onMounted(async () => {
+    if (props.linkToPP) {
+        api.getImagefromcache(props.linkToPP).then((image) => {
+            if (image) {
+                imageget.value = image;
+                console.log("got pp from cache")
+            } else {
+                console.error('Image non trouvée dans le cache');
+            }
+        }).catch((error) => {
+            console.error('Erreur lors de la récupération de l\'image :', error);
+        });
+    }
+});
 </script>
 
 <style scoped>

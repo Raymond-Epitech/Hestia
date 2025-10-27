@@ -111,5 +111,7 @@
   "ChangeColocation": "Rejoindre une autre colocation",
   "error_colloc_id": "*Veuillez indiquer un ID de colocation*",
   "recurrence": "Récurrence",
-  "recurrence_explaine": "Récurrence (le jour du mois):"
+  "recurrence_explaine": "Récurrence (le jour du mois):",
+  "User": "Utilisateur",
+  "User-subtext": "Données de l'utilisateur"
 }

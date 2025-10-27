@@ -3,6 +3,15 @@
         <img src="~/public/Retour.svg" class="icon">
     </button>
     <div class="conteneur">
+        <div class="setting-button" :onClick="() => redirect('/settings/user')" id="language">
+            <div class="icon">
+                <img src="~/public/navbar/Profile.svg">
+            </div>
+            <div class="setting-text">
+                <Texte_language class="header" source="User" />
+                <Texte_language class="sub-header" source="User-subtext" />
+            </div>
+        </div>
         <div class="setting-button" :onClick="() => redirect('/settings/language')" id="language">
             <div class="icon">
                 <img src="~/public/settings/language.svg">
