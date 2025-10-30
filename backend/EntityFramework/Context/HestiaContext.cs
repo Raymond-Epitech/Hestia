@@ -20,6 +20,7 @@ namespace EntityFramework.Context
         public virtual DbSet<PollVote> PollVotes { get; set; } = null!;
         public virtual DbSet<Reaction> Reactions { get; set; } = null!;
         public virtual DbSet<ExpenseAutomation> ExpenseAutomations { get; set; } = null!;
+        public virtual DbSet<Feedback> Feedbacks { get; set; } = null!;
 
         public HestiaContext(DbContextOptions<HestiaContext> options) : base(options) { }
 
