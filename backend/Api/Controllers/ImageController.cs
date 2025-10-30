@@ -22,6 +22,18 @@ public class ImageController(
         return File(file.Content, file.ContentType, file.FileName);
     }
 
+    [HttpPost]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<string>> UploadImage(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            throw new InvalidEntityException("File is empty");
+        var result =  await imageService.SaveImage(file);
+        return Ok(result);
+    }
+
     [HttpDelete("{fileName}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
