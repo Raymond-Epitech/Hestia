@@ -20,7 +20,6 @@ public class FeedbackInput
     
     public BugType BugType { get; set; } = BugType.BugOrError;
 
-    [Required]
     public IFormFile? Attatchment { get; set; } = null;
 }
 
