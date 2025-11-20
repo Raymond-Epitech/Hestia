@@ -26,20 +26,21 @@ public static class ServiceConfigurationExtension
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IExpenseService, ExpenseService>();
         services.AddScoped<IShoppingListService, ShoppingListService>();
-        services.AddScoped<IExpiredChoreRemover, ExpiredChoreRemover>();
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
         services.AddScoped<IRealTimeService, RealTimeService>();
         services.AddScoped<IFirebaseNotificationService, FirebaseNotificationService>();
         services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<IPollService, PollService>();
         services.AddScoped<IReactionService, ReactionService>();
+        services.AddScoped<IImageService, ImageService>();
+        services.AddScoped<IFeedbackService, FeedbackService>();
 
         // Repositories
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
         // Others
         services.AddHttpContextAccessor();
-        services.AddScoped<RecurringJobsConfigurator>();
+        services.AddSingleton<RecurringJobsConfigurator>();
         return services;
     }
 
