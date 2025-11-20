@@ -33,6 +33,44 @@ try
     builder.Services.AddMvcCore();
     builder.Services.AddControllers().AddNewtonsoftJson();
 
+    // Dans Program.cs, juste après builder.Services.AddControllers();
+
+    builder.Services.Configure<ApiBehaviorOptions>(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            // 1. Récupérer toutes les erreurs de validation
+            var errors = context.ModelState
+                .Where(e => e.Value!.Errors.Count > 0)
+                .Select(e => new
+                {
+                    Field = e.Key,
+                    Message = e.Value!.Errors.First().ErrorMessage
+                })
+                .ToList();
+
+            // 2. Construire le message "Detail" pour ressembler à ton ExceptionHandler
+            // On concatène les erreurs pour n'avoir qu'une string dans "Detail"
+            var errorMessages = string.Join("; ", errors.Select(e => $"{e.Field}: {e.Message}"));
+
+            // 3. Créer le ProblemDetails uniformisé
+            var problemDetails = new ProblemDetails
+            {
+                Status = StatusCodes.Status422UnprocessableEntity,
+                Title = "Invalid input data", // Exactement le même titre que ton ExceptionHandler
+                Detail = errorMessages,       // On met les erreurs ici au lieu d'un objet "errors"
+                Instance = context.HttpContext.Request.Path,
+                Type = "https://tools.ietf.org/html/rfc4918#section-11.2" // Uniformité du Type
+            };
+
+            // 4. Renvoyer le résultat
+            return new UnprocessableEntityObjectResult(problemDetails)
+            {
+                ContentTypes = { "application/problem+json" }
+            };
+        };
+    });
+
     // Error handling
     builder.Services.AddProblemDetails();
     builder.Services.AddExceptionHandler<ExceptionHandler>();

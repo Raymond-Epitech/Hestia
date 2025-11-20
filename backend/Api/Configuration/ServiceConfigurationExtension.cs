@@ -2,7 +2,6 @@
 using Business.Services;
 using EntityFramework.Context;
 using EntityFramework.Repositories;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Configuration;
@@ -34,6 +33,7 @@ public static class ServiceConfigurationExtension
         services.AddScoped<IReactionService, ReactionService>();
         services.AddScoped<IImageService, ImageService>();
         services.AddScoped<IFeedbackService, FeedbackService>();
+        services.AddScoped<IReceiptScannerService, ReceiptScannerService>();
 
         // Repositories
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -58,7 +58,7 @@ public static class ServiceConfigurationExtension
 
         return services;
     }
-    
+
 
     private static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
     {
