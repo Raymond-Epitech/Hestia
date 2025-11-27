@@ -11,8 +11,8 @@ public class ReceiptScannerService(IHttpClientFactory httpClientFactory, IConfig
 {
     private readonly string _apiKey = configuration["GoogleAI:ApiKey"]
                                       ?? throw new Exception("Clé GoogleAI:ApiKey introuvable !");
-    private readonly string _aiVersion = configuration["GoogleAI:AiVersion"]
-                                      ?? throw new Exception("Clé GoogleAI:AiVersion introuvable !");
+    private readonly string _aiVersion = configuration["GoogleAI:AiModel"]
+                                      ?? throw new Exception("Clé GoogleAI:AiModel introuvable !");
 
     public async Task<ReceiptScanResult> ScanReceiptAsync(Stream imageStream, string contentType)
     {
