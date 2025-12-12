@@ -41,6 +41,11 @@ public class Expense
     [ForeignKey("ExpenseCategoryId")]
     public ExpenseCategory ExpenseCategory { get; set; } = null!;
 
+    public Guid? ExpenseAutomationId { get; set; } = null;
+
+    [ForeignKey("ExpenseAutomationId")]
+    public ExpenseAutomation? ExpenseAutomation { get; set; } = null;
+
     public ICollection<SplitBetween> SplitBetweens { get; set; } = null!;
     public ICollection<Entry> Entries { get; set; } = null!;
 }

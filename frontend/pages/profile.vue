@@ -24,35 +24,45 @@
                 </div>
             </div>
         </div>
+        <div v-if="errview">
+            <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+        </div>
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type { Coloc } from '~/composables/service/type';
 import { useUserStore } from '~/store/user';
 const userStore = useUserStore();
 const router = useRouter();
 const { $bridge } = useNuxtApp();
 const api = $bridge;
+const err = ref < { status: number, body: any } > ({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const colocationData = ref([]);
-const list_coloc = ref([]);
-const user = ref(null);
+const list_coloc = ref<Coloc[]>([]);
+const user = ref<Coloc | null>(null);
 
 api.getColocationById(userStore.user.colocationId).then((response) => {
     colocationData.value = response;
 }).catch((error) => {
-    console.error('Error fetching data:', error);
-});
+    console.error(error);
+    err.valueOf = error;
+    errview.value = true;
+  });
 
 api.getUserbyCollocId(userStore.user.colocationId).then((response) => {
     list_coloc.value = response;
     user.value = list_coloc.value.find(user => user.id === userStore.user.id) || null;
 }).catch((error) => {
-    console.error('Error fetching data:', error);
-});
+    console.error(error);
+    err.valueOf = error;
+    errview.value = true;
+  });
 
 
-const redirect = (page) => {
+const redirect = (page: any) => {
     router.push(page);
 }
 </script>

@@ -86,6 +86,8 @@ export type Expense_Modif = {
         [key: string]: number
     }
     dateOfPayment: string,
+    isRecurring: boolean,
+    dayOfTheRecursion: number,
 }
 
 export type Expenseget = {
@@ -104,6 +106,8 @@ export type Expenseget = {
     dateOfPayment: string,
     expenseCategoryName: string,
     expenseCategoryId: string,
+    isRecurring: boolean,
+    dayOfTheRecursion: number,
 }
 
 export type ExpenseList = {

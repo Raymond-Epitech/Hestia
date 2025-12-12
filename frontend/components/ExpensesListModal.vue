@@ -19,6 +19,9 @@
                     </div>
                 </div>
             </div>
+            <div v-if="errview">
+                <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+            </div>
         </div>
     </transition>
 </template>
@@ -50,6 +53,8 @@ const expenses_list = ref<Expenseget[]>([]);
 const list_coloc = ref<Coloc[]>([]);
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const forbid_scroll = ref(false);
 const { $signalr } = useNuxtApp()
@@ -71,36 +76,46 @@ signalr.on("NewExpenseAdded", (CategoryOutput) => {
     api.getExpensebycategoryId(props.expense).then((response) => {
         expenses_list.value = response;
     }).catch((error) => {
-        console.error('Error fetching data:', error);
-    })
+        console.error(error);
+        err.value = error;
+        errview.value = true;
+    });
 })
 
 signalr.on("ExpenseUpdated", (CategoryOutput) => {
     api.getExpensebycategoryId(props.expense).then((response) => {
         expenses_list.value = response;
     }).catch((error) => {
-        console.error('Error fetching data:', error);
-    })
+        console.error(error);
+        err.value = error;
+        errview.value = true;
+    });
 })
 
 signalr.on("ExpenseDeleted", (CategoryOutput) => {
     api.getExpensebycategoryId(props.expense).then((response) => {
         expenses_list.value = response;
     }).catch((error) => {
-        console.error('Error fetching data:', error);
-    })
+        console.error(error);
+        err.value = error;
+        errview.value = true;
+    });
 })
 
 api.getExpensebycategoryId(props.expense).then((response) => {
     expenses_list.value = response;
 }).catch((error) => {
-    console.error('Error fetching data:', error);
-})
+    console.error(error);
+    err.value = error;
+    errview.value = true;
+});
 api.getUserbyCollocId(user.colocationId).then((response) => {
     list_coloc.value = response;
 }).catch((error) => {
-    console.error('Error fetching data:', error);
-})
+    console.error(error);
+    err.value = error;
+    errview.value = true;
+});
 
 const getUsername = (id: string): string => {
     const user = list_coloc.value.find(coloc => coloc.id === id);
@@ -127,8 +142,10 @@ const handleProceed = () => {
     api.getExpensebycategoryId(props.expense).then((response) => {
         expenses_list.value = response;
     }).catch((error) => {
-        console.error('Error fetching data:', error);
-    })
+        console.error(error);
+        err.value = error;
+        errview.value = true;
+    });
     emit('proceed')
 }
 

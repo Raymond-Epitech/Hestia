@@ -28,10 +28,13 @@
                 </form>
             </div>
         </div>
+        <div v-if="errview">
+            <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+        </div>
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useUserStore } from '~/store/user';
 
 definePageMeta({
@@ -42,6 +45,8 @@ const userStore = useUserStore();
 const user = userStore.user;
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const router = useRouter();
 const route = useRoute();
@@ -63,7 +68,11 @@ const new_data = ref({
 const joinColocation = async () => {
     if (new_data.value.colocationId !== '') {
         alert.value = false;
-        const data = await api.updateUser(new_data.value)
+        const data = await api.updateUser(new_data.value).catch((error) => {
+            console.error(error);
+            err.value = error;
+            errview.value = true;
+        });
         if (data) {
             userStore.setColocation(new_data.value.colocationId);
             router.push('/');
@@ -74,7 +83,11 @@ const joinColocation = async () => {
     }
 }
 const createColocation = async () => {
-    const data = await api.addColocation(colocation.value);
+    const data = await api.addColocation(colocation.value).catch((error) => {
+        console.error(error);
+        err.value = error;
+        errview.value = true;
+    });
     if (data) {
         userStore.setColocation(data);
         router.push('/');

@@ -83,14 +83,14 @@ try
 
     // Hangfire
     builder.Services.AddHangfire(config => config
-    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-    .UseSimpleAssemblyNameTypeSerializer()
-    .UseRecommendedSerializerSettings()
-    .UsePostgreSqlStorage(options =>
-        options.UseNpgsqlConnection(builder.Configuration.GetConnectionString("HestiaDb")))
-    );
+        .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+        .UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UsePostgreSqlStorage(o => o.UseNpgsqlConnection(
+            builder.Configuration.GetConnectionString("HestiaDb")))
+        );
+    builder.Services.AddHangfireServer(); // OK, à conserver
     builder.Logging.SetMinimumLevel(LogLevel.Debug);
-    builder.Services.AddHangfireServer();
 
     builder.WebHost.UseSentry(o =>
     {
@@ -128,11 +128,12 @@ try
     app.MapHub<HestiaHub>("/hestiaHub");
 
     // Configure Hangfire recurring jobs
-    using (var scope = app.Services.CreateScope())
+    app.Lifetime.ApplicationStarted.Register(() =>
     {
-        var jobConfigurator = scope.ServiceProvider.GetRequiredService<RecurringJobsConfigurator>();
-        jobConfigurator.Configure();
-    }
+        using var scope = app.Services.CreateScope();
+        var cfg = scope.ServiceProvider.GetRequiredService<RecurringJobsConfigurator>();
+        cfg.Configure();
+    });
 
     app.Run();
 }

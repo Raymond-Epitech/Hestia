@@ -21,6 +21,9 @@
                 </text>
             </div>
         </div>
+        <div v-if="errview">
+            <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+        </div>
     </div>
 </template>
 
@@ -33,6 +36,8 @@ const userStore = useUserStore();
 const user = userStore.user;
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const { t } = useI18n();
 const router = useRouter();
@@ -75,8 +80,10 @@ const getall = async () => {
         expenses_list.value = response.filter(item => item.name !== "Refund");
         global.value = expenses_list.value.reduce((acc, expense) => acc + expense.totalAmount, 0);
     }).catch((error) => {
-        console.error('Error fetching data:', error);
-    })
+        console.error(error);
+        err.value = error;
+        errview.value = true;
+    });
 }
 
 onMounted(async () => {

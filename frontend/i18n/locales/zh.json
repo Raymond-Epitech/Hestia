@@ -112,5 +112,7 @@
   "shopping-list-name": "购物清单的名称",
   "newFlateshare": "创建新的合租公寓",
   "ChangeColocation": "加入其他合租公寓",
-  "error_colloc_id": "*请提供一个合租ID*"
+  "error_colloc_id": "*请提供一个合租ID*",
+  "recurrence": "复发",
+  "recurrence_explaine": "复发（本月的一天）："
 }

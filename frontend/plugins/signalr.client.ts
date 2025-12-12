@@ -18,6 +18,10 @@ export default defineNuxtPlugin(() => {
         resolveReady = resolve
     })
 
+    connection.serverTimeoutInMilliseconds = 60000;
+    connection.keepAliveIntervalInMilliseconds = 20000;
+    connection.onclose(err => console.error("SignalR connection closed", err));
+
     const startConnection = async () => {
         try {
             await connection.start()

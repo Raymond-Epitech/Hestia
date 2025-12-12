@@ -11,6 +11,9 @@
           </div>
         </div>
       </div>
+      <div v-if="errview">
+        <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+      </div>
     </div>
   </transition>
 </template>
@@ -32,6 +35,8 @@ const props = withDefaults(
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 
 const { modelValue } = toRefs(props)
@@ -60,13 +65,19 @@ const handleReaction = async (emoji: string) => {
   await api.addReactionReminder(props.postId, userStore.user.id, emoji).then(() => {
     close()
     emit('closed')
-  }).catch((error: any) => {
-    console.error('Error adding reaction:', error);
+  }).catch((error) => {
+    console.error(error);
+    err.value = error;
+    errview.value = true;
   });
 }
 
 const deleteReaction = async () => {
-  await api.deleteReactionReminder(props.postId, userStore.user.id);
+  await api.deleteReactionReminder(props.postId, userStore.user.id).catch((error) => {
+    console.error(error);
+    err.value = error;
+    errview.value = true;
+  });
   close()
   emit('closed')
 }

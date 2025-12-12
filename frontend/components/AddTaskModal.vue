@@ -47,6 +47,9 @@
                         </div>
                     </form>
                 </div>
+                <div v-if="errview">
+                    <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+                </div>
             </div>
         </div>
     </transition>
@@ -76,6 +79,8 @@ const props = withDefaults(
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 
 const list_coloc = ref<Coloc[]>([]);
@@ -102,7 +107,9 @@ const { open, close, toggle, visible } = useModal(props.name)
 api.getUserbyCollocId(userStore.user.colocationId).then((response) => {
     list_coloc.value = response;
 }).catch((error) => {
-    console.error('Error fetching data:', error);
+    console.error(error);
+    err.value = error;
+    errview.value = true;
 });
 
 const emit = defineEmits<{
@@ -141,7 +148,11 @@ const handleProceed = async () => {
         ...task.value,
         enrolled: task.value.enrolled ? [task.value.enrolled] : []
     }
-    const response = await api.addChore(new_task)
+    const response = await api.addChore(new_task).catch((error) => {
+        console.error(error);
+        err.value = error;
+        errview.value = true;
+    });
     if (response) {
         resetTask()
         close()

@@ -11,6 +11,9 @@
                     </div>
                 </div>
             </div>
+            <div v-if="errview">
+                <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+            </div>
         </div>
     </transition>
 </template>
@@ -37,6 +40,9 @@ const props = withDefaults(
 )
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
+api.setjwt(useCookie('token').value ?? '');
 const userStore = useUserStore();
 const user = userStore.user;
 let rufendcategoryId = '';
@@ -70,7 +76,9 @@ const handleRefund = async () => {
             }
         });
     }).catch((error) => {
-        console.error('Error fetching expenses:', error);
+        console.error(error);
+        err.value = error;
+        errview.value = true;
     });
     const data: Expense = {
         colocationId: user.colocationId,
@@ -87,12 +95,14 @@ const handleRefund = async () => {
         dateOfPayment: new Date().toISOString(),
         expenseCategoryId: rufendcategoryId,
     }
-    api.addExpense(data).then((response) => {
+    api.addExpense(data, false, '').then((response) => {
         close()
         emit('proceed')
     }).catch((error) => {
-        console.error('Error adding expense:', error);
-    });
+    console.error(error);
+    err.value = error;
+    errview.value = true;
+  });
 }
 
 watch(

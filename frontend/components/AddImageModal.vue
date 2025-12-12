@@ -19,6 +19,9 @@
             </div>
           </form>
         </div>
+        <div v-if="errview">
+          <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+        </div>
       </div>
     </div>
   </transition>
@@ -46,6 +49,8 @@ const props = withDefaults(
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const prewiew = ref('');
 
@@ -118,7 +123,11 @@ const handleProceed = async () => {
   if (post.value.reminderType === 1) {
     post.value.content = '';
   }
-  const response = await api.addReminder(post.value)
+  const response = await api.addReminder(post.value).catch((error) => {
+    console.error(error);
+    err.value = error;
+    errview.value = true;
+  });
   if (response != '') {
     resetPost()
     close()

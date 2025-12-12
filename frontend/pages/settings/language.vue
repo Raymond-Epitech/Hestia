@@ -39,6 +39,9 @@
       </div>
       <Texte_language class="language-text" source="Japanese" />
     </div>
+    <div v-if="errview">
+      <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+    </div>
   </div>
 </template>
 
@@ -53,6 +56,8 @@ const userStore = useUserStore();
 const router = useRouter();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 const redirect = (page: string) => {
   router.push(page);
 }
@@ -60,7 +65,11 @@ const redirect = (page: string) => {
 const setlangue = (lang: Locale) => {
   setLocale(lang);
   $locally.setItem('locale', lang);
-  api.updateLanguage(lang, userStore.user.id);
+  api.updateLanguage(lang, userStore.user.id).catch((error) => {
+    console.error(error);
+    err.value = error;
+    errview.value = true;
+  });
 }
 </script>
 

@@ -34,5 +34,7 @@ namespace Shared.Models.Input
         public Dictionary<Guid, int>? SplitPercentages { get; set; } = null;
 
         public DateTime DateOfPayment { get; set; } = DateTime.Now.ToUniversalTime();
+        public bool IsRecurring { get; set; } = false;
+        public int? DayOfTheRecursion { get; set; } = null;
     }
 }
