@@ -82,21 +82,24 @@ const login = async () => {
     if (res) {
         const data = await $bridge.login(res.result.idToken, fcmToken.value).catch((error) => {
             console.error(error);
+            if (error.status === 404) {
+                console.log('User does not exist, opening registration modal');
+                openRegisterModal();
+                return;
+            }
             err.valueOf = error;
             errview.value = true;
         });
         if (data) {
             $bridge.setjwt(data.jwt);
-            if (data.status === 404) {
-                console.log('User does not exist, opening registration modal');
-                openRegisterModal();
-                return;
-            }
             userStore.setUser(data.user);
             $bridge.getLanguage(userStore.user.id).then((lang) => {
                 if (lang != '') {
                     setLocale(lang);
                     $locally.setItem('locale', lang);
+                } else {
+                    setLocale('en');
+                    $locally.setItem('locale', 'en');
                 }
             }).catch((error) => {
                 console.error(error);
