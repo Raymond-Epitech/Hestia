@@ -21,6 +21,9 @@
   <div v-else>
     <CalendarView class="calendar-container" :task_list="task_list" @proceed="getall()"></CalendarView>
   </div>
+  <div v-if="errview">
+    <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -33,6 +36,8 @@ const openModal = () => (isModalOpen.value = true)
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const { $signalr } = useNuxtApp()
 const task_list = ref<Chore[]>([]);
@@ -74,7 +79,11 @@ signalr.on("ChoreUpdated", async (ChoreOutput) => {
 })
 
 const getall = async () => {
-  const data = await api.getAllChore(userStore.user.colocationId);
+  const data = await api.getAllChore(userStore.user.colocationId).catch((error) => {
+    console.error(error);
+    err.value = error;
+    errview.value = true;
+  });
   task_list.value = data;
 };
 
@@ -82,7 +91,7 @@ function triggerCalendar() {
   calendar_view.value = !calendar_view.value;
 }
 
-function shouldDisplay(task) {
+function shouldDisplay(task: any) {
   if (task.isDone) {
     const date = new Date(task.dueDate);
     const today = new Date();

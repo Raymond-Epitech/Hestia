@@ -32,6 +32,9 @@
                         </div>
                     </div>
                 </div>
+                <div v-if="errview">
+                    <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+                </div>
             </div>
         </div>
     </transition>
@@ -63,6 +66,8 @@ const list_balance = ref<UserBalance>();
 const list_coloc = ref<Coloc[]>([]);
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const collocid = user.colocationId
 const myid = user.id
@@ -98,6 +103,8 @@ const handleReload = async () => {
         })
         .catch((error) => {
             console.error('Error fetching data:', error);
+            err.value = error;
+            errview.value = true;
         });
 }
 

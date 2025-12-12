@@ -10,10 +10,13 @@
                 </a>
             </div>
         </div>
+        <div v-if="errview">
+            <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+        </div>
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { SocialLogin } from '@capgo/capacitor-social-login'
 import { useRouter, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia';
@@ -33,6 +36,8 @@ const { authenticateUser } = useAuthStore();
 const { authenticated } = storeToRefs(useAuthStore());
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
+const err = ref < { status: number, body: any } > ({ status: 0, body: null });
+const errview = ref(false);
 const router = useRouter();
 const route = useRoute()
 const username = ref('');
@@ -75,7 +80,11 @@ const login = async () => {
     });
     providerJWT.value = res.result.idToken;
     if (res) {
-        const data = await $bridge.login(res.result.idToken, fcmToken.value);
+        const data = await $bridge.login(res.result.idToken, fcmToken.value).catch((error) => {
+            console.error(error);
+            err.valueOf = error;
+            errview.value = true;
+        });
         if (data) {
             $bridge.setjwt(data.jwt);
             if (data.status === 404) {
@@ -89,7 +98,11 @@ const login = async () => {
                     setLocale(lang);
                     $locally.setItem('locale', lang);
                 }
-            })
+            }).catch((error) => {
+                console.error(error);
+                err.valueOf = error;
+                errview.value = true;
+            });
             await authenticateUser(data.jwt);
         }
         if (authenticated) {

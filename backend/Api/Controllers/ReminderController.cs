@@ -85,31 +85,6 @@ namespace Api.Controllers
             return Ok(await reminderService.DeleteReminderAsync(id));
         }
 
-        [HttpGet("images/{fileName}")]
-        [Authorize]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> GetImage(string fileName)
-        {
-            var file = await reminderService.GetImageByNameAsync(fileName);
-
-            return File(file.Content, file.ContentType, file.FileName);
-        }
-
-        [HttpDelete("images/{fileName}")]
-        [Authorize]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult DeleteImage(string fileName)
-        {
-            if (string.IsNullOrEmpty(fileName))
-                throw new InvalidEntityException("File name is empty");
-
-            return Ok(reminderService.DeleteImage(fileName));
-        }
-
         // Shopping list
         [HttpGet("ShoppingList")]
         [Authorize]

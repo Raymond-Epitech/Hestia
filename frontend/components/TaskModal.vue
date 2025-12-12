@@ -47,6 +47,9 @@
                     </div>
                 </div>
             </div>
+            <div v-if="errview">
+                <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+            </div>
         </div>
     </transition>
 </template>
@@ -70,6 +73,8 @@ const props = defineProps<{
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const isEnrolled = ref(false);
 const enrollees = props.enrolledUsers ? Object.keys(props.enrolledUsers) : [];
@@ -104,7 +109,9 @@ const handleQuit = async () => {
     api.deleteChoreUser(props.id, userStore.user.id).then(() => {
         // isEnrolled.value = false;
     }).catch((error) => {
-        console.error('Error delete chore user:', error);
+        console.error(error);
+        err.value = error;
+        errview.value = true;
     });
     close()
     emit('proceed')
@@ -114,7 +121,9 @@ const handleEnroll = async () => {
     api.addChoreUser(props.id, userStore.user.id).then(() => {
         // isEnrolled.value = true;
     }).catch((error) => {
-        console.error('Error add chore user:', error);
+        console.error(error);
+        err.value = error;
+        errview.value = true;
     });
     close()
     emit('proceed')
@@ -132,7 +141,9 @@ const handleDone = async () => {
     api.updateChore(updateChore).then(() => {
         // done = true;
     }).catch((error) => {
-        console.error('Error update chore:', error);
+        console.error(error);
+        err.value = error;
+        errview.value = true;
     });
     close()
     emit('proceed')

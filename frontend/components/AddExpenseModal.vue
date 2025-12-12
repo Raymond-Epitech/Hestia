@@ -17,14 +17,31 @@
                   <text>€</text>
                 </div>
               </div>
-              <h3 class="subtext">
-                <Texte_language source="expense_paid_by" /> :
-              </h3>
-              <select v-model="expense.paidBy" class="drop-down-input name">
-                <option v-for="coloc in list_coloc" :key="coloc.id" :value="coloc.id">
-                  {{ coloc.username }}
-                </option>
-              </select>
+              <div class="name-expense-container">
+                <div>
+                  <h3 class="subtext">
+                    <Texte_language source="expense_paid_by" /> :
+                  </h3>
+                  <select v-model="expense.paidBy" class="drop-down-input name">
+                    <option v-for="coloc in list_coloc" :key="coloc.id" :value="coloc.id">
+                      {{ coloc.username }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <h3 class="recurring-expense subtext">
+                  <input type="checkbox" v-model="isRecurring" />
+                  <Texte_language :source="isRecurring ? 'recurrence_explaine' : 'recurrence'" />
+                </h3>
+                <div v-if="isRecurring">
+                  <select v-model="dueDate" class="day-select">
+                    <option v-for="day in 30" :key="day" :value="day">
+                      {{ day }}
+                    </option>
+                  </select>
+                </div>
+              </div>
               <h3 class="subtext">
                 <Texte_language source="split_type" /> :
               </h3>
@@ -75,6 +92,9 @@
               </button>
             </div>
           </form>
+          <div v-if="errview">
+            <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+          </div>
         </div>
       </div>
     </div>
@@ -85,6 +105,7 @@
 import useModal from '~/composables/useModal';
 import { useUserStore } from '~/store/user';
 import type { Expense, Coloc } from '~/composables/service/type';
+import { addMonths, getMonth, getYear, subMonths } from 'date-fns';
 
 const props = withDefaults(
   defineProps<{
@@ -103,6 +124,8 @@ const props = withDefaults(
 )
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 const userStore = useUserStore();
 const user = userStore.user;
 api.setjwt(useCookie('token').value ?? '');
@@ -114,6 +137,8 @@ const splitTypes = [
   // { value: 2, label: 'split_type2' },
 ];
 
+const dueDate = ref('');
+const isRecurring = ref(false);
 const expense = ref<Expense>({
   colocationId: user.colocationId,
   expenseCategoryId: props.categoryId,
@@ -165,6 +190,8 @@ api.getUserbyCollocId(user.colocationId).then((response) => {
   });
 }).catch((error) => {
   console.error('Error fetching data:', error);
+  err.value = error;
+  errview.value = true;
 });
 
 // const calculateValueFromPercentage = (colocId: string) => {
@@ -178,7 +205,7 @@ const calculatedSplitValue = computed(() => {
 });
 
 const handleProceed = async () => {
-  api.addExpense(expense.value).then((response) => {
+  api.addExpense(expense.value, isRecurring.value, dueDate.value).then((response) => {
     if (response === true) {
       close()
       emit('proceed')
@@ -196,10 +223,14 @@ const handleProceed = async () => {
         splitValues: {},
         splitPercentages: {},
         dateOfPayment: date.toISOString(),
+        isRecurring: false,
+        dayOfTheRecursion: 1,
       });
     }
   }).catch((error) => {
-    console.error('Error adding expense:', error);
+    console.error(error);
+    err.value = error;
+    errview.value = true;
   });
 }
 
@@ -232,6 +263,16 @@ watch(
   },
   { immediate: true }
 )
+
+watch(isRecurring, (newValue) => {
+  if (!newValue) {
+    dueDate.value = '';
+  }
+});
+
+watch(dueDate, (newValue) => {
+  console.log('Due date changed:', newValue);
+});
 
 watch(visible, (value) => {
   emit('update:modelValue', value)
@@ -299,6 +340,18 @@ h3 {
   align-content: center;
 }
 
+.day-select {
+  width: 100%;
+  height: 30px;
+  border-radius: 9px;
+  border: none;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 5px;
+  background-color: var(--recieved-message);
+  color: var(--page-text);
+}
+
 .name-input {
   height: 30px;
   width: 90%;
@@ -310,6 +363,12 @@ h3 {
   outline: none;
   color: var(--overlay-text);
   font-weight: 600;
+}
+
+.recurring-expense {
+  display: flex;
+  gap: 5px;
+  margin-top: 8px;
 }
 
 .expense-container {

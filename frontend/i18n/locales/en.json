@@ -111,5 +111,7 @@
   "shopping-list-name": "Name of the shopping list",
   "newFlateshare": "Create a new flat share",
   "ChangeColocation": "Join another flat share",
-  "error_colloc_id": "*Please enter a roommate ID*"
+  "error_colloc_id": "*Please enter a roommate ID*",
+  "recurrence": "Recurrence",
+  "recurrence_explaine": "Recurrence (the day of the month):"
 }

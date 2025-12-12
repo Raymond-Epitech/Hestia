@@ -61,9 +61,6 @@ const today = dayjs();
 const currentMonth = ref(today.month());
 const currentYear = ref(today.year());
 const userStore = useUserStore();
-const { $bridge } = useNuxtApp()
-const api = $bridge;
-api.setjwt(useCookie('token').value ?? '');
 const weekdays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 const { locale } = useI18n()
 

@@ -108,5 +108,7 @@
   "shopping-list-name": "Nom de la liste de courses",
   "newFlateshare": "Créer une nouvelle colocation",
   "ChangeColocation": "Rejoindre une autre colocation",
-  "error_colloc_id": "*Veuillez indiquer un ID de colocation*"
+  "error_colloc_id": "*Veuillez indiquer un ID de colocation*",
+  "recurrence": "Récurrence",
+  "recurrence_explaine": "Récurrence (le jour du mois):"
 }

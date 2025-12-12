@@ -3,6 +3,7 @@ using System;
 using EntityFramework.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EntityFramework.Migrations
 {
     [DbContext(typeof(HestiaContext))]
-    partial class HestiaContextModelSnapshot : ModelSnapshot
+    [Migration("20250925132747_AddExpenseAutomations")]
+    partial class AddExpenseAutomations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -242,43 +245,6 @@ namespace EntityFramework.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("FCMDevices");
-                });
-
-            modelBuilder.Entity("EntityFramework.Models.Feedback", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("AttachmentPath")
-                        .HasColumnType("text");
-
-                    b.Property<int>("BugType")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("VersionHash")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedBy");
-
-                    b.ToTable("Feedbacks");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.Message", b =>
@@ -662,17 +628,6 @@ namespace EntityFramework.Migrations
                     b.HasOne("EntityFramework.Models.User", "User")
                         .WithMany("FCMDevices")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EntityFramework.Models.Feedback", b =>
-                {
-                    b.HasOne("EntityFramework.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
