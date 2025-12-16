@@ -75,7 +75,6 @@
   "task_description": "Description of the task (optional)",
   "login": "Connexion",
   "register": "Register",
-  "register_with_google": "Register with google",
   "login_with_google": "Google connect",
   "error_register": "*Please indicate your username*",
   "colocation_id": "Shared",

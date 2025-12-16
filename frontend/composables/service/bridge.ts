@@ -1267,7 +1267,7 @@ export class bridge {
                 headers: { 'Authorization': 'Bearer ' + this.jwt }
             });
             if (response.ok) {
-                if (isNative()) {
+                if (Capacitor.getPlatform() !== 'web') {
                     await Filesystem.deleteFile({
                         path: name,
                         directory: Directory.Data
@@ -1335,7 +1335,7 @@ export class bridge {
 
     async getImagefromcache(name: string): Promise<string | null> {
         const url = `${this.url}/api/Image/${name}`;
-        if (isNative()) {
+        if (Capacitor.getPlatform() !== 'web') {
             // Mobile : lecture depuis le disque
             try {
                 const result = await Filesystem.readFile({
