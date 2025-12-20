@@ -8,6 +8,6 @@ public class LanguageInput
     [Required]
     public Guid UserId { get; set; }
 
-    public Languages Language { get; set; } = Languages.English;
+    public Languages Language { get; set; } = Languages.en;
 }
 
