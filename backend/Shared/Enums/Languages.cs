@@ -2,11 +2,11 @@
 
 public enum Languages
 {
-    French,
-    English,
-    Spanish,
-    German,
-    Chinese,
-    Japanese
+    fr,
+    en,
+    es,
+    ge,
+    ch,
+    jp
 }
 
