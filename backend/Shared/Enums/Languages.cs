@@ -6,7 +6,7 @@ public enum Languages
     en,
     es,
     ge,
-    ch,
+    zh,
     jp
 }
 
