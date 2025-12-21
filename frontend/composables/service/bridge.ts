@@ -3,10 +3,6 @@ import type { Reminder, User, Colocation, Chore, Coloc, Expenseget, Expense, Use
 import { Capacitor } from '@capacitor/core'
 import { Filesystem, Directory } from '@capacitor/filesystem';
 
-function isNative() {
-    return Capacitor.isNativePlatform()
-}
-
 export class bridge {
     constructor() {
         console.log('Bridge instance created')
@@ -1271,7 +1267,7 @@ export class bridge {
                 headers: { 'Authorization': 'Bearer ' + this.jwt }
             });
             if (response.ok) {
-                if (isNative()) {
+                if (Capacitor.getPlatform() !== 'web') {
                     await Filesystem.deleteFile({
                         path: name,
                         directory: Directory.Data
@@ -1304,7 +1300,7 @@ export class bridge {
             });
             if (response.status == 200) {
                 const blob = await response.blob();
-                if (isNative()) {
+                if (Capacitor.getPlatform() !== 'web') {
                     await new Promise<void>((resolve, reject) => {
                         const reader = new FileReader();
                         reader.onloadend = async () => {
@@ -1339,7 +1335,7 @@ export class bridge {
 
     async getImagefromcache(name: string): Promise<string | null> {
         const url = `${this.url}/api/Image/${name}`;
-        if (isNative()) {
+        if (Capacitor.getPlatform() !== 'web') {
             // Mobile : lecture depuis le disque
             try {
                 const result = await Filesystem.readFile({
