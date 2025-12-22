@@ -1,6 +1,6 @@
 <template>
     <div v-if="showImage" class="profile">
-        <img class="profile" :src="$props.linkToPP" alt="profile icon"
+        <img class="profile" :src="ppurl" alt="profile icon"
             :style="{ height: `${props.height}px`, width: `${props.width}px` }" @error="onImgError">
     </div>
     <div v-else class="icon">
@@ -24,16 +24,46 @@ const props = defineProps({
         default: 50,
     }
 })
+const { $bridge } = useNuxtApp();
+const api = $bridge;
+api.setjwt(useCookie('token').value ?? '');
+const ppurl = ref<string>('');
+const showImage = ref(true);
+
+const loadImage = async (imageUrl: string) => {
+    if (!imageUrl) {
+        return;
+    }
+    api.getImagetocache(props.linkToPP ?? '').then((response) => {
+    }).catch((error) => {
+        console.error(error);
+        showImage.value = false;
+    });
+
+    api.getImagefromcache(props.linkToPP ?? '').then((response) => {
+        if (response !== null) {
+            ppurl.value = response;
+            console.log('Profile picture loaded from cache in Profile_icon.vue: ', ppurl.value);
+        }
+    }).catch((error) => {
+        console.error(error);
+        showImage.value = false;
+    });
+};
+
+watch(() => props.linkToPP, (newVal) => {
+    if (newVal) {
+        loadImage(newVal);
+    }
+});
+
+onMounted(() => {
+    if (props.linkToPP) {
+        loadImage(props.linkToPP);
+    }
+});
 
 const hasError = ref(false);
-
-const showImage = computed(() =>
-    props.linkToPP &&
-    props.linkToPP !== "deleted.jpg" &&
-    props.linkToPP !== "exempledetest" &&
-    props.linkToPP !== "default.jpg" &&
-    !hasError.value
-);
 
 const onImgError = () => {
     hasError.value = true;
