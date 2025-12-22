@@ -529,7 +529,9 @@ export class bridge {
                 headers: { 'Authorization': 'Bearer ' + this.jwt }
             });
             if (response.ok) {
-                return await response.text() as Locale;
+                const languageEnum = await response.json();
+                const languages = ['fr', 'en', 'es', 'de', 'zh', 'ja'];
+                return languages[languageEnum] as Locale;
             }
             const errBody = await response.json();
             throw { status: response.status, body : errBody };
@@ -541,6 +543,10 @@ export class bridge {
 
     async updateLanguage(lang: string, id: string): Promise<boolean> {
         try {
+            // Convert language string to enum number
+            const languages = ['fr', 'en', 'es', 'de', 'zh', 'ja'];
+            const languageEnum = languages.indexOf(lang);
+            
             const response = await fetch(`${this.url}/api/User/Language`, {
                 method: 'POST',
                 headers: {
@@ -549,7 +555,7 @@ export class bridge {
                 },
                 body: JSON.stringify({
                     userId: id,
-                    language: lang
+                    language: languageEnum
                 })
             });
             if (response.ok) {
