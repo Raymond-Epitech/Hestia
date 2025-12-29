@@ -80,7 +80,7 @@ public class ChoreService(
     public async Task<Guid> AddChoreAsync(ChoreInput input)
     {
         var chore = input.ToDb();
-        
+
         await choreRepository.AddAsync(chore);
         if (input.Enrolled is not null && input.Enrolled.Count != 0)
         {
@@ -106,7 +106,7 @@ public class ChoreService(
         await realTimeService.SendToGroupAsync(chore.ColocationId, "NewChoreAdded", chore.ToOutput());
 
         logger.LogInformation("Succes : Chore added");
-            
+
         return chore.Id;
     }
 
@@ -128,7 +128,7 @@ public class ChoreService(
 
         chore.UpdateFromInput(input);
 
-        if (input.Enrolled.Count != 0)
+        if (input.Enrolled is not null)
         {
             await choreEnrollmentRepository.Query()
                 .Where(ce => ce.ChoreId == chore.Id)
@@ -203,7 +203,7 @@ public class ChoreService(
     public async Task<Guid> DeleteChoreAsync(Guid id)
     {
         var chore = await choreRepository.GetByIdAsync(id);
-        
+
         if (chore is null)
         {
             throw new NotFoundException($"Chore {id} not found");
@@ -303,7 +303,7 @@ public class ChoreService(
 
         cache.Remove($"chores:{chore.ColocationId}");
 
-        await realTimeService.SendToGroupAsync(chore.ColocationId, "ChoreEnrollmentAdded", chore.ToOutput());
+        await realTimeService.SendToGroupAsync(chore.ColocationId, "ChoreUpdated", chore.ToOutput());
 
         logger.LogInformation("Succes : User enrolled to the chore");
 
@@ -348,7 +348,7 @@ public class ChoreService(
         if (chore is null)
             throw new InvalidEntityException($"Could get the chore with id {choreId}");
 
-        await realTimeService.SendToGroupAsync(enrollement.Chore.ColocationId, "ChoreEnrollmentRemoved", chore.ToOutput());
+        await realTimeService.SendToGroupAsync(enrollement.Chore.ColocationId, "ChoreUpdated", chore.ToOutput());
 
         logger.LogInformation("Succes : User unenrolled to the chore");
 

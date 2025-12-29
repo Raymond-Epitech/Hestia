@@ -38,6 +38,7 @@ public class ReminderService(ILogger<ReminderService> logger,
 
             var reminders = await reminderRepository.Query()
                 .Where(r => r.ColocationId == colocationId)
+                .OrderByDescending(r => r.CreatedAt)
                 .Include(r => r.Reactions)
                 .Include(r => (r as ShoppingListReminder)!.ShoppingItems)
                 .Include(r => (r as PollReminder)!.PollVotes)
@@ -75,7 +76,7 @@ public class ReminderService(ILogger<ReminderService> logger,
         }
 
         logger.LogInformation("Succes : Reminder found");
-            
+
         return reminder.ToOutput();
     }
 
@@ -125,7 +126,7 @@ public class ReminderService(ILogger<ReminderService> logger,
         }, reminder.CreatedBy);
 
         logger.LogInformation("Succes : Reminder added");
-            
+
         return reminder.Id;
     }
 
