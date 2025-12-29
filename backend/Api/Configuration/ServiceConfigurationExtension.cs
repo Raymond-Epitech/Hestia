@@ -26,7 +26,7 @@ public static class ServiceConfigurationExtension
         services.AddScoped<IExpenseService, ExpenseService>();
         services.AddScoped<IShoppingListService, ShoppingListService>();
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
-        services.AddScoped<IRealTimeService, RealTimeService>();
+        services.AddSingleton<IRealTimeService, RealTimeService>();
         services.AddScoped<IFirebaseNotificationService, FirebaseNotificationService>();
         services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<IPollService, PollService>();

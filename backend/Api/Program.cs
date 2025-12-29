@@ -119,6 +119,13 @@ try
     // Firebase
     builder.Services.Configure<FirebaseSettings>(builder.Configuration.GetSection("Firebase"));
 
+    // Health checks
+    builder.Services.AddHealthChecks();
+    builder.Services.AddSignalR(o =>
+    {
+        o.EnableDetailedErrors = true;
+    });
+
     // Hangfire
     builder.Services.AddHangfire(config => config
         .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
@@ -154,6 +161,7 @@ try
 
     if (!app.Environment.IsDevelopment())
     {
+        app.MapHealthChecks("/health");
         app.UseHttpsRedirection();
     }
 
