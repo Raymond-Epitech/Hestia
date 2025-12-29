@@ -5,6 +5,9 @@ namespace Shared.Models.Input;
 public class ShoppingItemInput
 {
     [Required]
+    public Guid ColocationId { get; set; }
+
+    [Required]
     public string Name { get; set; } = null!;
 
     [Required]

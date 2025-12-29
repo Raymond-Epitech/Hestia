@@ -48,11 +48,9 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
 
         logger.LogInformation($"Succesfully added shopping item {shoppingItem.Id}");
 
-        var colocationId = await reminderRepository.Query().Select(r => r.ColocationId).FirstOrDefaultAsync();
+        cache.Remove($"reminders:{shoppingItemInput.ColocationId}");
 
-        cache.Remove($"reminders:{colocationId}");
-
-        await realTimeService.SendToGroupAsync(colocationId, "NewShoppingItem", shoppingItem.ToOutput());
+        await realTimeService.SendToGroupAsync(shoppingItemInput.ColocationId, "NewShoppingItem", shoppingItem.ToOutput());
 
         return shoppingItem.Id;
     }
@@ -70,7 +68,7 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
         var shoppingItem = await itemRepository.Query()
             .Include(s => s.ShoppingListReminder)
             .FirstOrDefaultAsync(s => s.Id == shoppingItemUpdate.Id);
-        
+
         if (shoppingItem == null)
             throw new NotFoundException("Shopping item not found");
 
@@ -84,7 +82,7 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
         await realTimeService.SendToGroupAsync(shoppingItem.ShoppingListReminder.ColocationId, "UpdatedShoppingItem", shoppingItem.ToOutput());
 
         logger.LogInformation($"Succesfully updated item {shoppingItemUpdate.Id}");
-        
+
         return shoppingItem.Id;
     }
 
@@ -99,7 +97,7 @@ public class ShoppingListService(ILogger<ShoppingListService> logger,
             .Include(s => s.ShoppingListReminder)
             .FirstOrDefaultAsync(s => s.Id == shoppingItemId);
 
-        if ( toDelete == null )
+        if (toDelete == null)
             throw new NotFoundException("Shopping item not found");
 
         itemRepository.Delete(toDelete);
