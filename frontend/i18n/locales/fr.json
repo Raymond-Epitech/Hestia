@@ -93,7 +93,7 @@
   "from": "De",
   "to": "à",
   "refund_history": "Historique des remboursements",
-  "add_user_header": "Ajoutes des utilisateurs à ta colocation",
+  "add_user_header": "Ajoute des utilisateurs à ta colocation",
   "weekdays": {
     "mon": "Lun",
     "tue": "Mar",
@@ -110,5 +110,6 @@
   "ChangeColocation": "Rejoindre une autre colocation",
   "error_colloc_id": "*Veuillez indiquer un ID de colocation*",
   "recurrence": "Récurrence",
-  "recurrence_explaine": "Récurrence (le jour du mois):"
+  "recurrence_explaine": "Récurrence (le jour du mois):",
+  "upload_image": "Télécharger une image"
 }

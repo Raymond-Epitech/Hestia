@@ -113,5 +113,6 @@
   "ChangeColocation": "Einer anderen Wohngemeinschaft beitreten",
   "error_colloc_id": "*Bitte geben Sie eine Mitbewohner-ID an*",
   "recurrence": "Wiederauftreten",
-  "recurrence_explaine": "Wiederauftreten (der Tag des Monats):"
+  "recurrence_explaine": "Wiederauftreten (der Tag des Monats):",
+  "upload_image": "Laden Sie ein Bild hoch"
 }

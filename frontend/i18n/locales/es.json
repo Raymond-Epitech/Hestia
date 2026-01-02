@@ -20,7 +20,7 @@
   "JoinColocation": "Únase a",
   "ColocationID": "ID de la colocación",
   "regularize": "equilibrar",
-  "global": "gasto\ngenerales",
+  "global": "gastos\ngenerales",
   "food_expenses": "gastos de comida",
   "Health_expenses": "gastos de salud",
   "partie_expenses": "gastos de fiesta",
@@ -75,7 +75,7 @@
   "task_description": "Descripción de la tarea (opcional)",
   "login": "Conexión",
   "register": "Registro",
-  "login_with_google": "Google Connect",
+  "login_with_google": "Iniciar sesión con Google",
   "error_register": "*Indique su nombre de usuario*",
   "colocation_id": "Id de colocation",
   "create_account": "Crear una cuenta",
@@ -113,5 +113,6 @@
   "ChangeColocation": "Unirse a otro piso compartido",
   "error_colloc_id": "*Indique un ID de piso compartido*",
   "recurrence": "Reaparición",
-  "recurrence_explaine": "Recurrencia (el día del mes):"
+  "recurrence_explaine": "Recurrencia (el día del mes):",
+  "upload_image": "Sube una imagen"
 }

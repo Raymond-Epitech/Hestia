@@ -8,7 +8,10 @@
           </div>
           <form method="post" action="">
             <div class="modal-body left">
-              <input type="file" class="modal-body-input" @change="handleImageUpload" accept="image/*" required />
+              <input type="file" ref="fileInput" class="modal-body-input-hidden" @change="handleImageUpload" accept="image/*" required />
+              <button type="button" class="button button-browse" @click="$refs.fileInput.click()">
+                {{ $t('upload_image') }}
+              </button>
               <img v-if="prewiew" :src="prewiew" alt="Image sélectionnée" class="image-preview" />
             </div>
             <div v-if="post.content" class="modal-buttons">
@@ -222,16 +225,15 @@ watch(visible, (value) => {
   line-height: 23px;
 }
 
-.modal-body-input {
-  width: 100%;
-  background-color: #1e1e1e00;
-  outline: none;
-  border: none;
-  line-height: 3ch;
-  background-image: linear-gradient(transparent, transparent calc(3ch - 1px), #E7EFF8 0px);
-  background-size: 100% 3ch;
+.modal-body-input-hidden {
+  display: none;
+}
+
+.button-browse {
+  background: #00000088;
   color: var(--overlay-text);
-  font-size: 18px;
+  padding: 12px 24px;
+  font-size: 16px;
   margin-bottom: 12px;
 }
 

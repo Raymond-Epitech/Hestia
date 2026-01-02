@@ -113,5 +113,6 @@
   "ChangeColocation": "Join another flat share",
   "error_colloc_id": "*Please enter a roommate ID*",
   "recurrence": "Recurrence",
-  "recurrence_explaine": "Recurrence (the day of the month):"
+  "recurrence_explaine": "Recurrence (the day of the month):",
+  "upload_image": "Upload an image"
 }
