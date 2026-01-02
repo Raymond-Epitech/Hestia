@@ -195,15 +195,16 @@ export class bridge {
         }
     }
 
-    async addReminderShoppingListItem(item: any) {
+    async addReminderShoppingListItem(item: any, colocationId: string) {
         try {
+            const newItem = { ...item, colocationId };
             const response = await fetch(this.url + "/api/Reminder/ShoppingList", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + this.jwt
                 },
-                body: JSON.stringify(item)
+                body: JSON.stringify(newItem)
             });
             if (response.ok) {
                 return await response.json();

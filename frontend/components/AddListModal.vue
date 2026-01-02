@@ -72,6 +72,7 @@ const item_list = ref<ReminderItem[]>([]);
 const Id = ref('');
 const modify = ref(false);
 const oldshoppinglistName = ref('');
+const colocationId = ref(userStore.user.colocationId);
 const newitemList = ref<ReminderItem>({
   name: '',
   reminderId: '',
@@ -192,7 +193,7 @@ const handleAddItem = async () => {
       }
     }
     newitemList.value.reminderId = Id.value;
-    const newID = await api.addReminderShoppingListItem(newitemList.value).catch((error) => {
+    const newID = await api.addReminderShoppingListItem(newitemList.value, colocationId.value).catch((error) => {
       console.error(error);
       err.value = error;
       errview.value = true;
