@@ -161,7 +161,14 @@ public class FirebaseNotificationService : IFirebaseNotificationService
             return new List<Guid>();
         }
 
-        await SendNotificationAsync(fcmDevices.Select(f => f.FCMToken).ToList(), notification.Title, notification.Body);
+        try
+        {
+            await SendNotificationAsync(fcmDevices.Select(f => f.FCMToken).ToList(), notification.Title, notification.Body);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning($"Certaines notifications n'ont pas pu être envoyées : {ex.Message}");
+        }
 
         logger.LogInformation($"Succes : Notification sent to colocation {notification.Id}");
 
