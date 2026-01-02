@@ -113,5 +113,6 @@
   "ChangeColocation": "加入其他合租公寓",
   "error_colloc_id": "*请提供一个合租ID*",
   "recurrence": "复发",
-  "recurrence_explaine": "复发（本月的一天）："
+  "recurrence_explaine": "复发（本月的一天）：",
+  "upload_image": "上传图片"
 }
