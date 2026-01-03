@@ -1,7 +1,7 @@
 <template>
     <div class="overlay" @click.self="emit('close')">
         <div class="popup">
-            <h1>{{ status }} {{ body.title }}</h1>
+            <h1 class="text">{{ status }} {{ body.title }}</h1>
             <p class="text">{{ body.detail }}</p>
             <div class="button">
                 <button class="confirm-button" @click="emit('close')">

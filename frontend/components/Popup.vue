@@ -1,7 +1,7 @@
 <template>
     <div class="overlay" @click.self="emit('close')">
         <div class="popup">
-            <h1>{{ title }}</h1>
+            <h1 class="text">{{ title }}</h1>
             <p class="text">{{ text }}</p>
             <div class="button">
                 <button v-if="!no_confirm" class="confirm-button" @click="emit('confirm')">
