@@ -114,5 +114,6 @@
   "error_colloc_id": "*Indique un ID de piso compartido*",
   "recurrence": "Reaparición",
   "recurrence_explaine": "Recurrencia (el día del mes):",
-  "upload_image": "Sube una imagen"
+  "upload_image": "Sube una imagen",
+  "bad_ammount_split": "La cantidad total de las partes no coincide con la cantidad del gasto."
 }

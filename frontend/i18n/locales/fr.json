@@ -111,5 +111,6 @@
   "error_colloc_id": "*Veuillez indiquer un ID de colocation*",
   "recurrence": "Récurrence",
   "recurrence_explaine": "Récurrence (le jour du mois):",
-  "upload_image": "Télécharger une image"
+  "upload_image": "Télécharger une image",
+  "bad_ammount_split": "Le montant total des parts ne correspond pas au montant de la dépense."
 }
