@@ -114,5 +114,6 @@
   "error_colloc_id": "*Bitte geben Sie eine Mitbewohner-ID an*",
   "recurrence": "Wiederauftreten",
   "recurrence_explaine": "Wiederauftreten (der Tag des Monats):",
-  "upload_image": "Laden Sie ein Bild hoch"
+  "upload_image": "Laden Sie ein Bild hoch",
+  "bad_ammount_split": "Der Gesamtbetrag der Anteile stimmt nicht mit dem Betrag der Ausgabe überein."
 }

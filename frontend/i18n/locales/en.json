@@ -114,5 +114,6 @@
   "error_colloc_id": "*Please enter a roommate ID*",
   "recurrence": "Recurrence",
   "recurrence_explaine": "Recurrence (the day of the month):",
-  "upload_image": "Upload an image"
+  "upload_image": "Upload an image",
+  "bad_ammount_split": "The total amount of the shares does not match the amount of the expense."
 }
