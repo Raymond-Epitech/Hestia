@@ -12,7 +12,7 @@
         </div>
         <div class="center-container">
             <div v-for="expense in expenses_list" :key="expense.id" class="center-container">
-                <ExpenseCategoryBox :expense="expense" @proceed="getall()" />
+                <ExpenseCategoryBox :expense="expense" @proceed="getall()" @delete="getall()" />
             </div>
             <div class="global">
                 <Texte_language class="category" source="global" />
@@ -64,6 +64,10 @@ signalr.on("ExpenseCategoryUpdated", (CategoryOutput) => {
 })
 
 signalr.on("NewExpenseAdded", (CategoryOutput) => {
+    getall();
+})
+
+signalr.on("expensecategorydeleted", (CategoryOutput) => {
     getall();
 })
 

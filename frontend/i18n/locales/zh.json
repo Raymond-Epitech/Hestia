@@ -114,5 +114,7 @@
   "error_colloc_id": "*请提供一个合租ID*",
   "recurrence": "复发",
   "recurrence_explaine": "复发（本月的一天）：",
-  "upload_image": "上传图片"
+  "upload_image": "上传图片",
+  "confirm_delete_category": "您确定要删除此费用类别吗？ （所有相关费用将被存档）",
+  "close": "关闭"
 }

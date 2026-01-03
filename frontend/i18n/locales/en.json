@@ -114,5 +114,7 @@
   "error_colloc_id": "*Please enter a roommate ID*",
   "recurrence": "Recurrence",
   "recurrence_explaine": "Recurrence (the day of the month):",
-  "upload_image": "Upload an image"
+  "upload_image": "Upload an image",
+  "confirm_delete_category": "Are you sure you want to delete this expense category? (all associated expenses will be archived)",
+  "close": "Close"
 }
