@@ -114,5 +114,14 @@
   "ChangeColocation": "Join another flat share",
   "error_colloc_id": "*Please enter a roommate ID*",
   "recurrence": "Recurrence",
-  "recurrence_explaine": "Recurrence (the day of the month):"
+  "recurrence_explaine": "Recurrence (the day of the month):",
+  "Feedback": "Feedback",
+  "Feedback-subtext": "Send us your feedback",
+  "issue": "Usage issue",
+  "error": "Application error",
+  "suggestion": "Suggestion for improvement",
+  "other": "Other",
+  "title": "Title",
+  "description": "Description",
+  "SendFeedback": "Send Feedback"
 }

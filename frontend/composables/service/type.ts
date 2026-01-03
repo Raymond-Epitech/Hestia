@@ -206,3 +206,14 @@ export type message = {
 export type SignalRClient = {
     on(event: string, callback: (data: any) => void): void;
 }
+
+export type Feedback = {
+    id?: string,
+    CreatedBy: string,
+    createdAt?: string,
+    VersionHash?: string,
+    Title?: string,
+    Description?: string,
+    BugType: 0 | 1 | 2 | 3,
+    Attatchment?: string,
+}

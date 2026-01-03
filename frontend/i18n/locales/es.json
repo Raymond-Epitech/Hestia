@@ -114,5 +114,14 @@
   "ChangeColocation": "Unirse a otro piso compartido",
   "error_colloc_id": "*Indique un ID de piso compartido*",
   "recurrence": "Reaparición",
-  "recurrence_explaine": "Recurrencia (el día del mes):"
+  "recurrence_explaine": "Recurrencia (el día del mes):",
+  "Feedback": "Comentarios",
+  "Feedback-subtext": "Envíenos sus comentarios",
+  "issue": "Problema de uso",
+  "error": "Error de aplicación",
+  "suggestion": "Sugerencia de mejora",
+  "other": "Otro",
+  "title": "Título",
+  "description": "Descripción",
+  "SendFeedback": "Enviar comentarios"
 }

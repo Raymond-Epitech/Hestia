@@ -114,5 +114,14 @@
   "ChangeColocation": "別のシェアハウスに参加する",
   "error_colloc_id": "*共同居住者IDを入力してください*",
   "recurrence": "再発",
-  "recurrence_explaine": "再発（月の日）："
+  "recurrence_explaine": "再発（月の日）：",
+  "Feedback": "フィードバック",
+  "Feedback-subtext": "フィードバックをお送りください",
+  "issue": "使用上の問題",
+  "error": "アプリケーションエラー",
+  "suggestion": "改善提案",
+  "other": "その他",
+  "title": "タイトル",
+  "description": "説明",
+  "SendFeedback": "フィードバックを送信"
 }

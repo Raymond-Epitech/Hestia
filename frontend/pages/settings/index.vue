@@ -50,6 +50,15 @@
             <img src>
             <Texte_language class="header" source="Informations" />
         </div> -->
+        <div class="setting-button" :onClick="() => redirect('/settings/feedback')" id="feedback">
+            <div class="icon">
+                <img src="~/public/settings/Affichage.svg">
+            </div>
+            <div class="setting-text">
+                <Texte_language class="header" source="Feedback" />
+                <Texte_language class="sub-header" source="Feedback-subtext" />
+            </div>
+        </div>
         <div class="setting-button" color="#FF6A61" @click.passive="logout()" id="logout">
             <div class="icon">
                 <img src="~/public/settings/Quitter.svg">

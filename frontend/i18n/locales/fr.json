@@ -111,5 +111,14 @@
   "ChangeColocation": "Rejoindre une autre colocation",
   "error_colloc_id": "*Veuillez indiquer un ID de colocation*",
   "recurrence": "Récurrence",
-  "recurrence_explaine": "Récurrence (le jour du mois):"
+  "recurrence_explaine": "Récurrence (le jour du mois):",
+  "Feedback": "Feedback",
+  "Feedback-subtext": "Envoyez-nous vos commentaires",
+  "issue": "Problème d'utilisation",
+  "error": "Erreur d'application",
+  "suggestion": "Suggestion d'amélioration",
+  "other": "Autre",
+  "title": "Titre",
+  "description": "Description",
+  "SendFeedback": "Envoyer le feedback"
 }

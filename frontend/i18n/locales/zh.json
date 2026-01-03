@@ -114,5 +114,14 @@
   "ChangeColocation": "加入其他合租公寓",
   "error_colloc_id": "*请提供一个合租ID*",
   "recurrence": "复发",
-  "recurrence_explaine": "复发（本月的一天）："
+  "recurrence_explaine": "复发（本月的一天）：",
+  "Feedback": "反馈",
+  "Feedback-subtext": "发送您的反馈",
+  "issue": "使用问题",
+  "error": "应用程序错误",
+  "suggestion": "改进建议",
+  "other": "其他",
+  "title": "标题",
+  "description": "描述",
+  "SendFeedback": "发送反馈"
 }
