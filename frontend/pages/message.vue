@@ -2,7 +2,7 @@
     <div>
         <div class="messages-box" ref="messagesBox">
             <MessageBox v-for="message in messages" :key="message.id" :content="message.content"
-                :sendBy="getUsername(message.sendBy)" />
+                :sendBy="getUsername(message.sendBy)" :linktoPP="getUserProfilePicture(message.sendBy)" />
         </div>
         <form @submit.prevent="handleSendMessage" class="form">
             <input v-model="newMessage.content" type="text" placeholder="Message" maxlength="6000" class="body-input"
@@ -101,6 +101,12 @@ const getUsername = (sendById: string): string => {
     if (sendById === userStore.user.id) return 'me';
     const user = list_coloc.value.find(coloc => coloc.id === sendById);
     return user ? user.username : 'Unknown';
+};
+
+const getUserProfilePicture = (sendById: string): string => {
+    if (!list_coloc.value.length) return '';
+    const user = list_coloc.value.find(coloc => coloc.id === sendById);
+    return user ? user.profilePictureUrl : '';
 };
 </script>
 
