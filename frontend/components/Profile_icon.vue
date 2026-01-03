@@ -32,6 +32,7 @@ const showImage = ref(true);
 
 const loadImage = async (imageUrl: string) => {
     if (!imageUrl) {
+        showImage.value = false;
         return;
     }
     api.getImagetocache(props.linkToPP ?? '').then((response) => {
@@ -44,6 +45,8 @@ const loadImage = async (imageUrl: string) => {
         if (response !== null) {
             ppurl.value = response;
             console.log('Profile picture loaded from cache in Profile_icon.vue: ', ppurl.value);
+        } else {
+            showImage.value = false;
         }
     }).catch((error) => {
         console.error(error);
@@ -60,6 +63,8 @@ watch(() => props.linkToPP, (newVal) => {
 onMounted(() => {
     if (props.linkToPP) {
         loadImage(props.linkToPP);
+    } else {
+        showImage.value = false;
     }
 });
 
