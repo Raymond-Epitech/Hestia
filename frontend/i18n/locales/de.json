@@ -116,5 +116,6 @@
   "recurrence_explaine": "Wiederauftreten (der Tag des Monats):",
   "upload_image": "Laden Sie ein Bild hoch",
   "confirm_delete_category": "Sind Sie sicher, dass Sie diese Ausgabenkategorie löschen möchten? (alle damit verbundenen Ausgaben werden archiviert)",
-  "close": "Schließen"
+  "close": "Schließen",
+  "bad_ammount_split": "Der Gesamtbetrag der Anteile stimmt nicht mit dem Betrag der Ausgabe überein."
 }

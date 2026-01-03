@@ -116,5 +116,6 @@
   "recurrence_explaine": "再発（月の日）：",
   "upload_image": "画像をアップロードする",
   "confirm_delete_category": "この経費カテゴリを削除してもよろしいですか? (関連する費用はすべてアーカイブされます)",
-  "close": "近い"
+  "close": "近い",
+  "bad_ammount_split": "シェアの合計金額が費用の金額と一致しません。"
 }

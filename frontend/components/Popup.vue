@@ -4,7 +4,7 @@
             <h1>{{ title }}</h1>
             <p class="text">{{ text }}</p>
             <div class="button">
-                <button class="confirm-button" @click="emit('confirm')">
+                <button v-if="!no_confirm" class="confirm-button" @click="emit('confirm')">
                     <Texte_language source="confirm" />
                 </button>
                 <button class="cancel-button" @click="emit('close')">
@@ -24,6 +24,11 @@ const props = defineProps({
     title: {
         type: String,
         required: false
+    },
+    no_confirm: {
+        type: Boolean,
+        required: false,
+        default: false
     }
 })
 const emit = defineEmits([
