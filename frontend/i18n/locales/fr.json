@@ -112,5 +112,7 @@
   "recurrence": "Récurrence",
   "recurrence_explaine": "Récurrence (le jour du mois):",
   "upload_image": "Télécharger une image",
+  "confirm_delete_category": "Etes-vous sûr de vouloir supprimer cette catégorie de dépense ? (toutes les dépenses associées seront archivées)",
+  "close": "Fermer",
   "bad_ammount_split": "Le montant total des parts ne correspond pas au montant de la dépense."
 }
