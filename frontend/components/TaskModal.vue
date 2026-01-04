@@ -150,7 +150,7 @@ const handleDone = async () => {
         title: props.title,
         description: props.description,
         isDone: true,
-        enrolled: enrollees.map(userId => userId),
+        enrolled: enrollees.value.map(userId => userId),
     }
     api.updateChore(updateChore).then(() => {
         // done = true;
@@ -159,8 +159,8 @@ const handleDone = async () => {
         err.value = error;
         errview.value = true;
     });
-    close()
     emit('proceed')
+    close()
 }
 
 function getDayNumber() {
