@@ -127,6 +127,14 @@ export type User = {
     id: string;
 }
 
+export type UserInfo = {
+    id: string;
+    username: string;
+    email: string;
+    pathToProfilePicture: string;
+    colocationId: string;
+}
+
 export type Colocation = {
     name: string;
     address: string;
