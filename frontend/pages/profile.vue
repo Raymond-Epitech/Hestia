@@ -1,9 +1,9 @@
 <template>
     <button class="settings" @click="redirect('/settings')">
-        <img src="~/public/profile/settings.svg" class="icon">
+        <img src="~/public/profile/settings.svg" class="button-icon">
     </button>
     <button class="add-user" @click="redirect('/add-user')">
-        <img src="~/public/profile/addUser.svg" class="icon">
+        <img src="~/public/profile/addUser.svg" class="button-icon">
     </button>
     <div class="page-container">
         <div class="user">
@@ -14,9 +14,9 @@
             <text class="header">
                 <Texte_language source="flatInfo" />
             </text>
-            <sub class="colocation-name">{{ colocationData.name }}<br>{{ colocationData.address }}</sub>
+            <div class="colocation-name">{{ colocationData.name }}<br>{{ colocationData.address }}</div>
             <text class="header">
-                <Texte_language source="roomates" /> :
+                <Texte_language source="roomates" />
             </text>
             <div class="roommates-list">
                 <div v-for="coloc in list_coloc" :key="coloc.id" :index="coloc.id">
@@ -55,6 +55,7 @@ api.getColocationById(userStore.user.colocationId).then((response) => {
 api.getUserbyCollocId(userStore.user.colocationId).then((response) => {
     list_coloc.value = response;
     user.value = list_coloc.value.find(user => user.id === userStore.user.id) || null;
+    console.log(user.value)
 }).catch((error) => {
     console.error(error);
     err.valueOf = error;
@@ -69,9 +70,12 @@ const redirect = (page: any) => {
 
 <style scoped>
 .page-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     margin-bottom: 4.5rem;
-    height: calc(100vh - 4.5rem);
-    display: grid;
+    height: calc(100vh - 9rem);
 }
 
 button {
@@ -87,7 +91,7 @@ button {
     box-shadow: var(--button-shadow-light);
 }
 
-.icon {
+.button-icon {
     filter: var(--icon-filter);
 }
 
@@ -102,7 +106,7 @@ button {
 }
 
 .user {
-    margin-top: 80px;
+    margin-top: 200px;
     margin-bottom: 20px;
     display: flex;
     flex-direction: column;
@@ -118,57 +122,58 @@ button {
 }
 
 .colocation-preview {
-    bottom: 4.5rem;
-    padding: 1rem;
-    display: grid;
-    grid-template-rows: repeat(4, 1fr);
-    gap: 10px;
-    background-color: var(--main-buttons);
+    margin-bottom: 20px;
+    padding: 30px;
+    display: flex;
+    height: fit-content;
+    width: 80%;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
+    background-color: var(--login-box-bg);
+    border-radius: 20px;
+    box-shadow: var(--rectangle-shadow-light);
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 600;
     text-align: center;
-    border-top-left-radius: 30px;
-    border-top-right-radius: 30px;
-    box-shadow: var(--button-shadow-light);
-    overflow: scroll;
-    scrollbar-width: none;
+    color: var(--page-text);
 }
 
 .header {
-    padding: 13px;
-    font-size: 26px;
+    width: 90%;
+    padding: 8px 12px;
     font-weight: 600;
-    border-radius: 20px;
+    border-radius: 18px;
     background-color: var(--sent-message);
-    /* box-shadow: var(--button-shadow-light); */
     color: var(--page-text);
 }
 
 sub {
-    font-size: 18px;
+    padding: 8px 12px;
     font-weight: 600;
+    border-radius: 18px;
+    background-color: var(--sent-message);
     color: var(--page-text);
 }
 
 .roommates-list {
-    margin-top: 6px;
-    height: fit-content;
-    padding: 13px;
+    width: 90%;
+    padding: 8px 12px;
     font-weight: 600;
-    border-radius: 20px;
-    background-color: var(--recieved-message);
-    color: var(--page-text);
+    border-radius: 18px;
+    background-color: var(--secondary-button);
+    color: var(--secondary-page-text);
 }
 
 .colocation-name {
-    margin-bottom: 12px;
-    font-size: 22px;
-    padding: 13px;
-    stroke: var(basic-grey);
-    stroke-width: 2px;
-    background-color: var(--recieved-message);
-    /* box-shadow: var(--button-shadow-light); */
-    border-radius: 20px;
-    line-height: 2.2rem;
-    color: var(--page-text);
+    width: 90%;
+    padding: 8px 12px;
+    font-weight: 600;
+    border-radius: 18px;
+    background-color: var(--secondary-button);
+    color: var(--secondary-page-text);
+    line-height: 24px;
+    font-size: 16px;
 }
 </style>
