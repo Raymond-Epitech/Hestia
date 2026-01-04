@@ -37,31 +37,59 @@ const userStore = useUserStore();
 const router = useRouter();
 const { $bridge } = useNuxtApp();
 const api = $bridge;
-const err = ref < { status: number, body: any } > ({ status: 0, body: null });
-const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
+const err = ref<{ status: number, body: any }>({ status: 0, body: null });
+const errview = ref(false);
 const colocationData = ref([]);
 const list_coloc = ref<Coloc[]>([]);
 const user = ref<Coloc | null>(null);
+const ppurl = ref<string>('');
 
-api.getColocationById(userStore.user.colocationId).then((response) => {
-    colocationData.value = response;
-}).catch((error) => {
-    console.error(error);
-    err.valueOf = error;
-    errview.value = true;
-  });
+const getall = async () => {
+    api.getColocationById(userStore.user.colocationId).then((response) => {
+        colocationData.value = response;
+    }).catch((error) => {
+        console.error(error);
+        err.valueOf = error;
+        errview.value = true;
+    });
 
-api.getUserbyCollocId(userStore.user.colocationId).then((response) => {
-    list_coloc.value = response;
-    user.value = list_coloc.value.find(user => user.id === userStore.user.id) || null;
-    console.log(user.value)
-}).catch((error) => {
-    console.error(error);
-    err.valueOf = error;
-    errview.value = true;
-  });
+    api.getUserbyCollocId(userStore.user.colocationId).then((response) => {
+        list_coloc.value = response;
+        user.value = list_coloc.value.find(user => user.id === userStore.user.id) || null;
+        console.log('User:', user.value);
 
+        if (user.value?.profilePictureUrl) {
+            api.getImagetocache(user.value.profilePictureUrl).then((response) => {
+                // Image cached
+            }).catch((error) => {
+                console.error(error);
+                err.valueOf = error;
+                errview.value = true;
+            });
+
+            api.getImagefromcache(user.value.profilePictureUrl).then((response) => {
+                if (response !== null) {
+                    ppurl.value = response;
+                    console.log('Profile picture loaded from cache: ', ppurl.value);
+                }
+            }).catch((error) => {
+                console.error(error);
+                err.valueOf = error;
+                errview.value = true;
+            });
+        }
+    }).catch((error) => {
+        console.error(error);
+        err.valueOf = error;
+        errview.value = true;
+    });
+};
+
+
+onMounted(async () => {
+    await getall();
+});
 
 const redirect = (page: any) => {
     router.push(page);

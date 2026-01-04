@@ -1,57 +1,59 @@
 <template>
-    <transition name="modal">
-        <div v-if="visible">
-            <div class="modal-background" @click="handleClose">
-                <div class="modal" :class="props.color" @click.stop>
-                    <div class="modal-header">
-                        <div class="modal-header-text">
-                            <text class="title">{{ title }}</text>
-                            <text class="description">{{ description }}</text>
+    <teleport to="body">
+        <transition name="modal">
+            <div v-if="visible">
+                <div class="modal-background" @click="handleClose">
+                    <div class="modal" :class="props.color" @click.stop>
+                        <div class="modal-header">
+                            <div class="modal-header-text">
+                                <text class="title">{{ title }}</text>
+                                <text class="description">{{ description }}</text>
+                            </div>
+                            <div class=" due-date">
+                                <div class="number">{{ getDayNumber() }}</div>
+                                <div class="month">{{ getMonthAbbreviation() }}</div>
+                            </div>
                         </div>
-                        <div class=" due-date">
-                            <div class="number">{{ getDayNumber() }}</div>
-                            <div class="month">{{ getMonthAbbreviation() }}</div>
-                        </div>
-                    </div>
 
-                    <!-- Buttons -->
-                    <div class="modal-buttons">
-                        <div class="enrollees-icon-container">
-                            <div v-for="(link, index) in linkToPP" :key="index" :value="linkToPP"
-                                class="enrollees-icon">
-                                <profile-icon :linkToPP="link" :height="33" :width="33"></profile-icon>
+                        <!-- Buttons -->
+                        <div class="modal-buttons">
+                            <div class="enrollees-icon-container">
+                                <div v-for="(link, index) in linkToPP" :key="index" :value="linkToPP"
+                                    class="enrollees-icon">
+                                    <profile-icon :linkToPP="link" :height="33" :width="33"></profile-icon>
+                                </div>
                             </div>
+                            <slot name="buttons">
+                                <div v-if="isEnrolled">
+                                    <button class="button button-proceed" @click="handleQuit" :disabled="loading">
+                                        <Texte_language source="quit" /> :c
+                                    </button>
+                                </div>
+                                <div v-else>
+                                    <button class="button button-proceed" @click="handleEnroll" :disabled="loading">
+                                        <Texte_language source="Enroll" /> !
+                                    </button>
+                                </div>
+                                <div v-if="isDone">
+                                    <text>
+                                        <Texte_language source="isDone" />
+                                    </text>
+                                </div>
+                                <div v-else>
+                                    <button class="button button-proceed" @click="handleDone">
+                                        <Texte_language source="Done" /> !
+                                    </button>
+                                </div>
+                            </slot>
                         </div>
-                        <slot name="buttons">
-                            <div v-if="isEnrolled">
-                                <button class="button button-proceed" @click="handleQuit">
-                                    <Texte_language source="quit" /> :c
-                                </button>
-                            </div>
-                            <div v-else>
-                                <button class="button button-proceed" @click="handleEnroll">
-                                    <Texte_language source="Enroll" /> !
-                                </button>
-                            </div>
-                            <div v-if="isDone">
-                                <text>
-                                    <Texte_language source="isDone" />
-                                </text>
-                            </div>
-                            <div v-else>
-                                <button class="button button-proceed" @click="handleDone">
-                                    <Texte_language source="Done" /> !
-                                </button>
-                            </div>
-                        </slot>
                     </div>
                 </div>
+                <div v-if="errview">
+                    <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+                </div>
             </div>
-            <div v-if="errview">
-                <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
-            </div>
-        </div>
-    </transition>
+        </transition>
+    </teleport>
 </template>
 
 <script setup lang="ts">
@@ -77,8 +79,11 @@ const err = ref<{ status: number; body: any }>({ status: 0, body: null });
 const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const isEnrolled = ref(false);
-const enrollees = props.enrolledUsers ? Object.keys(props.enrolledUsers) : [];
+const enrollees = computed(() =>
+    props.enrolledUsers ? Object.keys(props.enrolledUsers) : []
+)
 const linkToPP = props.enrolledUsers ? Object.values(props.enrolledUsers) : [];
+const loading = ref(false)
 
 const { modelValue } = toRefs(props)
 const { open, close, toggle, visible } = useModal(props.title)
@@ -96,8 +101,8 @@ defineExpose({
     visible,
 })
 
-const getEnroll = async () => {
-    isEnrolled.value = enrollees.includes(userStore.user.id);
+const getEnroll = () => {
+    isEnrolled.value = enrollees.value.includes(userStore.user.id)
 };
 
 const handleClose = () => {
@@ -106,28 +111,37 @@ const handleClose = () => {
 }
 
 const handleQuit = async () => {
-    api.deleteChoreUser(props.id, userStore.user.id).then(() => {
-        // isEnrolled.value = false;
-    }).catch((error) => {
+    if (loading.value) return
+    loading.value = true
+    try {
+        await api.deleteChoreUser(props.id, userStore.user.id);
+        emit('proceed');
+        close();
+    } catch (error) {
         console.error(error);
         err.value = error;
         errview.value = true;
-    });
-    close()
-    emit('proceed')
+    } finally {
+        loading.value = false
+    }
 }
 
 const handleEnroll = async () => {
-    api.addChoreUser(props.id, userStore.user.id).then(() => {
-        // isEnrolled.value = true;
-    }).catch((error) => {
+    if (loading.value) return
+    loading.value = true
+    try {
+        await api.addChoreUser(props.id, userStore.user.id);
+        emit('proceed');
+        close();
+    } catch (error) {
         console.error(error);
         err.value = error;
         errview.value = true;
-    });
-    close()
-    emit('proceed')
+    } finally {
+        loading.value = false
+    }
 }
+
 const handleDone = async () => {
     const updateChore: UpdateChore = {
         id: props.id,
@@ -136,7 +150,7 @@ const handleDone = async () => {
         title: props.title,
         description: props.description,
         isDone: true,
-        enrolled: enrollees.map(userId => userId),
+        enrolled: enrollees.value.map(userId => userId),
     }
     api.updateChore(updateChore).then(() => {
         // done = true;
@@ -145,8 +159,8 @@ const handleDone = async () => {
         err.value = error;
         errview.value = true;
     });
-    close()
     emit('proceed')
+    close()
 }
 
 function getDayNumber() {
@@ -200,7 +214,6 @@ watch(visible, (value) => {
     border-top-right-radius: 0px;
     border-bottom-left-radius: 30px;
     border-bottom-right-radius: 30px;
-    animation: slideIn 0.4s;
     backdrop-filter: blur(8px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
     display: flex;
@@ -309,7 +322,6 @@ watch(visible, (value) => {
     height: 100%;
     z-index: 100;
     position: fixed;
-    animation: fadeIn 0.2s;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -367,10 +379,10 @@ watch(visible, (value) => {
     opacity: 0.7;
 }
 
-/* Transition */
+/* Modal background fade */
 .modal-enter-active,
 .modal-leave-active {
-    transition: opacity 0.2s ease;
+    transition: opacity 0.25s ease;
 }
 
 .modal-enter-from,
@@ -378,35 +390,21 @@ watch(visible, (value) => {
     opacity: 0;
 }
 
-@keyframes fadeIn {
-    0% {
-        opacity: 0;
-    }
-
-    100% {
-        opacity: 1;
-    }
+/* Modal slide */
+.modal-enter-active .modal,
+.modal-leave-active .modal {
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
 }
 
-@keyframes slideIn {
-    0% {
-        transform: translateY(-400px);
-    }
-
-    100% {
-        transform: translateY(0px);
-    }
+.modal-enter-from .modal {
+    transform: translateY(-60px);
 }
 
-@keyframes slideOut {
-    0% {
-        transform: translateY(0px);
-    }
-
-    100% {
-        transform: translateY(-400px);
-    }
+.modal-leave-to .modal {
+    transform: translateY(-60px);
 }
+
 
 @media screen and (max-width: 768px) {
 

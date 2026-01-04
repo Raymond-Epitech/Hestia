@@ -1,7 +1,7 @@
 <template>
     <div class="overlay" @click.self="emit('close')">
         <div class="popup">
-            <h1>{{ status }} {{ body.title }}</h1>
+            <h1 class="text">{{ status }} {{ body.title }}</h1>
             <p class="text">{{ body.detail }}</p>
             <div class="button">
                 <button class="confirm-button" @click="emit('close')">
@@ -58,6 +58,7 @@ onMounted(() => {
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: var(--list-overlay-bg);
+    color: var(--page-text);
     padding: 4%;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);

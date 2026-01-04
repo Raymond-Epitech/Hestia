@@ -1,4 +1,5 @@
 import { HubConnectionBuilder, HubConnection, LogLevel, HttpTransportType } from '@microsoft/signalr'
+import { useUserStore } from '~/store/user'
 
 export default defineNuxtPlugin(() => {
     const config = useRuntimeConfig()
@@ -21,6 +22,24 @@ export default defineNuxtPlugin(() => {
     connection.serverTimeoutInMilliseconds = 60000;
     connection.keepAliveIntervalInMilliseconds = 20000;
     connection.onclose(err => console.error("SignalR connection closed", err));
+
+    connection.onreconnected(async () => {
+        console.log("SignalR reconnected")
+
+        const userStore = useUserStore()
+        if (userStore.user?.colocationId) {
+            try {
+                await connection.invoke(
+                    "JoinColocationGroup",
+                    userStore.user.colocationId
+                )
+                console.log("Rejoined colocation group")
+            } catch (err) {
+                console.error("Failed to rejoin group", err)
+            }
+        }
+    })
+
 
     const startConnection = async () => {
         try {

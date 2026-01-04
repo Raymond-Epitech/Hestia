@@ -75,8 +75,10 @@ const handleReaction = async (emoji: string) => {
 const deleteReaction = async () => {
   await api.deleteReactionReminder(props.postId, userStore.user.id).catch((error) => {
     console.error(error);
-    err.value = error;
-    errview.value = true;
+    if (error.status !== 404) {
+      err.value = error;
+      errview.value = true;
+    }
   });
   close()
   emit('closed')

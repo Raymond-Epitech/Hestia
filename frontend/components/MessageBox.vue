@@ -1,7 +1,7 @@
 <template>
     <div class="box">
         <div v-if="sendBy != 'me'" class="header">
-            <ProfileIcon :height="15" :width="15" />
+            <ProfileIcon :height="15" :width="15" :linkToPP="linktoPP"/>
             <p>{{ sendBy }}</p>
         </div>
         <div :class="['content', sendBy === 'me' ? 'content-me' : 'content-other']">
@@ -20,6 +20,10 @@ const props = defineProps({
         type: String,
         default: ''
     },
+    linktoPP: {
+        type: String,
+        default: ''
+    }
 })
 </script>
 

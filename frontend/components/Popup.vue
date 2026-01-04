@@ -1,10 +1,10 @@
 <template>
     <div class="overlay" @click.self="emit('close')">
         <div class="popup">
-            <h1>{{ title }}</h1>
+            <h1 class="text">{{ title }}</h1>
             <p class="text">{{ text }}</p>
             <div class="button">
-                <button class="confirm-button" @click="emit('confirm')">
+                <button v-if="!no_confirm" class="confirm-button" @click="emit('confirm')">
                     <Texte_language source="confirm" />
                 </button>
                 <button class="cancel-button" @click="emit('close')">
@@ -24,6 +24,11 @@ const props = defineProps({
     title: {
         type: String,
         required: false
+    },
+    no_confirm: {
+        type: Boolean,
+        required: false,
+        default: false
     }
 })
 const emit = defineEmits([
@@ -56,6 +61,7 @@ const emit = defineEmits([
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: var(--list-overlay-bg);
+    color: var(--page-text);
     padding: 4%;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
