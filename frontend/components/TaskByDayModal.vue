@@ -1,19 +1,19 @@
 <template>
-    <transition name="modal">
-        <div v-if="visible">
-            <div class="modal-background" @click="handleClose">
-                <div class="modal" @click.stop>
-                    <div class="padding-top">
-                    </div>
-                    <div v-for="(task) in props.tasks" :key="task.id" class="task-list">
-                        <Task :key="task.id" :id="task.id" :title="task.title" :description="task.description"
-                        :createdBy="task.createdBy" :createdAt="task.createdAt" :dueDate="task.dueDate" :isDone="task.isDone"
-                        :enrolledUsers="task.enrolledUsers" :updatedAt="task.updatedAt" @proceed="getall()"></Task>
+    <teleport to="body">
+        <transition name="modal">
+            <div v-if="visible">
+                <div class="modal-background" @click="handleClose">
+                    <div class="modal" @click.stop>
+                        <div v-for="(task) in props.tasks" :key="task.id" class="task-list">
+                            <Task :key="task.id" :id="task.id" :title="task.title" :description="task.description"
+                            :createdBy="task.createdBy" :createdAt="task.createdAt" :dueDate="task.dueDate" :isDone="task.isDone"
+                            :enrolledUsers="task.enrolledUsers" :updatedAt="task.updatedAt" @proceed="getall()"></Task>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </transition>
+        </transition>
+    </teleport>
 </template>
 
 <script setup lang="ts">
@@ -69,9 +69,9 @@ watch(visible, (value) => {
 <style scoped>
 .modal {
     width: 100%;
-    min-height: 400px;
     height: fit-content;
-    margin-top: 0px;
+    max-height: 70%;
+    overflow: scroll;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
     border-bottom-left-radius: 30px;
@@ -82,8 +82,9 @@ watch(visible, (value) => {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     position: relative;
+    padding-top: 16px;
 }
 
 .padding-top {
