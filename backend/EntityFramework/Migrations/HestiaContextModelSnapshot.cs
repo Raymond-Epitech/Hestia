@@ -158,6 +158,9 @@ namespace EntityFramework.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("ExpenseAutomationId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("ExpenseCategoryId")
                         .HasColumnType("uuid");
 
@@ -174,11 +177,31 @@ namespace EntityFramework.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ExpenseAutomationId");
+
                     b.HasIndex("ExpenseCategoryId");
 
                     b.HasIndex("PaidBy");
 
                     b.ToTable("Expenses");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.ExpenseAutomation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("DayOfTheMonth")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExpenseAutomations");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.ExpenseCategory", b =>
@@ -219,6 +242,43 @@ namespace EntityFramework.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("FCMDevices");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Feedback", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AttachmentPath")
+                        .HasColumnType("text");
+
+                    b.Property<int>("BugType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("VersionHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.ToTable("Feedbacks");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.Message", b =>
@@ -562,6 +622,11 @@ namespace EntityFramework.Migrations
 
             modelBuilder.Entity("EntityFramework.Models.Expense", b =>
                 {
+                    b.HasOne("EntityFramework.Models.ExpenseAutomation", "ExpenseAutomation")
+                        .WithMany("Expenses")
+                        .HasForeignKey("ExpenseAutomationId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("EntityFramework.Models.ExpenseCategory", "ExpenseCategory")
                         .WithMany("Expenses")
                         .HasForeignKey("ExpenseCategoryId")
@@ -573,6 +638,8 @@ namespace EntityFramework.Migrations
                         .HasForeignKey("PaidBy")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ExpenseAutomation");
 
                     b.Navigation("ExpenseCategory");
 
@@ -595,6 +662,17 @@ namespace EntityFramework.Migrations
                     b.HasOne("EntityFramework.Models.User", "User")
                         .WithMany("FCMDevices")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.Feedback", b =>
+                {
+                    b.HasOne("EntityFramework.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -740,6 +818,11 @@ namespace EntityFramework.Migrations
                     b.Navigation("Entries");
 
                     b.Navigation("SplitBetweens");
+                });
+
+            modelBuilder.Entity("EntityFramework.Models.ExpenseAutomation", b =>
+                {
+                    b.Navigation("Expenses");
                 });
 
             modelBuilder.Entity("EntityFramework.Models.ExpenseCategory", b =>

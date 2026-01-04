@@ -8,7 +8,10 @@
           </div>
           <form method="post" action="">
             <div class="modal-body left">
-              <input type="file" class="modal-body-input" @change="handleImageUpload" accept="image/*" required />
+              <input type="file" ref="fileInput" class="modal-body-input-hidden" @change="handleImageUpload" accept="image/*" required />
+              <button type="button" class="button button-browse" @click="$refs.fileInput.click()">
+                {{ $t('upload_image') }}
+              </button>
               <img v-if="prewiew" :src="prewiew" alt="Image sélectionnée" class="image-preview" />
             </div>
             <div v-if="post.content" class="modal-buttons">
@@ -18,6 +21,9 @@
               <button class="button button-proceed" @click.prevent="handleProceed" disabled>{{ $t('poster') }}</button>
             </div>
           </form>
+        </div>
+        <div v-if="errview">
+          <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
         </div>
       </div>
     </div>
@@ -46,6 +52,8 @@ const props = withDefaults(
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const prewiew = ref('');
 
@@ -93,7 +101,7 @@ const resetPost = () => {
     coordX: 0,
     coordY: 0,
     coordZ: 0,
-    reminderType: 0,
+    reminderType: 1,
     content: '',
     color: '',
     image: new File([], 'test.jpg'),
@@ -118,7 +126,11 @@ const handleProceed = async () => {
   if (post.value.reminderType === 1) {
     post.value.content = '';
   }
-  const response = await api.addReminder(post.value)
+  const response = await api.addReminder(post.value).catch((error) => {
+    console.error(error);
+    err.value = error;
+    errview.value = true;
+  });
   if (response != '') {
     resetPost()
     close()
@@ -213,16 +225,15 @@ watch(visible, (value) => {
   line-height: 23px;
 }
 
-.modal-body-input {
-  width: 100%;
-  background-color: #1e1e1e00;
-  outline: none;
-  border: none;
-  line-height: 3ch;
-  background-image: linear-gradient(transparent, transparent calc(3ch - 1px), #E7EFF8 0px);
-  background-size: 100% 3ch;
+.modal-body-input-hidden {
+  display: none;
+}
+
+.button-browse {
+  background: #00000088;
   color: var(--overlay-text);
-  font-size: 18px;
+  padding: 12px 24px;
+  font-size: 16px;
   margin-bottom: 12px;
 }
 

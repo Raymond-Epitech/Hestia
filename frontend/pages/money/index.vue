@@ -3,16 +3,16 @@
         <AddCategoryModal v-model="isCategoryModalOpen" @proceed="getall()" />
         <AddBalanceModal v-model="isBalanceModalOpen" @proceed="getall()" />
         <div class="top-bar">
-            <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openCategoryModal">
+            <button data-toggle="modal" data-target=".bd-example-modal-sm" @click="openCategoryModal">
                 <img src="~/public/plus.png" class="plus">
             </button>
-            <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openBalanceModal">
-                <img src="~/public/dollar-sign.svg" class="plus">
+            <button class="balance" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openBalanceModal">
+                {{$t('balance')}}
             </button>
         </div>
         <div class="center-container">
             <div v-for="expense in expenses_list" :key="expense.id" class="center-container">
-                <ExpenseCategoryBox :expense="expense" @proceed="getall()" />
+                <ExpenseCategoryBox :expense="expense" @proceed="getall()" @delete="getall()" />
             </div>
             <div class="global">
                 <Texte_language class="category" source="global" />
@@ -20,6 +20,9 @@
                     {{ global }} €
                 </text>
             </div>
+        </div>
+        <div v-if="errview">
+            <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
         </div>
     </div>
 </template>
@@ -33,6 +36,8 @@ const userStore = useUserStore();
 const user = userStore.user;
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const { t } = useI18n();
 const router = useRouter();
@@ -62,6 +67,10 @@ signalr.on("NewExpenseAdded", (CategoryOutput) => {
     getall();
 })
 
+signalr.on("expensecategorydeleted", (CategoryOutput) => {
+    getall();
+})
+
 signalr.on("ExpenseUpdated", (CategoryOutput) => {
     getall();
 })
@@ -75,8 +84,10 @@ const getall = async () => {
         expenses_list.value = response.filter(item => item.name !== "Refund");
         global.value = expenses_list.value.reduce((acc, expense) => acc + expense.totalAmount, 0);
     }).catch((error) => {
-        console.error('Error fetching data:', error);
-    })
+        console.error(error);
+        err.value = error;
+        errview.value = true;
+    });
 }
 
 onMounted(async () => {
@@ -100,7 +111,7 @@ onMounted(async () => {
     justify-content: space-between;
 }
 
-.add-post {
+button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -111,6 +122,14 @@ onMounted(async () => {
     border-radius: 9px;
     border: none;
     box-shadow: var(--button-shadow-light);
+}
+
+.balance {
+    padding: 5px 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--page-text);
+    width: auto;
 }
 
 .plus {

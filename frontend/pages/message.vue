@@ -2,7 +2,7 @@
     <div>
         <div class="messages-box" ref="messagesBox">
             <MessageBox v-for="message in messages" :key="message.id" :content="message.content"
-                :sendBy="getUsername(message.sendBy)" />
+                :sendBy="getUsername(message.sendBy)" :linktoPP="getUserProfilePicture(message.sendBy)" />
         </div>
         <form @submit.prevent="handleSendMessage" class="form">
             <input v-model="newMessage.content" type="text" placeholder="Message" maxlength="6000" class="body-input"
@@ -11,6 +11,9 @@
                 <img src="/Submit.svg" alt="Submit Icon" class="svg-icon" />
             </button>
         </form>
+        <div v-if="errview">
+            <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+        </div>
     </div>
 </template>
 
@@ -21,6 +24,8 @@ import type { Coloc, message, SignalRClient } from '~/composables/service/type';
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const colocationId = userStore.user.colocationId;
 const messages = ref<message[]>([]);
@@ -47,7 +52,12 @@ signalr.on("MessageUpdated", (messageOutput) => {
 });
 const fetchMessages = async () => {
     try {
-        messages.value = await api.getMessageByColocationId(colocationId);
+        messages.value = await api.getMessageByColocationId(colocationId).catch((error) => {
+            console.error(error);
+            err.value = error;
+            errview.value = true;
+            return [] as message[];
+        });
     } catch (error) {
         console.error('Error fetching messages:', error);
     }
@@ -62,6 +72,10 @@ onMounted(() => {
     api.getUserbyCollocId(colocationId)
         .then((colocs: Coloc[]) => {
             list_coloc.value = colocs;
+        }).catch((error) => {
+            console.error(error);
+            err.value = error;
+            errview.value = true;
         });
 });
 const newMessage = ref<message>({
@@ -71,7 +85,11 @@ const newMessage = ref<message>({
 });
 const handleSendMessage = async () => {
     try {
-        await api.addMessage(newMessage.value);
+        await api.addMessage(newMessage.value).catch((error) => {
+            console.error(error);
+            err.value = error;
+            errview.value = true;
+        });
         newMessage.value.content = '';
         fetchMessages();
     } catch (error) {
@@ -83,6 +101,12 @@ const getUsername = (sendById: string): string => {
     if (sendById === userStore.user.id) return 'me';
     const user = list_coloc.value.find(coloc => coloc.id === sendById);
     return user ? user.username : 'Unknown';
+};
+
+const getUserProfilePicture = (sendById: string): string => {
+    if (!list_coloc.value.length) return '';
+    const user = list_coloc.value.find(coloc => coloc.id === sendById);
+    return user ? user.profilePictureUrl : '';
 };
 </script>
 

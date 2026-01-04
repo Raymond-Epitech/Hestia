@@ -35,6 +35,9 @@
     </div>
     <popup v-if="popup_vue" :text="$t('confirm_delete_reminder')" @confirm="confirmDelete" @close="cancelDelete">
     </popup>
+    <div v-if="errview">
+        <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -52,6 +55,8 @@ const props = defineProps({
 const popup_vue = ref(false);
 const { $bridge } = useNuxtApp();
 const api = $bridge;
+const err = ref<{ status: number; body: any }>({ status: 0, body: null });
+const errview = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const userStore = useUserStore();
 const user = userStore.user;
@@ -68,7 +73,11 @@ const showPopup = () => {
 const confirmDelete = async () => {
     popup_vue.value = false;
     try {
-        await api.deleteReminder(props.post.id);
+        await api.deleteReminder(props.post.id).catch((error) => {
+            console.error(error);
+            err.value = error;
+            errview.value = true;
+        });
         emit('delete');
     } catch (error) {
         console.error('Failed to delete the post:', error);
@@ -106,6 +115,17 @@ signalr.on("UpdateReaction", async (ReactionOutput) => {
     }
 })
 
+signalr.on("UpdatedShoppingItem", async (item) => {
+    const updatedItem = item as any;
+    if (props.post.reminderType == 2 && props.post.items) {
+        for (let i = 0; i < props.post.items.length; i++) {
+            if (props.post.items[i].id == updatedItem.id) {
+                props.post.items[i] = updatedItem;
+            }
+        }
+    }
+});
+
 onMounted(async () => {
     reactions.value = [];
     await getReactions();
@@ -117,14 +137,20 @@ onMounted(async () => {
                 console.error('Image non trouvée dans le cache');
             }
         }).catch((error) => {
-            console.error('Erreur lors de la récupération de l\'image :', error);
+            console.error(error);
+            err.value = error;
+            errview.value = true;
         });
     }
 });
 
 const getReactions = async () => {
     try {
-        const data = await api.getReactionsReminder(props.post.id);
+        const data = await api.getReactionsReminder(props.post.id).catch((error) => {
+            console.error(error);
+            err.value = error;
+            errview.value = true;
+        });
         if (data && Array.isArray(data)) {
             reactions.value = data;
         } else {
@@ -140,7 +166,9 @@ const toggleCheck = (item: any) => {
     item.createdBy = user.id;
     api.updateReminderShoppingListItem(item).then(() => {
     }).catch((error) => {
-        console.error('Error updating item:', error);
+        console.error(error);
+        err.value = error;
+        errview.value = true;
     });
 }
 </script>

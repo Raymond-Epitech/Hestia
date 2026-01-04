@@ -1,36 +1,22 @@
 <template>
     <div class="body-container">
+        <RegisterModal v-model="isRegisterModalOpen" :providerJWT="providerJWT" :colocationID="colocationID" />
         <div class="base">
             <img src="../public/logo-hestia.png" class="logo" />
-            <div v-if="registration" class="register">
-                <h2 class="login-font">{{ $t('register') }}</h2>
-                <h2 class="register-font">{{ $t('user_name') }} :</h2>
-                <input class="input" type="text" :placeholder="$t('user_name')" maxlength="12" v-model="username" />
-                <h2 v-if="alert" class="alert">{{ $t('error_register') }}</h2>
-                <h2 class="register-font">{{ $t('colocation_id') }} :</h2>
-                <input class="input" type="text" :placeholder="$t('optional')" v-model="colocationID" />
-                <h2 class="register-font">{{ $t('create_account') }} :</h2>
-                <a type="submit" @click.prevent="register()" class="google-button">
-                    {{ $t('register_with_google') }}
-                </a>
-            </div>
-            <div v-else class="login">
+            <div class="login">
                 <h2 class="login-font">{{ $t('login') }}</h2>
                 <a @click="login()" class="google-button">
                     {{ $t('login_with_google') }}
                 </a>
             </div>
-            <button v-if="!registration" class="register-button" @click="goRegister()">
-                    {{ $t('register') }}
-            </button>
-            <button v-if="registration" class="register-button" @click="goLogin()">
-                {{ $t('login') }}
-            </button>
+        </div>
+        <div v-if="errview">
+            <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
         </div>
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { SocialLogin } from '@capgo/capacitor-social-login'
 import { useRouter, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia';
@@ -50,6 +36,8 @@ const { authenticateUser } = useAuthStore();
 const { authenticated } = storeToRefs(useAuthStore());
 const userStore = useUserStore();
 const { $bridge } = useNuxtApp()
+const err = ref < { status: number, body: any } > ({ status: 0, body: null });
+const errview = ref(false);
 const router = useRouter();
 const route = useRoute()
 const username = ref('');
@@ -57,6 +45,10 @@ const colocationID = ref('');
 const registration = ref(false);
 const alert = ref(false);
 const fcmToken = ref('');
+const providerJWT = ref('');
+
+const isRegisterModalOpen = ref(false);
+const openRegisterModal = () => (isRegisterModalOpen.value = true);
 
 onMounted(() => {
     SocialLogin.initialize({
@@ -64,12 +56,11 @@ onMounted(() => {
             webClientId: '80772791160-169jnnnnm5o18mg1h0uc7jm4s2epaj5d.apps.googleusercontent.com', // the web client id for Android and Web
         }
     })
-    registerNotifications();
-    colocationID.value = route.query.collocID;
-    if (colocationID.value) {
-        registration.value = true;
+    if (Capacitor.getPlatform() !== 'web') {
+        registerNotifications();
     }
-    if (Capacitor.isNativePlatform()) {
+    colocationID.value = route.query.collocID;
+    if (Capacitor.getPlatform() !== 'web') {
         PushNotifications.addListener('registration', (token) => {
             fcmToken.value = token.value;
         });
@@ -80,51 +71,6 @@ onMounted(() => {
 
 addListeners();
 
-function goLogin() {
-    registration.value = false;
-}
-
-function goRegister() {
-    registration.value = true;
-}
-
-const register = async () => {
-    if (!username.value) {
-        alert.value = true;
-        return;
-    }
-    alert.value = false;
-    if (alert.value == false) {
-        const res = await SocialLogin.login({
-            provider: 'google',
-            options: {
-                scopes: ['email', 'profile'],
-            },
-        });
-        if (res) {
-            const newuser = {
-                username: username.value,
-                colocationId: colocationID.value
-            };
-            const data = await $bridge.addUser(newuser, res.result.idToken, fcmToken.value);
-            if (data) {
-                $bridge.setjwt(data.jwt);
-                userStore.setUser(data.user);
-                $bridge.getLanguage(userStore.user.id).then((lang) => {
-                    if (lang != '') {
-                        setLocale(lang);
-                        $locally.setItem('locale', lang);
-                    }
-                })
-                await authenticateUser(data.jwt);
-            }
-            if (authenticated) {
-                router.push('/');
-            }
-        }
-    }
-}
-
 const login = async () => {
     const res = await SocialLogin.login({
         provider: 'google',
@@ -132,8 +78,18 @@ const login = async () => {
             scopes: ['email', 'profile'],
         },
     });
+    providerJWT.value = res.result.idToken;
     if (res) {
-        const data = await $bridge.login(res.result.idToken, fcmToken.value);
+        const data = await $bridge.login(res.result.idToken, fcmToken.value).catch((error) => {
+            console.error(error);
+            if (error.status === 404) {
+                console.log('User does not exist, opening registration modal');
+                openRegisterModal();
+                return;
+            }
+            err.valueOf = error;
+            errview.value = true;
+        });
         if (data) {
             $bridge.setjwt(data.jwt);
             userStore.setUser(data.user);
@@ -141,8 +97,15 @@ const login = async () => {
                 if (lang != '') {
                     setLocale(lang);
                     $locally.setItem('locale', lang);
+                } else {
+                    setLocale('en');
+                    $locally.setItem('locale', 'en');
                 }
-            })
+            }).catch((error) => {
+                console.error(error);
+                err.valueOf = error;
+                errview.value = true;
+            });
             await authenticateUser(data.jwt);
         }
         if (authenticated) {
@@ -236,19 +199,6 @@ h2 {
 .login-font {
     padding-bottom: 20px;
     font-size: 50px;
-}
-
-.register-button {
-    min-width: 68px;
-    min-height: 28px;
-    margin-top: 0.2rem;
-    padding: 0px 5px;
-    border-radius: 8px;
-    color: var(--page-text);
-    background-color: var(--login-box-bg);
-    font-weight: 600;
-    border: none;
-    text-align: center;
 }
 
 .google-button {

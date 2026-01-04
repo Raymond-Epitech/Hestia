@@ -16,5 +16,7 @@ namespace Shared.Models.Output
         public DateTime DateOfPayment { get; set; }
         public Guid ExpenseCategoryId { get; set; }
         public string ExpenseCategoryName { get; set; } = null!;
+        public bool IsRecurring { get; set; } = false;
+        public int? DayOfTheRecursion { get; set; } = null;
     }
 }

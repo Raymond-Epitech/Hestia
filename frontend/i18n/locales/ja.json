@@ -55,7 +55,7 @@
   "header_add_shopping": "買い物のリストを追加します",
   "shopping_list_name": "買い物リストの名前",
   "header_add_shoppingitem": "買い物リストにアイテムを追加します",
-  "shoppingitem_name": "記事名",
+  "shoppingitem_name": "項目",
   "flatInfo": "現在のルームメイト",
   "roomates": "同居人",
   "changeFlat": "フラットシェアの変更",
@@ -75,7 +75,6 @@
   "task_description": "タスクの説明（オプション）",
   "login": "接続",
   "register": "登録する",
-  "register_with_google": "Googleに登録してください",
   "login_with_google": "Google Connect",
   "error_register": "*ユーザー名を示してください*",
   "colocation_id": "共有",
@@ -112,5 +111,12 @@
   "shopping-list-name": "買い物リストの名前",
   "newFlateshare": "新しいシェアハウスを作成する",
   "ChangeColocation": "別のシェアハウスに参加する",
-  "error_colloc_id": "*共同居住者IDを入力してください*"
+  "error_colloc_id": "*共同居住者IDを入力してください*",
+  "recurrence": "再発",
+  "recurrence_explaine": "再発（月の日）：",
+  "upload_image": "画像をアップロードする",
+  "confirm_delete_category": "この経費カテゴリを削除してもよろしいですか? (関連する費用はすべてアーカイブされます)",
+  "close": "近い",
+  "bad_ammount_split": "シェアの合計金額が費用の金額と一致しません。",
+  "balance": "バランス"
 }

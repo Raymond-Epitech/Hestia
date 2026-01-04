@@ -19,6 +19,8 @@ namespace EntityFramework.Context
         public virtual DbSet<Message> Messages { get; set; } = null!;
         public virtual DbSet<PollVote> PollVotes { get; set; } = null!;
         public virtual DbSet<Reaction> Reactions { get; set; } = null!;
+        public virtual DbSet<ExpenseAutomation> ExpenseAutomations { get; set; } = null!;
+        public virtual DbSet<Feedback> Feedbacks { get; set; } = null!;
 
         public HestiaContext(DbContextOptions<HestiaContext> options) : base(options) { }
 
@@ -114,6 +116,15 @@ namespace EntityFramework.Context
                     .WithOne(x => x.Expense)
                     .HasForeignKey(x => x.ExpenseId)
                     .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<ExpenseAutomation>(c =>
+            {
+                c.HasMany(x => x.Expenses)
+                    .WithOne(x => x.ExpenseAutomation)
+                    .HasForeignKey(x => x.ExpenseAutomationId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .IsRequired(false);
             });
 
             modelBuilder.Entity<ExpenseCategory>(c =>
