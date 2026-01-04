@@ -22,9 +22,8 @@
                 <div>{{ day.date() }}</div>
                 <div v-if="choresByDay[day.format('YYYY-MM-DD')]" class="dot-container">
                     <div v-for="chore in choresByDay[day.format('YYYY-MM-DD')]" :key="chore.id">
-                        <CalendarDot :id="chore.id" :title="chore.title" :description="chore.description"
-                            :color="getColor(chore.dueDate)" :dueDate="chore.dueDate" :isDone="chore.isDone"
-                            :enrolledUsers="chore.enrolledUsers" @proceed="emitProceed()" />
+                        <CalendarDot :id="chore.id" :color="getColor(chore.dueDate)" :isDone="chore.isDone"
+                           :tasks="choresByDay[day.format('YYYY-MM-DD')]" @proceed="emitProceed()" />
                     </div>
                 </div>
             </div>
@@ -188,15 +187,19 @@ watch(locale, (newLocale) => {
 }
 
 .days {
-    height: 90px;
+    height: 80px;
     background-color: var(--recieved-message);
     border-radius: 7px;
     font-weight: 600;
     font-size: 20px;
     text-align: center;
     padding: 4px 10%;
-    overflow: scroll;
+    overflow-y: auto;
+    overflow-x: hidden;
     color: var(--page-text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .not-current-month {
@@ -213,7 +216,10 @@ watch(locale, (newLocale) => {
 
 .dot-container {
     display: grid;
-    grid-template-columns: repeat(3, 33%);
-    grid-gap: 2px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    row-gap: 2px;
+    justify-items: center;
+    width: 100%;
 }
 </style>

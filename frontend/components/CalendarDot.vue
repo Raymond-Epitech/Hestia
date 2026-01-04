@@ -1,7 +1,6 @@
 <template>
-    <TaskModal class="task-modal" v-model="isModalOpen" :key="id" :id="id" :title="title" :description="description"
-        :color="color" :dueDate="dueDate" :isDone="isDone" :enrolledUsers="enrolledUsers" @proceed="emitProceed()">
-    </TaskModal>
+    <TaskByDayModal class="task-modal" v-model="isModalOpen" :key="id" :tasks="tasks" @proceed="emitProceed()">
+    </TaskByDayModal>
     <div class="task-dot" :class="[color, { 'done': isDone }]" data-toggle="modal" data-target=".bd-example-modal-sm"
         @click="openModal">
     </div>
@@ -11,13 +10,15 @@
 
 const props = defineProps<{
     id: string,
-    title: string,
-    modelValue?: boolean,
-    description: string,
+    // title: string,
+    // modelValue?: boolean,
+    // description: string,
     color: string,
-    dueDate: string,
+    // dueDate: string,
     isDone: boolean,
-    enrolledUsers: Object,
+    // enrolledUsers: Object,
+    tasks: Array<any>,
+
 }>();
 
 const isModalOpen = ref(false)
