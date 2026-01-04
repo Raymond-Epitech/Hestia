@@ -56,6 +56,7 @@ const emit = defineEmits([
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: var(--list-overlay-bg);
+    color: var(--page-text);
     padding: 4%;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
