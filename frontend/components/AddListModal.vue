@@ -18,7 +18,7 @@
               </div>
             </div>
             <div @click.prevent="handleAddItem" class="form-add-item">
-              <input v-model="newitemList.name" type="text" placeholder="Item" maxlength="18"/><!-- !!!! add locale !!! -->
+              <input v-model="newitemList.name" type="text" :placeholder="$t('shoppingitem_name')" maxlength="18"/><!-- !!!! add locale !!! -->
               <button v-if="newitemList.name == ''" :disabled="true" type="submit">
                 <img src="/Submit.svg" alt="Submit Icon" class="svg-icon submit" />
               </button>
