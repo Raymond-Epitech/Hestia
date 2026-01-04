@@ -3,11 +3,11 @@
         <AddCategoryModal v-model="isCategoryModalOpen" @proceed="getall()" />
         <AddBalanceModal v-model="isBalanceModalOpen" @proceed="getall()" />
         <div class="top-bar">
-            <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openCategoryModal">
+            <button data-toggle="modal" data-target=".bd-example-modal-sm" @click="openCategoryModal">
                 <img src="~/public/plus.png" class="plus">
             </button>
-            <button class="add-post" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openBalanceModal">
-                <img src="~/public/dollar-sign.svg" class="plus">
+            <button class="balance" data-toggle="modal" data-target=".bd-example-modal-sm" @click="openBalanceModal">
+                {{$t('balance')}}
             </button>
         </div>
         <div class="center-container">
@@ -111,7 +111,7 @@ onMounted(async () => {
     justify-content: space-between;
 }
 
-.add-post {
+button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -122,6 +122,14 @@ onMounted(async () => {
     border-radius: 9px;
     border: none;
     box-shadow: var(--button-shadow-light);
+}
+
+.balance {
+    padding: 5px 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--page-text);
+    width: auto;
 }
 
 .plus {

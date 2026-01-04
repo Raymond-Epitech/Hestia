@@ -117,5 +117,6 @@
   "upload_image": "Sube una imagen",
   "confirm_delete_category": "¿Está seguro de que desea eliminar esta categoría de gastos? (todos los gastos asociados serán archivados)",
   "close": "Cerca",
-  "bad_ammount_split": "La cantidad total de las partes no coincide con la cantidad del gasto."
+  "bad_ammount_split": "La cantidad total de las partes no coincide con la cantidad del gasto.",
+  "balance": "Equilibrar"
 }

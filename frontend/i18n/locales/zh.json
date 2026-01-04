@@ -117,5 +117,6 @@
   "upload_image": "上传图片",
   "confirm_delete_category": "您确定要删除此费用类别吗？ （所有相关费用将被存档）",
   "close": "关闭",
-  "bad_ammount_split": "份额的总金额与费用金额不符。"
+  "bad_ammount_split": "份额的总金额与费用金额不符。",
+  "balance": "平衡"
 }
