@@ -20,7 +20,7 @@
   "Confidentiality": "Confidentialité",
   "Informations": "Informations",
   "regularize": "équilibre",
-  "global": "dépenses\nglobales",
+  "global": "Dépenses\nglobales",
   "header_add_expense": "Ajouter une dépense",
   "header_modify_expense": "Modifier la dépense",
   "expense_name": "Nom de la dépense",
@@ -93,7 +93,7 @@
   "from": "De",
   "to": "à",
   "refund_history": "Historique des remboursements",
-  "add_user_header": "Ajoutes des utilisateurs à ta colocation",
+  "add_user_header": "Ajoute des utilisateurs à ta colocation",
   "weekdays": {
     "mon": "Lun",
     "tue": "Mar",
@@ -110,5 +110,9 @@
   "ChangeColocation": "Rejoindre une autre colocation",
   "error_colloc_id": "*Veuillez indiquer un ID de colocation*",
   "recurrence": "Récurrence",
-  "recurrence_explaine": "Récurrence (le jour du mois):"
+  "recurrence_explaine": "Récurrence (le jour du mois):",
+  "upload_image": "Télécharger une image",
+  "confirm_delete_category": "Etes-vous sûr de vouloir supprimer cette catégorie de dépense ? (toutes les dépenses associées seront archivées)",
+  "close": "Fermer",
+  "bad_ammount_split": "Le montant total des parts ne correspond pas au montant de la dépense."
 }

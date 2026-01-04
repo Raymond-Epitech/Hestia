@@ -97,6 +97,7 @@
       <popup v-if="popup_vue" :text="$t('confirm_delete_expense')" @confirm="handleProceed('delete')"
         @close="cancelDelete">
       </popup>
+      <popup v-if="share_popup" :text="$t('bad_ammount_split')" :no_confirm="true" @close="share_popup = false" />
       <div v-if="errview">
         <Errorpopup :status="err.status" :body="err.body" @close="errview = false" />
       </div>
@@ -121,6 +122,7 @@ const { $bridge } = useNuxtApp()
 const api = $bridge;
 const err = ref<{ status: number; body: any }>({ status: 0, body: null });
 const errview = ref(false);
+const share_popup = ref(false);
 api.setjwt(useCookie('token').value ?? '');
 const date = new Date();
 const popup_vue = ref(false);
@@ -188,8 +190,12 @@ const handleProceed = async (action: string) => {
   if (action === 'modify') {
     const response = await api.updateExpense(modified_expense.value).catch((error) => {
       console.error(error);
-      err.value = error;
-      errview.value = true;
+      if (error.status === 422) {
+        share_popup.value = true;
+      } else {
+        err.value = error;
+        errview.value = true;
+      }
     });
     if (response) {
       close()

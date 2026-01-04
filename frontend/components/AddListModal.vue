@@ -4,7 +4,7 @@
       <div class="modal-background" @click="handleClose">
         <div class="modal" @click.stop>
           <div class="modal-header left">
-            <input class="modal-body-input" rows="1" maxlength="50" v-model="post.shoppinglistName"
+            <input class="title" rows="1" maxlength="50" v-model="post.shoppinglistName"
               :placeholder="$t('shopping-list-name')"></input>
             <button v-if="modify" src="/Trash.svg" alt="Delete Icon" @click="showPopup">
               <img src="/Trash.svg" alt="Delete Icon" class="svg-icon" />
@@ -18,16 +18,17 @@
               </div>
             </div>
             <div @click.prevent="handleAddItem" class="form-add-item">
-              <input v-model="newitemList.name" type="text" placeholder="Item" maxlength="18"
-                class="modal-body-input" /><!-- !!!! add locale !!! -->
+              <input v-model="newitemList.name" type="text" placeholder="Item" maxlength="18"/><!-- !!!! add locale !!! -->
               <button v-if="newitemList.name == ''" :disabled="true" type="submit">
                 <img src="/Submit.svg" alt="Submit Icon" class="svg-icon submit" />
               </button>
               <button v-if="newitemList.name != ''" type="submit">
                 <img src="/Submit.svg" alt="Submit Icon" class="svg-icon submit" />
               </button>
+
             </div>
           </form>
+        <button @click="handleClose">{{$t('confirm')}}</button>
         </div>
       </div>
       <popup v-if="popup_vue" :text="$t('confirm_delete_shoppinglist')" @confirm="confirmDelete"
@@ -71,6 +72,7 @@ const item_list = ref<ReminderItem[]>([]);
 const Id = ref('');
 const modify = ref(false);
 const oldshoppinglistName = ref('');
+const colocationId = ref(userStore.user.colocationId);
 const newitemList = ref<ReminderItem>({
   name: '',
   reminderId: '',
@@ -191,7 +193,7 @@ const handleAddItem = async () => {
       }
     }
     newitemList.value.reminderId = Id.value;
-    const newID = await api.addReminderShoppingListItem(newitemList.value).catch((error) => {
+    const newID = await api.addReminderShoppingListItem(newitemList.value, colocationId.value).catch((error) => {
       console.error(error);
       err.value = error;
       errview.value = true;
@@ -218,7 +220,7 @@ watch(visible, (value) => {
   emit('update:modelValue', value)
 })
 
-watch(() => props.post, (newPost, oldPost) => {
+watch(() => props.post, (newPost) => {
   if (newPost) {
     console.log("post to modify", newPost);
     console.log("post avant modif", post.value);
@@ -339,6 +341,12 @@ const cancelDelete = () => {
   top: -4.5rem;
 }
 
+.title {
+  font-size: 20px;
+  border-bottom: 2px dashed var(--page-text);
+  border-radius: 0%;
+}
+
 .modal-header {
   font-size: 10px;
   padding: 0;
@@ -354,9 +362,9 @@ const cancelDelete = () => {
   gap: 16px;
 }
 
-.modal-body-input {
+input {
   background-color: var(--main-buttons);
-  width: 13rem;
+  width: 75%;
   height: 2.2rem;
   border-radius: 9px;
   border-style: hidden;
@@ -404,6 +412,7 @@ const cancelDelete = () => {
 
 .svg-icon.submit {
   filter: var(--icon-filter);
+  rotate: -90deg;
 }
 
 
@@ -426,6 +435,14 @@ button {
 
 button:disabled {
   opacity: 0.5;
+}
+
+.dark button { /* Specific background because bad contrast on dark theme, to standardise? */
+  background: var(--sent-message); 
+}
+
+.hestia button { /* Specific background because bad contrast on hestia theme, to standardise? */
+  background: var(--sent-message); 
 }
 
 /* Transition */
