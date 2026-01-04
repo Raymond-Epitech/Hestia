@@ -141,7 +141,6 @@ button {
   padding-left: 0.8rem;
   top: 0;
   background-color: var(--page-background-light);
-  z-index: 1;
 }
 
 .task-list {
