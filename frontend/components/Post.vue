@@ -24,9 +24,16 @@
             <h3 v-if="post.shoppingListName" class="shopping-title">{{ post.shoppingListName }}</h3>
             <div class="shopping-items">
                 <div v-for="item in post.items" :key="item.id" class="shopping-header">
-                    <span class="shopping-name">
-                        {{ item.name }}
-                    </span>
+                    <div v-if="item.isChecked == true"> 
+                        <span class="shopping-name-checked">
+                            {{ item.name }}
+                        </span>
+                    </div>
+                    <div v-else>
+                        <span class="shopping-name">
+                            {{ item.name }}
+                        </span>
+                    </div>
                     <div class="check-zone" :class="{ checked: item.isChecked }" @click.stop="toggleCheck(item)">
                     </div>
                 </div>
@@ -94,18 +101,15 @@ const cancelDelete = () => {
 
 signalr.on("NewReaction", async (ReactionOutput) => {
     const reaction = ReactionOutput as Reaction;
+    console.log("Reaction received:", reaction);
     if (reaction.reminderId == props.post.id) {
         reactions.value.push(reaction);
     }
 })
 
-signalr.on("DeleteReaction", async (GUID) => {
-    const input = GUID as string;
-    reactions.value = reactions.value.filter(reaction => reaction.id !== input);
-})
-
 signalr.on("UpdateReaction", async (ReactionOutput) => {
     const reaction = ReactionOutput as Reaction;
+    console.log("UpdateReaction received:", reaction);
     if (reaction.reminderId == props.post.id) {
         for (let i = 0; i < reactions.value.length; i++) {
             if (reactions.value[i].id == reaction.id) {
@@ -115,8 +119,15 @@ signalr.on("UpdateReaction", async (ReactionOutput) => {
     }
 })
 
+signalr.on("DeleteReaction", async (GUID) => {
+    const input = GUID as string;
+    console.log("DeleteReaction received:", GUID);
+    reactions.value = reactions.value.filter(reaction => reaction.id !== input);
+})
+
 signalr.on("UpdatedShoppingItem", async (item) => {
     const updatedItem = item as any;
+    console.log("UpdatedShoppingItem received:", updatedItem);
     if (props.post.reminderType == 2 && props.post.items) {
         for (let i = 0; i < props.post.items.length; i++) {
             if (props.post.items[i].id == updatedItem.id) {
@@ -384,5 +395,13 @@ const toggleCheck = (item: any) => {
     align-items: center;
     margin-right: 10px;
     padding-left: 2px;
+}
+
+.shopping-name-checked {
+    display: grid;
+    align-items: center;
+    margin-right: 10px;
+    padding-left: 2px;
+    text-decoration: line-through;
 }
 </style>
