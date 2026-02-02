@@ -326,7 +326,7 @@ export class bridge {
 
     // Reaction for reminder section:
 
-    async addReactionReminder(reminderId: string, userId: string, reaction: string): Promise<boolean> {
+    async addReactionReminder(colocationId: string, reminderId: string, userId: string, reaction: string): Promise<boolean> {
         try {
             const response = await fetch(this.url + "/api/Reminder/Reactions", {
                 method: 'POST',
@@ -334,7 +334,7 @@ export class bridge {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + this.jwt
                 },
-                body: JSON.stringify({ reminderId: reminderId, userId: userId, type: reaction })
+                body: JSON.stringify({ colocationId: colocationId, reminderId: reminderId, userId: userId, type: reaction })
             });
             if (response.ok) {
                 return true;

@@ -62,7 +62,7 @@ const handleClose = () => {
 
 const handleReaction = async (emoji: string) => {
   if (!props.postId) return;
-  await api.addReactionReminder(props.postId, userStore.user.id, emoji).then(() => {
+  await api.addReactionReminder(userStore.user.colocationId, props.postId, userStore.user.id, emoji).then(() => {
     close()
     emit('closed')
   }).catch((error) => {
